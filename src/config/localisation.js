@@ -1,5 +1,8 @@
-const localisation = {};
+const localisation = {
+  "enterEmailId" : "Enter Email Id",
+  "enterPassword" : "Enter Password"
+};
 
-export default (prop) => {
+export const translate = (prop) => {
   return localisation[prop];
 };
