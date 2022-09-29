@@ -40,7 +40,7 @@ export default function AppInfo() {
               className={classes.body}
               style={{ margin: "20px 0px 50px 39px" }}
             >
-              {translate("label.shoonyaInfo")}
+              {translate("label.chitralekhaInfo")}
             </Typography>
           </Hidden>
         </Grid>
