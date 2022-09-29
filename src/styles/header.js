@@ -100,6 +100,13 @@ const headerStyle = makeStyles({
         padding: "6px 8px",
         height: "58px",
         fontSize: "1rem",
+    },
+    avatarBox: {
+        display: "flex",
+        alignItems: "center",
+    },
+    icon: {
+        margin: "0 10px"
     }
 })
 
