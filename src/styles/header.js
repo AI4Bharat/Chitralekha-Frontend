@@ -88,6 +88,19 @@ const headerStyle = makeStyles({
           height: "26px",
         },
       },
+    btnBox: {
+        justifyContent: "center",
+        color: 'black',
+    },
+    Logo: {
+        width: '35px',
+    },
+    navBtn: {
+        color: "black",
+        padding: "6px 8px",
+        height: "58px",
+        fontSize: "1rem",
+    }
 })
 
-export default headerStyle
+export default headerStyle;
