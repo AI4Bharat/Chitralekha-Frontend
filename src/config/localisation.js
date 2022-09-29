@@ -2,7 +2,7 @@ const localisation = {
   "enterEmailId" : "Enter Email Id",
   "enterPassword" : "Enter Password",
   "label.chitralekhaInfo":
-    "Chitralekha is an open source platform tool for video subtitling across various Indic languages, using ML model support (ASR for Transcription and NMT for Translation).",
+    "Chitralekha is an AI-based open-source platform to perform video translation for various Indic languages. It supports automatic transcription of videos to respective text captions and translating them into subtitles, which can be proofread by Reviewers/Translators.",
 
 };
 
