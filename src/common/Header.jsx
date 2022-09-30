@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,14 +14,15 @@ import headerStyle from "../styles/header";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useTheme } from "@emotion/react";
-import { useMediaQuery } from "@mui/material";
+import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
-
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   const classes = headerStyle();
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
+  const [anchorElHelp, setAnchorElHelp] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -34,10 +35,55 @@ const Header = () => {
     setAnchorElUser(null);
   };
 
+  const handleOpenSettingsMenu = (event) => {
+    setAnchorElSettings(event.currentTarget);
+  };
+
+  const handleCloseSettingsMenu = () => {
+    setAnchorElSettings(null);
+  };
+
+  const handleOpenHelpMenu = (event) => {
+    setAnchorElHelp(event.currentTarget);
+  };
+
+  const handleCloseHelpMenu = () => {
+    setAnchorElHelp(null);
+  };
+
+  const HelpMenu = [
+    {
+      name: "Help",
+      onClick: () => {},
+    },
+  ];
+
+  const SettingsMenu = [
+    {
+      name: "Settings",
+      onClick: () => {},
+    },
+  ];
+
+  const UserMenu = [
+    {
+      name: "My Profile",
+      onClick: () => {},
+    },
+    {
+      name: "Change Password",
+      onClick: () => {},
+    },
+    {
+      name: "Logout",
+      onClick: () => {},
+    },
+  ];
+
   return (
     <Box>
       {isMobile ? (
-        <MobileNavbar />
+        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
       ) : (
         <AppBar position="static">
           <Container maxWidth="xl">
@@ -48,61 +94,136 @@ const Header = () => {
                   alt="ai4bharat"
                   className={classes.Logo}
                 />
-                <Typography
-                  variant="h4"
-                  sx={{ color: "black", marginLeft: "10px" }}
-                >
+                <Typography variant="h4" sx={{ color: "black" }}>
                   Chitralekha
                 </Typography>
               </Box>
 
-              <Box display="flex">
-                <Button
-                  variant="text"
-                  className={classes.headerMenu}
-                  sx={{ color: "#000" }}
-                >
-                  Organization
-                </Button>
-                <Button
-                  variant="text"
-                  className={classes.headerMenu}
-                  sx={{ color: "#000" }}
-                >
-                  Projects
-                </Button>
-                <Button
-                  variant="text"
-                  className={classes.headerMenu}
-                  sx={{ color: "#000" }}
-                >
-                  Workspace
-                </Button>
-              </Box>
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                columnGap={2}
+                rowGap={2}
+                xs={12}
+                sm={12}
+                md={7}
+              >
+                <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={classes.headerMenu}
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Organizations
+                  </NavLink>
+                </Typography>
+                <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={classes.headerMenu}
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Projects
+                  </NavLink>
+                </Typography>
+                <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={classes.headerMenu}
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Workspace
+                  </NavLink>
+                </Typography>
+              </Grid>
 
               <Box className={classes.avatarBox}>
-                <Tooltip title="Help">
-                  <HelpOutlineIcon color="primary" className={classes.icon} />
-                </Tooltip>
+                <IconButton
+                  onClick={handleOpenHelpMenu}
+                  className={classes.icon}
+                >
+                  <Tooltip title="Help">
+                    <HelpOutlineIcon color="primary" className={classes.icon} />
+                  </Tooltip>
+                </IconButton>
 
-                <Tooltip title="Settings">
-                  <SettingsOutlinedIcon
-                    color="primary"
-                    className={classes.icon}
-                  />
-                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElHelp}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  open={Boolean(anchorElHelp)}
+                  onClose={handleCloseHelpMenu}
+                >
+                  {HelpMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+
+                <IconButton
+                  onClick={handleOpenSettingsMenu}
+                  className={classes.icon}
+                >
+                  <Tooltip title="Settings">
+                    <SettingsOutlinedIcon
+                      color="primary"
+                      className={classes.icon}
+                    />
+                  </Tooltip>
+                </IconButton>
+
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElSettings}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  open={Boolean(anchorElSettings)}
+                  onClose={handleCloseSettingsMenu}
+                >
+                  {SettingsMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
 
                 <IconButton
                   onClick={handleOpenUserMenu}
                   className={classes.icon}
+                  sx={{ marginLeft: "20px" }}
                 >
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
                   <Typography
                     variant="h4"
                     sx={{
-                      color: "black",
+                      color: "rgb(39, 30, 79)",
                       marginLeft: "10px",
-                      fontSize: "20px",
+                      fontSize: "1.25rem",
+                      fontFamily: "Roboto, sans-serif",
+                      fontWeight: "400",
                     }}
                   >
                     User
@@ -115,19 +236,21 @@ const Header = () => {
                   anchorEl={anchorElUser}
                   anchorOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "center",
                   }}
                   keepMounted
                   transformOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "center",
                   }}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
+                  {UserMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
                     </MenuItem>
                   ))}
                 </Menu>

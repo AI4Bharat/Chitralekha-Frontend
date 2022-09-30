@@ -40,7 +40,6 @@ const headerStyle = makeStyles({
     },
     headerLogo: {
         height: "2rem", 
-        width: "10rem", 
     },
     headerMenu : {
         textDecoration : "none",
@@ -106,7 +105,8 @@ const headerStyle = makeStyles({
         alignItems: "center",
     },
     icon: {
-        margin: "0 10px"
+        color: "rgba(0, 0, 0, 0.54) !important",
+        fontSize: "2.25rem !important",
     }
 })
 

@@ -14,14 +14,36 @@ import {
   Box,
   FormControlLabel,
   Checkbox,
+  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
 import headerStyle from "../styles/header";
 
-function MobileNavbar(props) {
+function MobileNavbar({ UserMenu, SettingsMenu }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const classes = headerStyle();
+
+  const tabs = [
+    {
+      name: "Organizations",
+      onClick: () => {
+        setOpenDrawer(false);
+      },
+    },
+    {
+      name: "project",
+      onClick: () => {
+        setOpenDrawer(false);
+      },
+    },
+    {
+      name: "workspace",
+      onClick: () => {
+        setOpenDrawer(false);
+      },
+    },
+  ];
 
   return (
     <>
@@ -45,7 +67,6 @@ function MobileNavbar(props) {
         >
           <Box>
             <NavLink
-              to="/profile"
               onClick={() => setOpenDrawer(false)}
               style={{
                 textDecoration: "none",
@@ -69,7 +90,7 @@ function MobileNavbar(props) {
                   U
                 </Avatar>
                 <Typography
-                  variant="h6"
+                  variant="h2"
                   sx={{ p: 0, ml: 1 }}
                   style={{
                     color: "black",
@@ -81,13 +102,25 @@ function MobileNavbar(props) {
             </NavLink>
             <Divider />
           </Box>
-          <Box>
+
+          <Box >
             <List>
-              {["Organizations", "project", "workspace"].map((tab) => (
-                <ListItem onClick={() => setOpenDrawer(false)}>{tab}</ListItem>
+              {tabs.map((tab) => (
+                  <ListItem onClick={() => setOpenDrawer(false)}>
+                    <Typography variant="body1">
+                      <NavLink
+                        to=""
+                        className={classes.headerMenu}
+                        activeClassName={classes.highlightedMenu}
+                      >
+                        {tab.name}
+                      </NavLink>
+                    </Typography>
+                  </ListItem>
               ))}
             </List>
           </Box>
+
           <Box>
             <Typography
               variant="h6"
@@ -99,23 +132,25 @@ function MobileNavbar(props) {
               App Settings
             </Typography>
             <Divider />
-            {/* <List>
-              {appSettings.map((setting) => (
-                <ListItem key={setting} onClick={setting.onclick}>
-                  {setting.control ? (
-                    <FormControlLabel
-                      control={setting.control}
-                      label={setting.name}
-                    />
-                  ) : (
-                    <Typography variant="body1" textAlign="center">
-                      {setting.name}
-                    </Typography>
-                  )}
+            <List>
+              {SettingsMenu.map((setting, index) => (
+                <ListItem key={index} onClick={setting.onclick}>
+                  <Typography
+                    variant="body1"
+                    textAlign="center"
+                    style={{
+                      color: "black",
+                      fontSize: "1rem",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {setting.name}
+                  </Typography>
                 </ListItem>
               ))}
-            </List> */}
+            </List>
           </Box>
+
           <Box>
             <Typography
               variant="h6"
@@ -127,24 +162,33 @@ function MobileNavbar(props) {
               User Settings
             </Typography>
             <Divider />
-            {/* <List>
-              {userSettings.map((setting) => (
+            <List>
+              {UserMenu.map((setting, index) => (
                 <ListItem
-                  key={setting}
+                  key={index}
                   onClick={() => {
                     setting.onclick();
                     setOpenDrawer(false);
                   }}
                 >
-                  <Typography variant="body1" textAlign="center">
+                  <Typography
+                    variant="body2"
+                    textAlign="center"
+                    style={{
+                      color: "black",
+                      fontSize: "1rem",
+                      fontWeight: "400",
+                    }}
+                  >
                     {setting.name}
                   </Typography>
                 </ListItem>
               ))}
-            </List> */}
+            </List>
           </Box>
         </Box>
       </Drawer>
+
       <AppBar style={{ backgroundColor: "#ffffff", padding: "8px 0" }}>
         <Grid
           container
@@ -154,16 +198,19 @@ function MobileNavbar(props) {
             padding: "0 5%",
           }}
         >
-          <Grid item>
-            <Link to="/projects">
-              <img
-                src={"https://i.imgur.com/pVT5Mjp.png"}
-                alt="logo"
-                className={classes.headerLogo}
-                style={{ marginTop: "5%" }}
-              />
-            </Link>
-          </Grid>
+          <Box display="flex" alignItems="center">
+            <img
+              src={"https://i.imgur.com/pVT5Mjp.png"}
+              alt="logo"
+              className={classes.headerLogo}
+            />
+            <Typography
+              variant="h3"
+              sx={{ color: "black", marginLeft: "10px" }}
+            >
+              Chitralekha
+            </Typography>
+          </Box>
           <Grid item>
             <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
               <MenuIcon />
