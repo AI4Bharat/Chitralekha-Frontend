@@ -100,8 +100,8 @@ const Login = () => {
             // message: rsp_data.detail
           });
         } else {
-          localStorage.setItem("shoonya_access_token", rsp_data.access);
-          localStorage.setItem("shoonya_refresh_token", rsp_data.refresh);
+          localStorage.setItem("token", rsp_data.token);
+          localStorage.setItem("userInfo", JSON.stringify(rsp_data.user));
           navigate("/projects");
         }
       })
