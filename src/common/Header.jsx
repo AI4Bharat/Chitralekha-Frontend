@@ -1,92 +1,42 @@
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import headerStyle from "../../../styles/header";
-import Logo from "../../../../assets/logo.svg";
+import React, { useState } from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import Container from "@mui/material/Container";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
+import headerStyle from "../styles/header";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../../../redux/actions/apitransport/apitransport";
-import FetchLoggedInUserDataAPI from "../../../../redux/actions/api/UserManagement/FetchLoggedInUserData";
-import { useNavigate } from "react-router-dom";
-import CustomButton from "../common/Button";
-import MobileNavbar from "./MobileNavbar";
 import { useTheme } from "@emotion/react";
-import { useMediaQuery } from "@mui/material";
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import Logout from "../../../../redux/actions/UserManagement/Logout";
-import Modal from "./Modal";
-import Transliteration from "../../container/Transliteration/Transliteration";
+import { Grid, useMediaQuery } from "@mui/material";
+import MobileNavbar from "./MobileNavbar";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Header = () => {
+  const classes = headerStyle();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
-  const [activeproject, setActiveproject] = useState("activeButtonproject");
-  const [activeworkspace, setActiveworkspace] = useState("");
-  const [showTransliterationModel, setShowTransliterationModel] = useState(false);
+  const [user, setUser] = useState({});
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const dispatch = useDispatch();
-  let navigate = useNavigate();
-
-  const classes = headerStyle();
-
-  const loggedInUserData = useSelector(
-    (state) => state.fetchLoggedInUserData.data
-  );
-
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI("me");
-    dispatch(APITransport(loggedInUserObj));
-  };
-
-  useEffect(() => {
-    getLoggedInUserData();
-    console.log("loggedInUserData", loggedInUserData);
-  }, []);
-
-  // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
-  const onLogoutClick = () => {
-    handleCloseUserMenu();
-    dispatch(Logout());
-    // ExpireSession();
-    localStorage.clear();
-    navigate("/");
-  };
-
-  // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-  
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleOpenHelpMenu = (event) => {
-    setAnchorElHelp(event.currentTarget);
-  };
-  const handleCloseHelpMenu = () => {
-    setAnchorElHelp(null);
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   const handleOpenSettingsMenu = (event) => {
@@ -97,531 +47,134 @@ const Header = () => {
     setAnchorElSettings(null);
   };
 
-  const handleRTLChange = (event) => {
-    let style;
-    if (event.target.checked) {
-      localStorage.setItem("rtl", true);
-      style = document.createElement("style");
-      style.innerHTML = "input, textarea { direction: RTL; }";
-      document.head.appendChild(style);
-    } else {
-      localStorage.setItem("rtl", false);
-      style = document.createElement("style");
-      style.innerHTML = "input, textarea { direction: unset; }";
-      document.head.appendChild(style);
-    }
+  const handleOpenHelpMenu = (event) => {
+    setAnchorElHelp(event.currentTarget);
   };
 
- 
-  const renderTabs = () => {
-    if (loggedInUserData?.role === 1) {
-      return(
-        <Grid
-          container
-          direction="row"
-          // justifyContent="space-evenly"
-          // spacing={0}
-          columnGap={2}
-          rowGap={2}
-          xs={12}
-          sm={12}
-          md={7}
-        >
-          {/* <Typography variant="body1">
-            <NavLink
-              hidden={loggedInUserData.role === 1}
-              to={
-                loggedInUserData && loggedInUserData.organization
-                  ? `/my-organization/${loggedInUserData.organization.id}`
-                  : `/my-organization/1`
-              }
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Organization
-            </NavLink>
-          </Typography> */}
-          {/* <Typography variant="body1">
-            <NavLink
-              hidden={loggedInUserData.role === 1 || loggedInUserData.role === 3}
-              to="/workspaces"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Workspaces
-            </NavLink>
-          </Typography> */}
-          <Typography variant="body1">
-            <NavLink
-              to="/projects"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Projects
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-             to="/Analytics"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Analytics
-            </NavLink>
-          </Typography>
-          {/* <Typography variant="body1">
-            <NavLink
-              hidden={loggedInUserData.role === 1}
-              to="/datasets"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Datasets
-            </NavLink>
-          </Typography> */}
-        </Grid>
-      )
-    } else if (loggedInUserData?.role === 2) {
-      return(<Grid
-          container
-          direction="row"
-          // justifyContent="space-evenly"
-          // spacing={0}
-          columnGap={2}
-          rowGap={2}
-          xs={12}
-          sm={12}
-          md={7}
-        >
-          {/* <Typography variant="body1">
-            <NavLink
-              to={
-                loggedInUserData && loggedInUserData.organization
-                  ? `/my-organization/${loggedInUserData.organization.id}`
-                  : `/my-organization/1`
-              }
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Organization
-            </NavLink>
-          </Typography> */}
-          <Typography variant="body1">
-            <NavLink
-              to="/workspaces"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Workspaces
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-              to="/projects"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Projects
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-              to="/datasets"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Datasets
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-             to="/Analytics"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Analytics
-            </NavLink>
-          </Typography>
-        </Grid>)
-    } else if (loggedInUserData?.role === 3) {
-      return(<Grid
-          container
-          direction="row"
-          // justifyContent="space-evenly"
-          // spacing={0}
-          columnGap={2}
-          rowGap={2}
-          xs={12}
-          sm={12}
-          md={7}
-        >
-          <Typography variant="body1">
-            <NavLink
-              to={
-                loggedInUserData && loggedInUserData.organization
-                  ? `/my-organization/${loggedInUserData.organization.id}`
-                  : `/my-organization/1`
-              }
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Organization
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-              to="/projects"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Projects
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-              to="/datasets"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Datasets
-            </NavLink>
-          </Typography>
-          <Typography variant="body1">
-            <NavLink
-             to="/Analytics"
-              className={({ isActive }) =>
-                isActive ? classes.highlightedMenu : classes.headerMenu
-              }
-              activeClassName={classes.highlightedMenu}
-            >
-              Analytics
-            </NavLink>
-          </Typography>
-        </Grid>)
-    } else {
-      return(
-        null
-      )
-    }
-  }
+  const handleCloseHelpMenu = () => {
+    setAnchorElHelp(null);
+  };
 
-  const tabs = [
-    <Typography variant="body1">
-      <NavLink
-        hidden={loggedInUserData.role === 1}
-        to={
-          loggedInUserData && loggedInUserData.organization
-            ? `/my-organization/${loggedInUserData.organization.id}`
-            : `/my-organization/1`
-        }
-        className={({ isActive }) =>
-          isActive ? classes.highlightedMenu : classes.headerMenu
-        }
-        activeClassName={classes.highlightedMenu}
-      >
-        Organization
-      </NavLink>
-    </Typography>,
-    <Typography variant="body1">
-      <NavLink
-        hidden={loggedInUserData.role === 1 || loggedInUserData.role === 3}
-        to="/workspaces"
-        className={({ isActive }) =>
-          isActive ? classes.highlightedMenu : classes.headerMenu
-        }
-        activeClassName={classes.highlightedMenu}
-      >
-        Workspaces
-      </NavLink>
-    </Typography>,
-    <Typography variant="body1">
-      <NavLink
-        to="/projects"
-        className={({ isActive }) =>
-          isActive ? classes.highlightedMenu : classes.headerMenu
-        }
-        activeClassName={classes.highlightedMenu}
-      >
-        Projects
-      </NavLink>
-    </Typography>,
-    <Typography variant="body1">
-      <NavLink
-        hidden={loggedInUserData.role === 1}
-        to="/datasets"
-        className={({ isActive }) =>
-          isActive ? classes.highlightedMenu : classes.headerMenu
-        }
-        activeClassName={classes.highlightedMenu}
-      >
-        Datasets
-      </NavLink>
-    </Typography>,
-    <Typography variant="body1">
-    <NavLink
-      to="/Analytics"
-      className={({ isActive }) =>
-        isActive ? classes.highlightedMenu : classes.headerMenu
-      }
-      activeClassName={classes.highlightedMenu}
-    >
-      Analytics
-    </NavLink>
-  </Typography>,
-  ];
-
-  const userSettings = [
+  const HelpMenu = [
     {
-      name: "My Profile",
-      onclick: () => {
+      name: "Help",
+      onClick: () => {
         handleCloseUserMenu();
-        navigate(`/profile/${loggedInUserData.id}`);
       },
     },
+  ];
+
+  const SettingsMenu = [
     {
-      name: "My Progress",
-      onclick: () => {
+      name: "Settings",
+      onClick: () => {
         handleCloseUserMenu();
-        navigate(`/profile/${loggedInUserData.id}`);
+      },
+    },
+  ];
+
+  const UserMenu = [
+    {
+      name: "My Profile",
+      onClick: () => {
+        handleCloseUserMenu();
       },
     },
     {
       name: "Change Password",
-      onclick: () => {
+      onClick: () => {
         handleCloseUserMenu();
-        navigate("/Change-Password");
-      },
-    },
-    { name: "Logout", onclick: () => onLogoutClick() },
-  ];
-
-  const appSettings = [
-    {
-      name: "Transliteration",
-      onclick: () => {
-        // navigate("/transliteration");
-        handleCloseSettingsMenu()
-        setShowTransliterationModel(true);
       },
     },
     {
-      name: "Enable RTL-typing",
-      control: (
-        <Checkbox
-          onChange={handleRTLChange}
-          defaultChecked={localStorage.getItem("rtl") === "true"}
-        />
-      ),
-    },
-    // {
-    //   name: "Help",
-    //   onclick: () => {},
-    // },
-  ];
-  const helpMenu = [
-    {
-      name: "Help",
-      onclick: () => {
-
-        const url = 'https://github.com/AI4Bharat/Shoonya/wiki/Shoonya-FAQ'
-        window.open(url, '_blank');
-
+      name: "Logout",
+      onClick: () => {
+        handleCloseUserMenu();
+        localStorage.clear();
+        navigate("/");
       },
     },
-
-    // {
-    //   name: "Feedback",
-    //   onclick: () => {},
-    // },
   ];
 
-  const handleTransliterationModelClose = () => {
-    setShowTransliterationModel(false);
-  }
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("userInfo")));
+  }, []);
 
   return (
-    <Grid container direction="row">
-      <Box className={classes.parentContainer}>
-        {isMobile ? (
-          <MobileNavbar
-            tabs={tabs}
-            userSettings={userSettings}
-            appSettings={appSettings}
-            loggedInUserData={loggedInUserData}
-          />
-        ) : (
-          <AppBar style={{ backgroundColor: "#ffffff" }}>
-            <Toolbar className={classes.toolbar}>
+    <Box>
+      {isMobile ? (
+        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
+      ) : (
+        <AppBar position="static">
+          <Container maxWidth="xl">
+            <Toolbar disableGutters className={classes.toolbar}>
+              <Box display="flex" alignItems="center">
+                <img
+                  src={"https://i.imgur.com/pVT5Mjp.png"}
+                  alt="ai4bharat"
+                  className={classes.Logo}
+                />
+                <Typography variant="h4" sx={{ color: "black" }}>
+                  Chitralekha
+                </Typography>
+              </Box>
+
               <Grid
-                sx={{ flexGrow: 0, display: "inline-grid" }}
-                xs={12}
-                sm={12}
-                md={3}
-              >
-                <Link to="/projects">
-                  <img src={Logo} alt="logo" className={classes.headerLogo} />
-                </Link>
-              </Grid>
-              {/* <Grid
                 container
                 direction="row"
-                // justifyContent="space-evenly"
-                // spacing={0}
+                justifyContent="center"
                 columnGap={2}
                 rowGap={2}
                 xs={12}
                 sm={12}
                 md={7}
               >
-                {tabs.map((tab) => tab)}
-              </Grid> */}
-              {renderTabs()}
+                <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={classes.headerMenu}
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Organizations
+                  </NavLink>
+                </Typography>
+                <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={classes.headerMenu}
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Projects
+                  </NavLink>
+                </Typography>
+                <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={classes.headerMenu}
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Workspace
+                  </NavLink>
+                </Typography>
+              </Grid>
 
-              <Box sx={{ flexGrow: 0 }} xs={12} sm={12} md={2}>
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="center"
-                  spacing={2}
-                  sx={{ textAlign: "center", alignItems: "center" }}
+              <Box className={classes.avatarBox}>
+                <IconButton
+                  onClick={handleOpenHelpMenu}
+                  className={classes.icon}
                 >
-                  <Grid item xs={3} sm={3} md={2}>
-                    <Tooltip title="help">
-                      <IconButton onClick={handleOpenHelpMenu}>
-                        <HelpOutlineIcon
-                          color="primary.dark"
-                          fontSize="large"
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                  <Grid item xs={3} sm={3} md={3}>
-                    <Tooltip title="Settings">
-                      <IconButton onClick={handleOpenSettingsMenu}>
-                        <SettingsOutlinedIcon
-                          color="primary.dark"
-                          fontSize="large"
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                  <Grid item xs={6} sm={6} md={7}>
-                    <Tooltip title="User Options">
-                      <IconButton onClick={handleOpenUserMenu}>
-                        <Avatar
-                          alt="user_profile_pic"
-                          variant="contained"
-                          className={classes.avatar}
-                        >
-                          {loggedInUserData &&
-                            loggedInUserData.username &&
-                            loggedInUserData.username.split("")[0]}
-                        </Avatar>
-                        <Typography
-                          variant="body1"
-                          color="primary.dark"
-                          sx={{ p: 0, ml: 1 }}
-                        >
-                          {loggedInUserData.username}
-                        </Typography>
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElSettings}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={Boolean(anchorElSettings)}
-                  onClose={handleCloseSettingsMenu}
-                >
-                  {appSettings.map((setting) => (
-                    <MenuItem key={setting} onClick={setting.onclick}>
-                      {setting.control ? (
-                        <FormControlLabel
-                          control={setting.control}
-                          label={setting.name}
-                          labelPlacement="start"
-                          sx={{ ml: 0 }}
-                        />
-                      ) : (
-                        <Typography variant="body2" textAlign="center">
-                          {setting.name}
-                        </Typography>
-                      )}
-                    </MenuItem>
-                  ))}
-                </Menu>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <Typography variant="body2" sx={{ pl: "1rem", mt: 1 }}>
-                    Signed in as <b>{loggedInUserData.last_name}</b>
-                  </Typography>
-                  <Divider sx={{ mb: 2, mt: 1 }} />
-                  {userSettings.map((setting) => (
-                    <MenuItem key={setting} onClick={setting.onclick}>
-                      <Typography variant="body2" textAlign="center">
-                        {setting.name}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
+                  <Tooltip title="Help">
+                    <HelpOutlineIcon color="primary" className={classes.icon} />
+                  </Tooltip>
+                </IconButton>
+
                 <Menu
                   sx={{ mt: "45px" }}
                   id="menu-appbar"
                   anchorEl={anchorElHelp}
                   anchorOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "center",
                   }}
                   keepMounted
                   transformOrigin={{
@@ -631,43 +184,102 @@ const Header = () => {
                   open={Boolean(anchorElHelp)}
                   onClose={handleCloseHelpMenu}
                 >
-                  {helpMenu.map((help) => (
-                    <MenuItem key={help} onClick={help.onclick}>
-                      {help.control ? (
-                        <FormControlLabel
-                          control={help.control}
-                          label={help.name}
-                          labelPlacement="start"
-                          sx={{ ml: 0 }}
-                        />
-                      ) : (
-                        <Typography variant="body2" textAlign="center">
-                          {help.name}
-                        </Typography>
-                      )}
+                  {HelpMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
                     </MenuItem>
                   ))}
                 </Menu>
 
+                <IconButton
+                  onClick={handleOpenSettingsMenu}
+                  className={classes.icon}
+                >
+                  <Tooltip title="Settings">
+                    <SettingsOutlinedIcon
+                      color="primary"
+                      className={classes.icon}
+                    />
+                  </Tooltip>
+                </IconButton>
+
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElSettings}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  open={Boolean(anchorElSettings)}
+                  onClose={handleCloseSettingsMenu}
+                >
+                  {SettingsMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  className={classes.icon}
+                  sx={{ marginLeft: "20px" }}
+                >
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      color: "rgb(39, 30, 79)",
+                      marginLeft: "10px",
+                      fontSize: "1.25rem",
+                      fontFamily: "Roboto, sans-serif",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {`${user.first_name} ${user.last_name}`}
+                  </Typography>
+                </IconButton>
+
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {UserMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
               </Box>
             </Toolbar>
-          </AppBar>
-        )}
-      </Box>
-      <Modal
-        open={showTransliterationModel}
-        onClose={() => handleTransliterationModelClose}
-        top= {50}
-        left= {50}
-        topTranslate={"40"}
-        leftTranslate={"-50"}
-        isTransliteration={true}
-        // sx={{width: "400px"}}
-      >
-        <Transliteration onCancelTransliteration={()=>handleTransliterationModelClose} />
-      </Modal>
-    </Grid>
+          </Container>
+        </AppBar>
+      )}
+    </Box>
   );
 };
-
 export default Header;

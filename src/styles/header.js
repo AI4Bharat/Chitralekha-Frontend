@@ -40,7 +40,6 @@ const headerStyle = makeStyles({
     },
     headerLogo: {
         height: "2rem", 
-        width: "10rem", 
     },
     headerMenu : {
         textDecoration : "none",
@@ -88,6 +87,27 @@ const headerStyle = makeStyles({
           height: "26px",
         },
       },
+    btnBox: {
+        justifyContent: "center",
+        color: 'black',
+    },
+    Logo: {
+        width: '35px',
+    },
+    navBtn: {
+        color: "black",
+        padding: "6px 8px",
+        height: "58px",
+        fontSize: "1rem",
+    },
+    avatarBox: {
+        display: "flex",
+        alignItems: "center",
+    },
+    icon: {
+        color: "rgba(0, 0, 0, 0.54) !important",
+        fontSize: "2.25rem !important",
+    }
 })
 
-export default headerStyle
+export default headerStyle;
