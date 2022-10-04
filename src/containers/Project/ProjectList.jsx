@@ -1,5 +1,9 @@
+import Header from "../../common/Header";
+
 const ProjectList = () =>{
-    return <div>Welcome to Chitralekha Project</div>
+    return (
+        <Header />
+        )
 };
 
 export default ProjectList;

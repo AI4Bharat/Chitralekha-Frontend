@@ -5,169 +5,217 @@ import {
   List,
   ListItem,
   ListItemText,
-  makeStyles,
   Grid,
   Link,
-  AppBar, 
+  AppBar,
   Divider,
   Avatar,
   Typography,
   Box,
   FormControlLabel,
-  Checkbox
-} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+  Checkbox,
+  Button,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
-import Logo from "../../../../assets/logo.svg";
-import headerStyle from "../../../styles/header";
+import headerStyle from "../styles/header";
 
-const useStyles = makeStyles(() => ({
-  Navlink: {
-    textDecoration: "none",
-    color: "blue",
-    fontSize: "20px",
-  },
-  icon: {
-    color: "white",
-  },
-}));
-
-function MobileNavbar(props) {
-  const { loggedInUserData, appSettings, userSettings, tabs } = props;
+function MobileNavbar({ UserMenu, SettingsMenu }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const classes = headerStyle();
 
-  const handleRTLChange = (event) => {
-    let style;
-    if (event.target.checked) {
-        localStorage.setItem("rtl", true);
-        style = document.createElement("style");
-        style.innerHTML = "input, textarea { direction: RTL; }";
-        document.head.appendChild(style);
-    } else {
-        localStorage.setItem("rtl", false);
-        style = document.createElement("style");
-        style.innerHTML = "input, textarea { direction: unset; }";
-        document.head.appendChild(style);
-    }
-  };
+  const tabs = [
+    {
+      name: "Organizations",
+      onClick: () => {
+        setOpenDrawer(false);
+      },
+    },
+    {
+      name: "project",
+      onClick: () => {
+        setOpenDrawer(false);
+      },
+    },
+    {
+      name: "workspace",
+      onClick: () => {
+        setOpenDrawer(false);
+      },
+    },
+  ];
 
   return (
     <>
-      <Drawer open={openDrawer} onClose={() => setOpenDrawer(false)} PaperProps={{
-        style: {
-            padding: "16px"
-        }
-      }}>
+      <Drawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        PaperProps={{
+          style: {
+            padding: "16px",
+          },
+        }}
+      >
         <Box
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                height: "100%",
-                paddingBottom: "16px"
-            }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+            paddingBottom: "16px",
+          }}
         >
-            <Box>
-                <NavLink to="/profile" onClick={() => setOpenDrawer(false)} style={{
-                    textDecoration: "none"
-                }}>
-                    <Box
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            columnGap: "16px",
-                            paddingBottom: "16px",
-                        }}
-                    >
-                        <Avatar
-                            alt="user_profile_pic"
-                            variant="contained"
-                            className={classes.avatar}
-                        >
-                            {loggedInUserData && loggedInUserData.username && loggedInUserData.username.split("")[0]}
-                        </Avatar>
-                        <Typography variant="h6" sx={{ p: 0, ml : 1 }} style={{
-                            color: "black"
-                        }}>
-                            {loggedInUserData.username}
-                        </Typography>
-                    </Box>
-                </NavLink>
-                <Divider />
-            </Box>
-            <Box>
-                <List>
-                    {tabs.map((tab) => (
-                        <ListItem onClick={() => setOpenDrawer(false)}>
-                            {tab}
-                        </ListItem>
-                    ))}
-                </List>
-            </Box>
-            <Box>
-                <Typography variant="h6" align="center" style={{
-                    fontSize: "1.1rem"
-                }}>
-                    App Settings
+          <Box>
+            <NavLink
+              onClick={() => setOpenDrawer(false)}
+              style={{
+                textDecoration: "none",
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  columnGap: "16px",
+                  paddingBottom: "16px",
+                }}
+              >
+                <Avatar
+                  alt="user_profile_pic"
+                  variant="contained"
+                  className={classes.avatar}
+                >
+                  U
+                </Avatar>
+                <Typography
+                  variant="h2"
+                  sx={{ p: 0, ml: 1 }}
+                  style={{
+                    color: "black",
+                  }}
+                >
+                  User
                 </Typography>
-                <Divider />
-                <List>
-                    {appSettings.map((setting) => (
-                        <ListItem key={setting} onClick={setting.onclick}>
-                            {setting.control ? 
-                                <FormControlLabel
-                                    control={setting.control}
-                                    label={setting.name}
-                                />
-                                : 
-                                <Typography variant="body1" textAlign="center">
-                                    {setting.name}
-                                </Typography>}
-                        </ListItem>
-                    ))}
-                </List>
-            </Box>
-            <Box>
-                <Typography variant="h6" align="center" style={{
-                    fontSize: "1.1rem"
-                }}>
-                    User Settings
-                </Typography>
-                <Divider />
-                <List>
-                    {userSettings.map((setting) => (
-                        <ListItem key={setting} onClick={() => {setting.onclick(); setOpenDrawer(false)}}>
-                            <Typography variant="body1" textAlign="center">
-                                {setting.name}
-                            </Typography>
-                        </ListItem>
-                    ))}
-                </List>
-            </Box>
+              </Box>
+            </NavLink>
+            <Divider />
+          </Box>
+
+          <Box >
+            <List>
+              {tabs.map((tab) => (
+                  <ListItem onClick={() => setOpenDrawer(false)}>
+                    <Typography variant="body1">
+                      <NavLink
+                        to=""
+                        className={classes.headerMenu}
+                        activeClassName={classes.highlightedMenu}
+                      >
+                        {tab.name}
+                      </NavLink>
+                    </Typography>
+                  </ListItem>
+              ))}
+            </List>
+          </Box>
+
+          <Box>
+            <Typography
+              variant="h6"
+              align="center"
+              style={{
+                fontSize: "1.1rem",
+              }}
+            >
+              App Settings
+            </Typography>
+            <Divider />
+            <List>
+              {SettingsMenu.map((setting, index) => (
+                <ListItem key={index} onClick={setting.onclick}>
+                  <Typography
+                    variant="body1"
+                    textAlign="center"
+                    style={{
+                      color: "black",
+                      fontSize: "1rem",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {setting.name}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+
+          <Box>
+            <Typography
+              variant="h6"
+              align="center"
+              style={{
+                fontSize: "1.1rem",
+              }}
+            >
+              User Settings
+            </Typography>
+            <Divider />
+            <List>
+              {UserMenu.map((setting, index) => (
+                <ListItem
+                  key={index}
+                  onClick={() => {
+                    setting.onclick();
+                    setOpenDrawer(false);
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    textAlign="center"
+                    style={{
+                      color: "black",
+                      fontSize: "1rem",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {setting.name}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         </Box>
       </Drawer>
+
       <AppBar style={{ backgroundColor: "#ffffff", padding: "8px 0" }}>
         <Grid
-            container
-            direction="row"
-            justifyContent={"space-between"}
-            style={{
-                padding: "0 5%"
-            }}
-        > 
-            <Grid item>
-                <Link to="/projects">
-                    <img src={Logo} alt="logo" className={classes.headerLogo} style={{marginTop: "5%"}} />
-                </Link>
-            </Grid>
-            <Grid item>
-                <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
-                    <MenuIcon />
-                </IconButton>
-            </Grid>
+          container
+          direction="row"
+          justifyContent={"space-between"}
+          style={{
+            padding: "0 5%",
+          }}
+        >
+          <Box display="flex" alignItems="center">
+            <img
+              src={"https://i.imgur.com/pVT5Mjp.png"}
+              alt="logo"
+              className={classes.headerLogo}
+            />
+            <Typography
+              variant="h3"
+              sx={{ color: "black", marginLeft: "10px" }}
+            >
+              Chitralekha
+            </Typography>
+          </Box>
+          <Grid item>
+            <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
+              <MenuIcon />
+            </IconButton>
+          </Grid>
         </Grid>
       </AppBar>
     </>
