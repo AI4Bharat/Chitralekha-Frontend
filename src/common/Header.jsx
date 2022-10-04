@@ -16,16 +16,20 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Header = () => {
   const classes = headerStyle();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
+  const [user, setUser] = useState({});
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -54,31 +58,47 @@ const Header = () => {
   const HelpMenu = [
     {
       name: "Help",
-      onClick: () => {},
+      onClick: () => {
+        handleCloseUserMenu();
+      },
     },
   ];
 
   const SettingsMenu = [
     {
       name: "Settings",
-      onClick: () => {},
+      onClick: () => {
+        handleCloseUserMenu();
+      },
     },
   ];
 
   const UserMenu = [
     {
       name: "My Profile",
-      onClick: () => {},
+      onClick: () => {
+        handleCloseUserMenu();
+      },
     },
     {
       name: "Change Password",
-      onClick: () => {},
+      onClick: () => {
+        handleCloseUserMenu();
+      },
     },
     {
       name: "Logout",
-      onClick: () => {},
+      onClick: () => {
+        handleCloseUserMenu();
+        localStorage.clear();
+        navigate("/");
+      },
     },
   ];
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("userInfo")));
+  }, []);
 
   return (
     <Box>
@@ -226,7 +246,7 @@ const Header = () => {
                       fontWeight: "400",
                     }}
                   >
-                    User
+                    {`${user.first_name} ${user.last_name}`}
                   </Typography>
                 </IconButton>
 
