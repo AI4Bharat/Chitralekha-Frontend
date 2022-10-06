@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ProjectList from "./containers/Project/ProjectList";
+import Projects from "./containers/Project/Projects";
 import Login from "./containers/UserManagement/Login";
 import Layout from './Layout'
 const router = createBrowserRouter([
@@ -9,7 +9,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/projects",
-    element: <ProjectList />
+    element: <Projects />
   }
 ]);
 
