@@ -235,7 +235,7 @@ const Header = () => {
                   className={classes.icon}
                   sx={{ marginLeft: "20px" }}
                 >
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar>{user.first_name.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{

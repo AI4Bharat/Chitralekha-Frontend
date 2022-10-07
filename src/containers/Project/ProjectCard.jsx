@@ -51,7 +51,7 @@ const ProjectCard = ({ data }) => {
           </Grid>
           <TablePagination
             component="div"
-            count={9}
+            count={data.length}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}

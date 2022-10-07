@@ -66,13 +66,11 @@ const Projects = () => {
         </Box>
 
         <Box>
-            {
-                radioValue === "list" ? (
-                    <ProjectList data={data}/>
-                ) : (
-                  <ProjectCard data={data}/>
-                )
-            }
+          {radioValue === "list" ? (
+            <ProjectList data={data} />
+          ) : (
+            <ProjectCard data={data} />
+          )}
         </Box>
       </div>
     </>

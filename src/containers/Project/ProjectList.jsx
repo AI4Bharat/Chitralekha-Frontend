@@ -3,6 +3,7 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 import CustomButton from "../../common/Button";
+import { Link } from "react-router-dom";
 
 const ProjectList = ({ data }) => {
   const columns = [
@@ -65,12 +66,14 @@ const ProjectList = ({ data }) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px" },
         }),
-        customBodyRender: () => {
+        customBodyRender: (_value, tableMeta) => {
           return (
-            <CustomButton
-              sx={{ borderRadius: 2, marginRight: 2 }}
-              label="View"
-            />
+            <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
+                <CustomButton
+                    sx={{ borderRadius: 2, marginRight: 2 }}
+                    label="View"
+                />
+            </Link>
           );
         },
       },
