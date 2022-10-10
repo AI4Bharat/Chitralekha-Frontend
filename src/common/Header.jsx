@@ -25,6 +25,7 @@ const Header = () => {
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
   const [user, setUser] = useState({});
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -78,6 +79,7 @@ const Header = () => {
       name: "My Profile",
       onClick: () => {
         handleCloseUserMenu();
+        navigate(`/profile/${user.id}`)
       },
     },
     {
@@ -140,7 +142,7 @@ const Header = () => {
                 </Typography>
                 <Typography variant="body1">
                   <NavLink
-                    to="#"
+                    to="/Projects"
                     className={classes.headerMenu}
                     activeClassName={classes.highlightedMenu}
                   >
@@ -235,7 +237,7 @@ const Header = () => {
                   className={classes.icon}
                   sx={{ marginLeft: "20px" }}
                 >
-                  <Avatar>{user.first_name.charAt(0)}</Avatar>
+                  <Avatar>{userInfo.first_name.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{

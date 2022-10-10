@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import VerifyEmailAPI from "../../../../redux/actions/api/UserManagement/VerifyEmail";
+// import VerifyEmailAPI from "../../../../redux/actions/api/UserManagement/VerifyEmail";
 import CustomButton from "../common/Button";
 import OutlinedTextField from "../common/OutlinedTextField";
 import Snackbar from "../common/Snackbar";
@@ -19,25 +19,25 @@ const UpdateEmailDialog = ({isOpen, handleClose, oldEmail, newEmail, onSuccess})
   const [loading, setLoading] = useState(false);
   const [snackbarState, setSnackbarState] = useState({ open: false, message: '', variant: ''});
 
-  const verifyEmail = async () => {
-    setLoading(true);
-    const apiObj = new VerifyEmailAPI(oldEmailCode, newEmailCode);
-    fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    }).then(async (res) => {
-      if (!res.ok) throw await res.json();
-      else return await res.json();
-    }).then((res) => {
-      setSnackbarState({ open: true, message: res.message, variant: "success" });
-      onSuccess();
-      handleClose();
-    }).catch((err) => {
-        setSnackbarState({ open: true, message: err.message, variant: "error" });
-        setLoading(false);
-    });
-  };
+  // const verifyEmail = async () => {
+  //   setLoading(true);
+  //   const apiObj = new VerifyEmailAPI(oldEmailCode, newEmailCode);
+  //   fetch(apiObj.apiEndPoint(), {
+  //     method: "POST",
+  //     body: JSON.stringify(apiObj.getBody()),
+  //     headers: apiObj.getHeaders().headers,
+  //   }).then(async (res) => {
+  //     if (!res.ok) throw await res.json();
+  //     else return await res.json();
+  //   }).then((res) => {
+  //     setSnackbarState({ open: true, message: res.message, variant: "success" });
+  //     onSuccess();
+  //     handleClose();
+  //   }).catch((err) => {
+  //       setSnackbarState({ open: true, message: err.message, variant: "error" });
+  //       setLoading(false);
+  //   });
+  // };
 
   return (
     <Dialog open={isOpen} onClose={handleClose} close fullWidth={true} maxWidth="sm">
@@ -80,7 +80,7 @@ const UpdateEmailDialog = ({isOpen, handleClose, oldEmail, newEmail, onSuccess})
         </Button>
         <CustomButton
           startIcon={loading && <CircularProgress size="0.8rem" color="secondary" />}
-          onClick={verifyEmail}
+          // onClick={verifyEmail}
           label="Verify"
           disabled={!(oldEmailCode && newEmailCode)}
         />
