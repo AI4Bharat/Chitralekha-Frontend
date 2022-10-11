@@ -133,7 +133,7 @@ const Header = () => {
               >
                 <Typography variant="body1">
                   <NavLink
-                    to="#"
+                    to="/my-organization"
                     className={classes.headerMenu}
                     activeClassName={classes.highlightedMenu}
                   >
@@ -142,7 +142,7 @@ const Header = () => {
                 </Typography>
                 <Typography variant="body1">
                   <NavLink
-                    to="/Projects"
+                    to="/projects"
                     className={classes.headerMenu}
                     activeClassName={classes.highlightedMenu}
                   >
