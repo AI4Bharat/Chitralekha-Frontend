@@ -155,7 +155,7 @@ const Header = () => {
                     className={classes.headerMenu}
                     activeClassName={classes.highlightedMenu}
                   >
-                    Workspace
+                    Analytics
                   </NavLink>
                 </Typography>
               </Grid>
