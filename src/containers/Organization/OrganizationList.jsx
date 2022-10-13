@@ -3,7 +3,6 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 import CustomButton from "../../common/Button";
-import { Link } from "react-router-dom";
 
 const OrganizationList = ({ data }) => {
   const columns = [

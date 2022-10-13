@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Avatar,
   Card,
   CardContent,
-  Chip,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -21,7 +20,6 @@ import ProjectStyle from "../../styles/ProjectStyle";
 import { Box } from "@mui/system";
 
 const ProfilePage = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
