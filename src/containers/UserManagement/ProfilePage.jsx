@@ -15,15 +15,12 @@ import CustomButton from "../../common/Button";
 import Spinner from "../../common/Spinner";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
-import Header from "../../common/Header";
-import ProjectStyle from "../../styles/ProjectStyle";
 import { Box } from "@mui/system";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const classes = ProjectStyle();
 
   useEffect(() => {
     setUserDetails(JSON.parse(localStorage.getItem("userInfo")));
@@ -32,8 +29,6 @@ const ProfilePage = () => {
 
   return (
     <>
-      <Header />
-      <div className={classes.container}>
         <Grid container spacing={2}>
           {loading && <Spinner />}
           {userDetails && (
@@ -106,7 +101,6 @@ const ProfilePage = () => {
             </>
           )}
         </Grid>
-      </div>
     </>
   );
 };

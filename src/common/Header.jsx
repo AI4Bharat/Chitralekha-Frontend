@@ -133,7 +133,9 @@ const Header = () => {
                 <Typography variant="body1">
                   <NavLink
                     to="/my-organization"
-                    className={classes.headerMenu}
+                    className={({ isActive }) =>
+                      isActive ? classes.highlightedMenu : classes.headerMenu
+                    }
                     activeClassName={classes.highlightedMenu}
                   >
                     Organizations
@@ -142,7 +144,9 @@ const Header = () => {
                 <Typography variant="body1">
                   <NavLink
                     to="/projects"
-                    className={classes.headerMenu}
+                    className={({ isActive }) =>
+                      isActive ? classes.highlightedMenu : classes.headerMenu
+                    }
                     activeClassName={classes.highlightedMenu}
                   >
                     Projects
