@@ -3,18 +3,36 @@ import Header from "./common/Header";
 import GlobalStyles from "./styles/LayoutStyles";
 import themeDefault from "./theme/theme";
 import BackButton from "./common/BackButton";
-import { translate } from "./config/localisation";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Joyride, { STATUS } from "react-joyride";
+import { steps } from "./utils/utils";
+import { TutorialTooltip } from "./common/TutorialPlayer";
 
 const App = (props) => {
-  const {component, Backbutton, backPressNavigationPath } = props;
+  const { component, Backbutton, backPressNavigationPath } = props;
   const classes = GlobalStyles();
 
   return (
     <ThemeProvider theme={themeDefault}>
       <div className={classes.root}>
         <Header />
-        <div className={classes.container}>
+        {localStorage.getItem("tutorialDone") ? (
+          <></>
+        ) : (
+          <Joyride
+            continuous={true}
+            steps={steps}
+            showProgress={true}
+            showSkipButton={true}
+            tooltipComponent={TutorialTooltip}
+            callback={({ status }) => {
+              if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+                localStorage.setItem("tutorialDone", true);
+              }
+            }}
+          />
+        )}
+        <div className={`${classes.container} main`}>
           {Backbutton && (
             <BackButton
               startIcon={<ArrowBackIcon />}
