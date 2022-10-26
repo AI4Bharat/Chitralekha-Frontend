@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import headerStyle from "../styles/header";
@@ -79,7 +78,7 @@ const Header = () => {
       name: "My Profile",
       onClick: () => {
         handleCloseUserMenu();
-        navigate(`/profile/${user.id}`)
+        navigate(`/profile/${user.id}`);
       },
     },
     {
@@ -134,7 +133,11 @@ const Header = () => {
                 <Typography variant="body1">
                   <NavLink
                     to="/my-organization"
-                    className={classes.headerMenu}
+                    className={({ isActive }) =>
+                      isActive
+                        ? `${classes.highlightedMenu} organizations`
+                        : `${classes.headerMenu} organizations`
+                    }
                     activeClassName={classes.highlightedMenu}
                   >
                     Organizations
@@ -143,7 +146,11 @@ const Header = () => {
                 <Typography variant="body1">
                   <NavLink
                     to="/projects"
-                    className={classes.headerMenu}
+                    className={({ isActive }) =>
+                      isActive
+                        ? `${classes.highlightedMenu} projects`
+                        : `${classes.headerMenu} projects`
+                    }
                     activeClassName={classes.highlightedMenu}
                   >
                     Projects
@@ -152,7 +159,7 @@ const Header = () => {
                 <Typography variant="body1">
                   <NavLink
                     to="#"
-                    className={classes.headerMenu}
+                    className={`${classes.headerMenu} workspace`}
                     activeClassName={classes.highlightedMenu}
                   >
                     Analytics
@@ -163,7 +170,7 @@ const Header = () => {
               <Box className={classes.avatarBox}>
                 <IconButton
                   onClick={handleOpenHelpMenu}
-                  className={classes.icon}
+                  className={`${classes.icon} help`}
                 >
                   <Tooltip title="Help">
                     <HelpOutlineIcon color="primary" className={classes.icon} />
@@ -197,7 +204,7 @@ const Header = () => {
 
                 <IconButton
                   onClick={handleOpenSettingsMenu}
-                  className={classes.icon}
+                  className={`${classes.icon} settings`}
                 >
                   <Tooltip title="Settings">
                     <SettingsOutlinedIcon
@@ -234,7 +241,7 @@ const Header = () => {
 
                 <IconButton
                   onClick={handleOpenUserMenu}
-                  className={classes.icon}
+                  className={`${classes.icon} profile`}
                   sx={{ marginLeft: "20px" }}
                 >
                   <Avatar>{userInfo.first_name.charAt(0)}</Avatar>

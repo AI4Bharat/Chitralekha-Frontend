@@ -16,8 +16,6 @@ import OutlinedTextField from "../../common/OutlinedTextField";
 import React, { useEffect, useState } from "react";
 import Snackbar from "../../common/Snackbar";
 import UpdateEmailDialog from "../../common/UpdateEmailDialog";
-import ProjectStyle from "../../styles/ProjectStyle";
-import Header from "../../common/Header";
 
 const EditProfile = () => {
   const [initLangs, setInitLangs] = useState([]);
@@ -32,8 +30,6 @@ const EditProfile = () => {
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
-
-  const classes = ProjectStyle();
 
   useEffect(() => {
     setUserDetails(JSON.parse(localStorage.getItem("userInfo")));
@@ -78,8 +74,6 @@ const EditProfile = () => {
 
   return (
     <>
-      <Header />
-      <div className={classes.container}>
         <Grid
           container
           direction="row"
@@ -272,7 +266,6 @@ const EditProfile = () => {
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           hide={2000}
         />
-      </div>
     </>
   );
 };
