@@ -3,4 +3,5 @@ export default {
   video: "/video/",
   transcript: "/transcript/",
   translation: "/translation/",
+  organization: "/organization/",
 };
