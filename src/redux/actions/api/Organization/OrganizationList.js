@@ -27,7 +27,7 @@ export default class OrganizationListAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        "Authorization":`${localStorage.getItem('token')}`
       },
     };
     return this.headers;

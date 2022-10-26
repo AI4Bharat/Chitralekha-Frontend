@@ -1,5 +1,5 @@
 export default {
-  users: "/users/api/",
+  users: "/users/auth/jwt/create",
   video: "/video/",
   transcript: "/transcript/",
   translation: "/translation/",
