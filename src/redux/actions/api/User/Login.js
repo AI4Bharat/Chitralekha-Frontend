@@ -25,7 +25,7 @@
  
    getBody() {
      return {
-       email: this.email,
+       username: this.email,
        password: this.password,
      };
    }

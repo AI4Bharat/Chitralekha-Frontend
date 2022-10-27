@@ -1,19 +1,19 @@
+//API to get the list of all the users in the organization.
+
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchOrganizationDetailsAPI extends API {
-  constructor(id, timeout = 2000) {
+export default class FetchLoggedInUserDetailsAPI extends API {
+  constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_ORGANIZATION_DETAILS;
-    this.id = id;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}`;
+    this.type = C.GET_LOGGEDIN_USER_DETAILS;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.loggedInUserDetails}`;
   }
 
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-        console.log(res,'res');
       this.report = res;
     }
   }

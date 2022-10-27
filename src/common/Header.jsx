@@ -17,9 +17,14 @@ import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
+import { useDispatch } from "react-redux";
+import APITransport from "../redux/actions/apitransport/apitransport";
 
 const Header = () => {
   const classes = headerStyle();
+  const dispatch = useDispatch();
+
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
@@ -97,8 +102,14 @@ const Header = () => {
     },
   ];
 
+  const getLoggedInUserData = () => {
+    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    dispatch(APITransport(loggedInUserObj));
+  };
+
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("userInfo")));
+    getLoggedInUserData();
   }, []);
 
   return (
@@ -132,7 +143,7 @@ const Header = () => {
               >
                 <Typography variant="body1">
                   <NavLink
-                    to="/my-organization"
+                    to={`/my-organization/${"1"}`}
                     className={({ isActive }) =>
                       isActive
                         ? `${classes.highlightedMenu} organizations`

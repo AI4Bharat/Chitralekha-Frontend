@@ -1,10 +1,14 @@
 import React from "react";
-import MUIDataTable from "mui-datatables";
+
+//Themes
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import CustomButton from "../../common/Button";
 
-const OrganizationList = ({ data }) => {
+//Components
+import CustomButton from "../../common/Button";
+import MUIDataTable from "mui-datatables";
+
+const ProjectList = ({ data }) => {
   const columns = [
     {
       name: "name",
@@ -100,4 +104,4 @@ const OrganizationList = ({ data }) => {
   );
 };
 
-export default OrganizationList;
+export default ProjectList;

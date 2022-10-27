@@ -47,7 +47,7 @@ const RootRouter = () => {
           element={ProtectedRouteWrapper(<Layout component={<EditProfile />} Backbutton={true} />)}
         />
         <Route
-          path="/my-organization"
+          path="/my-organization/:id"
           element={ProtectedRouteWrapper(<Layout component={<MyOrganization />} />)}
         />
       </Routes>

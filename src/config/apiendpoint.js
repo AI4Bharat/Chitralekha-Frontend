@@ -1,7 +1,9 @@
 export default {
   //User
-  users: "/users/auth/jwt/create",
-  
+  users: "/users/api/login/",
+  userList: "/users/auth/users/",
+  loggedInUserDetails: "/users/account/me/fetch/",
+
   //Video
   video: "/video/",
   transcript: "/transcript/",

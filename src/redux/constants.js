@@ -3,9 +3,14 @@ const constants = {
 
     //organization
     GET_ORGANIZATION_DETAILS: "GET_ORGANIZATION_DETAILS",
+    EDIT_ORGANIZATION_DETAILS: "EDIT_ORGANIZATION_DETAILS",
     
     //project
     GET_PROJECT_LIST: "GET_PROJECT_LIST",
+
+    //User
+    GET_USER_LIST: "GET_USER_LIST",
+    GET_LOGGEDIN_USER_DETAILS: "GET_LOGGEDIN_USER_DETAILS",
 };
 
 export default constants;
