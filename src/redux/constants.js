@@ -1,6 +1,11 @@
 const constants = {
     APISTATUS: "APISTATUS",
-    GET_ORGANIZATION_LIST: "GET_ORGANIZATION_LIST",
+
+    //organization
+    GET_ORGANIZATION_DETAILS: "GET_ORGANIZATION_DETAILS",
+    
+    //project
+    GET_PROJECT_LIST: "GET_PROJECT_LIST",
 };
 
 export default constants;

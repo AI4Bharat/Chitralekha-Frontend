@@ -2,14 +2,14 @@ import C from "../../constants";
 
 const initialState = {};
 
-const getOrganizations = (state, payload) => {
+const getOrganizationDetails = (state, payload) => {
   return "";
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case C.GET_ORGANIZATION_LIST:
-      return getOrganizations(state, action.payload);
+    case C.GET_ORGANIZATION_DETAILS:
+      return getOrganizationDetails(state, action.payload);
 
     default:
       return {

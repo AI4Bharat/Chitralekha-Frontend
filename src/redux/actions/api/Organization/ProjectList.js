@@ -1,12 +1,14 @@
+//API to get the list of all the projects in the organization.
+
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class OrganizationListAPI extends API {
+export default class ProjectListAPI extends API {
   constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_ORGANIZATION_LIST;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}`;
+    this.type = C.GET_PROJECT_LIST;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.project}`;
   }
 
   processResponse(res) {
