@@ -7,7 +7,7 @@ export default class FetchOrganizationDetailsAPI extends API {
     super("GET", timeout, false);
     this.type = C.GET_ORGANIZATION_DETAILS;
     this.id = id;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/`;
   }
 
   processResponse(res) {
@@ -28,7 +28,7 @@ export default class FetchOrganizationDetailsAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`${localStorage.getItem('token')}`
+        "Authorization":`JWT ${localStorage.getItem('token')}`
       },
     };
     return this.headers;

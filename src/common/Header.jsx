@@ -29,7 +29,7 @@ const Header = () => {
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
   const [user, setUser] = useState({});
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  // const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -83,7 +83,7 @@ const Header = () => {
       name: "My Profile",
       onClick: () => {
         handleCloseUserMenu();
-        navigate(`/profile/${user.id}`);
+        // navigate(`/profile/${user.id}`);
       },
     },
     {
@@ -108,7 +108,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("userInfo")));
+    // setUser(JSON.parse(localStorage.getItem("userInfo")));
     getLoggedInUserData();
   }, []);
 
@@ -255,7 +255,7 @@ const Header = () => {
                   className={`${classes.icon} profile`}
                   sx={{ marginLeft: "20px" }}
                 >
-                  <Avatar>{userInfo.first_name.charAt(0)}</Avatar>
+                  {/* <Avatar>{userInfo.first_name.charAt(0)}</Avatar> */}
                   <Typography
                     variant="h4"
                     sx={{
@@ -266,7 +266,7 @@ const Header = () => {
                       fontWeight: "400",
                     }}
                   >
-                    {`${user.first_name} ${user.last_name}`}
+                    {/* {`${user.first_name} ${user.last_name}`} */}test
                   </Typography>
                 </IconButton>
 

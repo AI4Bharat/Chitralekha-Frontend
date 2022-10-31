@@ -28,7 +28,7 @@ export default class FetchLoggedInUserDetailsAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`${localStorage.getItem('token')}`
+        "Authorization": `JWT ${localStorage.getItem('token')}`,
       },
     };
     return this.headers;

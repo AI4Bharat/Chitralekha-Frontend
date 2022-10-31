@@ -88,20 +88,14 @@ const Login = () => {
     })
       .then(async (res) => {
         const rsp_data = await res.json();
-        console.log(rsp_data);
         if (!res.ok) {
-          // return Promise.reject('');
-          // let errorObj =
-          console.log("res -", res);
           setSnackbarInfo({
             open: true,
             variant: "error",
             message: "Username or Password incorrect.",
-            // message: rsp_data.detail
           });
         } else {
-          localStorage.setItem("token", rsp_data.token);
-          localStorage.setItem("userInfo", JSON.stringify(rsp_data.user));
+          localStorage.setItem("token", rsp_data.access);
           navigate("/projects");
         }
       })

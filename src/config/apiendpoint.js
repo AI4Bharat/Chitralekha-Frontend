@@ -1,6 +1,6 @@
 export default {
   //User
-  users: "/users/api/login/",
+  users: "/users/auth/jwt/create/",
   userList: "/users/auth/users/",
   loggedInUserDetails: "/users/account/me/fetch/",
 
