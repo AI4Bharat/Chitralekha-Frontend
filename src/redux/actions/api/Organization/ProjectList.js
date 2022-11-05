@@ -14,7 +14,6 @@ export default class ProjectListAPI extends API {
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-        console.log(res,'res');
       this.report = res;
     }
   }

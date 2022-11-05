@@ -1,15 +1,16 @@
 import C from "../../constants";
 
-const initialState = {};
-
-const getProjects = (state, payload) => {
-  return "";
-}
+const initialState = {
+  data: [],
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case C.GET_PROJECT_LIST:
-      return getProjects(state, action.payload);
+      return {
+        ...state,
+        data: action.payload,
+      };
 
     default:
       return {

@@ -18,7 +18,7 @@ import MobileNavbar from "./MobileNavbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
 
 const Header = () => {
@@ -28,13 +28,22 @@ const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
-  const [user, setUser] = useState({});
-  // const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const navigate = useNavigate();
+
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+
+  const getLoggedInUserData = () => {
+    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    dispatch(APITransport(loggedInUserObj));
+  };
+
+  useEffect(() => {
+    getLoggedInUserData();
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -83,7 +92,7 @@ const Header = () => {
       name: "My Profile",
       onClick: () => {
         handleCloseUserMenu();
-        // navigate(`/profile/${user.id}`);
+        navigate(`/profile/${userData?.id}`);
       },
     },
     {
@@ -101,16 +110,6 @@ const Header = () => {
       },
     },
   ];
-
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
-    dispatch(APITransport(loggedInUserObj));
-  };
-
-  useEffect(() => {
-    // setUser(JSON.parse(localStorage.getItem("userInfo")));
-    getLoggedInUserData();
-  }, []);
 
   return (
     <Box>
@@ -143,7 +142,7 @@ const Header = () => {
               >
                 <Typography variant="body1">
                   <NavLink
-                    to={`/my-organization/${"1"}`}
+                    to={`/my-organization/${userData?.organization?.id}`}
                     className={({ isActive }) =>
                       isActive
                         ? `${classes.highlightedMenu} organizations`
@@ -255,7 +254,7 @@ const Header = () => {
                   className={`${classes.icon} profile`}
                   sx={{ marginLeft: "20px" }}
                 >
-                  {/* <Avatar>{userInfo.first_name.charAt(0)}</Avatar> */}
+                  <Avatar>{userData?.username?.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{
@@ -266,7 +265,7 @@ const Header = () => {
                       fontWeight: "400",
                     }}
                   >
-                    {/* {`${user.first_name} ${user.last_name}`} */}test
+                    {userData.username}
                   </Typography>
                 </IconButton>
 

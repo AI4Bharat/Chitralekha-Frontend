@@ -2,27 +2,58 @@
 import { useEffect, useState } from "react";
 
 //APIs
-import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
-import ProjectListAPI from "../../redux/actions/api/Organization/ProjectList";
-import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
-import ProjectList from "./ProjectList";
-import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
-import APITransport from "../../redux/actions/apitransport/apitransport";
+import FetchOrganizationDetailsAPI from "../../../redux/actions/api/Organization/FetchOrganizationDetails";
+import ProjectListAPI from "../../../redux/actions/api/Organization/ProjectList";
+import FetchUserListAPI from "../../../redux/actions/api/User/FetchUserList";
+import ProjectList from "../ProjectList";
+import EditOrganizationDetailsAPI from "../../../redux/actions/api/Organization/EditOrganizationDetails";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
 //Styles
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../../styles/Dataset";
 
 //Components
 import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
-import Button from "../../common/Button";
-import UserList from "./UserList";
-import OutlinedTextField from "../../common/OutlinedTextField";
-import AddDialog from "../../common/AddDialog";
-import AddOrganizationMember from "../../common/AddOrganizationMember";
-import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
+import Button from "../../../common/Button";
+import UserList from "../UserList";
+import OutlinedTextField from "../../../common/OutlinedTextField";
+import AddDialog from "../../../common/AddDialog";
+
+const data = [
+  {
+    id: "1",
+    title: "test1",
+    type: "video",
+    mode: "test1",
+  },
+  {
+    id: "2",
+    title: "test1",
+    type: "video",
+    mode: "test1",
+  },
+  {
+    id: "3",
+    title: "test1",
+    type: "video",
+    mode: "test1",
+  },
+  {
+    id: "4",
+    title: "test1",
+    type: "video",
+    mode: "test1",
+  },
+  {
+    id: "5",
+    title: "test1",
+    type: "video",
+    mode: "test1",
+  },
+];
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -40,8 +71,8 @@ const TabPanel = (props) => {
   );
 };
 
-const MyOrganization = () => {
-  const { id } = useParams();
+const Project = () => {
+  const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
@@ -53,67 +84,17 @@ const MyOrganization = () => {
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("");
 
-  const organizationDetails = useSelector(
-    (state) => state.getOrganizationDetails.data
-  );
-
-  const projectList = useSelector((state) => state.getProjectList.data);
-
-  const userList = useSelector((state) => state.getUserList.data);
-
-  const getOrganizationDetails = () => {
-    const userObj = new FetchOrganizationDetailsAPI(id);
-    dispatch(APITransport(userObj));
-  };
-
-  const getProjectList = () => {
-    const userObj = new ProjectListAPI();
-    dispatch(APITransport(userObj));
-  };
-
-  const getUserList = () => {
-    const userObj = new FetchUserListAPI();
-    dispatch(APITransport(userObj));
-  };
-
-  useEffect(() => {
-    getOrganizationDetails();
-    getProjectList();
-    getUserList();
-  }, []);
-
-  useEffect(() => {
-    setOrganizationName(organizationDetails?.title);
-  }, [organizationDetails]);
-
-  const handleOrganizationUpdate = () => {
-    const userObj = new EditOrganizationDetailsAPI(
-      id,
-      organizationName,
-      organizationDetails?.email_domain_name
-    );
-    dispatch(APITransport(userObj));
-  };
-
   const addNewProjectHandler = () => {};
-
-  const addNewMemberHandler = () => {
-    const apiObj = new AddOrganizationMemberAPI(
-      id,
-      newMemberRole,
-      newMemberName
-    );
-    dispatch(APITransport(apiObj));
-  };
+  const addNewMemberHandler = () => {};
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
-          {organizationDetails?.title}
+          Title
         </Typography>
         <Typography variant="body1" gutterBottom component="div">
-          Created by : {organizationDetails?.created_by}
+          Created by :
         </Typography>
 
         <Box>
@@ -122,8 +103,9 @@ const MyOrganization = () => {
             onChange={(_event, newValue) => setValue(newValue)}
             aria-label="basic tabs example"
           >
-            <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
           </Tabs>
         </Box>
@@ -141,11 +123,11 @@ const MyOrganization = () => {
           >
             <Button
               className={classes.projectButton}
-              label={"Add New Project"}
-              onClick={() => setAddProjectDialog(true)}
+              label={"Create a New Video"}
+              onClick={() => {}}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={projectList} />
+              <ProjectList data={data}/>
             </div>
           </Box>
         </TabPanel>
@@ -161,13 +143,13 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Button
-              className={classes.projectButton}
-              label={"Add New Member"}
-              onClick={() => setAddUserDialog(true)}
-            />
+              <Button
+                className={classes.projectButton}
+                label={"Add project members"}
+                onClick={() => {}}
+              />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList data={userList} />
+              <UserList />
             </div>
           </Box>
         </TabPanel>
@@ -177,7 +159,29 @@ const MyOrganization = () => {
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
-          <Typography variant="h4">Edit Organization</Typography>
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+              <Button
+                className={classes.projectButton}
+                label={"Add project managers"}
+                onClick={() => {}}
+              />
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <UserList />
+            </div>
+          </Box>
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={3}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Typography variant="h4">Edit Project</Typography>
           <OutlinedTextField
             value={organizationName}
             onChange={(e) => setOrganizationName(e.target.value)}
@@ -186,8 +190,13 @@ const MyOrganization = () => {
           />
           <Button
             label={"Change"}
-            onClick={() => handleOrganizationUpdate()}
+            onClick={() => {}}
             sx={{ mt: 5, width: "100%" }}
+          />
+          <Button
+            label={"Archive Project"}
+            onClick={() => {}}
+            sx={{ mt: 5, width: "100%", background: "rgb(207, 89, 89)" }}
           />
         </TabPanel>
       </Card>
@@ -205,7 +214,7 @@ const MyOrganization = () => {
       )}
 
       {addUserDialog && (
-        <AddOrganizationMember
+        <AddDialog
           open={addUserDialog}
           handleUserDialogClose={() => setAddUserDialog(false)}
           title={"Add New Members"}
@@ -213,6 +222,7 @@ const MyOrganization = () => {
           textFieldValue={newMemberName}
           handleTextField={setNewMemberName}
           addBtnClickHandler={addNewMemberHandler}
+          isAddMember={true}
           selectFieldValue={newMemberRole}
           handleSelectField={setNewMemberRole}
         />
@@ -221,4 +231,4 @@ const MyOrganization = () => {
   );
 };
 
-export default MyOrganization;
+export default Project;

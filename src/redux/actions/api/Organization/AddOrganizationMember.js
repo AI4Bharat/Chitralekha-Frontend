@@ -2,12 +2,14 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchOrganizationDetailsAPI extends API {
-  constructor(id, timeout = 2000) {
-    super("GET", timeout, false);
-    this.type = C.GET_ORGANIZATION_DETAILS;
+export default class AddOrganizationMemberAPI extends API {
+  constructor(id, role, email, timeout = 2000) {
+    super("POST", timeout, false);
+    this.type = C.EDIT_ORGANIZATION_DETAILS;
     this.id = id;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/`;
+    this.role = role;
+    this.email = email;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.addOrganizationMember}`;
   }
 
   processResponse(res) {
@@ -21,7 +23,13 @@ export default class FetchOrganizationDetailsAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return {
+        role : this.role,
+        emails: [this.email],
+        organization_id: this.id,
+    } 
+  }
 
   getHeaders() {
     this.headers = {

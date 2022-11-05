@@ -1,15 +1,15 @@
-import C from "../../constants";
+import constants from "../../constants";
 
-const initialState = {};
-
-const getLoggedInUserDetails = (state, payload) => {
-  return "";
-}
-
+let initialState = {
+  data: [],
+};
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case C.GET_LOGGEDIN_USER_DETAILS:
-      return getLoggedInUserDetails(state, action.payload);
+    case constants.GET_LOGGEDIN_USER_DETAILS:
+      return {
+        ...state,
+        data: action.payload,
+      };
 
     default:
       return {

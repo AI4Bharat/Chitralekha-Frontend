@@ -1,10 +1,10 @@
-import getOrganizationList from "./Organization/OrganizationDetails";
+import getOrganizationDetails from "./Organization/OrganizationDetails";
 import getProjectList from "./Organization/ProjectList";
 import getUserList from "./User/UserList";
 import getLoggedInUserDetails from "./User/LoggedInUserDetails";
 
 const rootReducer = {
-    getOrganizationList,
+    getOrganizationDetails,
     getProjectList,
     getUserList,
     getLoggedInUserDetails,

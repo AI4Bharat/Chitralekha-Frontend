@@ -7,12 +7,13 @@ import tableTheme from "../../theme/tableTheme";
 //Components
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../common/Button";
+import { Link } from "react-router-dom";
 
 const UserList = ({ data }) => {
   const columns = [
     {
-      name: "name",
-      label: "Name",
+      name: "email",
+      label: "Email",
       options: {
         filter: false,
         sort: false,
@@ -21,33 +22,7 @@ const UserList = ({ data }) => {
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
-    },
-    {
-      name: "manager",
-      label: "Manager",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "createdBy",
-      label: "Created By",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-  
+    },  
     {
       name: "Action",
       label: "Action",

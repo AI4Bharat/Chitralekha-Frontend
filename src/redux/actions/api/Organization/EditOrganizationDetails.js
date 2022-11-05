@@ -3,18 +3,18 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class EditOrganizationDetailsAPI extends API {
-  constructor(id, name, timeout = 2000) {
+  constructor(id, title, email, timeout = 2000) {
     super("PUT", timeout, false);
     this.type = C.EDIT_ORGANIZATION_DETAILS;
     this.id = id;
-    this.name = name;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}`;
+    this.title = title;
+    this.email = email;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/`;
   }
 
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-        console.log(res,'res');
       this.report = res;
     }
   }
@@ -25,7 +25,8 @@ export default class EditOrganizationDetailsAPI extends API {
 
   getBody() {
     return {
-        name : this.name
+        title : this.title,
+        email_domain_name: this.email,
     } 
   }
 
