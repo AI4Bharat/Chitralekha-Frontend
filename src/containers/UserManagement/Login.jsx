@@ -88,7 +88,6 @@ const Login = () => {
     })
       .then(async (res) => {
         const rsp_data = await res.json();
-        console.log(rsp_data);
         if (!res.ok) {
           setSnackbarInfo({
             open: true,

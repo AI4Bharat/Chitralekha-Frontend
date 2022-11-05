@@ -9,7 +9,7 @@
      super("POST", timeout, false);
      this.email = email;
      this.password = password;
-     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.users}login/`;
+     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.users}`;
    }
  
    processResponse(res) {
