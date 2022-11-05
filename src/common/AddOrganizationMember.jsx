@@ -26,13 +26,6 @@ const AddOrganizationMember = ({
   handleSelectField,
 }) => {
 
-  const disabled = () => {
-    if(textFieldLabel && selectFieldValue) {
-      return true;
-    }
-    return false;
-  }
-
   return (
     <Dialog open={open} onClose={handleUserDialogClose} close>
       <DialogTitle>{title}</DialogTitle>
@@ -72,7 +65,7 @@ const AddOrganizationMember = ({
             addBtnClickHandler();
             handleUserDialogClose();
           }}
-          disabled={!disabled()}
+          disabled={(textFieldLabel && selectFieldValue) ? false : true}
           sx={{lineHeight: "0", height: "auto"}}
         >
           Add

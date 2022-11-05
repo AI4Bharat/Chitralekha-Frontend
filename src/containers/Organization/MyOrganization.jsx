@@ -10,7 +10,7 @@ import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/Edi
 import APITransport from "../../redux/actions/apitransport/apitransport";
 
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 //Styles
 import DatasetStyle from "../../styles/Dataset";
@@ -20,7 +20,6 @@ import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
 import Button from "../../common/Button";
 import UserList from "./UserList";
 import OutlinedTextField from "../../common/OutlinedTextField";
-import AddDialog from "../../common/AddDialog";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 
@@ -44,12 +43,11 @@ const MyOrganization = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
+  const navigate = useNavigate();
 
   const [value, setValue] = useState(0);
   const [organizationName, setOrganizationName] = useState("");
   const [addUserDialog, setAddUserDialog] = useState(false);
-  const [addProjectDialog, setAddProjectDialog] = useState(false);
-  const [newProjectName, setNewProjectName] = useState("");
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("");
 
@@ -94,8 +92,6 @@ const MyOrganization = () => {
     );
     dispatch(APITransport(userObj));
   };
-
-  const addNewProjectHandler = () => {};
 
   const addNewMemberHandler = () => {
     const apiObj = new AddOrganizationMemberAPI(
@@ -142,7 +138,7 @@ const MyOrganization = () => {
             <Button
               className={classes.projectButton}
               label={"Add New Project"}
-              onClick={() => setAddProjectDialog(true)}
+              onClick={() => navigate(`/my-organization/${id}/create-new-project`)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectList data={projectList} />
@@ -191,18 +187,6 @@ const MyOrganization = () => {
           />
         </TabPanel>
       </Card>
-
-      {addProjectDialog && (
-        <AddDialog
-          open={addProjectDialog}
-          handleUserDialogClose={() => setAddProjectDialog(false)}
-          title={"Add New Projects"}
-          textFieldLabel={"Project Name"}
-          textFieldValue={newProjectName}
-          handleTextField={setNewProjectName}
-          addBtnClickHandler={addNewProjectHandler}
-        />
-      )}
 
       {addUserDialog && (
         <AddOrganizationMember

@@ -14,6 +14,7 @@ import ProfilePage from "./containers/UserManagement/ProfilePage";
 import Layout from './Layout'
 import { authenticateUser } from "./utils/utils";
 import Project from "./containers/Organization/Project/Project";
+import CreateNewProject from "./containers/Organization/Project/CreateNewProject";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -54,6 +55,10 @@ const RootRouter = () => {
         <Route
           path="/my-organization/:orgId/project/:projectId"
           element={ProtectedRouteWrapper(<Layout component={<Project />} Backbutton={true} />)}
+        />
+        <Route
+          path="/my-organization/:orgId/create-new-project"
+          element={ProtectedRouteWrapper(<Layout component={<CreateNewProject />} Backbutton={true} />)}
         />
       </Routes>
     </HashRouter>

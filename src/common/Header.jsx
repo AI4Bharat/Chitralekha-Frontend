@@ -116,7 +116,7 @@ const Header = () => {
       {isMobile ? (
         <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
       ) : (
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Container maxWidth="xl">
             <Toolbar disableGutters className={classes.toolbar}>
               <Box display="flex" alignItems="center">
