@@ -254,7 +254,7 @@ const Header = () => {
                   className={`${classes.icon} profile`}
                   sx={{ marginLeft: "20px" }}
                 >
-                  <Avatar>{userData?.username?.charAt(0)}</Avatar>
+                  <Avatar>{userData?.first_name?.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{
@@ -265,7 +265,7 @@ const Header = () => {
                       fontWeight: "400",
                     }}
                   >
-                    {userData.username}
+                    {userData.first_name} {userData.last_name}
                   </Typography>
                 </IconButton>
 

@@ -13,6 +13,8 @@ const constants = {
     //User
     GET_USER_LIST: "GET_USER_LIST",
     GET_LOGGEDIN_USER_DETAILS: "GET_LOGGEDIN_USER_DETAILS",
+    UPDATE_EMAIL: "UPDATE_EMAIL",
+    UPDATE_PROFILE: "UPDATE_PROFILE",
 };
 
 export default constants;
