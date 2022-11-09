@@ -6,6 +6,7 @@ export default {
   addOrganizationMember: "/users/invite/generate/",
   updateEmail: "/users/account/update_email/",
   updateProfile: "/users/account/update/",
+  changePassword: "/users/auth/users/set_password/",
 
   //Video
   video: "/video/",

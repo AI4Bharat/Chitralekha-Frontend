@@ -11,10 +11,11 @@ import MyOrganization from "./containers/Organization/MyOrganization";
 import EditProfile from "./containers/UserManagement/EditProfile";
 import Login from "./containers/UserManagement/Login";
 import ProfilePage from "./containers/UserManagement/ProfilePage";
-import Layout from './Layout'
+import Layout from "./Layout";
 import { authenticateUser } from "./utils/utils";
 import Project from "./containers/Organization/Project/Project";
 import CreateNewProject from "./containers/Organization/Project/CreateNewProject";
+import ChangePassword from "./containers/UserManagement/ChangePassword";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -38,27 +39,45 @@ const RootRouter = () => {
         />
         <Route
           path="/projects/:id"
-          element={ProtectedRouteWrapper(<Layout component={<ProjectDetails />} Backbutton={true}/>)}
+          element={ProtectedRouteWrapper(
+            <Layout component={<ProjectDetails />} Backbutton={true} />
+          )}
         />
         <Route
           path="/profile/:id"
-          element={ProtectedRouteWrapper(<Layout component={<ProfilePage />} Backbutton={true} />)}
+          element={ProtectedRouteWrapper(
+            <Layout component={<ProfilePage />} Backbutton={true} />
+          )}
         />
         <Route
           path="/edit-profile"
-          element={ProtectedRouteWrapper(<Layout component={<EditProfile />} Backbutton={true} />)}
+          element={ProtectedRouteWrapper(
+            <Layout component={<EditProfile />} Backbutton={true} />
+          )}
         />
         <Route
           path="/my-organization/:id"
-          element={ProtectedRouteWrapper(<Layout component={<MyOrganization />} />)}
+          element={ProtectedRouteWrapper(
+            <Layout component={<MyOrganization />} />
+          )}
         />
         <Route
           path="/my-organization/:orgId/project/:projectId"
-          element={ProtectedRouteWrapper(<Layout component={<Project />} Backbutton={true} />)}
+          element={ProtectedRouteWrapper(
+            <Layout component={<Project />} Backbutton={true} />
+          )}
         />
         <Route
           path="/my-organization/:orgId/create-new-project"
-          element={ProtectedRouteWrapper(<Layout component={<CreateNewProject />} Backbutton={true} />)}
+          element={ProtectedRouteWrapper(
+            <Layout component={<CreateNewProject />} Backbutton={true} />
+          )}
+        />
+        <Route
+          path="/profile/:id/change-password"
+          element={ProtectedRouteWrapper(
+            <Layout component={<ChangePassword />} Backbutton={true} />
+          )}
         />
       </Routes>
     </HashRouter>
