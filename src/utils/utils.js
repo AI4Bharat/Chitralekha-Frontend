@@ -56,3 +56,34 @@ export const steps = [
     placement: "top",
   },
 ];
+
+export const roles = [
+  {
+    id: 1,
+    type: "Transcript editor"
+  },
+  {
+    id: 2,
+    type: "Transcript Reviewer"
+  },
+  {
+    id: 3,
+    type: "Translation editor"
+  },
+  {
+    id: 4,
+    type: "Translation Reviewer"
+  },
+  {
+    id: 5,
+    type: "Universal Editor"
+  },
+  {
+    id: 6,
+    type: "Project Manager"
+  },
+  {
+    id: 7,
+    type: "Organization Owner"
+  },
+];

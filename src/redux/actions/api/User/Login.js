@@ -5,11 +5,11 @@
  import ENDPOINTS from "../../../../config/apiendpoint";
  
  export default class LoginAPI extends API {
-   constructor(username, password, timeout = 2000) {
+   constructor(email, password, timeout = 2000) {
      super("POST", timeout, false);
-     this.username = username;
+     this.email = email;
      this.password = password;
-     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.users}login/`;
+     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.users}`;
    }
  
    processResponse(res) {
@@ -25,7 +25,7 @@
  
    getBody() {
      return {
-       username: this.username,
+       email: this.email,
        password: this.password,
      };
    }

@@ -17,19 +17,33 @@ import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
+import { useDispatch, useSelector } from "react-redux";
+import APITransport from "../redux/actions/apitransport/apitransport";
 
 const Header = () => {
   const classes = headerStyle();
+  const dispatch = useDispatch();
+
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
-  const [user, setUser] = useState({});
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const navigate = useNavigate();
+
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+
+  const getLoggedInUserData = () => {
+    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    dispatch(APITransport(loggedInUserObj));
+  };
+
+  useEffect(() => {
+    getLoggedInUserData();
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -78,7 +92,7 @@ const Header = () => {
       name: "My Profile",
       onClick: () => {
         handleCloseUserMenu();
-        navigate(`/profile/${user.id}`);
+        navigate(`/profile/${userData?.id}`);
       },
     },
     {
@@ -97,16 +111,12 @@ const Header = () => {
     },
   ];
 
-  useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("userInfo")));
-  }, []);
-
   return (
     <Box>
       {isMobile ? (
         <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
       ) : (
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Container maxWidth="xl">
             <Toolbar disableGutters className={classes.toolbar}>
               <Box display="flex" alignItems="center">
@@ -132,7 +142,7 @@ const Header = () => {
               >
                 <Typography variant="body1">
                   <NavLink
-                    to="/my-organization"
+                    to={`/my-organization/${userData?.organization?.id}`}
                     className={({ isActive }) =>
                       isActive
                         ? `${classes.highlightedMenu} organizations`
@@ -244,7 +254,7 @@ const Header = () => {
                   className={`${classes.icon} profile`}
                   sx={{ marginLeft: "20px" }}
                 >
-                  <Avatar>{userInfo.first_name.charAt(0)}</Avatar>
+                  <Avatar>{userData?.first_name?.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{
@@ -255,7 +265,7 @@ const Header = () => {
                       fontWeight: "400",
                     }}
                   >
-                    {`${user.first_name} ${user.last_name}`}
+                    {userData.first_name} {userData.last_name}
                   </Typography>
                 </IconButton>
 

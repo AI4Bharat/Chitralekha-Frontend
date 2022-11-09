@@ -1,13 +1,41 @@
 import React from "react";
-import MUIDataTable from "mui-datatables";
+
+//Themes
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import CustomButton from "../../common/Button";
 
-const OrganizationList = ({ data }) => {
+//Components
+import CustomButton from "../../common/Button";
+import MUIDataTable from "mui-datatables";
+import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useState } from "react";
+
+const ProjectList = ({ data }) => {
+  const { id } = useParams();
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const result = data.map((item) => {
+      return [
+        item.title,
+        item.manager?.username,
+        item.created_by?.username,
+        <Link
+          to={`/my-organization/${id}/project/${item.id}`}
+          style={{ textDecoration: "none" }}
+        >
+          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
+        </Link>,
+      ];
+    });
+
+    setTableData(result);
+  }, [data]);
+
   const columns = [
     {
-      name: "name",
+      name: "title",
       label: "Name",
       options: {
         filter: false,
@@ -19,7 +47,7 @@ const OrganizationList = ({ data }) => {
       },
     },
     {
-      name: "manager",
+      name: "Manager",
       label: "Manager",
       options: {
         filter: false,
@@ -37,13 +65,11 @@ const OrganizationList = ({ data }) => {
         filter: false,
         sort: false,
         align: "center",
-
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
     },
-  
     {
       name: "Action",
       label: "Action",
@@ -54,16 +80,6 @@ const OrganizationList = ({ data }) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px" },
         }),
-        customBodyRender: (_value, tableMeta) => {
-          return (
-            // <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
-                <CustomButton
-                    sx={{ borderRadius: 2, marginRight: 2 }}
-                    label="View"
-                />
-            // </Link>
-          );
-        },
       },
     },
   ];
@@ -95,9 +111,9 @@ const OrganizationList = ({ data }) => {
 
   return (
     <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={data} columns={columns} options={options} />
+      <MUIDataTable data={tableData} columns={columns} options={options} />
     </ThemeProvider>
   );
 };
 
-export default OrganizationList;
+export default ProjectList;
