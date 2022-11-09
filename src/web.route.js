@@ -16,6 +16,7 @@ import { authenticateUser } from "./utils/utils";
 import Project from "./containers/Organization/Project/Project";
 import CreateNewProject from "./containers/Organization/Project/CreateNewProject";
 import ChangePassword from "./containers/UserManagement/ChangePassword";
+import ForgotPassword from "./containers/UserManagement/ForgotPassword";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -78,6 +79,10 @@ const RootRouter = () => {
           element={ProtectedRouteWrapper(
             <Layout component={<ChangePassword />} Backbutton={true} />
           )}
+        />
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
         />
       </Routes>
     </HashRouter>

@@ -7,6 +7,7 @@ export default {
   updateEmail: "/users/account/update_email/",
   updateProfile: "/users/account/update/",
   changePassword: "/users/auth/users/set_password/",
+  resetPassword: "/users/auth/users/reset_password/",
 
   //Video
   video: "/video/",

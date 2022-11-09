@@ -1,8 +1,4 @@
-import {
-  Grid,
-  Link,
-  ThemeProvider,
-} from "@mui/material";
+import { Box, Grid, Link, ThemeProvider } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "../../config/localisation";
@@ -17,7 +13,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppInfo from "./AppInfo";
 import CustomizedSnackbars from "../../common/Snackbar";
-import LoginAPI from '../../redux/actions/api/User/Login';
+import LoginAPI from "../../redux/actions/api/User/Login";
 
 const Login = () => {
   const classes = LoginStyle();
@@ -143,16 +139,16 @@ const Login = () => {
   };
   const renderCardContent = () => (
     <CustomCard title={"Sign in to Chitralekha"} cardContent={TextFields()}>
-      <Grid container spacing={2} style={{ width: "100%" }}>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} textAlign={"right"}>
-          <Link onClick={() => navigate("/forgot-password")}>
-            {translate("forgotPassword")}
+      <Box display="flex" flexDirection="column" width="100%">
+        <Box marginLeft="auto" marginBottom="10px">
+          <Link onClick={() => navigate("/forgot-password")} style={{ cursor: "pointer" }}>
+            Forgot Password?
           </Link>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        </Box>
+        <Box>
           <Button fullWidth onClick={createToken} label={"Login"} />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </CustomCard>
   );
 
