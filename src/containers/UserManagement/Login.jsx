@@ -96,7 +96,11 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        setSnackbarInfo({ open: true, variant: "error", message: error });
+        setSnackbarInfo({
+          open: true,
+          variant: "error",
+          message: "Something went wrong. Please try again.",
+        });
       });
   };
 
@@ -141,7 +145,10 @@ const Login = () => {
     <CustomCard title={"Sign in to Chitralekha"} cardContent={TextFields()}>
       <Box display="flex" flexDirection="column" width="100%">
         <Box marginLeft="auto" marginBottom="10px">
-          <Link onClick={() => navigate("/forgot-password")} style={{ cursor: "pointer" }}>
+          <Link
+            onClick={() => navigate("/forgot-password")}
+            style={{ cursor: "pointer" }}
+          >
             Forgot Password?
           </Link>
         </Box>

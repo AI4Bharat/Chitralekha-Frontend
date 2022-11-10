@@ -31,6 +31,7 @@ export default class ChangePasswordAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem('token')}`,
       },
     };
     return this.headers;

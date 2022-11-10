@@ -4,23 +4,26 @@ import {
   Typography,
   InputAdornment,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../common/Button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import DatasetStyle from "../../styles/Dataset";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import { useEffect } from "react";
 
 const ChangePassword = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
   const classes = DatasetStyle();
   const dispatch = useDispatch();
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [currentPassword, setCurrentPassword] = useState({
     value: "",
@@ -30,6 +33,22 @@ const ChangePassword = () => {
     value: "",
     visibility: false,
   });
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
+
+  useEffect(() => {
+    if (apiStatus.message) {
+      setSnackbarInfo({
+        ...snackbar,
+        open: true,
+        message: apiStatus.message,
+        variant: apiStatus.error ? "error" : "Success",
+      });
+    }
+  }, [apiStatus]);
 
   const handleChangePassword = () => {
     let apiObj = new ChangePasswordAPI(
@@ -51,9 +70,30 @@ const ChangePassword = () => {
     setNewPassword({ ...newPassword, visibility: !newPassword.visibility });
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarInfo({
+      ...snackbar,
+      open: false,
+    });
+  };
+
+  const renderSnackBar = () => {
+    return (
+      <Snackbar
+        open={snackbar.open}
+        handleClose={handleSnackbarClose}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert severity={snackbar.variant}>{snackbar.message}</Alert>
+      </Snackbar>
+    );
+  };
+
   return (
     <>
       <Grid container direction="row">
+        {renderSnackBar()}
         <Card className={classes.workspaceCard}>
           <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

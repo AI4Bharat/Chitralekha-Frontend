@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Grid, Typography, Link } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Grid, Typography, Link, Snackbar, Alert } from "@mui/material";
 import Button from "../../common/Button";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import AppInfo from "./AppInfo";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LoginStyle from "../../styles/loginStyle";
 import ForgotPasswordAPI from "../../redux/actions/api/User/ForgotPassword";
 import APITransport from "../../redux/actions/apitransport/apitransport";
@@ -11,9 +11,26 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 const ForgotPassword = () => {
   const classes = LoginStyle();
   const dispatch = useDispatch();
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState(false);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
+
+  useEffect(() => {
+    if (apiStatus.message) {
+      setSnackbarInfo({
+        ...snackbar,
+        open: true,
+        message: apiStatus.message,
+        variant: apiStatus.error ? "error" : "Success",
+      });
+    }
+  }, [apiStatus]);
 
   const handleChange = (value) => {
     setEmail(value);
@@ -86,6 +103,26 @@ const ForgotPassword = () => {
     );
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarInfo({
+      ...snackbar,
+      open: false,
+    });
+  };
+
+  const renderSnackBar = () => {
+    return (
+      <Snackbar
+        open={snackbar.open}
+        handleClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={6000}
+      >
+        <Alert severity={snackbar.variant}>{snackbar.message}</Alert>
+      </Snackbar>
+    );
+  };
+
   return (
     <Grid container className={classes.loginGrid}>
       <Grid
@@ -100,6 +137,7 @@ const ForgotPassword = () => {
         <AppInfo />
       </Grid>
       <Grid item xs={12} sm={9} md={9} lg={9} className={classes.parent}>
+        {renderSnackBar()}
         {TextFields()}
       </Grid>
     </Grid>
