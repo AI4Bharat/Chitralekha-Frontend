@@ -16,6 +16,7 @@ import { authenticateUser } from "./utils/utils";
 import Project from "./containers/Organization/Project/Project";
 import CreateNewProject from "./containers/Organization/Project/CreateNewProject";
 import ChangePassword from "./containers/UserManagement/ChangePassword";
+import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import ForgotPassword from "./containers/UserManagement/ForgotPassword";
 
 const RootRouter = () => {
@@ -80,10 +81,8 @@ const RootRouter = () => {
             <Layout component={<ChangePassword />} Backbutton={true} />
           )}
         />
-        <Route
-          path="/forgot-password"
-          element={<ForgotPassword />}
-        />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/forget-password/confirm/:key/:token" element={<ConfirmForgotPassword />} />
       </Routes>
     </HashRouter>
   );

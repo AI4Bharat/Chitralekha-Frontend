@@ -8,6 +8,7 @@ export default {
   updateProfile: "/users/account/update/",
   changePassword: "/users/auth/users/set_password/",
   resetPassword: "/users/auth/users/reset_password/",
+  confirmResetPassword: "/users/auth/users/reset_password_confirm/",
 
   //Video
   video: "/video/",
