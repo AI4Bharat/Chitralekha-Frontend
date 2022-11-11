@@ -99,6 +99,7 @@ const Header = () => {
       name: "Change Password",
       onClick: () => {
         handleCloseUserMenu();
+        navigate(`/profile/${userData?.id}/change-password`);
       },
     },
     {
