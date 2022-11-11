@@ -5,6 +5,7 @@ export default {
   loggedInUserDetails: "/users/account/me/fetch/",
   addOrganizationMember: "/users/invite/generate/",
   updateEmail: "/users/account/update_email/",
+  verifyUpdateEmail: "/users/account/verify_email_updation/",
   updateProfile: "/users/account/update/",
   changePassword: "/users/auth/users/set_password/",
   resetPassword: "/users/auth/users/reset_password/",
