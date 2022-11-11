@@ -4,6 +4,7 @@ import {
   Link,
   Route,
   Routes,
+  Navigate,
 } from "react-router-dom";
 import ProjectDetails from "./containers/Project/ProjectDetails";
 import Projects from "./containers/Project/Projects";
@@ -19,7 +20,7 @@ import CreateNewProject from "./containers/Organization/Project/CreateNewProject
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
     if (!authenticateUser()) {
-      return <Link href="/" />;
+      return <Navigate to="/" />;
     }
     return children;
   };
