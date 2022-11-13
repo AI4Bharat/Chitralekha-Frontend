@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
-import ProjectListAPI from "../../redux/actions/api/Organization/ProjectList";
+import ProjectListAPI from "../../redux/actions/api/Project/ProjectList";
 import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
 import ProjectList from "./ProjectList";
 import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
