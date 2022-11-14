@@ -8,6 +8,7 @@ import FetchUserListAPI from "../../../redux/actions/api/User/FetchUserList";
 import ProjectList from "../ProjectList";
 import EditOrganizationDetailsAPI from "../../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import TaskList from "./TaskList";
 
 import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -104,9 +105,11 @@ const Project = () => {
             aria-label="basic tabs example"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Task"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
+           
           </Tabs>
         </Box>
 
@@ -127,7 +130,7 @@ const Project = () => {
               onClick={() => {}}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={data}/>
+              <ProjectList data={data}  type="video"/>
             </div>
           </Box>
         </TabPanel>
@@ -135,6 +138,24 @@ const Project = () => {
         <TabPanel
           value={value}
           index={1}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+             
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <TaskList data={data} />
+            </div>
+          </Box>
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <Box
@@ -156,7 +177,7 @@ const Project = () => {
 
         <TabPanel
           value={value}
-          index={2}
+          index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <Box
@@ -178,7 +199,7 @@ const Project = () => {
 
         <TabPanel
           value={value}
-          index={3}
+          index={4}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <Typography variant="h4">Edit Project</Typography>
