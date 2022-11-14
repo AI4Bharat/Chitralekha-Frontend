@@ -7,6 +7,7 @@ import FetchVideoListAPI from "../../../redux/actions/api/Project/FetchVideoList
 import FetchUserListAPI from "../../../redux/actions/api/User/FetchUserList";
 import ProjectList from "../ProjectList";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import TaskList from "./TaskList";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -138,6 +139,7 @@ const Project = () => {
             aria-label="basic tabs example"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Task"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -177,11 +179,29 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Button
-              className={classes.projectButton}
-              label={"Add project members"}
-              onClick={() => {}}
-            />
+             
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <TaskList data={data} />
+            </div>
+          </Box>
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={2}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+              <Button
+                className={classes.projectButton}
+                label={"Add project members"}
+                onClick={() => {}}
+              />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails data={projectDetails.members} />
             </div>
@@ -190,7 +210,7 @@ const Project = () => {
 
         <TabPanel
           value={value}
-          index={2}
+          index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <Box
@@ -210,7 +230,7 @@ const Project = () => {
           </Box>
         </TabPanel>
 
-        <TabPanel value={value} index={3} style={{ maxWidth: "100%" }}>
+        <TabPanel value={value} index={4} style={{ maxWidth: "100%" }}>
           <ProjectSettings projectInfo={projectInfo} />
         </TabPanel>
       </Card>

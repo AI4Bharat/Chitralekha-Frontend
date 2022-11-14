@@ -11,7 +11,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 
-const ProjectList = ({ data }) => {
+const ProjectList = ({ data,props }) => {
   const { id } = useParams();
   const [tableData, setTableData] = useState([]);
 
@@ -24,7 +24,7 @@ const ProjectList = ({ data }) => {
         <Link
           to={`/my-organization/${id}/project/${item.id}`}
           style={{ textDecoration: "none" }}
-        >
+        > 
           <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
         </Link>,
       ];
