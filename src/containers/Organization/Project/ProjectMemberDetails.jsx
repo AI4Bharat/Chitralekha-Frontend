@@ -7,13 +7,12 @@ import tableTheme from "../../../theme/tableTheme";
 //Components
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { roles } from "../../../utils/utils";
 
 const ProjectMemberDetails = ({ data }) => {
-  const { id } = useParams();
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
@@ -27,7 +26,7 @@ const ProjectMemberDetails = ({ data }) => {
           value.id === item.role ? value.type : ""
         ),
         <Link
-          //   to={`/my-organization/${id}/project/${item.id}`}
+            to={`/profile/${item.id}`}
           style={{ textDecoration: "none" }}
         >
           <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />

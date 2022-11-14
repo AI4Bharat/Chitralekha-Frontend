@@ -21,6 +21,7 @@ const constants = {
     UPDATE_EMAIL: "UPDATE_EMAIL",
     UPDATE_PROFILE: "UPDATE_PROFILE",
     VERIFY_UPDATE_EMAIL: "VERIFY_UPDATE_EMAIL",
+    GET_USER_DETAILS: "GET_USER_DETAILS",
 };
 
 export default constants;

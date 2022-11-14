@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
@@ -10,6 +10,24 @@ import CustomButton from "../../common/Button";
 import { Link } from "react-router-dom";
 
 const UserList = ({ data }) => {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const result = data.map((item) => {
+      return [
+        item.email,
+        <Link
+            to={`/profile/${item.id}`}
+          style={{ textDecoration: "none" }}
+        >
+          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
+        </Link>,
+      ];
+    });
+
+    setTableData(result);
+  }, [data]);
+
   const columns = [
     {
       name: "email",
@@ -33,19 +51,6 @@ const UserList = ({ data }) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px" },
         }),
-        customBodyRender: (_value, tableMeta) => {
-          return (
-            // <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
-            <>
-              <CustomButton
-                sx={{ borderRadius: 2, marginRight: 2 }}
-                label="View"
-              />
-            </>
-            // </Link>
-
-          );
-        },
       },
     },
   ];
@@ -77,7 +82,7 @@ const UserList = ({ data }) => {
 
   return (
     <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={data} columns={columns} options={options} />
+      <MUIDataTable data={tableData} columns={columns} options={options} />
     </ThemeProvider>
   );
 };
