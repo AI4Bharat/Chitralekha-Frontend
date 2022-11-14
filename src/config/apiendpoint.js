@@ -3,6 +3,7 @@ export default {
   users: "/users/auth/jwt/create/",
   userList: "/users/auth/users/",
   loggedInUserDetails: "/users/account/me/fetch/",
+  getUserDetails: "/users/account/",
   addOrganizationMember: "/users/invite/generate/",
   updateEmail: "/users/account/update_email/",
   verifyUpdateEmail: "/users/account/verify_email_updation/",

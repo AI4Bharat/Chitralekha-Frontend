@@ -57,11 +57,7 @@ const MyOrganization = () => {
   );
 
   const projectList = useSelector((state) => state.getProjectList.data);
-
   const userList = useSelector((state) => state.getUserList.data);
-
-  
- 
 
   const getOrganizationDetails = () => {
     const userObj = new FetchOrganizationDetailsAPI(id);

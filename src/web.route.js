@@ -83,7 +83,10 @@ const RootRouter = () => {
           )}
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/forget-password/confirm/:key/:token" element={<ConfirmForgotPassword />} />
+        <Route
+          path="/forget-password/confirm/:key/:token"
+          element={<ConfirmForgotPassword />}
+        />
       </Routes>
     </HashRouter>
   );
