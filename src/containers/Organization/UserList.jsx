@@ -22,7 +22,7 @@ const UserList = ({ data }) => {
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
-    },  
+    },
     {
       name: "Action",
       label: "Action",
@@ -36,11 +36,14 @@ const UserList = ({ data }) => {
         customBodyRender: (_value, tableMeta) => {
           return (
             // <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
-                <CustomButton
-                    sx={{ borderRadius: 2, marginRight: 2 }}
-                    label="View"
-                />
+            <>
+              <CustomButton
+                sx={{ borderRadius: 2, marginRight: 2 }}
+                label="View"
+              />
+            </>
             // </Link>
+
           );
         },
       },
