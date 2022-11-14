@@ -8,6 +8,7 @@ import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
 import ProjectList from "./ProjectList";
 import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import MembersListAPI from "../../redux/actions/api/Organization/MembersList";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -59,6 +60,9 @@ const MyOrganization = () => {
 
   const userList = useSelector((state) => state.getUserList.data);
 
+  const MembersList = useSelector((state) => state.getMembersList.data)
+ 
+
   const getOrganizationDetails = () => {
     const userObj = new FetchOrganizationDetailsAPI(id);
     dispatch(APITransport(userObj));
@@ -73,11 +77,17 @@ const MyOrganization = () => {
     const userObj = new FetchUserListAPI();
     dispatch(APITransport(userObj));
   };
+  const getMembersList = () => {
+    const userObj = new MembersListAPI(id);
+    dispatch(APITransport(userObj));
+  };
+
 
   useEffect(() => {
     getOrganizationDetails();
     getProjectList();
     getUserList();
+    getMembersList();
   }, []);
 
   useEffect(() => {
@@ -163,7 +173,7 @@ const MyOrganization = () => {
               onClick={() => setAddUserDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList data={userList} />
+              <UserList data={MembersList} />
             </div>
           </Box>
         </TabPanel>

@@ -4,6 +4,7 @@ import getUserList from "./User/UserList";
 import getLoggedInUserDetails from "./User/LoggedInUserDetails";
 import getNewProjectDetails from "./Organization/CreateNewProject";
 import apiStatus from './apistatus/apistatus';
+import getMembersList from './Organization/MembersList';
 
 const rootReducer = {
     apiStatus,
@@ -12,6 +13,7 @@ const rootReducer = {
     getUserList,
     getLoggedInUserDetails,
     getNewProjectDetails,
+    getMembersList,
 };
 
 export default rootReducer;
