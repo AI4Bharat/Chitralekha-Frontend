@@ -31,7 +31,7 @@ const RootRouter = () => {
   const ProtectedRouteWrapper = (component) => {
     return <ProtectedRoute>{component}</ProtectedRoute>;
   };
-console.log("object")
+
   return (
     <HashRouter>
       <Routes>
