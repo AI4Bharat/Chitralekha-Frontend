@@ -2,15 +2,15 @@
 import { useEffect, useState } from "react";
 
 //APIs
-import FetchOrganizationDetailsAPI from "../../../redux/actions/api/Organization/FetchOrganizationDetails";
-import ProjectListAPI from "../../../redux/actions/api/Organization/ProjectList";
+import FetchProjectDetailsAPI from "../../../redux/actions/api/Project/FetchProjectDetails";
+import FetchVideoListAPI from "../../../redux/actions/api/Project/FetchVideoList";
 import FetchUserListAPI from "../../../redux/actions/api/User/FetchUserList";
 import ProjectList from "../ProjectList";
-import EditOrganizationDetailsAPI from "../../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import TaskList from "./TaskList";
 
-import { useDispatch } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 //Styles
 import DatasetStyle from "../../../styles/Dataset";
@@ -19,8 +19,10 @@ import DatasetStyle from "../../../styles/Dataset";
 import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
 import Button from "../../../common/Button";
 import UserList from "../UserList";
-import OutlinedTextField from "../../../common/OutlinedTextField";
 import AddDialog from "../../../common/AddDialog";
+import ProjectSettings from "./ProjectSettings";
+import VideoList from "./VideoList";
+import ProjectMemberDetails from "./ProjectMemberDetails";
 
 const data = [
   {
@@ -76,25 +78,58 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
+  const projectvideoList = useSelector(
+    (state) => state.getProjectVideoList.data
+  );
+
   const [value, setValue] = useState(0);
-  const [organizationName, setOrganizationName] = useState("");
+  const [projectDetails, SetProjectDetails] = useState({});
+  const [videoList, setVideoList] = useState([]);
+
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [addProjectDialog, setAddProjectDialog] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("");
 
+  useEffect(() => {
+    SetProjectDetails(projectInfo);
+  }, [projectInfo]);
+
+  useEffect(() => {
+    setVideoList(projectvideoList);
+  }, [projectvideoList]);
+
+  const getOrganizationDetails = () => {
+    const apiObj = new FetchProjectDetailsAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  const getProjectVideoList = () => {
+    const apiObj = new FetchVideoListAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  useEffect(() => {
+    getOrganizationDetails();
+    getProjectVideoList();
+  }, []);
+
   const addNewProjectHandler = () => {};
   const addNewMemberHandler = () => {};
 
+  console.log(videoList,'videoList');
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
-          Title
+          Title: {projectDetails.title}
         </Typography>
+
         <Typography variant="body1" gutterBottom component="div">
-          Created by :
+          Created by:{" "}
+          {`${projectDetails.created_by?.first_name} ${projectDetails.created_by?.last_name}`}
         </Typography>
 
         <Box>
@@ -104,6 +139,7 @@ const Project = () => {
             aria-label="basic tabs example"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Task"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -127,7 +163,7 @@ const Project = () => {
               onClick={() => {}}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={data}/>
+              <VideoList data={videoList} />
             </div>
           </Box>
         </TabPanel>
@@ -143,13 +179,9 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-              <Button
-                className={classes.projectButton}
-                label={"Add project members"}
-                onClick={() => {}}
-              />
+             
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList />
+              <TaskList data={data} />
             </div>
           </Box>
         </TabPanel>
@@ -167,11 +199,11 @@ const Project = () => {
           >
               <Button
                 className={classes.projectButton}
-                label={"Add project managers"}
+                label={"Add project members"}
                 onClick={() => {}}
               />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList />
+              <ProjectMemberDetails data={projectDetails.members} />
             </div>
           </Box>
         </TabPanel>
@@ -181,23 +213,25 @@ const Project = () => {
           index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
-          <Typography variant="h4">Edit Project</Typography>
-          <OutlinedTextField
-            value={organizationName}
-            onChange={(e) => setOrganizationName(e.target.value)}
-            sx={{ width: "100%", mt: 5 }}
-            placeholder="Organization Name..."
-          />
-          <Button
-            label={"Change"}
-            onClick={() => {}}
-            sx={{ mt: 5, width: "100%" }}
-          />
-          <Button
-            label={"Archive Project"}
-            onClick={() => {}}
-            sx={{ mt: 5, width: "100%", background: "rgb(207, 89, 89)" }}
-          />
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Button
+              className={classes.projectButton}
+              label={"Add project managers"}
+              onClick={() => {}}
+            />
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <UserList data={data}/>
+            </div>
+          </Box>
+        </TabPanel>
+
+        <TabPanel value={value} index={4} style={{ maxWidth: "100%" }}>
+          <ProjectSettings projectInfo={projectInfo} />
         </TabPanel>
       </Card>
 

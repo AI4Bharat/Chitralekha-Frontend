@@ -2,29 +2,31 @@ import React from "react";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
+import tableTheme from "../../../theme/tableTheme";
 
 //Components
-import CustomButton from "../../common/Button";
+import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 
-const ProjectList = ({ data,props }) => {
+const VideoList = ({ data }) => {
   const { id } = useParams();
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const result = data.map((item) => {
       return [
-        item.title,
-        item.manager?.username,
-        item.created_by?.username,
+        item.id,
+        item.project_id,
+        item.name,
+        item.url,
+        item.duration,
         <Link
-          to={`/my-organization/${id}/project/${item.id}`}
+          //   to={`/my-organization/${id}/project/${item.id}`}
           style={{ textDecoration: "none" }}
-        > 
+        >
           <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
         </Link>,
       ];
@@ -35,7 +37,31 @@ const ProjectList = ({ data,props }) => {
 
   const columns = [
     {
-      name: "title",
+      name: "id",
+      label: "Id",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "projectId",
+      label: "Project Id",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "name",
       label: "Name",
       options: {
         filter: false,
@@ -47,8 +73,8 @@ const ProjectList = ({ data,props }) => {
       },
     },
     {
-      name: "Manager",
-      label: "Manager",
+      name: "url",
+      label: "URL",
       options: {
         filter: false,
         sort: false,
@@ -59,8 +85,8 @@ const ProjectList = ({ data,props }) => {
       },
     },
     {
-      name: "createdBy",
-      label: "Created By",
+      name: "duration",
+      label: "Duration",
       options: {
         filter: false,
         sort: false,
@@ -78,7 +104,7 @@ const ProjectList = ({ data,props }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
     },
@@ -116,4 +142,4 @@ const ProjectList = ({ data,props }) => {
   );
 };
 
-export default ProjectList;
+export default VideoList;

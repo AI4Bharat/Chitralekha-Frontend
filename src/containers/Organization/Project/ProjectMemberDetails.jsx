@@ -1,21 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
+import tableTheme from "../../../theme/tableTheme";
 
 //Components
+import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../common/Button";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useState } from "react";
+import { roles } from "../../../utils/utils";
 
-const UserList = ({ data }) => {
+const ProjectMemberDetails = ({ data }) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const result = data.map((item) => {
       return [
+        `${item.first_name} ${item.last_name}`,
+        item.username,
         item.email,
+        item.availability_status,
+        roles.map((value) =>
+          value.id === item.role ? value.type : ""
+        ),
         <Link
             to={`/profile/${item.id}`}
           style={{ textDecoration: "none" }}
@@ -30,8 +39,56 @@ const UserList = ({ data }) => {
 
   const columns = [
     {
+      name: "name",
+      label: "Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "username",
+      label: "Username",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
       name: "email",
       label: "Email",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "availability_status",
+      label: "Availability Status",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "role",
+      label: "Role",
       options: {
         filter: false,
         sort: false,
@@ -49,7 +106,7 @@ const UserList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
     },
@@ -87,4 +144,4 @@ const UserList = ({ data }) => {
   );
 };
 
-export default UserList;
+export default ProjectMemberDetails;

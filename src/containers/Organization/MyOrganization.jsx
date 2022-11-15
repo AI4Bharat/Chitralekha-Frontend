@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
-import ProjectListAPI from "../../redux/actions/api/Organization/ProjectList";
+import ProjectListAPI from "../../redux/actions/api/Project/ProjectList";
 import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
 import ProjectList from "./ProjectList";
 import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -56,7 +57,6 @@ const MyOrganization = () => {
   );
 
   const projectList = useSelector((state) => state.getProjectList.data);
-
   const userList = useSelector((state) => state.getUserList.data);
 
   const getOrganizationDetails = () => {
@@ -73,6 +73,7 @@ const MyOrganization = () => {
     const userObj = new FetchUserListAPI();
     dispatch(APITransport(userObj));
   };
+ 
 
   useEffect(() => {
     getOrganizationDetails();

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Avatar,
   Card,
@@ -18,26 +18,30 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import { Box } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
+import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
 import { roles } from "../../utils/utils";
 
 const ProfilePage = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const userData = useSelector((state) => state.getUserDetails.data);
+  const loggedInUserId = useSelector(
+    (state) => state.getLoggedInUserDetails.data.id
+  );
 
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
-    dispatch(APITransport(loggedInUserObj));
+  const getUserData = () => {
+    const userObj = new FetchUserDetailsAPI(id);
+    dispatch(APITransport(userObj));
   };
 
   useEffect(() => {
-    getLoggedInUserData();
-  }, []);
+    getUserData();
+  }, [id]);
 
   useEffect(() => {
     if (userData) {
@@ -92,21 +96,28 @@ const ProfilePage = () => {
                 {userDetails?.phone}
               </Typography>
             )}
-            <Box display="flex" justifyContent="flex-start" alignItems="center">
-              <FormGroup>
-                <FormControlLabel
-                  control={<Switch defaultChecked />}
-                  label="Daily Mails"
-                  labelPlacement="start"
-                  sx={{ mt: 2 }}
+
+            {loggedInUserId == id && (
+              <Box
+                display="flex"
+                justifyContent="flex-start"
+                alignItems="center"
+              >
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch defaultChecked />}
+                    label="Daily Mails"
+                    labelPlacement="start"
+                    sx={{ mt: 2 }}
+                  />
+                </FormGroup>
+                <CustomButton
+                  label="Edit Profile"
+                  sx={{ mt: 2, ml: 6 }}
+                  onClick={() => navigate("/edit-profile")}
                 />
-              </FormGroup>
-              <CustomButton
-                label="Edit Profile"
-                sx={{ mt: 2, ml: 6 }}
-                onClick={() => navigate("/edit-profile")}
-              />
-            </Box>
+              </Box>
+            )}
           </CardContent>
         </Card>
       </Grid>

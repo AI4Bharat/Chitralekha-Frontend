@@ -1,37 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
+import tableTheme from "../../../theme/tableTheme";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../common/Button";
+import CustomButton from "../../../common/Button";
 import { Link } from "react-router-dom";
 
-const UserList = ({ data }) => {
-  const [tableData, setTableData] = useState([]);
-
-  useEffect(() => {
-    const result = data.map((item) => {
-      return [
-        item.email,
-        <Link
-            to={`/profile/${item.id}`}
-          style={{ textDecoration: "none" }}
-        >
-          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
-        </Link>,
-      ];
-    });
-
-    setTableData(result);
-  }, [data]);
-
+const TaskList = ({ data }) => {
   const columns = [
     {
-      name: "email",
-      label: "Email",
+      name: "title",
+      label: "TaskName",
       options: {
         filter: false,
         sort: false,
@@ -40,7 +22,19 @@ const UserList = ({ data }) => {
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
-    },
+    }, 
+    {
+        name: "createdBy",
+        label: "Created By",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            style: { height: "30px", fontSize: "16px", padding: "16px" },
+          }),
+        },
+      }, 
     {
       name: "Action",
       label: "Action",
@@ -51,6 +45,16 @@ const UserList = ({ data }) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px" },
         }),
+        customBodyRender: (_value, tableMeta) => {
+          return (
+            // <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
+                <CustomButton
+                    sx={{ borderRadius: 2, marginRight: 2 }}
+                    label="View"
+                />
+            // </Link>
+          );
+        },
       },
     },
   ];
@@ -82,9 +86,9 @@ const UserList = ({ data }) => {
 
   return (
     <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
+      <MUIDataTable data={data} columns={columns} options={options} />
     </ThemeProvider>
   );
 };
 
-export default UserList;
+export default TaskList;
