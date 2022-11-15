@@ -2,11 +2,10 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class EditProjectDetailsAPI extends API {
-  constructor(projectData, id, timeout = 2000) {
+export default class ArchiveProjectAPI extends API {
+  constructor(id, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.ARCHIVE_PROJECT;
-    this.projectData = projectData;
     this.id = id;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.project
@@ -24,9 +23,7 @@ export default class EditProjectDetailsAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.projectData;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
