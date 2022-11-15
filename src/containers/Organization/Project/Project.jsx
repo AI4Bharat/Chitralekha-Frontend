@@ -101,7 +101,7 @@ const Project = () => {
     setVideoList(projectvideoList);
   }, [projectvideoList]);
 
-  const getOrganizationDetails = () => {
+  const getProjectnDetails = () => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
     dispatch(APITransport(apiObj));
   };
@@ -112,7 +112,7 @@ const Project = () => {
   };
 
   useEffect(() => {
-    getOrganizationDetails();
+    getProjectnDetails();
     getProjectVideoList();
   }, []);
 
@@ -203,7 +203,7 @@ const Project = () => {
                 onClick={() => {}}
               />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectMemberDetails data={projectDetails.members} />
+              <ProjectMemberDetails />
             </div>
           </Box>
         </TabPanel>

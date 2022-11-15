@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { roles } from "../../../utils/utils";
+import { useDispatch, useSelector } from "react-redux";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
@@ -7,35 +10,65 @@ import tableTheme from "../../../theme/tableTheme";
 //Components
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
-import { Link } from "react-router-dom";
-import { useEffect } from "react";
-import { useState } from "react";
-import { roles } from "../../../utils/utils";
+import { Box } from "@mui/system";
 
-const ProjectMemberDetails = ({ data }) => {
+//APIs
+import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
+import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
+
+const ProjectMemberDetails = () => {
+  const { projectId } = useParams();
+  const dispatch = useDispatch();
+
   const [tableData, setTableData] = useState([]);
 
+  const projectMembersList = useSelector(
+    (state) => state.getProjectMembers.data
+  );
+
+  const removeProjectMember = (id) => {
+    const apiObj = new RemoveProjectMemberAPI(projectId, id);
+    dispatch(APITransport(apiObj));
+    getProjectMembers();
+  };
+
+  const getProjectMembers = () => {
+    const userObj = new FetchProjectMembersAPI(projectId);
+    dispatch(APITransport(userObj));
+  };
+
   useEffect(() => {
-    const result = data.map((item) => {
+    getProjectMembers();
+  }, []);
+
+  useEffect(() => {
+    const result = projectMembersList.map((item) => {
       return [
         `${item.first_name} ${item.last_name}`,
         item.username,
         item.email,
         item.availability_status,
-        roles.map((value) =>
-          value.id === item.role ? value.type : ""
-        ),
-        <Link
-            to={`/profile/${item.id}`}
-          style={{ textDecoration: "none" }}
-        >
-          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
-        </Link>,
+        roles.map((value) => (value.id === item.role ? value.type : "")),
+        <Box>
+          <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
+            <CustomButton
+              sx={{ borderRadius: 2, marginRight: 1 }}
+              label="View"
+            />
+          </Link>
+          <CustomButton
+            sx={{ borderRadius: 2 }}
+            label="Remove"
+            color="error"
+            onClick={() => removeProjectMember(item.id)}
+          />
+        </Box>,
       ];
     });
 
     setTableData(result);
-  }, [data]);
+  }, [projectMembersList]);
 
   const columns = [
     {
