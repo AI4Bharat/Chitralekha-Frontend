@@ -225,7 +225,7 @@ const Project = () => {
               onClick={() => {}}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList />
+              <UserList data={data}/>
             </div>
           </Box>
         </TabPanel>
