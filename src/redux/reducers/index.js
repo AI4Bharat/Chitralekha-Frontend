@@ -7,6 +7,7 @@ import getNewProjectDetails from "./Project/CreateNewProject";
 import apiStatus from './apistatus/apistatus';
 import getProjectDetails from "./Project/ProjectDetails";
 import getProjectVideoList from "./Project/ProjectVideoList";
+import getProjectMembers from "./Project/FetchProjectMembers";
 
 const rootReducer = {
     apiStatus,
@@ -18,6 +19,7 @@ const rootReducer = {
     getProjectDetails,
     getProjectVideoList,
     getUserDetails,
+    getProjectMembers,
 };
 
 export default rootReducer;
