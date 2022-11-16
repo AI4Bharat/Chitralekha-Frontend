@@ -154,7 +154,7 @@ const Header = () => {
                     Organizations
                   </NavLink>
                 </Typography>
-                <Typography variant="body1">
+                {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"
                     className={({ isActive }) =>
@@ -166,8 +166,8 @@ const Header = () => {
                   >
                     Projects
                   </NavLink>
-                </Typography>
-                <Typography variant="body1">
+                </Typography> */}
+                {/* <Typography variant="body1">
                   <NavLink
                     to="#"
                     className={`${classes.headerMenu} workspace`}
@@ -175,7 +175,7 @@ const Header = () => {
                   >
                     Workspace
                   </NavLink>
-                </Typography>
+                </Typography> */}
               </Grid>
 
               <Box className={classes.avatarBox}>
