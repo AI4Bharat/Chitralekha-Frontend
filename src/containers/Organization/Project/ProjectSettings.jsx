@@ -13,6 +13,7 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 //Utils
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import ArchiveProjectAPI from "../../../redux/actions/api/Project/ArchiveProject";
 
 const ProjectSettings = ({ projectInfo }) => {
   const { orgId, projectId } = useParams();
@@ -54,6 +55,7 @@ const ProjectSettings = ({ projectInfo }) => {
   const [creatorOrgEmail, setCreatorOrgEmail] = useState(
     projectInfo.created_by?.organization?.email_domain_name
   );
+  const [isDisabled, setIsDisabled] = useState(projectInfo.is_archived);
 
   const handleProjectUpdate = () => {
     const updateProjectReqBody = {
@@ -89,6 +91,12 @@ const ProjectSettings = ({ projectInfo }) => {
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
     dispatch(APITransport(apiObj));
+  };
+
+  const handleProjectArchive = () => {
+    const apiObj = new ArchiveProjectAPI(projectId);
+    dispatch(APITransport(apiObj));
+    setIsDisabled(true);
   };
 
   return (
@@ -287,7 +295,8 @@ const ProjectSettings = ({ projectInfo }) => {
       />
       <Button
         label={"Archive Project"}
-        onClick={() => {}}
+        onClick={() => handleProjectArchive()}
+        disabled={isDisabled}
         sx={{ mt: 5, width: "100%", background: "rgb(207, 89, 89)" }}
       />
     </Box>

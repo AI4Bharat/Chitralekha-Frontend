@@ -2,14 +2,15 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class ArchiveProjectAPI extends API {
-  constructor(id, timeout = 2000) {
+export default class RemoveProjectMemberAPI extends API {
+  constructor(projectId, userId, timeout = 2000) {
     super("POST", timeout, false);
-    this.type = C.ARCHIVE_PROJECT;
-    this.id = id;
+    this.type = C.REMOVE_PROJECT_MEMBER;
+    this.projectId = projectId;
+    this.userId = userId;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.project
-    }${id}/archive_project/`;
+    }${projectId}/remove_project_members/`;
   }
 
   processResponse(res) {
@@ -23,7 +24,11 @@ export default class ArchiveProjectAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return {
+      user_id: `${this.userId}`,
+    };
+  }
 
   getHeaders() {
     this.headers = {
