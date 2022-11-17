@@ -56,7 +56,8 @@ const TablePaginationActions = (props) => {
           disabled={page >= Math.ceil(count / rowsPerPage) - 1}
           aria-label="next page"
         >
-          {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+          {/* {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />} */}
+          
         </IconButton>
         <IconButton
           onClick={handleLastPageButtonClick}
