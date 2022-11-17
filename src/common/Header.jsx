@@ -154,7 +154,7 @@ const Header = () => {
                     Organizations
                   </NavLink>
                 </Typography>
-                {/* <Typography variant="body1">
+                <Typography variant="body1">
                   <NavLink
                     to="/projects"
                     className={({ isActive }) =>
@@ -166,7 +166,7 @@ const Header = () => {
                   >
                     Projects
                   </NavLink>
-                </Typography> */}
+                </Typography>
                 {/* <Typography variant="body1">
                   <NavLink
                     to="#"
