@@ -11,6 +11,7 @@ export default {
   changePassword: "/users/auth/users/set_password/",
   resetPassword: "/users/auth/users/reset_password/",
   confirmResetPassword: "/users/auth/users/reset_password_confirm/",
+  languages: "/users/languages/fetch/",
 
   //Video
   video: "/video/",

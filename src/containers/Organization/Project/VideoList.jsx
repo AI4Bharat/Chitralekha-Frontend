@@ -7,13 +7,19 @@ import tableTheme from "../../../theme/tableTheme";
 //Components
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
-import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
+import VideoDialog from "../../../common/VideoDialog";
 
 const VideoList = ({ data }) => {
-  const { id } = useParams();
   const [tableData, setTableData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [currentVideoDetails, setCurrentVideoDetails] = useState({});
+
+  const handleVideoDialog = (item) => {
+    setOpen(true);
+    setCurrentVideoDetails(item);
+  };
 
   useEffect(() => {
     const result = data.map((item) => {
@@ -23,12 +29,11 @@ const VideoList = ({ data }) => {
         item.name,
         item.url,
         item.duration,
-        <Link
-          //   to={`/my-organization/${id}/project/${item.id}`}
-          style={{ textDecoration: "none" }}
-        >
-          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
-        </Link>,
+        <CustomButton
+          sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+          label="View"
+          onClick={() => handleVideoDialog(item)}
+        />,
       ];
     });
 
@@ -136,9 +141,18 @@ const VideoList = ({ data }) => {
   };
 
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={tableTheme}>
+        <MUIDataTable data={tableData} columns={columns} options={options} />
+      </ThemeProvider>
+      {open && (
+        <VideoDialog
+          open={open}
+          handleClose={() => setOpen(false)}
+          videoDetails={currentVideoDetails}
+        />
+      )}
+    </>
   );
 };
 
