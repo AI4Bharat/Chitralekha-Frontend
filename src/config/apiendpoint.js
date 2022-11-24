@@ -22,5 +22,8 @@ export default {
   organization: "/organization/",
 
   //Project
-  project: "/project/"
+  project: "/project/",
+
+  //Task
+  createTask: "/task/",
 };

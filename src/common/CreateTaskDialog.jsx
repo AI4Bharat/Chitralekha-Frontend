@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { tasks } from "../utils/utils";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 //APIs
 import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
@@ -26,8 +26,7 @@ const CreateTaskDialog = ({
   handleUserDialogClose,
   createTaskHandler,
 }) => {
-  const navigate = useNavigate();
-  const { orgId, projectId } = useParams();
+  const { projectId } = useParams();
   const dispatch = useDispatch();
 
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
@@ -45,6 +44,14 @@ const CreateTaskDialog = ({
     const apiObj = new FetchLanguageAPI();
     dispatch(APITransport(apiObj));
   }, []);
+
+  const submitHandler = () => {
+    const obj = {
+      task_type: taskType,
+      user_id: user.id,
+    };
+    createTaskHandler(obj);
+  };
 
   return (
     <Dialog
@@ -147,7 +154,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          onClick={() => createTaskHandler()}
+          onClick={() => submitHandler()}
         >
           Create Task
         </Button>
