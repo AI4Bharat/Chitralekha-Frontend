@@ -72,7 +72,7 @@ const CreateVideoDialog = ({
           onClick={() => addBtnClickHandler()}
           disabled={!videoLink}
         >
-          Create Video
+          Create 
         </Button>
       </DialogActions>
     </Dialog>
