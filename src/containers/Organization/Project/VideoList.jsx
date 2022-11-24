@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
@@ -7,14 +8,20 @@ import tableTheme from "../../../theme/tableTheme";
 //Components
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
-import { useEffect } from "react";
-import { useState } from "react";
 import VideoDialog from "../../../common/VideoDialog";
+import CreateTaskDialog from "../../../common/CreateTaskDialog";
+
+//APIs
+import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const VideoList = ({ data }) => {
+  const dispatch = useDispatch();
+
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState({});
+  const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -29,16 +36,37 @@ const VideoList = ({ data }) => {
         item.name,
         item.url,
         item.duration,
-        <CustomButton
-          sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
-          label="View"
-          onClick={() => handleVideoDialog(item)}
-        />,
+        <>
+          <CustomButton
+            sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+            label="View"
+            onClick={() => handleVideoDialog(item)}
+          />
+          <CustomButton
+            sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+            label="Create Task"
+            onClick={() => {
+              setOpenCreateTaskDialog(true);
+              setCurrentVideoDetails(item);
+            }}
+          />
+        </>,
       ];
     });
 
     setTableData(result);
   }, [data]);
+
+  const createTaskHandler = (data) => {
+    const reqBody = {
+      ...data,
+      video_id: currentVideoDetails.id,
+    };
+
+    const apiObj = new CreateNewTaskAPI(reqBody);
+    dispatch(APITransport(apiObj));
+    setOpenCreateTaskDialog(false);
+  };
 
   const columns = [
     {
@@ -145,11 +173,20 @@ const VideoList = ({ data }) => {
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={tableData} columns={columns} options={options} />
       </ThemeProvider>
+
       {open && (
         <VideoDialog
           open={open}
           handleClose={() => setOpen(false)}
           videoDetails={currentVideoDetails}
+        />
+      )}
+
+      {openCreateTaskDialog && (
+        <CreateTaskDialog
+          open={openCreateTaskDialog}
+          handleUserDialogClose={() => setOpenCreateTaskDialog(false)}
+          createTaskHandler={createTaskHandler}
         />
       )}
     </>

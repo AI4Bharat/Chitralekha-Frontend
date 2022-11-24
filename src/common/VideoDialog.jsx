@@ -7,11 +7,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
-  const { orgId, projectId } = useParams();
-  const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -42,19 +39,6 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         </Typography>
         <Button autoFocus onClick={handleClose}>
           Close
-        </Button>
-        <Button
-          autoFocus
-          variant="contained"
-          sx={{ borderRadius: 2 }}
-          onClick={() => {
-            handleClose();
-            navigate(
-              `/my-organization/${orgId}/project/${projectId}/create-task`
-            );
-          }}
-        >
-          Create Task
         </Button>
       </DialogActions>
     </Dialog>

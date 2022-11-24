@@ -5,9 +5,9 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
   TextField,
 } from "@mui/material";
 import React from "react";
@@ -21,17 +21,6 @@ const CreateVideoDialog = ({
   isAudio,
   setIsAudio,
 }) => {
-  const menuItems = [
-    {
-      label: "True",
-      value: true,
-    },
-    {
-      label: "False",
-      value: false,
-    },
-  ];
-
   return (
     <Dialog
       fullWidth={true}
@@ -40,8 +29,28 @@ const CreateVideoDialog = ({
       close
       maxWidth={"md"}
     >
-      <DialogTitle variant="h4">Create New Video</DialogTitle>
+      <DialogTitle variant="h4">Create New Video/Audio</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
+        <FormControl fullWidth>
+          <RadioGroup
+            row
+            name="controlled-radio-buttons-group"
+            value={isAudio}
+            onChange={(event) => setIsAudio(event.target.value)}
+          >
+            <FormControlLabel
+              value="false"
+              control={<Radio />}
+              label="Upload Video"
+            />
+            <FormControlLabel
+              value="true"
+              control={<Radio />}
+              label="Upload Audio"
+            />
+          </RadioGroup>
+        </FormControl>
+
         <TextField
           label={"Enter Video Link from Youtube or Google Drive Here"}
           fullWidth
@@ -49,23 +58,8 @@ const CreateVideoDialog = ({
           rows={4}
           value={videoLink}
           onChange={(event) => setVideoLink(event.target.value)}
-          sx={{ mb: 3 }}
+          sx={{ mt  : 3, mb: 3 }}
         />
-
-        <FormControl fullWidth>
-          <InputLabel id="type-select-label">Is Audio</InputLabel>
-          <Select
-            labelId="type-select-label"
-            id="type-select"
-            value={isAudio}
-            label="Is Audio"
-            onChange={(event) => setIsAudio(event.target.value)}
-          >
-            {menuItems.map((item) => {
-              return <MenuItem value={item.value}>{item.label}</MenuItem>;
-            })}
-          </Select>
-        </FormControl>
       </DialogContent>
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
         <Button autoFocus onClick={handleUserDialogClose}>
@@ -76,6 +70,7 @@ const CreateVideoDialog = ({
           variant="contained"
           sx={{ borderRadius: 2 }}
           onClick={() => addBtnClickHandler()}
+          disabled={!videoLink}
         >
           Create Video
         </Button>

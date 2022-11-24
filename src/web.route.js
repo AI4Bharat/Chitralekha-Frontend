@@ -15,7 +15,6 @@ import ProfilePage from "./containers/UserManagement/ProfilePage";
 import Layout from "./Layout";
 import { authenticateUser } from "./utils/utils";
 import Project from "./containers/Organization/Project/Project";
-import CreateTask from "./containers/Organization/Project/CreateTask";
 import CreateNewProject from "./containers/Organization/Project/CreateNewProject";
 import ChangePassword from "./containers/UserManagement/ChangePassword";
 import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPassword";
@@ -87,12 +86,6 @@ const RootRouter = () => {
         <Route
           path="/forget-password/confirm/:key/:token"
           element={<ConfirmForgotPassword />}
-        />
-        <Route
-          path="my-organization/:orgId/project/:projectId/create-task"
-          element={ProtectedRouteWrapper(
-            <Layout component={<CreateTask />} Backbutton={true} />
-          )}
         />
       </Routes>
     </HashRouter>
