@@ -160,7 +160,7 @@ const Project = () => {
           >
             <Button
               className={classes.projectButton}
-              label={"Create a New Video"}
+              label={"Create a New Video/Audio"}
               onClick={() => setCreateVideoDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
