@@ -10,11 +10,13 @@ import MUIDataTable from "mui-datatables";
 import { useEffect } from "react";
 import { useState } from "react";
 import VideoDialog from "../../../common/VideoDialog";
+import CreateTaskDialog from "../../../common/CreateTaskDialog";
 
 const VideoList = ({ data }) => {
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState({});
+  const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -29,16 +31,25 @@ const VideoList = ({ data }) => {
         item.name,
         item.url,
         item.duration,
-        <CustomButton
-          sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
-          label="View"
-          onClick={() => handleVideoDialog(item)}
-        />,
+        <>
+          <CustomButton
+            sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+            label="View"
+            onClick={() => handleVideoDialog(item)}
+          />
+          <CustomButton
+            sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+            label="Create Task"
+            onClick={() => setOpenCreateTaskDialog(true)}
+          />
+        </>,
       ];
     });
 
     setTableData(result);
   }, [data]);
+
+  const createTaskHandler = () => {}
 
   const columns = [
     {
@@ -145,6 +156,7 @@ const VideoList = ({ data }) => {
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={tableData} columns={columns} options={options} />
       </ThemeProvider>
+      
       {open && (
         <VideoDialog
           open={open}
@@ -152,6 +164,16 @@ const VideoList = ({ data }) => {
           videoDetails={currentVideoDetails}
         />
       )}
+
+      {
+        openCreateTaskDialog && (
+          <CreateTaskDialog 
+            open={openCreateTaskDialog}
+            handleUserDialogClose={() => setOpenCreateTaskDialog(false)}
+            createTaskHandler={createTaskHandler}
+          />
+        )
+      }
     </>
   );
 };

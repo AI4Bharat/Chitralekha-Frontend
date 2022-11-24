@@ -87,7 +87,7 @@ const Project = () => {
   const [videoList, setVideoList] = useState([]);
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
   const [videoLink, setVideoLink] = useState("");
-  const [isAudio, setIsAudio] = useState("");
+  const [isAudio, setIsAudio] = useState(false);
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
@@ -117,7 +117,7 @@ const Project = () => {
     dispatch(APITransport(apiObj));
     setCreateVideoDialog(false);
     setVideoLink("");
-    setIsAudio("");
+    setIsAudio(false);
   };
 
   console.log(videoList, "videoList");
