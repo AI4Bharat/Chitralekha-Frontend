@@ -4,10 +4,8 @@ import { useEffect, useState } from "react";
 //APIs
 import FetchProjectDetailsAPI from "../../../redux/actions/api/Project/FetchProjectDetails";
 import FetchVideoListAPI from "../../../redux/actions/api/Project/FetchVideoList";
-import FetchUserListAPI from "../../../redux/actions/api/User/FetchUserList";
-import ProjectList from "../ProjectList";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import TaskList from "./TaskList";
+import CreateNewVideoAPI from "../../../redux/actions/api/Project/CreateNewVideo";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -19,10 +17,11 @@ import DatasetStyle from "../../../styles/Dataset";
 import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
 import Button from "../../../common/Button";
 import UserList from "../UserList";
-import AddDialog from "../../../common/AddDialog";
+import CreateVideoDialog from "../../../common/CreateVideoDialog";
 import ProjectSettings from "./ProjectSettings";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
+import TaskList from "./TaskList";
 
 const data = [
   {
@@ -86,12 +85,9 @@ const Project = () => {
   const [value, setValue] = useState(0);
   const [projectDetails, SetProjectDetails] = useState({});
   const [videoList, setVideoList] = useState([]);
-
-  const [addUserDialog, setAddUserDialog] = useState(false);
-  const [addProjectDialog, setAddProjectDialog] = useState(false);
-  const [newProjectName, setNewProjectName] = useState("");
-  const [newMemberName, setNewMemberName] = useState("");
-  const [newMemberRole, setNewMemberRole] = useState("");
+  const [createVideoDialog, setCreateVideoDialog] = useState(false);
+  const [videoLink, setVideoLink] = useState("");
+  const [isAudio, setIsAudio] = useState("");
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
@@ -116,10 +112,15 @@ const Project = () => {
     getProjectVideoList();
   }, []);
 
-  const addNewProjectHandler = () => {};
-  const addNewMemberHandler = () => {};
+  const addNewProjectHandler = () => {
+    const apiObj = new CreateNewVideoAPI(videoLink, isAudio);
+    dispatch(APITransport(apiObj));
+    setCreateVideoDialog(false);
+    setVideoLink("");
+    setIsAudio("");
+  };
 
-  console.log(videoList,'videoList');
+  console.log(videoList, "videoList");
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
@@ -160,7 +161,7 @@ const Project = () => {
             <Button
               className={classes.projectButton}
               label={"Create a New Video"}
-              onClick={() => {}}
+              onClick={() => setCreateVideoDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <VideoList data={videoList} />
@@ -179,7 +180,6 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-             
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <TaskList data={data} />
             </div>
@@ -197,11 +197,11 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-              <Button
-                className={classes.projectButton}
-                label={"Add project members"}
-                onClick={() => {}}
-              />
+            <Button
+              className={classes.projectButton}
+              label={"Add project members"}
+              onClick={() => {}}
+            />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
             </div>
@@ -225,7 +225,7 @@ const Project = () => {
               onClick={() => {}}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList data={data}/>
+              <UserList data={data} />
             </div>
           </Box>
         </TabPanel>
@@ -235,30 +235,15 @@ const Project = () => {
         </TabPanel>
       </Card>
 
-      {addProjectDialog && (
-        <AddDialog
-          open={addProjectDialog}
-          handleUserDialogClose={() => setAddProjectDialog(false)}
-          title={"Add New Projects"}
-          textFieldLabel={"Project Name"}
-          textFieldValue={newProjectName}
-          handleTextField={setNewProjectName}
+      {createVideoDialog && (
+        <CreateVideoDialog
+          open={createVideoDialog}
+          handleUserDialogClose={() => setCreateVideoDialog(false)}
+          videoLink={videoLink}
+          setVideoLink={setVideoLink}
+          isAudio={isAudio}
+          setIsAudio={setIsAudio}
           addBtnClickHandler={addNewProjectHandler}
-        />
-      )}
-
-      {addUserDialog && (
-        <AddDialog
-          open={addUserDialog}
-          handleUserDialogClose={() => setAddUserDialog(false)}
-          title={"Add New Members"}
-          textFieldLabel={"Enter Email Id of Member"}
-          textFieldValue={newMemberName}
-          handleTextField={setNewMemberName}
-          addBtnClickHandler={addNewMemberHandler}
-          isAddMember={true}
-          selectFieldValue={newMemberRole}
-          handleSelectField={setNewMemberRole}
         />
       )}
     </Grid>
