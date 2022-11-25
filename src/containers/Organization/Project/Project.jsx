@@ -120,7 +120,6 @@ const Project = () => {
     setIsAudio(false);
   };
 
-  console.log(videoList, "videoList");
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
@@ -181,7 +180,7 @@ const Project = () => {
             alignItems="center"
           >
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <TaskList data={data} />
+              <TaskList />
             </div>
           </Box>
         </TabPanel>

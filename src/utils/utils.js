@@ -60,31 +60,31 @@ export const steps = [
 export const roles = [
   {
     id: 1,
-    type: "Transcript editor"
+    type: "Transcript editor",
   },
   {
     id: 2,
-    type: "Transcript Reviewer"
+    type: "Transcript Reviewer",
   },
   {
     id: 3,
-    type: "Translation editor"
+    type: "Translation editor",
   },
   {
     id: 4,
-    type: "Translation Reviewer"
+    type: "Translation Reviewer",
   },
   {
     id: 5,
-    type: "Universal Editor"
+    type: "Universal Editor",
   },
   {
     id: 6,
-    type: "Project Manager"
+    type: "Project Manager",
   },
   {
     id: 7,
-    type: "Organization Owner"
+    type: "Organization Owner",
   },
 ];
 
@@ -92,31 +92,38 @@ export const tasks = [
   {
     id: 1,
     type: "TRANSCRIPTION_SELECT_SOURCE",
-    label: "Transcription Select Source"
+    label: "Transcription Select Source",
   },
   {
     id: 2,
     type: "TRANSCRIPTION_EDIT",
-    label: "Transcription Edit"
+    label: "Transcription Edit",
   },
   {
     id: 3,
     type: "TRANSCRIPTION_REVIEW",
-    label: "Transcription Review"
+    label: "Transcription Review",
   },
   {
     id: 4,
     type: "TRANSLATION_SELECT_SOURCE",
-    label: "Translation Select Source"
+    label: "Translation Select Source",
   },
   {
     id: 5,
     type: "TRANSLATION_EDIT",
-    label: "Translation Edit"
+    label: "Translation Edit",
   },
   {
     id: 6,
     type: "TRANSLATION_REVIEW",
-    label: "Translation Review"
-  }
+    label: "Translation Review",
+  },
+];
+
+export const transcriptSelectSource = [
+  "Machine Generated",
+  "Original Source",
+  "Manually Uploaded (srt)",
+  "Manually Created",
 ];
