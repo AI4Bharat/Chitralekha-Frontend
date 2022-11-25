@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
@@ -7,13 +7,65 @@ import tableTheme from "../../../theme/tableTheme";
 //Components
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../../common/Button";
-import { Link } from "react-router-dom";
 
-const TaskList = ({ data }) => {
+//Apis
+import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import ViewTaskDialog from "../../../common/ViewTaskDialog";
+
+const data = [
+  {
+    id: 1,
+    task_uuid: "ea827352-7062-4f77-a35a-707be95c8c6d",
+    task_type: "TRANSLATION_EDIT",
+    target_language: "hi",
+    status: "NEW",
+    video: 1,
+    user: 2,
+    created_by: 1,
+  },
+  {
+    id: 2,
+    task_uuid: "0e09bccc-fa4d-4fde-987b-afff09a03265",
+    task_type: "TRANSLATION_EDIT",
+    target_language: "hi",
+    status: "NEW",
+    video: 2,
+    user: 3,
+    created_by: 1,
+  },
+  {
+    id: 3,
+    task_uuid: "c8a637b8-c399-4d02-8a79-09158f9710cc",
+    task_type: "TRANSCRIPTION_REVIEW",
+    target_language: "bn",
+    status: "NEW",
+    video: 3,
+    user: 2,
+    created_by: 1,
+  },
+];
+
+const TaskList = () => {
+  const { projectId } = useParams();
+  const dispatch = useDispatch();
+
+  const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
+
+  useEffect(() => {
+    const apiObj = new FetchTaskListAPI(projectId);
+    dispatch(APITransport(apiObj));
+  }, []);
+
+  const taskList = useSelector((state) => state.getTaskList.data);
+
   const columns = [
     {
-      name: "title",
-      label: "TaskName",
+      name: "task_type",
+      label: "Task Type",
       options: {
         filter: false,
         sort: false,
@@ -22,19 +74,55 @@ const TaskList = ({ data }) => {
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
       },
-    }, 
+    },
     {
-        name: "createdBy",
-        label: "Created By",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            style: { height: "30px", fontSize: "16px", padding: "16px" },
-          }),
-        },
-      }, 
+      name: "video_name",
+      label: "Video Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "source_language",
+      label: "Source Language",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "target_language",
+      label: "Target Language",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "status",
+      label: "Status",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
     {
       name: "Action",
       label: "Action",
@@ -45,14 +133,13 @@ const TaskList = ({ data }) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px" },
         }),
-        customBodyRender: (_value, tableMeta) => {
+        customBodyRender: () => {
           return (
-            // <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
-                <CustomButton
-                    sx={{ borderRadius: 2, marginRight: 2 }}
-                    label="View"
-                />
-            // </Link>
+            <CustomButton
+              sx={{ borderRadius: 2, marginRight: 2 }}
+              label="View"
+              onClick={() => setOpenViewTaskDialog(true)}
+            />
           );
         },
       },
@@ -85,9 +172,19 @@ const TaskList = ({ data }) => {
   };
 
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={data} columns={columns} options={options} />
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={tableTheme}>
+        <MUIDataTable data={data} columns={columns} options={options} />
+      </ThemeProvider>
+
+      {openViewTaskDialog && (
+        <ViewTaskDialog
+          open={openViewTaskDialog}
+          handleClose={() => setOpenViewTaskDialog(false)}
+          submitHandler={() => {}}
+        />
+      )}
+    </>
   );
 };
 
