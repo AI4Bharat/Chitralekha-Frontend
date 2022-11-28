@@ -2,12 +2,12 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchTaskListAPI extends API {
+export default class FetchTaskDetailsAPI extends API {
   constructor(id, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_TASK_LIST;
+    this.type = C.GET_TASK_DETAILS;
     this.id = id;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${id}/`;
   }
 
   processResponse(res) {

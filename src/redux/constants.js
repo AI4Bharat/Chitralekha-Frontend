@@ -30,6 +30,7 @@ const constants = {
     //Task
     CREATE_NEW_TASk: "CREATE_NEW_TASk",
     GET_TASK_LIST: "GET_TASK_LIST",
+    GET_TASK_DETAILS: "GET_TASK_DETAILS",
 };
 
 export default constants;

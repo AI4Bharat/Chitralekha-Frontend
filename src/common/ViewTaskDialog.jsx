@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -15,8 +15,13 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { transcriptSelectSource } from "../utils/utils";
+import { useDispatch, useSelector } from "react-redux";
+import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
+import APITransport from "../redux/actions/apitransport/apitransport";
 
-const ViewTaskDialog = ({ open, handleClose, submitHandler }) => {
+const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
+  const dispatch = useDispatch();
+
   const [transcriptSource, setTranscriptSource] = useState([]);
   const [file, setFile] = useState();
 
@@ -26,6 +31,13 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler }) => {
     } = event;
     setTranscriptSource(typeof value === "string" ? value.split(",") : value);
   };
+
+  const taskDetail = useSelector((state) => state.getTaskDetails.data);
+
+  useEffect(() => {
+    const apiObj = new FetchTaskDetailsAPI(id);
+    dispatch(APITransport(apiObj));
+  }, []);
 
   return (
     <Dialog
@@ -40,7 +52,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler }) => {
           <Typography variant="h5" width={"25%"}>
             Task Type:
           </Typography>
-          <Typography variant="body1">Transcription</Typography>
+          <Typography variant="body1">{taskDetail.task_type}</Typography>
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>

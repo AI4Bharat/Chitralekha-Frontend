@@ -7,7 +7,7 @@ export default class CreateNewTaskAPI extends API {
     super("POST", timeout, false);
     this.type = C.CREATE_NEW_TASk;
     this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.createTask}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}`;
   }
 
   processResponse(res) {
