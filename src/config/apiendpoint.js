@@ -25,5 +25,5 @@ export default {
   project: "/project/",
 
   //Task
-  createTask: "/task/",
+  task: "/task/",
 };

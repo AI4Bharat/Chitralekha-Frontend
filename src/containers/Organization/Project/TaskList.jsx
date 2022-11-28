@@ -16,44 +16,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 
-const data = [
-  {
-    id: 1,
-    task_uuid: "ea827352-7062-4f77-a35a-707be95c8c6d",
-    task_type: "TRANSLATION_EDIT",
-    target_language: "hi",
-    status: "NEW",
-    video: 1,
-    user: 2,
-    created_by: 1,
-  },
-  {
-    id: 2,
-    task_uuid: "0e09bccc-fa4d-4fde-987b-afff09a03265",
-    task_type: "TRANSLATION_EDIT",
-    target_language: "hi",
-    status: "NEW",
-    video: 2,
-    user: 3,
-    created_by: 1,
-  },
-  {
-    id: 3,
-    task_uuid: "c8a637b8-c399-4d02-8a79-09158f9710cc",
-    task_type: "TRANSCRIPTION_REVIEW",
-    target_language: "bn",
-    status: "NEW",
-    video: 3,
-    user: 2,
-    created_by: 1,
-  },
-];
-
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
+  const [currentTaskDetails, setCurrentTaskDetails] = useState();
 
   useEffect(() => {
     const apiObj = new FetchTaskListAPI(projectId);
@@ -63,6 +31,18 @@ const TaskList = () => {
   const taskList = useSelector((state) => state.getTaskList.data);
 
   const columns = [
+    {
+      name: "id",
+      label: "#",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
     {
       name: "task_type",
       label: "Task Type",
@@ -133,12 +113,13 @@ const TaskList = () => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px" },
         }),
-        customBodyRender: () => {
+        customBodyRender: (value, tableMeta) => {
+          console.log(tableMeta,'tableMeta');
           return (
             <CustomButton
               sx={{ borderRadius: 2, marginRight: 2 }}
               label="View"
-              onClick={() => setOpenViewTaskDialog(true)}
+              onClick={() => {setOpenViewTaskDialog(true); setCurrentTaskDetails(tableMeta.rowData)}}
             />
           );
         },
@@ -174,7 +155,7 @@ const TaskList = () => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={data} columns={columns} options={options} />
+        <MUIDataTable data={taskList} columns={columns} options={options} />
       </ThemeProvider>
 
       {openViewTaskDialog && (
@@ -182,6 +163,7 @@ const TaskList = () => {
           open={openViewTaskDialog}
           handleClose={() => setOpenViewTaskDialog(false)}
           submitHandler={() => {}}
+          id={currentTaskDetails[0]}
         />
       )}
     </>

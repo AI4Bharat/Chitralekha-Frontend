@@ -10,6 +10,7 @@ import getProjectVideoList from "./Project/ProjectVideoList";
 import getProjectMembers from "./Project/FetchProjectMembers";
 import getLanguages from "./Project/FetchLanguages";
 import getTaskList from "./Project/FetchTaskList";
+import getTaskDetails from "./Project/FetchTaskDetails";
 
 const rootReducer = {
     apiStatus,
@@ -24,6 +25,7 @@ const rootReducer = {
     getProjectMembers,
     getLanguages,
     getTaskList,
+    getTaskDetails,
 };
 
 export default rootReducer;

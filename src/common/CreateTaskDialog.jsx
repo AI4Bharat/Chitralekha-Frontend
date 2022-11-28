@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useEffect, useState } from "react";
 import { tasks } from "../utils/utils";
 import { useParams } from "react-router-dom";
@@ -20,6 +21,8 @@ import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMem
 import FetchLanguageAPI from "../redux/actions/api/Project/FetchLanguages";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
+import ProjectStyle from "../styles/ProjectStyle"
+import moment from "moment";
 
 const CreateTaskDialog = ({
   open,
@@ -28,6 +31,7 @@ const CreateTaskDialog = ({
 }) => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = ProjectStyle();
 
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
   const languages = useSelector((state) => state.getLanguages.data.language);
@@ -36,6 +40,8 @@ const CreateTaskDialog = ({
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
   const [language, setLanguage] = useState("");
+  const [priority, setPriority] = useState("");
+  const [date, setDate] = useState(moment().format());
 
   useEffect(() => {
     const obj = new FetchProjectMembersAPI(projectId);
@@ -115,7 +121,7 @@ const CreateTaskDialog = ({
             <TextField
               fullWidth
               multiline
-              rows={4}
+              rows={3}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
             />
@@ -144,6 +150,43 @@ const CreateTaskDialog = ({
               </Select>
             </Box>
           )}
+
+          <Box width={"100%"} sx={{ mt: 3 }}>
+            <Typography gutterBottom component="div" label="Required">
+              Priority:
+            </Typography>
+            <Select
+              fullWidth
+              labelId="lang-label"
+              value={priority}
+              onChange={(event) => setPriority(event.target.value)}
+              style={{ zIndex: "0" }}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem key={1} value="p1">
+                P1
+              </MenuItem>
+              <MenuItem key={2} value="p2">
+                P2
+              </MenuItem>
+              <MenuItem key={3} value="p3">
+                P3
+              </MenuItem>
+            </Select>
+          </Box>
+
+          <Box width={"100%"} sx={{ mt: 3 }}>
+            <Typography gutterBottom component="div" label="Required" multiline>
+              ETA:
+            </Typography>
+            <DatePicker
+              inputFormat="DD/MM/YYYY"
+              value={date}
+              onChange={(newValue) => setDate(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+              className={classes.datePicker}
+            />
+          </Box>
         </Grid>
       </DialogContent>
       <DialogActions style={{ padding: "24px 24px 24px 0" }}>
