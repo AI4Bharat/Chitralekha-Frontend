@@ -19,6 +19,7 @@ import CreateNewProject from "./containers/Organization/Project/CreateNewProject
 import ChangePassword from "./containers/UserManagement/ChangePassword";
 import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import ForgotPassword from "./containers/UserManagement/ForgotPassword";
+import ComparisonTable from "./containers/Organization/Project/ComparisonTable";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -61,7 +62,7 @@ const RootRouter = () => {
         <Route
           path="/my-organization/:id"
           element={ProtectedRouteWrapper(
-            <Layout component={<MyOrganization />} />
+            <Layout component={<ComparisonTable />} />
           )}
         />
         <Route
