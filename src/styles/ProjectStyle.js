@@ -10,6 +10,12 @@ const ProjectStyle = makeStyles({
   datePicker: {
     width: "100%",
   },
+
+  findBtn: {
+    width: "50%", 
+    borderRadius: "10px", 
+    margin: "24px auto", 
+  },
 });
 
 export default ProjectStyle;

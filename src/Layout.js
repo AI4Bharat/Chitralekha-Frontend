@@ -9,7 +9,7 @@ import { steps } from "./utils/utils";
 import { TutorialTooltip } from "./common/TutorialPlayer";
 
 const App = (props) => {
-  const { component, Backbutton, backPressNavigationPath } = props;
+  const { component, Backbutton, backPressNavigationPath, isDrawer } = props;
   const classes = GlobalStyles();
 
   return (
@@ -32,7 +32,10 @@ const App = (props) => {
             }}
           />
         )}
-        <div className={`${classes.container} main`}>
+        <div
+          className={`${classes.container} main`}
+          style={isDrawer ? { margin: 0, maxWidth: "100%" } : {}}
+        >
           {Backbutton && (
             <BackButton
               startIcon={<ArrowBackIcon />}

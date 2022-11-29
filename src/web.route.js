@@ -19,6 +19,7 @@ import CreateNewProject from "./containers/Organization/Project/CreateNewProject
 import ChangePassword from "./containers/UserManagement/ChangePassword";
 import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import ForgotPassword from "./containers/UserManagement/ForgotPassword";
+import VideoLanding from "./containers/Organization/Video/VideoLanding";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -86,6 +87,12 @@ const RootRouter = () => {
         <Route
           path="/forget-password/confirm/:key/:token"
           element={<ConfirmForgotPassword />}
+        />
+        <Route
+          path="/transcript"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true}/>
+          )}
         />
       </Routes>
     </HashRouter>
