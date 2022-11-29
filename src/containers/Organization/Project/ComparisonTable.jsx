@@ -9,12 +9,12 @@ import {
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useMemo } from "react";
+import { maxHeight } from "@mui/system";
 
 const ComparisonTable = () => {
-  const [noOfSelect, setNoOfSelect] = useState([0]);
-  const [selectValue, setSelectValue] = useState([]);
+  const [selectValue, setSelectValue] = useState([{ id: 0, value: "" }]);
   const dropDown = [
     {
       key: "mg",
@@ -30,35 +30,47 @@ const ComparisonTable = () => {
     },
   ];
 
+  const dummyData = [
+    {
+      key: "mg",
+      values: ["Dummy1", "Dummy2", "Dummy3", "Dummy4", "Dummy5","Dummy1", "Dummy2", "Dummy3", "Dummy4", "Dummy5"],
+    },
+    {
+      key: "mu",
+      values: ["Dummy6", "Dummy7", "Dummy8", "Dummy9", "Dummy10","Dummy6", "Dummy7", "Dummy8", "Dummy9", "Dummy10"],
+    },
+    {
+      key: "og",
+      values: ["Dummy11", "Dummy12", "Dummy13", "Dummy14", "Dummy15","Dummy11", "Dummy12", "Dummy13", "Dummy14", "Dummy15"],
+    },
+  ];
+
   const addType = (indx) => {
-    const count = Object.assign([], noOfSelect);
-    const select = Object.assign([],selectValue);
-    count.push(indx+1);
-    select.splice(indx,0,[]);
-    setNoOfSelect(count);
-    setSelectValue(select);
+    setSelectValue((prev) => {
+      return [...prev, { id: indx + 1, value: "" }];
+    });
   };
 
   const deleteType = (indx) => {
-      const count = Object.assign([],noOfSelect);
-      const select = Object.assign([],selectValue);
-      count.splice(indx,1);
-      select.splice(indx,1);
-      setNoOfSelect(count);
-      setSelectValue(select);
+    setSelectValue((prev) => {
+      const result = JSON.parse(JSON.stringify(Object.assign([], prev)));
+      return result.filter((res, i) => {
+        return i !== indx;
+      });
+    });
   };
 
   const renderActionButton = (indx) => {
     return (
       <Grid item>
         <IconButton
-          disabled={noOfSelect.length === dropDown.length}
-          onClick={()=>addType(indx)}
+          disabled={dropDown.length <= selectValue.length}
+          onClick={() => addType(indx)}
         >
           <AddCircleOutlineIcon />
         </IconButton>
         <IconButton
-          disabled={noOfSelect.length === 1}
+          disabled={selectValue.length === 1}
           onClick={() => deleteType(indx)}
         >
           <DeleteOutlineIcon />
@@ -67,51 +79,44 @@ const ComparisonTable = () => {
     );
   };
 
-  const handleChange = (e, index) => {
+  const handleChange = (e, indx) => {
     const {
       target: { value },
     } = e;
-    let result = [...selectValue];
-    result.push({ selectIdx: index, value });
-    setSelectValue(result);
+    setSelectValue((prev) => {
+      const result = JSON.parse(JSON.stringify(Object.assign([], prev)));
+      result.forEach((res, i) => {
+        if (i === indx) {
+          result[i].value = value;
+        }
+      });
+      return result;
+    });
   };
 
-  const renderDropDown = () => {
-    if (noOfSelect.length === 1)
+  const renderTableData = (data) => {
+    console.log(data)
+    if (!!data) {
+      const values = (dummyData.filter((el) => el.key === data)).map(el=>el.values)[0];
       return (
-        <Grid container spacing={2}>
-          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Compare with
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Compare with"
-                onChange={(e) => handleChange(e, 0)}
-                value={selectValue[0]?.value}
-              >
-                {dropDown.map((el, i) => {
-                  return (
-                    <MenuItem key={i} value={el.value}>
-                      {el.value}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            {renderActionButton(0)}
-          </Grid>
-        </Grid>
+        <div style={{height:'50%',maxHeight:'50%',overflowX:'hidden', overflowY:'scroll'} }>
+          {values.map((value) => {
+            return <Typography>{value}</Typography>;
+          })}
+        </div>
       );
+    }
+    return <></>;
+  };
+
+  const renderDropDown = useMemo(() => {
     return (
       <Grid container spacing={2}>
-        {noOfSelect.map((select, indx) => {
+        {selectValue.map((select, indx) => {
           return (
-            <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Grid key={indx} item xs={3} sm={3} md={3} lg={3} xl={3}>
               <FormControl fullWidth>
-                <InputLabel key={select} id="demo-multi-select-label">
+                <InputLabel key={indx} id="demo-multi-select-label">
                   Compare with
                 </InputLabel>
                 <Select
@@ -120,11 +125,11 @@ const ComparisonTable = () => {
                   id="demo-multi-select"
                   label="Compare with"
                   onChange={(e) => handleChange(e, indx)}
-                  value={selectValue[indx]?.value}
+                  value={selectValue[indx].value}
                 >
                   {dropDown.map((el, i) => {
                     return (
-                      <MenuItem key={i} value={el.value}>
+                      <MenuItem key={`${el.key}-${i}`} value={el.key}>
                         {el.value}
                       </MenuItem>
                     );
@@ -132,22 +137,20 @@ const ComparisonTable = () => {
                 </Select>
               </FormControl>
               {renderActionButton(indx)}
+              {renderTableData(selectValue[indx]?.value)}
             </Grid>
           );
         })}
       </Grid>
     );
-  };
-
-  const renderTableData = () => {};
+  }, [selectValue]);
 
   return (
     <Grid container spacing={2} style={{ alignItems: "center" }}>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
         <Typography variant="h3">Compare Transcription Type</Typography>
       </Grid>
-      {renderDropDown()}
-      {renderTableData()}
+      {renderDropDown}
     </Grid>
   );
 };
