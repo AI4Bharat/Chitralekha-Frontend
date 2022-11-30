@@ -2,12 +2,12 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class CreateNewTaskAPI extends API {
-  constructor(data, timeout = 2000) {
-    super("POST", timeout, false);
-    this.type = C.CREATE_NEW_TASk;
-    this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}`;
+export default class FetchTaskDetailsAPI extends API {
+  constructor(id, timeout = 2000) {
+    super("GET", timeout, false);
+    this.type = C.GET_TASK_DETAILS;
+    this.id = id;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${id}/`;
   }
 
   processResponse(res) {
@@ -21,9 +21,7 @@ export default class CreateNewTaskAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.data;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
