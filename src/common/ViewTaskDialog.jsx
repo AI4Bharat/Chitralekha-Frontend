@@ -154,7 +154,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          onClick={() => submitHandler()}
+          onClick={() => submitHandler(id,transcriptSource)}
         >
           Compare
         </Button>

@@ -62,6 +62,12 @@ const RootRouter = () => {
         <Route
           path="/my-organization/:id"
           element={ProtectedRouteWrapper(
+            <Layout component={<MyOrganization />} />
+          )}
+        />
+        <Route
+          path="/comparison-table/:id"
+          element={ProtectedRouteWrapper(
             <Layout component={<ComparisonTable />} />
           )}
         />

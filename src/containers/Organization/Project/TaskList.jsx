@@ -15,6 +15,8 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
+import { useNavigate } from "react-router-dom";
+import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -22,6 +24,7 @@ const TaskList = () => {
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const apiObj = new FetchTaskListAPI(projectId);
@@ -29,6 +32,15 @@ const TaskList = () => {
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
+
+  const getTranscriptionSourceComparison = (id, source) => {
+    const sourceTypeList = source.map((el)=>{
+      return el.toUpperCase().split(' ').join('_');
+    })
+    console.log(id,sourceTypeList)
+    const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
+    dispatch(APITransport(apiObj));
+  };
 
   const columns = [
     {
@@ -114,12 +126,15 @@ const TaskList = () => {
           style: { height: "30px", fontSize: "16px" },
         }),
         customBodyRender: (value, tableMeta) => {
-          console.log(tableMeta,'tableMeta..');
+          console.log(tableMeta, "tableMeta..");
           return (
             <CustomButton
               sx={{ borderRadius: 2, marginRight: 2 }}
               label="View"
-              onClick={() => {setOpenViewTaskDialog(true); setCurrentTaskDetails(tableMeta.rowData)}}
+              onClick={() => {
+                setOpenViewTaskDialog(true);
+                setCurrentTaskDetails(tableMeta.rowData);
+              }}
             />
           );
         },
@@ -162,7 +177,11 @@ const TaskList = () => {
         <ViewTaskDialog
           open={openViewTaskDialog}
           handleClose={() => setOpenViewTaskDialog(false)}
-          submitHandler={() => {}}
+          submitHandler={(id, source) => {
+            console.log('inside submit handler')
+            getTranscriptionSourceComparison(id, source);
+            // navigate(`/comparison-table/${id}`);
+          }}
           id={currentTaskDetails[0]}
         />
       )}
