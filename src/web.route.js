@@ -62,7 +62,7 @@ const RootRouter = () => {
         <Route
           path="/my-organization/:id"
           element={ProtectedRouteWrapper(
-            <Layout component={<ComparisonTable />} />
+            <Layout component={<MyOrganization />} />
           )}
         />
         <Route
@@ -88,7 +88,15 @@ const RootRouter = () => {
           path="/forget-password/confirm/:key/:token"
           element={<ConfirmForgotPassword />}
         />
+         <Route
+           path="/comparisonTable"
+          element={ProtectedRouteWrapper(
+            <Layout component={<ComparisonTable />}  />
+          )}
+        />
+        
       </Routes>
+      
     </HashRouter>
   );
 };

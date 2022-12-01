@@ -7,6 +7,7 @@ import {
   FormControl,
   InputLabel,
   Card,
+  Button,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -14,6 +15,7 @@ import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { maxHeight } from "@mui/system";
 import DatasetStyle from "../../../styles/Dataset";
+import TaskVideoDialog from "../../../common/TaskVideoDialog";
 
 const ComparisonTable = () => {
   const classes = DatasetStyle();
@@ -36,15 +38,48 @@ const ComparisonTable = () => {
   const dummyData = [
     {
       key: "mg",
-      values: ["Dummy1", "Dummy2", "Dummy3", "Dummy4", "Dummy5","Dummy1", "Dummy2", "Dummy3", "Dummy4", "Dummy5"],
+      values: [
+        "Dummy1",
+        "Dummy2",
+        "Dummy3",
+        "Dummy4",
+        "Dummy5",
+        "Dummy1",
+        "Dummy2",
+        "Dummy3",
+        "Dummy4",
+        "Dummy5",
+      ],
     },
     {
       key: "mu",
-      values: ["Dummy6", "Dummy7", "Dummy8", "Dummy9", "Dummy10","Dummy6", "Dummy7", "Dummy8", "Dummy9", "Dummy10"],
+      values: [
+        "Dummy6",
+        "Dummy7",
+        "Dummy8",
+        "Dummy9",
+        "Dummy10",
+        "Dummy6",
+        "Dummy7",
+        "Dummy8",
+        "Dummy9",
+        "Dummy10",
+      ],
     },
     {
       key: "og",
-      values: ["Dummy11", "Dummy12", "Dummy13", "Dummy14", "Dummy15","Dummy11", "Dummy12", "Dummy13", "Dummy14", "Dummy15"],
+      values: [
+        "Dummy11",
+        "Dummy12",
+        "Dummy13",
+        "Dummy14",
+        "Dummy15",
+        "Dummy11",
+        "Dummy12",
+        "Dummy13",
+        "Dummy14",
+        "Dummy15",
+      ],
     },
   ];
 
@@ -65,16 +100,16 @@ const ComparisonTable = () => {
 
   const renderActionButton = (indx) => {
     return (
-      <Grid item sx={{mt:1}}>
+      <Grid item sx={{ mt: 1 }}>
         <IconButton
-        color="primary"
+          color="primary"
           disabled={dropDown.length <= selectValue.length}
           onClick={() => addType(indx)}
         >
           <AddCircleOutlineIcon />
         </IconButton>
         <IconButton
-        color="error"
+          color="error"
           disabled={selectValue.length === 1}
           onClick={() => deleteType(indx)}
         >
@@ -100,13 +135,19 @@ const ComparisonTable = () => {
   };
 
   const renderTableData = (data) => {
-    console.log(data)
+    console.log(data);
     if (!!data) {
-      const values = (dummyData.filter((el) => el.key === data)).map(el=>el.values)[0];
+      const values = dummyData
+        .filter((el) => el.key === data)
+        .map((el) => el.values)[0];
       return (
-        <div className={classes.tableData} >
+        <div className={classes.tableData}>
           {values.map((value) => {
-            return <Typography  className={classes.Typographyvalue}>{value}</Typography>;
+            return (
+              <Typography className={classes.Typographyvalue}>
+                {value}
+              </Typography>
+            );
           })}
         </div>
       );
@@ -152,11 +193,42 @@ const ComparisonTable = () => {
 
   return (
     <Grid container spacing={2} style={{ alignItems: "center" }}>
-        <Card className={classes.orgCard}>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{mb:4}}>
-        <Typography align="center" variant="h3">Compare Transcription Type</Typography>
-      </Grid >
-      {renderDropDown}
+      <Card className={classes.orgCard}>
+        <TaskVideoDialog />
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
+          <Typography variant="h4">Compare Transcription Type</Typography>
+        </Grid>
+        {renderDropDown}
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          sx={{ mb: 4, mt: 3 }}
+        >
+          <Typography variant="h4">Select Transcription Type</Typography>
+        </Grid>
+        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+          <FormControl fullWidth>
+            <InputLabel id="demo-multi-select-label">Compare with</InputLabel>
+            <Select
+              //key={`multi-${indx}`}
+              labelId="demo-multi-select-label"
+              id="demo-multi-select"
+              label="Compare with"
+              onChange={(e) => handleChange(e)}
+              //value={selectValue[indx].value}
+            >
+              return (<MenuItem>data</MenuItem>
+              );
+            </Select>
+          </FormControl>
+        </Grid>
+        <Button variant="contained" size="large" sx={{ mt: 3 }}>
+          Submit
+        </Button>
       </Card>
     </Grid>
   );
