@@ -34,7 +34,7 @@ const App = (props) => {
         )}
         <div
           className={`${classes.container} main`}
-          style={isDrawer ? { margin: 0, maxWidth: "100%" } : {}}
+          style={isDrawer ? { margin: 0, maxWidth: "100%", height: "100%" } : {}}
         >
           {Backbutton && (
             <BackButton

@@ -1,18 +1,42 @@
 import { Box } from "@mui/material";
-import React from "react";
-import RightPanel from "../../../common/RightPanel";
-import Timeline from "../../../common/Timeline";
-import VideoPanel from "../../../common/VideoPanel";
+import React, { useState } from "react";
+import RightPanel from "./RightPanel";
+import Timeline from "./Timeline";
+import VideoPanel from "./VideoPanel";
 
 const VideoLanding = () => {
+  const [waveform, setWaveform] = useState();
+  const [player, setPlayer] = useState();
+  const [render, setRender] = useState({
+    padding: 2,
+    duration: 10,
+    gridGap: 10,
+    gridNum: 110,
+    beginTime: -5,
+  });
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+
   return (
-    <Box display={"flex"} flexDirection="column" sx={{ mt: 7, height: "100%" }}>
-      <Box display={"flex"} height="calc(100% - 350px)">
+    <Box sx={{ mt: 7 }} height={"calc(100% - 56px)"}>
+      <Box display={"flex"} height="calc(100% - 150px)">
+        <VideoPanel
+          setPlayer={setPlayer}
+          setCurrentTime={setCurrentTime}
+          setPlaying={setPlaying}
+        />
         <RightPanel />
-        <VideoPanel />
       </Box>
-      <Box>
-        <Timeline />
+      <Box height={"150px"} position="relative">
+        <Timeline
+          waveform={waveform}
+          setWaveform={setWaveform}
+          player={player}
+          render={render}
+          setRender={setRender}
+          currentTime={currentTime}
+          playing={playing}
+        />
       </Box>
     </Box>
   );
