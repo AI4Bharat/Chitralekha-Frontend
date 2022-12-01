@@ -18,6 +18,7 @@ import { transcriptSelectSource } from "../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
+import moment from "moment/moment";
 
 const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
   const dispatch = useDispatch();
@@ -60,13 +61,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
             Description:
           </Typography>
           <Typography variant="body1" width={"70%"} textAlign="justify">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+            {taskDetail.description}
           </Typography>
         </Box>
 
@@ -74,7 +69,9 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           <Typography variant="h5" width={"25%"}>
             ETA:
           </Typography>
-          <Typography variant="body1">22/12/2522</Typography>
+          <Typography variant="body1">
+            {moment(taskDetail.eta).format("DD/MM/YYYY")}
+          </Typography>
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>
@@ -103,7 +100,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           </FormControl>
         </Box>
 
-        {transcriptSource.includes("Manually Created") && (
+        {transcriptSource.includes("Manually Uploaded") && (
           <Box display="flex" sx={{ mb: 3 }} alignItems="center">
             <Typography variant="h5" width={"25%"}>
               Upload SRT:
