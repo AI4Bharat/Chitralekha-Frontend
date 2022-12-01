@@ -6,14 +6,17 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Card,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { maxHeight } from "@mui/system";
+import DatasetStyle from "../../../styles/Dataset";
 
 const ComparisonTable = () => {
+  const classes = DatasetStyle();
   const [selectValue, setSelectValue] = useState([{ id: 0, value: "" }]);
   const dropDown = [
     {
@@ -62,14 +65,16 @@ const ComparisonTable = () => {
 
   const renderActionButton = (indx) => {
     return (
-      <Grid item>
+      <Grid item sx={{mt:1}}>
         <IconButton
+        color="primary"
           disabled={dropDown.length <= selectValue.length}
           onClick={() => addType(indx)}
         >
           <AddCircleOutlineIcon />
         </IconButton>
         <IconButton
+        color="error"
           disabled={selectValue.length === 1}
           onClick={() => deleteType(indx)}
         >
@@ -99,9 +104,9 @@ const ComparisonTable = () => {
     if (!!data) {
       const values = (dummyData.filter((el) => el.key === data)).map(el=>el.values)[0];
       return (
-        <div style={{height:'50%',maxHeight:'50%',overflowX:'hidden', overflowY:'scroll'} }>
+        <div className={classes.tableData} >
           {values.map((value) => {
-            return <Typography>{value}</Typography>;
+            return <Typography  className={classes.Typographyvalue}>{value}</Typography>;
           })}
         </div>
       );
@@ -114,7 +119,7 @@ const ComparisonTable = () => {
       <Grid container spacing={2}>
         {selectValue.map((select, indx) => {
           return (
-            <Grid key={indx} item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Grid key={indx} item xs={12} sm={12} md={3} lg={3} xl={3}>
               <FormControl fullWidth>
                 <InputLabel key={indx} id="demo-multi-select-label">
                   Compare with
@@ -147,10 +152,12 @@ const ComparisonTable = () => {
 
   return (
     <Grid container spacing={2} style={{ alignItems: "center" }}>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-        <Typography variant="h3">Compare Transcription Type</Typography>
-      </Grid>
+        <Card className={classes.orgCard}>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{mb:4}}>
+        <Typography align="center" variant="h3">Compare Transcription Type</Typography>
+      </Grid >
       {renderDropDown}
+      </Card>
     </Grid>
   );
 };
