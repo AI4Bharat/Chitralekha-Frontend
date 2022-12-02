@@ -11,6 +11,8 @@ import getProjectMembers from "./Project/FetchProjectMembers";
 import getLanguages from "./Project/FetchLanguages";
 import getTaskList from "./Project/FetchTaskList";
 import getTaskDetails from "./Project/FetchTaskDetails";
+import getTranscriptTypes from "./Project/FetchTranscriptTypes";
+import getVideoDetails from "./Project/FetchVideoDetails";
 
 const rootReducer = {
     apiStatus,
@@ -26,6 +28,8 @@ const rootReducer = {
     getLanguages,
     getTaskList,
     getTaskDetails,
+    getTranscriptTypes,
+    getVideoDetails,
 };
 
 export default rootReducer;

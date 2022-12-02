@@ -17,6 +17,7 @@ import { Box } from "@mui/system";
 import { transcriptSelectSource } from "../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
+import FetchTranscriptTypesAPI from "../redux/actions/api/Project/FetchTranscriptTypes";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import moment from "moment/moment";
 
@@ -34,12 +35,16 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
   };
 
   const taskDetail = useSelector((state) => state.getTaskDetails.data);
+  const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(apiObj));
-  }, []);
 
+    const obj = new FetchTranscriptTypesAPI();
+    dispatch(APITransport(obj));
+  }, []);
+  
   return (
     <Dialog
       fullWidth={true}
@@ -90,10 +95,10 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
               renderValue={(selected) => selected.join(", ")}
               inputProps={{ "aria-label": "Without label" }}
             >
-              {transcriptSelectSource.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  <Checkbox checked={transcriptSource.indexOf(item) > -1} />
-                  <ListItemText primary={item} />
+              {transcriptTypes.map((item, index) => (
+                <MenuItem key={index} value={item.label}>
+                  <Checkbox checked={transcriptSource.indexOf(item.label) > -1} />
+                  <ListItemText primary={item.label} />
                 </MenuItem>
               ))}
             </Select>
