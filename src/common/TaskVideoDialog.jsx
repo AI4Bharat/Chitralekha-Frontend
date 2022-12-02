@@ -12,7 +12,7 @@ import ComparisonTable from "../containers/Organization/Project/ComparisonTable"
 const TaskVideoDialog = (props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { open, handleClose, videoDetails } = props;
+  const {  } = props;
   return (
     <>
       <Grid container spacing={2} align="center"justify="center" >

@@ -18,10 +18,9 @@ import { transcriptSelectSource } from "../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
-import TaskVideoDialog from "../common/TaskVideoDialog";
 import { useNavigate } from 'react-router-dom';
 
-const ViewTaskDialog = ({ open, handleClose, submitHandler, id,taskList }) => {
+const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const [transcriptSource, setTranscriptSource] = useState([]);
@@ -158,12 +157,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id,taskList }) => {
         <Button
           variant="contained"
           sx={{ borderRadius: 2 }}
-          onClick={() => {
-            // setopenTaskVideo(true);
-            //setCurrentVideoDetails();
-            navigate('/comparisonTable');
-           
-          }}
+          onClick={() => submitHandler(id,transcriptSource)}
         >
           Compare
         </Button>

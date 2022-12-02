@@ -11,6 +11,7 @@ import getProjectMembers from "./Project/FetchProjectMembers";
 import getLanguages from "./Project/FetchLanguages";
 import getTaskList from "./Project/FetchTaskList";
 import getTaskDetails from "./Project/FetchTaskDetails";
+import comparsionTable from "./Project/ComparisionTable";
 
 const rootReducer = {
     apiStatus,
@@ -26,6 +27,7 @@ const rootReducer = {
     getLanguages,
     getTaskList,
     getTaskDetails,
+    comparsionTable,
 };
 
 export default rootReducer;

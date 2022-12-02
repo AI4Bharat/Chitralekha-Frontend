@@ -88,10 +88,10 @@ const RootRouter = () => {
           path="/forget-password/confirm/:key/:token"
           element={<ConfirmForgotPassword />}
         />
-         <Route
-           path="/comparisonTable"
+       <Route
+          path="/comparison-table/:id"
           element={ProtectedRouteWrapper(
-            <Layout component={<ComparisonTable />}  />
+            <Layout component={<ComparisonTable />} />
           )}
         />
         
