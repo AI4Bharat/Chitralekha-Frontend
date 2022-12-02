@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import { useNavigate } from "react-router-dom";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
+import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -39,7 +40,18 @@ const TaskList = () => {
     })
     console.log(id,sourceTypeList)
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
-    dispatch(APITransport(apiObj));
+    fetch(apiObj.apiEndPoint(),{
+      method:'post',
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers
+    }).then(async res=>{
+      const rsp_data =await res.json();
+      if(res.ok){
+        dispatch(setComparisonTable(rsp_data.payloads));
+      }else{
+        console.log('failed')
+      }
+    })
   };
 
   const columns = [
@@ -180,7 +192,7 @@ const TaskList = () => {
           submitHandler={(id, source) => {
             console.log('inside submit handler')
             getTranscriptionSourceComparison(id, source);
-            // navigate(`/comparison-table/${id}`);
+            navigate(`/comparison-table/${id}`);
           }}
           id={currentTaskDetails[0]}
         />
