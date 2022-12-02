@@ -13,7 +13,7 @@ import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import { useNavigate } from "react-router-dom";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
@@ -22,12 +22,9 @@ import setComparisonTable from "../../../redux/actions/api/Project/SetComparison
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
-  
-  const navigate = useNavigate();
-
   useEffect(() => {
     const apiObj = new FetchTaskListAPI(projectId);
     dispatch(APITransport(apiObj));
@@ -53,6 +50,16 @@ const TaskList = () => {
         console.log('failed')
       }
     })
+  const viewTaskHandler = (rowData) => {
+    if (
+      rowData[1] === "TRANSCRIPTION_SELECT_SOURCE" ||
+      rowData[1] === "TRANSLATION_SELECT_SOURCE"
+    ) {
+      setOpenViewTaskDialog(true);
+      setCurrentTaskDetails(rowData);
+    } else {
+      navigate("/transcript");
+    }
   };
 
   const columns = [
@@ -139,15 +146,11 @@ const TaskList = () => {
           style: { height: "30px", fontSize: "16px" },
         }),
         customBodyRender: (value, tableMeta) => {
-          console.log(tableMeta, "tableMeta..");
           return (
             <CustomButton
               sx={{ borderRadius: 2, marginRight: 2 }}
               label="View"
-              onClick={() => {
-                setOpenViewTaskDialog(true);
-                setCurrentTaskDetails(tableMeta.rowData);
-              }}
+              onClick={() => viewTaskHandler(tableMeta.rowData)}
             />
           );
         },
@@ -200,6 +203,6 @@ const TaskList = () => {
       )}
     </>
   );
-};
+}}
 
 export default TaskList;
