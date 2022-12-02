@@ -50,7 +50,7 @@ const TaskList = () => {
       if(res.ok){
         dispatch(setComparisonTable(rsp_data.payloads));
       }else{
-        console.log('failed')
+        console.log('failed..')
       }
     })
   };
