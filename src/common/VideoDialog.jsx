@@ -11,7 +11,7 @@ import { Typography } from "@mui/material";
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-
+console.log(videoDetails,"videoDetails")
   return (
     <Dialog
       fullScreen={fullScreen}

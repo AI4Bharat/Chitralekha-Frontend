@@ -18,12 +18,15 @@ import { transcriptSelectSource } from "../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
+import { useNavigate } from 'react-router-dom';
 
 const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
   const dispatch = useDispatch();
-
+  let navigate = useNavigate();
   const [transcriptSource, setTranscriptSource] = useState([]);
   const [file, setFile] = useState();
+  const [openTaskVideo, setopenTaskVideo] = useState(false);
+  const [currentVideoDetails, setCurrentVideoDetails] = useState({});
 
   const handleChange = (event) => {
     const {
@@ -40,6 +43,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
   }, []);
 
   return (
+    <>
     <Dialog
       fullWidth={true}
       maxWidth={"md"}
@@ -146,12 +150,11 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          onClick={() => handleClose()}
+          onClick={() => handleClose(true)}
         >
           Cancel
         </Button>
         <Button
-          autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
           onClick={() => submitHandler(id,transcriptSource)}
@@ -160,6 +163,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
         </Button>
       </DialogActions>
     </Dialog>
+   </>
   );
 };
 

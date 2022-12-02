@@ -203,7 +203,29 @@ const DatasetStyle = makeStyles({
   },
   rootdiv:{
     marginTop:"25px",
-  }
+  },
+  orgCard: {
+    width: "100%",
+    minHeight: "500px",
+    padding: "40px",
+    justifyContent: "center", justifyItems: "center"
+  },
+  tableData:{
+    height:'70%',
+    maxHeight:'70%',
+    overflowX:'hidden', 
+    overflowY:'scroll',
+    marginTop:"15px",
+  },
+  Typographyvalue:{ "&:nth-child(odd)": {
+      backgroundColor: "#FFE6E6",
+    },
+    "&:nth-child(even)": {
+      backgroundColor: "#FFCCCC",
+    }},
+
+
+
 })
 
 export default DatasetStyle

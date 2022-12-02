@@ -25,6 +25,7 @@ const TaskList = () => {
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
+  
   const navigate = useNavigate();
 
   useEffect(() => {
