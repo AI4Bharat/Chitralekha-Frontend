@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -7,10 +7,26 @@ import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
+import APITransport from "../redux/actions/apitransport/apitransport";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    const apiObj = new FetchVideoDetailsAPI(
+      videoDetails.url,
+      videoDetails.language,
+      videoDetails.project_id,
+      videoDetails.audio_only
+    );
+    dispatch(APITransport(apiObj));
+  }, []);
+
+  const video = useSelector((state) => state.getVideoDetails.data);
 
   return (
     <Dialog
@@ -26,12 +42,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <video
-          controls
-          src={
-            "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
-          }
-        />
+        <video controls src={video.direct_video_url} />
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
         <Typography variant="body1" style={{ marginRight: "auto" }}>
