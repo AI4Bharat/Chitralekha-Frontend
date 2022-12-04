@@ -19,11 +19,8 @@ import CreateNewProject from "./containers/Organization/Project/CreateNewProject
 import ChangePassword from "./containers/UserManagement/ChangePassword";
 import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import ForgotPassword from "./containers/UserManagement/ForgotPassword";
-<<<<<<< HEAD
 import ComparisonTable from "./containers/Organization/Project/ComparisonTable";
-=======
 import VideoLanding from "./containers/Organization/Video/VideoLanding";
->>>>>>> develop
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -92,7 +89,6 @@ const RootRouter = () => {
           path="/forget-password/confirm/:key/:token"
           element={<ConfirmForgotPassword />}
         />
-<<<<<<< HEAD
        <Route
           path="/comparison-table/:id"
           element={ProtectedRouteWrapper(
@@ -100,14 +96,12 @@ const RootRouter = () => {
           )}
         />
         
-=======
         <Route
           path="/transcript"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true}/>
           )}
         />
->>>>>>> develop
       </Routes>
       
     </HashRouter>

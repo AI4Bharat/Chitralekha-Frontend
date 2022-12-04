@@ -18,11 +18,8 @@ import { transcriptSelectSource } from "../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
-<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
-=======
 import moment from "moment/moment";
->>>>>>> develop
 
 const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
   const dispatch = useDispatch();
