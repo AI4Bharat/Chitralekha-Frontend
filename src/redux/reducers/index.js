@@ -13,6 +13,8 @@ import getTaskList from "./Project/FetchTaskList";
 import getTaskDetails from "./Project/FetchTaskDetails";
 import setComparisonTable from "./Project/SetComparisonTableData";
 // import comparsionTable from "./Project/ComparisionTable";
+import getTranscriptTypes from "./Project/FetchTranscriptTypes";
+import getVideoDetails from "./Project/FetchVideoDetails";
 
 const rootReducer = {
     apiStatus,
@@ -28,8 +30,10 @@ const rootReducer = {
     getLanguages,
     getTaskList,
     getTaskDetails,
-    setComparisonTable
+    setComparisonTable,
     // comparsionTable,
+    getTranscriptTypes,
+    getVideoDetails,
 };
 
 export default rootReducer;
