@@ -85,7 +85,7 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
 
         <Box display="flex" sx={{ mb: 3 }}>
           <Typography variant="h5" width={"25%"}>
-            Transcript Select Source:
+            Select Transcription Source:
           </Typography>
           <FormControl style={{ width: "70%" }}>
             <Select
