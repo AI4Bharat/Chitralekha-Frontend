@@ -15,7 +15,6 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
-import { useNavigate } from "react-router-dom";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 
