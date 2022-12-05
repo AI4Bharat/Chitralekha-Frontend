@@ -18,6 +18,7 @@ import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import { useNavigate } from "react-router-dom";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
+import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -28,6 +29,8 @@ const TaskList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    localStorage.removeItem("sourceTypeList");
+    localStorage.removeItem("sourceId");
     const apiObj = new FetchTaskListAPI(projectId);
     dispatch(APITransport(apiObj));
   }, []);
@@ -35,23 +38,23 @@ const TaskList = () => {
   const taskList = useSelector((state) => state.getTaskList.data);
 
   const getTranscriptionSourceComparison = (id, source) => {
-    const sourceTypeList = source.map((el)=>{
-      return el.toUpperCase().split(' ').join('_');
-    })
-    console.log(id,sourceTypeList)
+    const sourceTypeList = source.map((el) => {
+      return el.toUpperCase().split(" ").join("_");
+    });
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
-    fetch(apiObj.apiEndPoint(),{
-      method:'post',
+    localStorage.setItem("sourceTypeList", JSON.stringify(sourceTypeList));
+    fetch(apiObj.apiEndPoint(), {
+      method: "post",
       body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers
-    }).then(async res=>{
-      const rsp_data =await res.json();
-      if(res.ok){
-        dispatch(setComparisonTable(rsp_data))
-      }else{
-        console.log('failed')
+      headers: apiObj.getHeaders().headers,
+    }).then(async (res) => {
+      const rsp_data = await res.json();
+      if (res.ok) {
+        dispatch(setComparisonTable(rsp_data));
+      } else {
+        console.log("failed");
       }
-    })
+    });
   };
 
   const columns = [
@@ -138,7 +141,6 @@ const TaskList = () => {
           style: { height: "30px", fontSize: "16px" },
         }),
         customBodyRender: (value, tableMeta) => {
-          console.log(tableMeta, "tableMeta..");
           return (
             <CustomButton
               sx={{ borderRadius: 2, marginRight: 2 }}
@@ -190,8 +192,9 @@ const TaskList = () => {
           open={openViewTaskDialog}
           handleClose={() => setOpenViewTaskDialog(false)}
           submitHandler={(id, source) => {
-            console.log('inside submit handler')
-            getTranscriptionSourceComparison(id, source);
+            dispatch(clearComparisonTable());
+            localStorage.setItem("sourceId", id);
+            if (source.length) getTranscriptionSourceComparison(id, source);
             navigate(`/comparison-table/${id}`);
           }}
           id={currentTaskDetails[0]}

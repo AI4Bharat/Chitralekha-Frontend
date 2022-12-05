@@ -21,88 +21,55 @@ import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams } from "react-router-dom";
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
+import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
+import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 
 const ComparisonTable = (id) => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
   const { projectId } = useParams();
-  
-  const taskList = useSelector((state) => state.getTaskList.data);
 
-  const [selectValue, setSelectValue] = useState([{ id: 0, value: "" }]);
-  const [selectTranscriptionValue, setSelectTranscriptionValue] = useState([{ id: 0, value: "" }]);
+  const taskList = useSelector((state) => state.getTaskList.data);
+  console.log(taskList);
+  const comparsionData = useSelector((state) => state.setComparisonTable.data);
+  const getComparisonData = () => {
+    if (Object.keys(comparsionData).length) {
+      return Object.keys(comparsionData).map((value, id) => {
+        return { id, value };
+      });
+    }
+    return [{ id: 0, value: "" }];
+  };
+  const [selectValue, setSelectValue] = useState(getComparisonData());
+  const [selectTranscriptionValue, setSelectTranscriptionValue] = useState([
+    { id: 0, value: "" },
+  ]);
+
+  useEffect(() => {
+    setSelectValue(getComparisonData());
+  }, [comparsionData]);
 
   const dropDown = [
     {
-      key: "mg",
+      key: "MACHINE_GENERATED",
       value: "Machine Generated",
     },
     {
-      key: "og",
+      key: "ORIGINAL_SOURCE",
       value: "Original Source",
     },
     {
-      key: "mu",
-      value: "Manually Uploaded",
+      key: "MANUALLY_CREATED",
+      value: "Manually Created",
     },
   ];
 
-  const dummyData = [
-    {
-      key: "mg",
-      values: [
-        "Dummy1",
-        "Dummy2",
-        "Dummy3",
-        "Dummy4",
-        "Dummy5",
-        "Dummy1",
-        "Dummy2",
-        "Dummy3",
-        "Dummy4",
-        "Dummy5",
-      ],
-    },
-    {
-      key: "mu",
-      values: [
-        "Dummy6",
-        "Dummy7",
-        "Dummy8",
-        "Dummy9",
-        "Dummy10",
-        "Dummy6",
-        "Dummy7",
-        "Dummy8",
-        "Dummy9",
-        "Dummy10",
-      ],
-    },
-    {
-      key: "og",
-      values: [
-        "Dummy11",
-        "Dummy12",
-        "Dummy13",
-        "Dummy14",
-        "Dummy15",
-        "Dummy11",
-        "Dummy12",
-        "Dummy13",
-        "Dummy14",
-        "Dummy15",
-      ],
-    },
-  ];
-
-  let projectid ;
+  let projectid;
   let videoname;
   useEffect(() => {
     taskList?.map((element, index) => {
-      projectid= element.id; 
-      videoname= element.video_name
-
-
+      projectid = element.id;
+      videoname = element.video_name;
     });
   }, [taskList]);
 
@@ -111,20 +78,38 @@ const ComparisonTable = (id) => {
     dispatch(APITransport(apiObj));
   }, []);
 
-const handleSubmit = () =>{
- const data ={
-  type:selectTranscriptionValue,
-  payload:"data"
- }
+  const handleSubmit = () => {
+    const data = {
+      type: selectTranscriptionValue,
+      payload: "data",
+    };
 
-  const projectObj = new ComparisionTableAPI(projectid,data);
-  dispatch(APITransport(projectObj));
-}
- 
+    const projectObj = new ComparisionTableAPI(projectid, data);
+    dispatch(APITransport(projectObj));
+  };
 
+  const postCompareTranscriptionSource = (id, sourceTypeList) => {
+    const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
+    fetch(apiObj.apiEndPoint(), {
+      method: "post",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    }).then(async (res) => {
+      const rsp_data = await res.json();
+      if (res.ok) {
+        dispatch(setComparisonTable(rsp_data));
+      } else {
+        console.log("failed");
+      }
+    });
+  };
 
-
-
+  useEffect(() => {
+    const sourceTypeList = JSON.parse(localStorage.getItem("sourceTypeList"));
+    const id = localStorage.getItem("sourceId");
+    if (!!sourceTypeList && sourceTypeList.length)
+      postCompareTranscriptionSource(id, sourceTypeList);
+  }, []);
 
   const addType = (indx) => {
     setSelectValue((prev) => {
@@ -170,6 +155,10 @@ const handleSubmit = () =>{
       const result = JSON.parse(JSON.stringify(Object.assign([], prev)));
       result.forEach((res, i) => {
         if (i === indx) {
+          const id = JSON.parse(
+            JSON.stringify(localStorage.getItem("sourceId"))
+          );
+          postCompareTranscriptionSource(id, [value]);
           result[i].value = value;
         }
       });
@@ -192,19 +181,24 @@ const handleSubmit = () =>{
   };
 
   const renderTableData = (data) => {
-    console.log(data);
     if (!!data) {
-      const values = dummyData
-        .filter((el) => el.key === data)
-        .map((el) => el.values)[0];
+      const keys = Object.keys(comparsionData);
+      let renderResult = [];
+      for (let i = 0; i < keys.length; i++) {
+        if (keys[i] === data) {
+          renderResult.push(comparsionData[keys[i]]);
+        }
+      }
+      renderResult = renderResult.flat();
       return (
         <div className={classes.tableData}>
-          {values.map((value) => {
-            return (
-              <Typography className={classes.Typographyvalue}>
-                {value}
-              </Typography>
-            );
+          {renderResult.map((el, i) => {
+            if (el.text)
+              return (
+                <Typography className={classes.Typographyvalue}>
+                  {el.text}
+                </Typography>
+              );
           })}
         </div>
       );
@@ -248,7 +242,6 @@ const handleSubmit = () =>{
     );
   }, [selectValue]);
 
-
   const renderTranscriptionType = useMemo(() => {
     return (
       <Grid container spacing={2}>
@@ -257,7 +250,7 @@ const handleSubmit = () =>{
             <Grid key={indx} item xs={12} sm={12} md={3} lg={3} xl={3}>
               <FormControl fullWidth>
                 <InputLabel key={indx} id="demo-multi-select-label">
-                Transcription Type
+                  Transcription Type
                 </InputLabel>
                 <Select
                   key={`multi-${indx}`}
@@ -286,25 +279,36 @@ const handleSubmit = () =>{
   return (
     <Grid container spacing={2} style={{ alignItems: "center" }}>
       <Card className={classes.orgCard}>
-        <TaskVideoDialog  videoName={videoname}/>
+        <TaskVideoDialog videoName={videoname} />
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
           <Typography variant="h4">Compare Transcription Type</Typography>
         </Grid>
         {renderDropDown}
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={12}
-          lg={12}
-          xl={12}
-          sx={{ mb: 4, mt: 3 }}
+        {Object.keys(comparsionData).length ? (
+          <>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              xl={12}
+              sx={{ mb: 4, mt: 3 }}
+            >
+              <Typography variant="h4">Select Transcription Type</Typography>
+            </Grid>
+            {renderTranscriptionType}
+          </>
+        ) : (
+          <></>
+        )}
+
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          size="large"
+          sx={{ mt: 3 }}
         >
-          <Typography variant="h4">Select Transcription Type</Typography>
-        </Grid>
-        {renderTranscriptionType}
-        
-        <Button  onClick={handleSubmit} variant="contained" size="large" sx={{ mt: 3 }}>
           Submit
         </Button>
       </Card>

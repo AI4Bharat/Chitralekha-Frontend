@@ -1,41 +1,39 @@
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from "@mui/styles";
 
 const DatasetStyle = makeStyles({
-
   Projectsettingtextarea: {
     width: "100%",
     fontSize: "1.4rem",
     fontFamily: "Roboto",
     fontWeight: 10,
     lineHeight: 1.2,
-
   },
   workspaceTables: {
-    marginTop: "20px"
+    marginTop: "20px",
   },
   projectButton: {
     width: "100%",
     textDecoration: "none",
   },
   annotatorsButton: {
-    width: "100%"
+    width: "100%",
   },
   managersButton: {
-    width: "100%"
+    width: "100%",
   },
   settingsButton: {
     width: "100%",
-    backgroundColor: "red"
+    backgroundColor: "red",
   },
   workspaceCard: {
     width: "100%",
     minHeight: "500px",
     padding: "40px",
-    justifyContent: "center", justifyItems: "center"
+    justifyContent: "center",
+    justifyItems: "center",
   },
   projectsettingGrid: {
     margin: "20px 0px 10px 0px",
-
   },
   filterToolbarContainer: {
     // alignItems : 'center',
@@ -105,7 +103,7 @@ const DatasetStyle = makeStyles({
     },
   },
   projectCardContainer: {
-    cursor: 'pointer'
+    cursor: "pointer",
   },
   modelname: {
     boxSizing: "border-box",
@@ -113,7 +111,7 @@ const DatasetStyle = makeStyles({
     height: "64px",
     backgroundColor: "white",
     maxWidth: "90%",
-    minWidth: '90%',
+    minWidth: "90%",
     width: "auto",
     display: "flex",
     alignItems: "center",
@@ -126,64 +124,61 @@ const DatasetStyle = makeStyles({
     alignItems: "center",
     paddingBottom: "5vh",
     // justifyContent: "space-around",
-    flexGrow: 0
+    flexGrow: 0,
   },
   projectCardContainer1: {
     backgroundColor: "#2A61AD",
     height: "100%",
-    width: "100%"
-
+    width: "100%",
   },
   projectCardContainer2: {
     backgroundColor: "#119DA4",
     height: "100%",
-    width: "100%"
+    width: "100%",
   },
   userCardContainer: {
     direction: "column",
     alignItems: "center",
     height: "100%",
-    placeContent: "center"
+    placeContent: "center",
   },
   dashboardContentContainer: {
     alignItems: "left",
     justifyContent: "space-around",
     minHeight: "70vh",
-    borderLeft: '1px solid lightgray',
-    paddingLeft: '5%'
+    borderLeft: "1px solid lightgray",
+    paddingLeft: "5%",
   },
   link: {
-    textDecoration: "none"
+    textDecoration: "none",
   },
   progress: {
-    position: 'relative',
-    top: '40%',
-    left: '46%'
-
+    position: "relative",
+    top: "40%",
+    left: "46%",
   },
   progressDiv: {
-    position: 'fixed',
+    position: "fixed",
     // backgroundColor: 'rgba(0.5, 0, 0, 0.5)',
     zIndex: 1000,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     top: 0,
     left: 0,
-    opacity: 1
+    opacity: 1,
   },
   search: {
-   // position: "relative",
+    // position: "relative",
     borderRadius: "24px",
     backgroundColor: "#F3F3F3",
     marginLeft: "0px",
     width: "300px",
     textAlign: "left",
-   // float: "right",
-   marginBottom:"30px",
-   position: "absolute",
-   right: "200px",
-   top:"105px",
-  
+    // float: "right",
+    marginBottom: "30px",
+    position: "absolute",
+    right: "200px",
+    top: "105px",
   },
   searchIcon: {
     // padding: theme.spacing(0, 2),
@@ -201,31 +196,29 @@ const DatasetStyle = makeStyles({
     height: "200px",
     position: "absolute",
   },
-  rootdiv:{
-    marginTop:"25px",
+  rootdiv: {
+    marginTop: "25px",
   },
   orgCard: {
     width: "100%",
     minHeight: "500px",
     padding: "40px",
-    justifyContent: "center", justifyItems: "center"
+    justifyContent: "center",
+    justifyItems: "center",
   },
-  tableData:{
-    height:'70%',
-    maxHeight:'70%',
-    overflowX:'hidden', 
-    overflowY:'scroll',
-    marginTop:"15px",
+  tableData: {
+    height: "500px",
+    overflowY: "scroll",
+    marginTop: "15px",
   },
-  Typographyvalue:{ "&:nth-child(odd)": {
+  Typographyvalue: {
+    "&:nth-child(odd)": {
       backgroundColor: "#FFE6E6",
     },
     "&:nth-child(even)": {
       backgroundColor: "#FFCCCC",
-    }},
+    },
+  },
+});
 
-
-
-})
-
-export default DatasetStyle
+export default DatasetStyle;

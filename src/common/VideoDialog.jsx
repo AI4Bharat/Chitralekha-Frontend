@@ -27,7 +27,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   }, []);
 
   const video = useSelector((state) => state.getVideoDetails.data);
-
+  console.log('direct' ,video.direct_video_url);
   return (
     <Dialog
       fullScreen={fullScreen}

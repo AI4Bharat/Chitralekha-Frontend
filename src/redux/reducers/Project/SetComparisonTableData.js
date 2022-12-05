@@ -1,5 +1,4 @@
 import C from "../../constants";
-import { parseSubtitles } from "../../../utils/utils";
 
 const initialState = {
   data: {},
@@ -8,18 +7,21 @@ const initialState = {
 const setComparisonTable = (state = initialState, action) => {
   switch (action.type) {
     case C.COMPARE_TRANSCRIPTION_SOURCE:
-      const keyList = Object.keys(action.payload);
-      const valueList = Object.values(action.payload);
-      let data = {};
-      for (let i = 0; i < keyList.length; i++) {
-        parseSubtitles(valueList[i].output).then((sub) => {
-          data[keyList[i]] = sub;
-        });
+      const { payloads } = action.payload;
+      const keyPayloads = Object.keys(payloads);
+      let { data } = JSON.parse(JSON.stringify(Object.assign({}, state)));
+      for (let i = 0; i < keyPayloads.length; i++) {
+        const key = keyPayloads[i];
+        data[key] = payloads[key]["payload"];
       }
-
       return {
         ...state,
         data,
+      };
+
+    case C.CLEAR_COMPARISON_TABLE:
+      return {
+        ...initialState,
       };
     default:
       return {
