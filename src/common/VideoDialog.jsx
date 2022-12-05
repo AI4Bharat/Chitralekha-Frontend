@@ -10,11 +10,14 @@ import { Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
+import { Box } from "@mui/system";
+import ProjectStyle from "../styles/ProjectStyle";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const classes = ProjectStyle();
 
   useEffect(() => {
     const apiObj = new FetchVideoDetailsAPI(
@@ -27,7 +30,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   }, []);
 
   const video = useSelector((state) => state.getVideoDetails.data);
-  console.log('direct' ,video.direct_video_url);
+
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -42,7 +45,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <video controls src={video.direct_video_url} />
+        <Box className={classes.videoBox}>
+          <div className={classes.backlight}></div>
+          <video controls src={video.direct_video_url} className={classes.video}/>
+        </Box>
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
         <Typography variant="body1" style={{ marginRight: "auto" }}>

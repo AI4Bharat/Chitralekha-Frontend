@@ -88,6 +88,7 @@ const Project = () => {
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
   const [videoLink, setVideoLink] = useState("");
   const [isAudio, setIsAudio] = useState(false);
+  const [lang, setLang] = useState("");
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
@@ -112,8 +113,8 @@ const Project = () => {
     getProjectVideoList();
   }, []);
 
-  const addNewProjectHandler = () => {
-    const apiObj = new CreateNewVideoAPI(videoLink, isAudio);
+  const addNewVideoHandler = () => {
+    const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
     dispatch(APITransport(apiObj));
     setCreateVideoDialog(false);
     setVideoLink("");
@@ -199,7 +200,7 @@ const Project = () => {
             <Button
               className={classes.projectButton}
               label={"Add project members"}
-              onClick={() => {}}
+              onClick={() => { }}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
@@ -221,7 +222,7 @@ const Project = () => {
             <Button
               className={classes.projectButton}
               label={"Add project managers"}
-              onClick={() => {}}
+              onClick={() => { }}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <UserList data={data} />
@@ -242,7 +243,9 @@ const Project = () => {
           setVideoLink={setVideoLink}
           isAudio={isAudio}
           setIsAudio={setIsAudio}
-          addBtnClickHandler={addNewProjectHandler}
+          addBtnClickHandler={addNewVideoHandler}
+          lang={lang}
+          setLang={setLang}
         />
       )}
     </Grid>

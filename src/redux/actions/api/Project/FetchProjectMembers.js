@@ -3,13 +3,14 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchProjectMembersAPI extends API {
-  constructor(id, timeout = 2000) {
+  constructor(id, taskType, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_PROJECT_MEMBERS;
     this.id = id;
+    this.taskType = taskType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.project
-    }${id}/users/`;
+    }${id}/users?taskType=${taskType}`;
   }
 
   processResponse(res) {
