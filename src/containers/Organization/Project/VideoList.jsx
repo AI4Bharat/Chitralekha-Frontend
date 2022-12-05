@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
@@ -187,6 +187,7 @@ const VideoList = ({ data }) => {
           open={openCreateTaskDialog}
           handleUserDialogClose={() => setOpenCreateTaskDialog(false)}
           createTaskHandler={createTaskHandler}
+          videoDetails={currentVideoDetails}
         />
       )}
     </>

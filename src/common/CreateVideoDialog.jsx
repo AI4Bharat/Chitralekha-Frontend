@@ -6,11 +6,17 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
+  InputLabel,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import FetchLanguagesAPI from "../redux/actions/api/Project/FetchLanguages";
+import APITransport from "../redux/actions/apitransport/apitransport";
 
 const CreateVideoDialog = ({
   open,
@@ -20,7 +26,18 @@ const CreateVideoDialog = ({
   setVideoLink,
   isAudio,
   setIsAudio,
+  lang,
+  setLang,
 }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const apiObj = new FetchLanguagesAPI();
+    dispatch(APITransport(apiObj));
+  }, []);
+
+  const languages = useSelector((state) => state.getLanguages.data.language);
+console.log(languages,"languages");
   return (
     <Dialog
       fullWidth={true}
@@ -51,6 +68,26 @@ const CreateVideoDialog = ({
           </RadioGroup>
         </FormControl>
 
+        <FormControl fullWidth sx={{ mt: 3 }}>
+          <InputLabel id="select-Language">Select Language</InputLabel>
+          <Select
+            fullWidth
+            labelId="select-Language"
+            label="Select Language"
+            value={lang}
+            onChange={(event) => setLang(event.target.value)}
+            style={{ zIndex: "0" }}
+            inputProps={{ "aria-label": "Without label" }}
+          >
+            {languages?.map((item, index) => (
+              <MenuItem key={index} value={item}>
+                {item}
+              </MenuItem>
+            ))}
+
+          </Select>
+        </FormControl>
+
         <TextField
           label={"Enter Video Link from Youtube or Google Drive Here"}
           fullWidth
@@ -58,7 +95,7 @@ const CreateVideoDialog = ({
           rows={4}
           value={videoLink}
           onChange={(event) => setVideoLink(event.target.value)}
-          sx={{ mt  : 3, mb: 3 }}
+          sx={{ mt: 3, mb: 3 }}
         />
       </DialogContent>
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
@@ -72,7 +109,7 @@ const CreateVideoDialog = ({
           onClick={() => addBtnClickHandler()}
           disabled={!videoLink}
         >
-          Create 
+          Create
         </Button>
       </DialogActions>
     </Dialog>

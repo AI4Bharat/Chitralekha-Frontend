@@ -11,11 +11,9 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useEffect, useState } from "react";
-import { tasks } from "../utils/utils";
 import { useParams } from "react-router-dom";
 
 //APIs
@@ -25,11 +23,14 @@ import APITransport from "../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
 import ProjectStyle from "../styles/ProjectStyle";
 import moment from "moment";
+import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
+import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
 
 const CreateTaskDialog = ({
   open,
   handleUserDialogClose,
   createTaskHandler,
+  videoDetails,
 }) => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -37,6 +38,8 @@ const CreateTaskDialog = ({
 
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
   const languages = useSelector((state) => state.getLanguages.data.language);
+  const tasklist = useSelector((state) => state.getTaskTypes.data);
+  const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
 
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
@@ -44,13 +47,15 @@ const CreateTaskDialog = ({
   const [language, setLanguage] = useState("");
   const [priority, setPriority] = useState("");
   const [date, setDate] = useState(moment().format());
+  const [allowedTaskType, setAllowedTaskType] = useState("");
+  const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
 
   useEffect(() => {
-    const obj = new FetchProjectMembersAPI(projectId);
-    dispatch(APITransport(obj));
-
     const apiObj = new FetchLanguageAPI();
     dispatch(APITransport(apiObj));
+
+    const taskObj = new FetchTaskTypeAPI();
+    dispatch(APITransport(taskObj));
   }, []);
 
   const submitHandler = () => {
@@ -60,6 +65,21 @@ const CreateTaskDialog = ({
     };
     createTaskHandler(obj);
   };
+
+  const selectTaskTypeHandler = (event) => {  
+    setTaskType(event.target.value);
+    setShowAllowedTaskList(true);
+
+    const allowedTaskObj = new FetchAllowedTasksAPI(videoDetails.id, event.target.value);
+    dispatch(APITransport(allowedTaskObj));
+  }
+
+  const selectAllowedTaskHandler = (value) => {
+    setAllowedTaskType(value);
+
+    const obj = new FetchProjectMembersAPI(projectId, value);
+    dispatch(APITransport(obj));
+  }
 
   return (
     <Dialog
@@ -79,24 +99,49 @@ const CreateTaskDialog = ({
         >
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
-              <InputLabel id="select-role">Select Role</InputLabel>
+              <InputLabel id="select-task">Select Task</InputLabel>
               <Select
-                labelId="select-role"
-                label="Select Role"
+                labelId="select-task"
+                label="Select Task"
                 fullWidth
                 value={taskType}
-                onChange={(event) => setTaskType(event.target.value)}
+                onChange={(event) => selectTaskTypeHandler(event)}
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
               >
-                {tasks.map((item, index) => (
-                  <MenuItem key={index} value={item.type}>
+                {tasklist.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
                     {item.label}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Box>
+
+          {
+            showAllowedTaskList && (
+              <Box width={"100%"} sx={{ mt: 3 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="select-allowed-task">Select Allowed Task</InputLabel>
+                  <Select
+                    labelId="select-allowed-task"
+                    label="Select Allowed Task"
+                    fullWidth
+                    value={allowedTaskType}
+                    onChange={(event) => selectAllowedTaskHandler(event.target.value)}
+                    style={{ zIndex: "0" }}
+                    inputProps={{ "aria-label": "Without label" }}
+                  >
+                    {allowedTasklist.map((item, index) => (
+                      <MenuItem key={index} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            )
+          }
 
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
@@ -130,33 +175,28 @@ const CreateTaskDialog = ({
             />
           </Box>
 
-          {(taskType === "TRANSLATION_SELECT_SOURCE" ||
-            taskType === "TRANSLATION_EDIT" ||
-            taskType === "TRANSLATION_REVIEW") && (
-            <Box width={"100%"} sx={{ mt: 3 }}>
-              <FormControl fullWidth>
-                <InputLabel id="select-lang">Select Language</InputLabel>
-                <Typography gutterBottom component="div" label="Required">
-                  Select Language:
-                </Typography>
-                <Select
-                  fullWidth
-                  labelId="select-lang"
-                  label="Select Language"
-                  value={language}
-                  onChange={(event) => setLanguage(event.target.value)}
-                  style={{ zIndex: "0" }}
-                  inputProps={{ "aria-label": "Without label" }}
-                >
-                  {languages?.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          )}
+          {(taskType === "TRANSLATION") && (
+              <Box width={"100%"} sx={{ mt: 3 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="select-lang">Select Language</InputLabel>
+                  <Select
+                    fullWidth
+                    labelId="select-lang"
+                    label="Select Language"
+                    value={language}
+                    onChange={(event) => setLanguage(event.target.value)}
+                    style={{ zIndex: "0" }}
+                    inputProps={{ "aria-label": "Without label" }}
+                  >
+                    {languages?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
 
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
@@ -185,7 +225,7 @@ const CreateTaskDialog = ({
 
           <Box width={"100%"} sx={{ mt: 3 }}>
             <DatePicker
-            label="ETA"
+              label="ETA"
               inputFormat="DD/MM/YYYY"
               value={date}
               onChange={(newValue) => setDate(newValue)}

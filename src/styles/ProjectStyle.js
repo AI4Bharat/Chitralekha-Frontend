@@ -26,7 +26,6 @@ const ProjectStyle = makeStyles({
     zIndex: "1",
     width: "100%",
     height: "100%",
-    zIndex: "1",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -168,6 +167,31 @@ const ProjectStyle = makeStyles({
     resize: "none",
     fontFamily: "Roboto, sans-serif",
     width: "75%",
+  },
+
+  videoBox: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
+    position: "relative",
+    flexDirection: "column",
+  },
+
+  backlight: {
+    position: "absolute",
+    zIndex: 9,
+    inset: 0,
+    width: "100%",
+    height: "100%"
+  },
+
+  video: {
+    position: "relative", 
+    maxWidth: "100%", 
+    maxHeight: "90%",
+    height: "100vh",
   }
 });
 

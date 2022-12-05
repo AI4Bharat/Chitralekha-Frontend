@@ -2,16 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class CreateNewVideoAPI extends API {
-  constructor(url, isAudio, projectId, language, timeout = 2000) {
+export default class FetchAllowedTasksAPI extends API {
+  constructor(videoId, taskType, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.CREATE_NEW_VIDEO;
-    this.url = url;
-    this.isAudio = isAudio;
-    this.projectId = projectId;
-    this.projectId = projectId;
-    this.language = language;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.video}?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}`;
+    this.type = C.GET_ALLOWED_TASK;
+    this.videoId = videoId;
+    this.taskType = taskType;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}get_allowed_task/?video_id=${videoId}&type=${taskType}`;
   }
 
   processResponse(res) {

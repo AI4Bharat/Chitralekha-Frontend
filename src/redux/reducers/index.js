@@ -15,6 +15,8 @@ import setComparisonTable from "./Project/SetComparisonTableData";
 // import comparsionTable from "./Project/ComparisionTable";
 import getTranscriptTypes from "./Project/FetchTranscriptTypes";
 import getVideoDetails from "./Project/FetchVideoDetails";
+import getTaskTypes from "./Project/FetchTaskType";
+import getAllowedTasks from "./Project/FetchAllowedTask";
 
 const rootReducer = {
     apiStatus,
@@ -34,6 +36,8 @@ const rootReducer = {
     // comparsionTable,
     getTranscriptTypes,
     getVideoDetails,
+    getTaskTypes,
+    getAllowedTasks,
 };
 
 export default rootReducer;
