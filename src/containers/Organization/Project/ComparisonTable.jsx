@@ -135,7 +135,7 @@ const ComparisonTable = () => {
       if (res.ok) {
         dispatch(setComparisonTable(rsp_data));
       } else {
-        console.log("failed");
+        console.log("failed..");
       }
     });
   };
