@@ -97,7 +97,7 @@ const RootRouter = () => {
         />
         
         <Route
-          path="/transcript"
+          path="/:taskId/transcript"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true}/>
           )}
