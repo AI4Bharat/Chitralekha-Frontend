@@ -127,11 +127,11 @@ const Project = () => {
         <Typography variant="h2" gutterBottom component="div">
           Title: {projectDetails.title}
         </Typography>
-
+{/* 
         <Typography variant="body1" gutterBottom component="div">
           Created by:{" "}
           {`${projectDetails.created_by?.first_name} ${projectDetails.created_by?.last_name}`}
-        </Typography>
+        </Typography> */}
 
         <Box>
           <Tabs
@@ -142,8 +142,8 @@ const Project = () => {
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Task"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {/* <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
+            {/* <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
           </Tabs>
         </Box>
 

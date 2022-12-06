@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import FetchLanguagesAPI from "../redux/actions/api/Project/FetchLanguages";
+import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
 import APITransport from "../redux/actions/apitransport/apitransport";
 
 const CreateVideoDialog = ({
@@ -32,12 +32,12 @@ const CreateVideoDialog = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const apiObj = new FetchLanguagesAPI();
-    dispatch(APITransport(apiObj));
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
   }, []);
 
-  const languages = useSelector((state) => state.getLanguages.data.language);
-console.log(languages,"languages");
+  const supportedLanguages = useSelector((state) => state.getSupportedLanguages.data);
+
   return (
     <Dialog
       fullWidth={true}
@@ -79,9 +79,9 @@ console.log(languages,"languages");
             style={{ zIndex: "0" }}
             inputProps={{ "aria-label": "Without label" }}
           >
-            {languages?.map((item, index) => (
-              <MenuItem key={index} value={item}>
-                {item}
+            {supportedLanguages?.map((item, index) => (
+              <MenuItem key={index} value={item.value}>
+                {item.label}
               </MenuItem>
             ))}
 

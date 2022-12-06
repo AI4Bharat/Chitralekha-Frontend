@@ -20,15 +20,21 @@ import TaskVideoDialog from "../../../common/TaskVideoDialog";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
+<<<<<<< HEAD
 import Spinner from "../../../common/Spinner";
+=======
+import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
+import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
+>>>>>>> develop
 
-const ComparisonTable = (id) => {
+const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
+<<<<<<< HEAD
   const [loading, setLoading] = useState(false);
   const { projectId } = useParams();
 console.log(loading,"loadingloading")
@@ -44,6 +50,22 @@ useEffect(()=>{
     setLoading(false);
   }
 },[comparsionData])
+=======
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [selectedTranscriptType, setSelectTranscriptType] = useState("");
+
+  const taskList = useSelector((state) => state.getTaskList.data);
+  const comparsionData = useSelector((state) => state.setComparisonTable.data);
+  const taskDetails = useSelector((state) => state.getTaskDetails.data);
+  const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
+
+  useEffect(() => {
+    const obj = new FetchTaskDetailsAPI(id)
+    dispatch(APITransport(obj));
+  }, [])
+>>>>>>> develop
 
   const getComparisonData = () => {
     if (Object.keys(comparsionData).length) {
@@ -94,16 +116,40 @@ useEffect(()=>{
   useEffect(() => {
     const apiObj = new FetchTaskListAPI();
     dispatch(APITransport(apiObj));
+
+    const obj = new FetchTranscriptTypesAPI();
+    dispatch(APITransport(obj));
   }, []);
 
   const handleSubmit = () => {
-    const data = {
-      type: selectTranscriptionValue,
-      payload: "data",
-    };
+    let data = {};
 
-    const projectObj = new ComparisionTableAPI(projectid, data);
+    if(selectedTranscriptType === "MANUALLY_CREATED") {
+      data = {
+        type: taskDetails.task_type,
+        payloads: {
+          [selectedTranscriptType]: {
+            payload: [],
+          }
+        }
+      }
+    } else {
+      const [key, value] = Object.entries(comparsionData).find(([key]) => (selectedTranscriptType === key)) || [];
+
+      data = {
+        type: taskDetails.task_type,
+        payloads: {
+          [key]: {
+            payload: value,
+          }
+        }
+      };
+    }
+    
+    const projectObj = new ComparisionTableAPI(taskDetails.project, data);
     dispatch(APITransport(projectObj));
+
+    navigate(`/${taskDetails.id}/transcript`)
   };
 
   const postCompareTranscriptionSource = (id, sourceTypeList) => {
@@ -184,20 +230,6 @@ useEffect(()=>{
       return result;
     });
   };
-  const handleChangeTranscriptionType = (e, indx) => {
-    const {
-      target: { value },
-    } = e;
-    setSelectTranscriptionValue((prev) => {
-      const result = JSON.parse(JSON.stringify(Object.assign([], prev)));
-      result.forEach((res, i) => {
-        if (i === indx) {
-          result[i].value = value;
-        }
-      });
-      return result;
-    });
-  };
 
   const renderTableData = (data) => {
     if (!!data) {
@@ -228,7 +260,10 @@ useEffect(()=>{
     return <></>;
   };
   
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
   const renderDropDown = useMemo(() => {
     return (
       <Grid container spacing={8}>
@@ -247,10 +282,10 @@ useEffect(()=>{
                   onChange={(e) => handleChange(e, indx)}
                   value={selectValue[indx].value}
                 >
-                  {dropDown.map((el, i) => {
+                  {transcriptTypes.map((el, i) => {
                     return (
-                      <MenuItem key={`${el.key}-${i}`} value={el.key}>
-                        {el.value}
+                      <MenuItem key={i} value={el.value}>
+                        {el.label}
                       </MenuItem>
                     );
                   })}
@@ -264,46 +299,48 @@ useEffect(()=>{
       </Grid>
     );
   }, [selectValue]);
-
+  
   const renderTranscriptionType = useMemo(() => {
+    const currentTranscriptTypes = Object.keys(comparsionData);
+    const filteredDropDown = transcriptTypes.filter(dl => currentTranscriptTypes.includes(dl.value))
+
     return (
-      <Grid container spacing={2}>
-        {selectTranscriptionValue.map((select, indx) => {
-          return (
-            <Grid key={indx} item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <FormControl fullWidth>
-                <InputLabel key={indx} id="demo-multi-select-label">
-                  Transcription Type
-                </InputLabel>
-                <Select
-                  key={`multi-${indx}`}
-                  labelId="demo-multi-select-label"
-                  id="demo-multi-select"
-                  label=" Transcription Type"
-                  onChange={(e) => handleChangeTranscriptionType(e, indx)}
-                  value={selectTranscriptionValue[indx].value}
-                >
-                  {dropDown.map((el, i) => {
-                    return (
-                      <MenuItem key={`${el.key}-${i}`} value={el.key}>
-                        {el.value}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
-          );
-        })}
+      <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-multi-select-label">
+            Transcription Type
+          </InputLabel>
+          <Select
+            labelId="demo-multi-select-label"
+            id="demo-multi-select"
+            label="Transcription Type"
+            onChange={(e) => setSelectTranscriptType(e.target.value)}
+            value={selectedTranscriptType}
+          >
+            <MenuItem key={0} value={"MANUALLY_CREATED"}>Manually Created</MenuItem>
+            {filteredDropDown.map((el, i) => {
+              return (
+                <MenuItem key={i} value={el.value}>
+                  {el.label}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
       </Grid>
     );
-  }, [selectTranscriptionValue]);
+  }, [selectTranscriptionValue, comparsionData, selectedTranscriptType]);
 
   return (
     <Grid container spacing={2} style={{ alignItems: "center" }}>
       {loading && <Spinner  />}
       <Card className={classes.orgCard}>
-        <TaskVideoDialog videoName={videoname} />
+        <TaskVideoDialog 
+          videoName={taskDetails.video_name} 
+          videoUrl={taskDetails.video_url}
+          projectId={taskDetails.project}
+          lang={taskDetails.src_language}
+        />
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
           <Typography variant="h4">Compare Transcription Type</Typography>
         </Grid>
