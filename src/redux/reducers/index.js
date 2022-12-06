@@ -17,6 +17,7 @@ import getTranscriptTypes from "./Project/FetchTranscriptTypes";
 import getVideoDetails from "./Project/FetchVideoDetails";
 import getTaskTypes from "./Project/FetchTaskType";
 import getAllowedTasks from "./Project/FetchAllowedTask";
+import getPriorityTypes from "./Project/FetchPriorityTypes";
 
 const rootReducer = {
     apiStatus,
@@ -38,6 +39,7 @@ const rootReducer = {
     getVideoDetails,
     getTaskTypes,
     getAllowedTasks,
+    getPriorityTypes,
 };
 
 export default rootReducer;
