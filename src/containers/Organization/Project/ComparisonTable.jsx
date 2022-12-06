@@ -8,6 +8,7 @@ import {
   InputLabel,
   Card,
   Button,
+  CircularProgress
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -23,12 +24,27 @@ import { useNavigate, useParams } from "react-router-dom";
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
+import Spinner from "../../../common/Spinner";
 import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
 import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
 
 const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const { projectId } = useParams();
+
+
+//   useEffect(() => {
+//     setLoading(false);
+// }, [])
+
+useEffect(()=>{
+  if(comparsionData){
+    setLoading(false);
+  }
+},[comparsionData])
+
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -53,9 +69,14 @@ const ComparisonTable = () => {
     return [{ id: 0, value: "" }];
   };
   const [selectValue, setSelectValue] = useState(getComparisonData());
+  
   const [selectTranscriptionValue, setSelectTranscriptionValue] = useState([
     { id: 0, value: "" },
   ]);
+
+  // useEffect(()=>{
+  //   console.log("selectValue -------- ", selectValue);
+  // }, [])
 
   useEffect(() => {
     setSelectValue(getComparisonData());
@@ -121,6 +142,7 @@ const ComparisonTable = () => {
   };
 
   const postCompareTranscriptionSource = (id, sourceTypeList) => {
+    setLoading(true);
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
     fetch(apiObj.apiEndPoint(), {
       method: "post",
@@ -212,10 +234,13 @@ const ComparisonTable = () => {
         <div className={classes.tableData}>
           {renderResult.map((el, i) => {
             if (el.text)
+         
               return (
+                <>
                 <Typography className={classes.Typographyvalue}>
                   {el.text}
                 </Typography>
+                </>
               );
           })}
         </div>
@@ -226,10 +251,10 @@ const ComparisonTable = () => {
   
   const renderDropDown = useMemo(() => {
     return (
-      <Grid container spacing={2}>
+      <Grid container spacing={8}>
         {selectValue.map((select, indx) => {
           return (
-            <Grid key={indx} item xs={12} sm={12} md={3} lg={3} xl={3}>
+            <Grid key={indx} item xs={12} sm={12} md={4} lg={4} xl={4}>
               <FormControl fullWidth>
                 <InputLabel key={indx} id="demo-multi-select-label">
                   Compare with
@@ -293,6 +318,7 @@ const ComparisonTable = () => {
 
   return (
     <Grid container spacing={2} style={{ alignItems: "center" }}>
+      {loading && <Spinner  />}
       <Card className={classes.orgCard}>
         <TaskVideoDialog 
           videoName={taskDetails.video_name} 
@@ -328,6 +354,7 @@ const ComparisonTable = () => {
           variant="contained"
           size="large"
           sx={{ mt: 3 }}
+          disabled={!selectValue[0]?.value}
         >
           Submit
         </Button>

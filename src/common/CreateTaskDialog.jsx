@@ -24,6 +24,7 @@ import ProjectStyle from "../styles/ProjectStyle";
 import moment from "moment";
 import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
 import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
+import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
 import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
 
 const CreateTaskDialog = ({
@@ -39,6 +40,7 @@ const CreateTaskDialog = ({
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
+  const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
   const supportedLanguages = useSelector((state) => state.getSupportedLanguages.data);
 
   const [taskType, setTaskType] = useState("");
@@ -54,6 +56,8 @@ const CreateTaskDialog = ({
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
 
+    const priorityTypesObj = new FetchPriorityTypesAPI();
+    dispatch(APITransport(priorityTypesObj));
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
   }, []);
@@ -215,15 +219,11 @@ const CreateTaskDialog = ({
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
               >
-                <MenuItem key={1} value="p1">
-                  P1
-                </MenuItem>
-                <MenuItem key={2} value="p2">
-                  P2
-                </MenuItem>
-                <MenuItem key={3} value="p3">
-                  P3
-                </MenuItem>
+                 {PriorityTypes.map((item, index) => (
+                  <MenuItem key={index} value={item}>
+                    {item.value}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>

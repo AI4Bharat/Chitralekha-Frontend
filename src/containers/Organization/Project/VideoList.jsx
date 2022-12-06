@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 //Themes
-import { ThemeProvider } from "@mui/material";
+import { Box, Grid, ThemeProvider } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
@@ -10,6 +10,7 @@ import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
+import DatasetStyle from "../../../styles/Dataset";
 
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
@@ -17,6 +18,7 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const VideoList = ({ data }) => {
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -37,19 +39,26 @@ const VideoList = ({ data }) => {
         item.url,
         item.duration,
         <>
-          <CustomButton
-            sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+        <Box sx={{display: "flex"}}>
+        {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
+        <CustomButton
+        className={classes.tableButton}
             label="View"
             onClick={() => handleVideoDialog(item)}
           />
+           {/* </Grid> */}
+           {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
           <CustomButton
-            sx={{ borderRadius: 2, marginRight: 2, textDecoration: "none" }}
+           className={classes.tableButton}
             label="Create Task"
             onClick={() => {
               setOpenCreateTaskDialog(true);
               setCurrentVideoDetails(item);
             }}
           />
+         {/* </Grid> */}
+        </Box>
+         
         </>,
       ];
     });
@@ -132,7 +141,7 @@ const VideoList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px", textAlign: "center" },
         }),
       },
     },
