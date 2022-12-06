@@ -213,12 +213,19 @@ const DatasetStyle = makeStyles({
   },
   Typographyvalue: {
     "&:nth-child(odd)": {
-      backgroundColor: "#FFE6E6",
+      backgroundColor: "#D6EAF8",
     },
     "&:nth-child(even)": {
-      backgroundColor: "#FFCCCC",
+      backgroundColor: "#E9F7EF",
     },
   },
+  tableButton:{
+    borderRadius: "7px", 
+    textAlign: "center",
+     inlineSize: "max-content", 
+     marginRight: 2, 
+     textDecoration: "none"
+  }
 });
 
 export default DatasetStyle;
