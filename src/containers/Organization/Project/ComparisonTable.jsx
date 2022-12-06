@@ -24,22 +24,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-<<<<<<< HEAD
 import Spinner from "../../../common/Spinner";
-=======
 import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
 import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
->>>>>>> develop
 
 const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
-<<<<<<< HEAD
   const [loading, setLoading] = useState(false);
   const { projectId } = useParams();
-console.log(loading,"loadingloading")
-  const taskList = useSelector((state) => state.getTaskList.data);
-  const comparsionData = useSelector((state) => state.setComparisonTable.data);
+
 
 //   useEffect(() => {
 //     setLoading(false);
@@ -50,7 +44,7 @@ useEffect(()=>{
     setLoading(false);
   }
 },[comparsionData])
-=======
+
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -65,7 +59,6 @@ useEffect(()=>{
     const obj = new FetchTaskDetailsAPI(id)
     dispatch(APITransport(obj));
   }, [])
->>>>>>> develop
 
   const getComparisonData = () => {
     if (Object.keys(comparsionData).length) {
@@ -260,10 +253,6 @@ useEffect(()=>{
     return <></>;
   };
   
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
   const renderDropDown = useMemo(() => {
     return (
       <Grid container spacing={8}>
