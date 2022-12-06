@@ -20,7 +20,7 @@ const TaskVideoDialog = ({ videoName, videoUrl, projectId, lang }) => {
 
   return (
     <>
-      <Grid container spacing={2} align="center"justify="center" >
+      <Grid container spacing={2} align="center" justify="center" >
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
           <Typography variant="h4" style={{ marginRight: "auto" }}>
             {videoName}

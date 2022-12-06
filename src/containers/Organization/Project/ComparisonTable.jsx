@@ -34,17 +34,6 @@ const ComparisonTable = () => {
   const [loading, setLoading] = useState(false);
   const { projectId } = useParams();
 
-
-//   useEffect(() => {
-//     setLoading(false);
-// }, [])
-
-useEffect(()=>{
-  if(comparsionData){
-    setLoading(false);
-  }
-},[comparsionData])
-
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -55,6 +44,12 @@ useEffect(()=>{
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
 
+  useEffect(()=>{
+    if(comparsionData){
+      setLoading(false);
+    }
+  },[comparsionData])
+  
   useEffect(() => {
     const obj = new FetchTaskDetailsAPI(id)
     dispatch(APITransport(obj));
@@ -321,7 +316,7 @@ useEffect(()=>{
   }, [selectTranscriptionValue, comparsionData, selectedTranscriptType]);
 
   return (
-    <Grid container spacing={2} style={{ alignItems: "center" }}>
+    <Grid container spacing={1} style={{ alignItems: "center" }}>
       {loading && <Spinner  />}
       <Card className={classes.orgCard}>
         <TaskVideoDialog 
