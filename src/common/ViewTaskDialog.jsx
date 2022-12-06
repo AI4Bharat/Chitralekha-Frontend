@@ -6,6 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import {
   Checkbox,
   FormControl,
+  InputLabel,
   ListItemText,
   MenuItem,
   OutlinedInput,
@@ -78,9 +79,13 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           <Typography variant="h5" width={"25%"}>
             ETA:
           </Typography>
-          <Typography variant="body1">
-            {moment(taskDetail.eta).format("DD/MM/YYYY")}
-          </Typography>
+          {
+            taskDetail.eta && (
+              <Typography variant="body1">
+                {moment(taskDetail.eta).format("DD/MM/YYYY")}
+              </Typography>
+            )
+          }
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>
@@ -88,15 +93,17 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
             Select Transcription Source:
           </Typography>
           <FormControl style={{ width: "70%" }}>
+            <InputLabel id="select-transcription-source">Select Transcription Source</InputLabel>
             <Select
               fullWidth
               width="100%"
-              id="demo-multiple-checkbox"
+              labelId="select-transcription-source"
               multiple
               value={transcriptSource}
               onChange={handleChange}
-              input={<OutlinedInput />}
+              input={<OutlinedInput label="Select Transcription Source"/>}
               renderValue={(selected) => selected.join(", ")}
+              style={{ zIndex: 0 }}
               inputProps={{ "aria-label": "Without label" }}
             >
               {transcriptTypes.map((item, index) => (

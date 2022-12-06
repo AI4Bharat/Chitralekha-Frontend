@@ -58,12 +58,7 @@ const VideoList = ({ data }) => {
   }, [data]);
 
   const createTaskHandler = (data) => {
-    const reqBody = {
-      ...data,
-      video_id: currentVideoDetails.id,
-    };
-
-    const apiObj = new CreateNewTaskAPI(reqBody);
+    const apiObj = new CreateNewTaskAPI(data);
     dispatch(APITransport(apiObj));
     setOpenCreateTaskDialog(false);
   };
