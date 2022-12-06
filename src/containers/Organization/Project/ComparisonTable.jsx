@@ -98,27 +98,23 @@ const ComparisonTable = () => {
 
     if(selectedTranscriptType === "MANUALLY_CREATED") {
       data = {
-        type: taskDetails.task_type,
-        payloads: {
-          [selectedTranscriptType]: {
-            payload: [],
-          }
+        type: selectedTranscriptType,
+        payload: {
+          payload: []
         }
       }
     } else {
       const [key, value] = Object.entries(comparsionData).find(([key]) => (selectedTranscriptType === key)) || [];
 
       data = {
-        type: taskDetails.task_type,
-        payloads: {
-          [key]: {
-            payload: value,
-          }
+        type: key,
+        payload: {
+          payload: value
         }
       };
     }
     
-    const projectObj = new ComparisionTableAPI(taskDetails.project, data);
+    const projectObj = new ComparisionTableAPI(taskDetails.id, data);
     dispatch(APITransport(projectObj));
 
     navigate(`/${taskDetails.id}/transcript`)

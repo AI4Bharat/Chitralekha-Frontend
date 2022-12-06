@@ -2,14 +2,15 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class ComparisionTableAPI extends API {
-  constructor(id, data,timeout = 2000) {
-    super("POST", timeout, false);
-    this.type = C.COMPARISION_TABLE;
+export default class FetchTranscriptPayloadAPI extends API {
+  constructor(id, timeout = 2000) {
+    super("GET", timeout, false);
+    this.type = C.GET_TRANSCRIPT_PAYLOAD;
     this.id = id;
-    this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${id}/select_source/`;
-  }  
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.transcript
+    }get_payload/?task_id=${id}`;
+  }
 
   processResponse(res) {
     super.processResponse(res);
@@ -22,9 +23,7 @@ export default class ComparisionTableAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.data;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
