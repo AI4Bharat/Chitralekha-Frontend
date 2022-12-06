@@ -88,6 +88,7 @@ const TaskList = () => {
     return (
       <CustomButton
         sx={{ borderRadius: 2, marginLeft: 2}}
+        color="error"
         label="Delete"
         onClick={() => {
           console.log("Delete Button --- ", tableData.rowData);
@@ -185,8 +186,8 @@ const TaskList = () => {
           return (
             <Box sx={{display: 'flex'}}>
               {renderViewButton(tableMeta)}
-              {renderDeleteButton(tableMeta)}
               {renderEditButton(tableMeta)}
+              {renderDeleteButton(tableMeta)}
             </Box>
 
             // <CustomButton

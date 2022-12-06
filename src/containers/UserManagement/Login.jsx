@@ -92,7 +92,8 @@ const Login = () => {
           });
         } else {
           localStorage.setItem("token", rsp_data.access);
-          navigate("/projects");
+          // navigate("/projects");
+          navigate(`/my-organization/1`)
         }
       })
       .catch((error) => {
