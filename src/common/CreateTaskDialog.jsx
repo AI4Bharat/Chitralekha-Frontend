@@ -18,13 +18,13 @@ import { useParams } from "react-router-dom";
 
 //APIs
 import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
-import FetchLanguageAPI from "../redux/actions/api/Project/FetchLanguages";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
 import ProjectStyle from "../styles/ProjectStyle";
 import moment from "moment";
 import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
 import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
+import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
 
 const CreateTaskDialog = ({
   open,
@@ -37,9 +37,9 @@ const CreateTaskDialog = ({
   const classes = ProjectStyle();
 
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
-  const languages = useSelector((state) => state.getLanguages.data.language);
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
+  const supportedLanguages = useSelector((state) => state.getSupportedLanguages.data);
 
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
@@ -51,17 +51,22 @@ const CreateTaskDialog = ({
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
 
   useEffect(() => {
-    const apiObj = new FetchLanguageAPI();
-    dispatch(APITransport(apiObj));
-
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
+
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
   }, []);
 
   const submitHandler = () => {
     const obj = {
-      task_type: taskType,
+      task_type: allowedTaskType,
       user_id: user.id,
+      target_language: language,
+      eta: date,
+      priority: priority,
+      description: description,
+      video_id: videoDetails.id,
     };
     createTaskHandler(obj);
   };
@@ -188,9 +193,9 @@ const CreateTaskDialog = ({
                     style={{ zIndex: "0" }}
                     inputProps={{ "aria-label": "Without label" }}
                   >
-                    {languages?.map((item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
+                    {supportedLanguages?.map((item, index) => (
+                      <MenuItem key={index} value={item.value}>
+                        {item.label}
                       </MenuItem>
                     ))}
                   </Select>
