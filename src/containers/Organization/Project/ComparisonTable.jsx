@@ -19,7 +19,7 @@ import TaskVideoDialog from "../../../common/TaskVideoDialog";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
@@ -29,6 +29,7 @@ import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTra
 const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const [selectedTranscriptType, setSelectTranscriptType] = useState("");
@@ -93,15 +94,34 @@ const ComparisonTable = () => {
   }, []);
 
   const handleSubmit = () => {
-    const [_, value] = Object.entries(comparsionData).find(([key]) => (selectedTranscriptType === key)) || [];
+    let data = {};
 
-    const data = {
-      type: taskDetails.task_type,
-      payload: value,
-    };
+    if(selectedTranscriptType === "MANUALLY_CREATED") {
+      data = {
+        type: taskDetails.task_type,
+        payloads: {
+          [selectedTranscriptType]: {
+            payload: [],
+          }
+        }
+      }
+    } else {
+      const [key, value] = Object.entries(comparsionData).find(([key]) => (selectedTranscriptType === key)) || [];
 
+      data = {
+        type: taskDetails.task_type,
+        payloads: {
+          [key]: {
+            payload: value,
+          }
+        }
+      };
+    }
+    
     const projectObj = new ComparisionTableAPI(taskDetails.project, data);
     dispatch(APITransport(projectObj));
+
+    navigate(`/${taskDetails.id}/transcript`)
   };
 
   const postCompareTranscriptionSource = (id, sourceTypeList) => {
@@ -257,10 +277,11 @@ const ComparisonTable = () => {
           <Select
             labelId="demo-multi-select-label"
             id="demo-multi-select"
-            label=" Transcription Type"
+            label="Transcription Type"
             onChange={(e) => setSelectTranscriptType(e.target.value)}
             value={selectedTranscriptType}
           >
+            <MenuItem key={0} value={"MANUALLY_CREATED"}>Manually Created</MenuItem>
             {filteredDropDown.map((el, i) => {
               return (
                 <MenuItem key={i} value={el.value}>
