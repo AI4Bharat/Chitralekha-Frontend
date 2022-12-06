@@ -1,6 +1,7 @@
 import getOrganizationDetails from "./Organization/OrganizationDetails";
 import getProjectList from "./Project/ProjectList";
 import getUserList from "./User/UserList";
+import getUserAccessToken from "./User/Login";
 import getLoggedInUserDetails from "./User/LoggedInUserDetails";
 import getUserDetails from "./User/UserDetails";
 import getNewProjectDetails from "./Project/CreateNewProject";
@@ -24,6 +25,7 @@ const rootReducer = {
     getOrganizationDetails,
     getProjectList,
     getUserList,
+    getUserAccessToken,
     getLoggedInUserDetails,
     getNewProjectDetails,
     getProjectDetails,

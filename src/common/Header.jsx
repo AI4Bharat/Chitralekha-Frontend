@@ -36,14 +36,14 @@ const Header = () => {
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
-    dispatch(APITransport(loggedInUserObj));
-  };
+  // const getLoggedInUserData = () => {
+  //   const loggedInUserObj = new FetchLoggedInUserDataAPI();
+  //   dispatch(APITransport(loggedInUserObj));
+  // };
 
-  useEffect(() => {
-    getLoggedInUserData();
-  }, []);
+  // useEffect(() => {
+  //   getLoggedInUserData();
+  // }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
