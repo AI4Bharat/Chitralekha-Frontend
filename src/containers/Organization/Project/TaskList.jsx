@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 //Themes
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, Box } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
@@ -56,6 +56,47 @@ const TaskList = () => {
       }
     });
   };
+
+  const renderViewButton = (tableData) => {
+    return (
+      (tableData.rowData[5] === "NEW" || tableData.rowData[5] === "INPROGRESS") && <CustomButton
+        sx={{ borderRadius: 2}}
+        label="View"
+        onClick={() => {
+          setOpenViewTaskDialog(true);
+          setCurrentTaskDetails(tableData.rowData);
+        }}
+      />
+    )
+  }
+
+  const renderEditButton = (tableData) => {
+    return(
+      tableData.rowData[5] === "SELECTED_SOURCE" && <CustomButton
+        sx={{ borderRadius: 2}}
+        label="Edit"
+        onClick={() => {
+          console.log("Edit Button --- ", tableData.rowData);
+          // setOpenViewTaskDialog(true);
+          // setCurrentTaskDetails(tableData.rowData);
+        }}
+      />
+    )
+  }
+
+  const renderDeleteButton = (tableData) => {
+    return (
+      <CustomButton
+        sx={{ borderRadius: 2, marginLeft: 2}}
+        label="Delete"
+        onClick={() => {
+          console.log("Delete Button --- ", tableData.rowData);
+          // setOpenViewTaskDialog(true);
+          // setCurrentTaskDetails(tableData.rowData);
+        }}
+      />
+    )
+  }
 
   const columns = [
     {
@@ -138,18 +179,24 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          style: { height: "30px", fontSize: "16px", textAlign: "center" },
         }),
         customBodyRender: (value, tableMeta) => {
           return (
-            <CustomButton
-              sx={{ borderRadius: 2, marginRight: 2 }}
-              label="View"
-              onClick={() => {
-                setOpenViewTaskDialog(true);
-                setCurrentTaskDetails(tableMeta.rowData);
-              }}
-            />
+            <Box sx={{display: 'flex'}}>
+              {renderViewButton(tableMeta)}
+              {renderDeleteButton(tableMeta)}
+              {renderEditButton(tableMeta)}
+            </Box>
+
+            // <CustomButton
+            //   sx={{ borderRadius: 2, marginRight: 2 }}
+            //   label="View"
+            //   onClick={() => {
+            //     setOpenViewTaskDialog(true);
+            //     setCurrentTaskDetails(tableMeta.rowData);
+            //   }}
+            // />
           );
         },
       },
