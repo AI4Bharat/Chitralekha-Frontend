@@ -29,6 +29,7 @@ const TaskVideoDialog = ({ videoName, videoUrl, projectId, lang }) => {
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
           <video
+          style={{width: "100%"}}
             controls
             src={video.direct_video_url}
           />
