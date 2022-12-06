@@ -12,8 +12,8 @@ const ProjectStyle = makeStyles({
   },
 
   findBtn: {
-    width: "50%",
-    borderRadius: "10px",
+    width: "40%",
+    borderRadius: "7px",
     margin: "24px auto",
   },
 
@@ -34,8 +34,8 @@ const ProjectStyle = makeStyles({
     position: "relative",
     zIndex: "10",
     outline: "none",
-    maxHeight: "90%",
-    maxWidth: "100%",
+    maxHeight: "90vw",
+    maxWidth: "100vw",
     boxShadow: "0px 5px 25px 5px rgb(0 0 0 / 80%)",
     backgroundColor: " #000",
     cursor: "pointer",
@@ -155,8 +155,8 @@ const ProjectStyle = makeStyles({
   },
 
   customTextarea: {
-    margin: "24px 24px 0 24px",
-    padding: "16.5px 14px",
+    margin: "5px 15px 15px 23px",
+    padding: "16.5px 12px",
     fontSize: "1.25rem",
     fontWeight: "400",
     lineHeight: "1.4375em",

@@ -12,6 +12,7 @@ import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
 import { throttle } from "lodash";
 import Metronome from "./Metronome";
+import { useSelector } from "react-redux";
 
 const WaveForm = memo(
   ({ player, setWaveform, setRender }) => {
@@ -209,6 +210,7 @@ const Timeline = ({
   playing,
 }) => {
   const $footer = createRef();
+  const transcriptPayload = useSelector((state) => state.getTranscriptPayload.data);
 
   const onWheel = useCallback(
     (event) => {
