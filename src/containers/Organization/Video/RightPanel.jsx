@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, CardContent, } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
@@ -101,7 +101,7 @@ const RightPanel = () => {
                   }
                 }}/>
               </Box>
-              <IndicTransliterate
+              {/* <IndicTransliterate
                 lang={"hi"}
                 value={item.text}
                 onChangeText={(text, index) => {
@@ -112,7 +112,15 @@ const RightPanel = () => {
                 renderComponent={(props) => (
                   <textarea className={classes.customTextarea} rows={3} {...props} />
                 )}
-              />
+              /> */}
+              <CardContent>
+              <textarea rows={3} className={classes.textAreaTransliteration}
+              value={item.text} 
+               onChange={(event) => {
+                changeTranscriptHandler(event.target, index)
+              }}
+               />
+               </CardContent>
             </>)
           })
         }

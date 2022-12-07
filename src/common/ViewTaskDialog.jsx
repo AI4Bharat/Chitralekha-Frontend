@@ -46,39 +46,80 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
     dispatch(APITransport(apiObj));
 
   }, []);
-
+  
   useEffect(() => {
     if (taskDetail) {
       const obj = new FetchTranscriptTypesAPI(taskDetail.task_type);
       dispatch(APITransport(obj))
     }
   }, [taskDetail])
-
+  
   return (
     <>
-      <Dialog
-        fullWidth={true}
-        maxWidth={"md"}
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogContent sx={{ p: 5 }}>
-          <Box display="flex" sx={{ mb: 3 }}>
-            <Typography variant="h5" width={"25%"}>
-              Task Type:
-            </Typography>
-            <Typography variant="body1">{taskDetail.task_type}</Typography>
-          </Box>
+    <Dialog
+      fullWidth={true}
+      maxWidth={"md"}
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="responsive-dialog-title"
+    >
+      <DialogContent sx={{ p: 5 }}>
+        <Box display="flex" sx={{ mb: 3 }}>
+          <Typography variant="h5" width={"20%"}>
+            Task Type :
+          </Typography>
+          <Typography variant="body1">{taskDetail.task_type}</Typography>
+        </Box>
 
-          <Box display="flex" sx={{ mb: 3 }}>
-            <Typography variant="h5" width={"25%"}>
-              Description:
-            </Typography>
-            <Typography variant="body1" width={"70%"} textAlign="justify">
-              {taskDetail.description}
-            </Typography>
-          </Box>
+        <Box display="flex" sx={{ mb: 3 }}>
+          <Typography variant="h5" width={"20%"}>
+            Description :
+          </Typography>
+          <Typography variant="body1" width={"70%"} textAlign="justify">
+            {taskDetail.description}
+          </Typography>
+        </Box>
+
+        <Box display="flex" sx={{ mb: 3 }}>
+          <Typography variant="h5" width={"20%"}>
+            ETA :
+          </Typography>
+          {
+            taskDetail.eta && (
+              <Typography variant="body1">
+                {moment(taskDetail.eta).format("DD/MM/YYYY")}
+              </Typography>
+            )
+          }
+        </Box>
+
+        <Box display="flex" sx={{ mb: 4 }}>
+          <Typography variant="h5" width={"20%"} style={{marginTop:"12px"}}>
+            Select :
+          </Typography>
+          <FormControl style={{ width: "70%" }}>
+            <InputLabel id="select-transcription-source"> Transcription Source</InputLabel>
+            <Select
+              fullWidth
+              width="100%"
+              labelId="select-transcription-source"
+              multiple
+              value={transcriptSource}
+              onChange={handleChange}
+              input={<OutlinedInput label="Select Transcription Source"/>}
+              renderValue={(selected) => selected.join(", ")}
+              style={{ zIndex: 0 }}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              {transcriptTypes.map((item, index) => (
+                <MenuItem key={index} value={item.label}>
+                  <Checkbox checked={transcriptSource.indexOf(item.label) > -1} />
+                  <ListItemText primary={item.label} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
           <Box display="flex" sx={{ mb: 3 }}>
             <Typography variant="h5" width={"25%"}>
