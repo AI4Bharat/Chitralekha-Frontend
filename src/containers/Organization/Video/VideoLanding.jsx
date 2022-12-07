@@ -42,7 +42,7 @@ const VideoLanding = () => {
       );
       dispatch(APITransport(apiObj));
 
-      const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id)
+      const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id, taskDetails.task_type);
       dispatch(APITransport(payloadObj))
     }
   }, [taskDetails]);

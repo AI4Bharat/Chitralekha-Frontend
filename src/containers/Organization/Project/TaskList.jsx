@@ -105,7 +105,7 @@ const TaskList = () => {
         sx={{ borderRadius: 2}}
         label="Edit"
         onClick={() => {
-          // navigate(`/${tableData.rowData[]}/transcript`);
+          navigate(`/${tableData.rowData[0]}/transcript`);
           console.log("Edit Button ---- ", tableData.rowData);
           // setOpenViewTaskDialog(true);
           // setCurrentTaskDetails(tableData.rowData);
@@ -204,7 +204,7 @@ const TaskList = () => {
     },
     {
       name: "Action",
-      label: "Action",
+      label: "Actions",
       options: {
         filter: false,
         sort: false,
