@@ -20,16 +20,16 @@ const TaskVideoDialog = ({ videoName, videoUrl, projectId, lang }) => {
 
   return (
     <>
-      <Grid container spacing={2} align="center" justify="center" >
+      <Grid container spacing={2} align="center"justify="center" >
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
           <Typography variant="h4" style={{ marginRight: "auto" }}>
             {videoName}
           </Typography>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 4 }} >
           <video
-          style={{width: "100%"}}
+            style={{width:"500px",height:"300px"}}
             controls
             src={video.direct_video_url}
           />

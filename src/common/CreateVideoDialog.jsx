@@ -58,12 +58,12 @@ const CreateVideoDialog = ({
             <FormControlLabel
               value="false"
               control={<Radio />}
-              label="Upload Video"
+              label="Import Video"
             />
             <FormControlLabel
               value="true"
               control={<Radio />}
-              label="Upload Audio"
+              label="Import Audio"
             />
           </RadioGroup>
         </FormControl>
@@ -89,7 +89,7 @@ const CreateVideoDialog = ({
         </FormControl>
 
         <TextField
-          label={"Enter Video Link from Youtube or Google Drive Here"}
+          label={"Enter Link from Youtube or Google Drive Here"}
           fullWidth
           multiline
           rows={4}
