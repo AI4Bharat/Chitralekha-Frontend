@@ -17,6 +17,8 @@ const RightPanel = () => {
   
   const [sourceText, setSourceText] = useState([]);
   const [lang, setLang] = useState("hi");
+ 
+ 
 
   useEffect(() => {
     setSourceText(transcriptPayload?.payload?.payload)
@@ -73,16 +75,20 @@ const RightPanel = () => {
           flexDirection: "column",
           borderTop: "1px solid #eaeaea",
           overflowY: "scroll",
-          height: "100%"
+          height: "100%",
+          backgroundColor:"black",
+          color:"white",
         }}
       >
         {
           sourceText?.map((item, index) => {
             return (<>
-              <Box display="flex" padding="10px 24px 0">
+              <Box display="flex" padding="10px 24px 0" >
                 <TextField variant="outlined" value={item.start_time} sx={{
                   "& .MuiOutlinedInput-root": {
-                    width: "85%"
+                    width: "85%",
+                    backgroundColor:"#616A6B  ",
+                    color:"white"
                   },
                   "& .MuiOutlinedInput-input": {
                     fontSize: "12px",
@@ -94,6 +100,8 @@ const RightPanel = () => {
                   "& .MuiOutlinedInput-root": {
                     width: "85%",
                     marginLeft: "auto",
+                    backgroundColor:"#616A6B",
+                    color:"white"
                   },
                   "& .MuiOutlinedInput-input": {
                     fontSize: "12px",
@@ -114,10 +122,16 @@ const RightPanel = () => {
                 )}
               /> */}
               <CardContent>
-              <textarea rows={3} className={classes.textAreaTransliteration}
+              <textarea rows={3} 
+              className={classes.textAreaTransliteration}
+              //   className={({ isActive }) =>
+              //   isActive ? classes.textAreaTransliteration : classes.headerMenu
+              // }
+              // activeClassName={classes.textAreaTransliteration}
               value={item.text} 
                onChange={(event) => {
                 changeTranscriptHandler(event.target, index)
+                
               }}
                />
                </CardContent>
