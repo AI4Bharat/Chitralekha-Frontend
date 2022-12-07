@@ -76,7 +76,7 @@ const TaskList = () => {
         sx={{ borderRadius: 2}}
         label="Edit"
         onClick={() => {
-          console.log("Edit Button ---- ", tableData.rowData);
+          console.log("Edit Button --- ", tableData.rowData);
           // setOpenViewTaskDialog(true);
           // setCurrentTaskDetails(tableData.rowData);
         }}
