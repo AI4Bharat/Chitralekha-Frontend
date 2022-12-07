@@ -60,15 +60,15 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
     >
       <DialogContent sx={{ p: 5 }}>
         <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            Task Type:
+          <Typography variant="h5" width={"20%"}>
+            Task Type :
           </Typography>
           <Typography variant="body1">{taskDetail.task_type}</Typography>
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            Description:
+          <Typography variant="h5" width={"20%"}>
+            Description :
           </Typography>
           <Typography variant="body1" width={"70%"} textAlign="justify">
             {taskDetail.description}
@@ -76,8 +76,8 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            ETA:
+          <Typography variant="h5" width={"20%"}>
+            ETA :
           </Typography>
           {
             taskDetail.eta && (
@@ -88,12 +88,12 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           }
         </Box>
 
-        <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            Select Transcription Source:
+        <Box display="flex" sx={{ mb: 4 }}>
+          <Typography variant="h5" width={"20%"} style={{marginTop:"12px"}}>
+            Select :
           </Typography>
           <FormControl style={{ width: "70%" }}>
-            <InputLabel id="select-transcription-source">Select Transcription Source</InputLabel>
+            <InputLabel id="select-transcription-source"> Transcription Source</InputLabel>
             <Select
               fullWidth
               width="100%"

@@ -108,10 +108,10 @@ const CreateTaskDialog = ({
         >
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
-              <InputLabel id="select-task">Select Task</InputLabel>
+              <InputLabel id="select-task">Select Task Type</InputLabel>
               <Select
                 labelId="select-task"
-                label="Select Task"
+                label="Select Task Type"
                 fullWidth
                 value={taskType}
                 onChange={(event) => selectTaskTypeHandler(event)}
@@ -131,10 +131,10 @@ const CreateTaskDialog = ({
             showAllowedTaskList && (
               <Box width={"100%"} sx={{ mt: 3 }}>
                 <FormControl fullWidth>
-                  <InputLabel id="select-allowed-task">Select Allowed Task</InputLabel>
+                  <InputLabel id="select-allowed-task">Select Action</InputLabel>
                   <Select
                     labelId="select-allowed-task"
-                    label="Select Allowed Task"
+                    label="Select Action"
                     fullWidth
                     value={allowedTaskType}
                     onChange={(event) => selectAllowedTaskHandler(event.target.value)}
@@ -187,11 +187,11 @@ const CreateTaskDialog = ({
           {(taskType === "TRANSLATION") && (
               <Box width={"100%"} sx={{ mt: 3 }}>
                 <FormControl fullWidth>
-                  <InputLabel id="select-lang">Select Language</InputLabel>
+                  <InputLabel id="select-lang">Select Translation Language</InputLabel>
                   <Select
                     fullWidth
                     labelId="select-lang"
-                    label="Select Language"
+                    label="Select Translation Language"
                     value={language}
                     onChange={(event) => setLanguage(event.target.value)}
                     style={{ zIndex: "0" }}

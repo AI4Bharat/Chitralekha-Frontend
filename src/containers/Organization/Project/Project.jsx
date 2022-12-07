@@ -125,7 +125,8 @@ const Project = () => {
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
-          Title: {projectDetails.title}
+          {/* Title:  */}
+          {projectDetails.title}
         </Typography>
 {/* 
         <Typography variant="body1" gutterBottom component="div">
@@ -140,7 +141,7 @@ const Project = () => {
             aria-label="basic tabs example"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Task"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             {/* <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
             {/* <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
