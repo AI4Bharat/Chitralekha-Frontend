@@ -89,6 +89,7 @@ const TaskList = () => {
       <CustomButton
         sx={{ borderRadius: 2, marginLeft: 2}}
         label="Delete"
+        color="error"
         onClick={() => {
           console.log("Delete Button --- ", tableData.rowData);
           // setOpenViewTaskDialog(true);
