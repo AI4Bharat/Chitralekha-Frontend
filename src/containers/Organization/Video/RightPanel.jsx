@@ -31,16 +31,20 @@ const RightPanel = () => {
     });
 
     setSourceText(arr);
-    saveTranscriptHandler()
+    saveTranscriptHandler(false)
   }
 
-  const saveTranscriptHandler = () => {
+  const saveTranscriptHandler = (isFinal) => {
     const reqBody = {
       task_id: taskId,
       payload: {
         payload: sourceText
       }
     };
+
+    if(isFinal){
+      reqBody.final = true
+    }
 
     const obj = new SaveTranscriptAPI(reqBody);
     dispatch(APITransport(obj));
@@ -59,7 +63,7 @@ const RightPanel = () => {
         <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button>
-        <Button variant="contained" className={classes.findBtn} onClick={() => saveTranscriptHandler()}>
+        <Button variant="contained" className={classes.findBtn} onClick={() => saveTranscriptHandler(true)}>
           Save
         </Button>
       </Box>

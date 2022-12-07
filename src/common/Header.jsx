@@ -34,7 +34,8 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  // const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
   // const getLoggedInUserData = () => {
   //   const loggedInUserObj = new FetchLoggedInUserDataAPI();
