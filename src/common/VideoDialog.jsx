@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,6 +12,7 @@ import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
 import ProjectStyle from "../styles/ProjectStyle";
+import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -47,7 +48,12 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       <DialogContent>
         <Box className={classes.videoBox}>
           <div className={classes.backlight}></div>
-          <video controls src={video.direct_video_url} className={classes.video}/>
+          <video
+            style={{ width: "500px", height: "300px" }}
+            controls
+            src={video.direct_video_url}
+            className={classes.video}
+          />
         </Box>
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
@@ -58,6 +64,9 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
           Close
         </Button>
       </DialogActions>
+      <div style={{padding:"0px 20px 20px 20px"}}>
+      <VideoTaskList videoDetails={videoDetails.id} />
+      </div>
     </Dialog>
   );
 };
