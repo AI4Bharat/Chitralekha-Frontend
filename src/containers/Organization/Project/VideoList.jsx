@@ -166,7 +166,7 @@ const VideoList = ({ data }) => {
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
-    viewColumns: false,
+    viewColumns: true,
     selectableRows: "none",
     search: false,
     jumpToPage: true,

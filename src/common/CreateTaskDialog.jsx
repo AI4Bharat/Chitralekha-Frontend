@@ -15,6 +15,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import CustomizedSnackbars from "../common/Snackbar";
 
 //APIs
 import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
@@ -51,6 +52,11 @@ const CreateTaskDialog = ({
   const [date, setDate] = useState(moment().format());
   const [allowedTaskType, setAllowedTaskType] = useState("");
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
@@ -89,6 +95,20 @@ const CreateTaskDialog = ({
     const obj = new FetchProjectMembersAPI(projectId, value);
     dispatch(APITransport(obj));
   }
+
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
 
   return (
     <Dialog

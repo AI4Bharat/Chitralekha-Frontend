@@ -22,6 +22,7 @@ import ProjectSettings from "./ProjectSettings";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
 import TaskList from "./TaskList";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const data = [
   {
@@ -89,6 +90,11 @@ const Project = () => {
   const [videoLink, setVideoLink] = useState("");
   const [isAudio, setIsAudio] = useState(false);
   const [lang, setLang] = useState("");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
@@ -113,16 +119,53 @@ const Project = () => {
     getProjectVideoList();
   }, []);
 
-  const addNewVideoHandler = () => {
+  const addNewVideoHandler = async() => {
     const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
     dispatch(APITransport(apiObj));
     setCreateVideoDialog(false);
     setVideoLink("");
     setIsAudio(false);
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+  
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      })
+
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
+   
+
+  };
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
   };
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
+      {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
           Title: {projectDetails.title}
