@@ -1,12 +1,14 @@
 import { TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { createRef, memo, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import ProjectStyle from "../../../styles/ProjectStyle";
 
 const VideoPanel = memo(
   ({ setPlayer, setCurrentTime, setPlaying }) => {
     const classes = ProjectStyle();
     const $video = createRef();
+    const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
     const isPlaying = ($video) => {
       return !!(
@@ -41,15 +43,13 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <Box margin="auto">
-        <Typography variant="h4" textAlign="center" marginBottom="15px">Video Name</Typography>
+      <Box margin="auto" display="flex" flexDirection="column">
+        <Typography variant="h4" textAlign="center" marginBottom="15px">{videoDetails?.video?.name}</Typography>
         <video
           onClick={onClick}
-          src={
-            "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
-          }
+          src={videoDetails?.direct_video_url}
           ref={$video}
-          className={classes.videoPlayer}
+          // className={classes.videoPlayer}
         />
       </Box>
     );

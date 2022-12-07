@@ -88,6 +88,7 @@ const TaskList = () => {
     return (
       <CustomButton
         sx={{ borderRadius: 2, marginLeft: 2}}
+        color="error"
         label="Delete"
         color="error"
         onClick={() => {
@@ -186,8 +187,8 @@ const TaskList = () => {
           return (
             <Box sx={{display: 'flex'}}>
               {renderViewButton(tableMeta)}
-              {renderDeleteButton(tableMeta)}
               {renderEditButton(tableMeta)}
+              {renderDeleteButton(tableMeta)}
             </Box>
 
             // <CustomButton

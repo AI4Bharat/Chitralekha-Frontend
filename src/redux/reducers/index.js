@@ -1,6 +1,7 @@
 import getOrganizationDetails from "./Organization/OrganizationDetails";
 import getProjectList from "./Project/ProjectList";
 import getUserList from "./User/UserList";
+import getUserAccessToken from "./User/Login";
 import getLoggedInUserDetails from "./User/LoggedInUserDetails";
 import getUserDetails from "./User/UserDetails";
 import getNewProjectDetails from "./Project/CreateNewProject";
@@ -19,12 +20,14 @@ import getTaskTypes from "./Project/FetchTaskType";
 import getAllowedTasks from "./Project/FetchAllowedTask";
 import getPriorityTypes from "./Project/FetchPriorityTypes";
 import getSupportedLanguages from "./Project/FetchSupportedLanguage";
+import getTranscriptPayload from "./Project/FetchTranscriptPayload";
 
 const rootReducer = {
     apiStatus,
     getOrganizationDetails,
     getProjectList,
     getUserList,
+    getUserAccessToken,
     getLoggedInUserDetails,
     getNewProjectDetails,
     getProjectDetails,
@@ -42,6 +45,7 @@ const rootReducer = {
     getAllowedTasks,
     getPriorityTypes,
     getSupportedLanguages,
+    getTranscriptPayload,
 };
 
 export default rootReducer;
