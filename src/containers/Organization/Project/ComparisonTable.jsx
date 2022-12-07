@@ -285,7 +285,7 @@ const ComparisonTable = () => {
     const filteredDropDown = transcriptTypes.filter(dl => currentTranscriptTypes.includes(dl.value))
 
     return (
-      <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+      <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
         <FormControl fullWidth>
           <InputLabel id="demo-multi-select-label">
             Transcription Type
@@ -326,33 +326,44 @@ const ComparisonTable = () => {
         </Grid>
         {renderDropDown}
         {Object.keys(comparsionData).length ? (
-          <>
+          <Grid container  direction='row' sx={{ mb: 2, mt: 3, alignItems: "center", }}>
             <Grid
               item
               xs={12}
               sm={12}
               md={12}
-              lg={12}
-              xl={12}
-              sx={{ mb: 4, mt: 3 }}
+              lg={1}
+              xl={1}
             >
-              <Typography variant="h4">Select Transcription Type</Typography>
-            </Grid>
-            {renderTranscriptionType}
-          </>
+              <Typography variant="h4">Select :</Typography>
+             
+              </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={9}
+              lg={9}
+              xl={9}
+            >
+               {renderTranscriptionType}
+           </Grid>
+           
+
+           </Grid>  
         ) : (
           <></>
         )}
-
-        <Button
+ <Button
           onClick={handleSubmit}
           variant="contained"
           size="large"
-          sx={{ mt: 3 }}
+          sx={{ mt: 3,width:"120px" }}
           disabled={!selectValue[0]?.value}
         >
           Submit
         </Button>
+      
       </Card>
     </Grid>
   );
