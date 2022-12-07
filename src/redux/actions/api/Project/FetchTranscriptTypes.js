@@ -3,13 +3,12 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchTranscriptTypesAPI extends API {
-  constructor(id, timeout = 2000) {
+  constructor(sourceType, id, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_TRANSCRIPT_TYPES;
     this.id = id;
-    this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.transcript
-    }get_transcript_types/`;
+    this.sourceTypeEndpoint = sourceType === "TRANSCRIPTION_EDIT" ? `${ENDPOINTS.transcript}get_transcript_types/` : `${ENDPOINTS.translation}get_translation_types/`;
+    this.endpoint = `${super.apiEndPointAuto()}${this.sourceTypeEndpoint}`;
   }
 
   processResponse(res) {
