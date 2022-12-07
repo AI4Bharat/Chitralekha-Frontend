@@ -168,6 +168,21 @@ const ProjectStyle = makeStyles({
     fontFamily: "Roboto, sans-serif",
     width: "75%",
   },
+  textAreaTransliteration: {
+    width: "80%",
+   // margin: "5px 15px 15px 10px",
+   margin: "5px 15px 15px 23px",
+    padding: "16.5px 12px",
+    fontSize: "1rem",
+    fontWeight: "400",
+    lineHeight: "1.4375em",
+    color: "rgba(0, 0, 0, 0.87)",
+    borderRadius: "4px",
+    borderColor: "rgba(0, 0, 0, 0.23)",
+    outlineColor: "#2C2799",
+    resize: "none",
+    fontFamily: "Roboto, sans-serif",
+  },
 
   videoBox: {
     display: "flex",
