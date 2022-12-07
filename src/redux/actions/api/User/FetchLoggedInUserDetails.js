@@ -14,6 +14,7 @@ export default class FetchLoggedInUserDetailsAPI extends API {
   processResponse(res) {
     super.processResponse(res);
     if (res) {
+      localStorage.setItem("userData", JSON.stringify(res));
       this.report = res;
     }
   }

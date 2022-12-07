@@ -163,13 +163,14 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
         >
           Cancel
         </Button>
-        <Button
+        {taskDetail.task_type && <Button
           variant="contained"
           sx={{ borderRadius: 2 }}
           onClick={() => submitHandler(id,transcriptSource)}
         >
-          Compare
-        </Button>
+          {taskDetail.task_type === "TRANSLATION_EDIT" && "Submit"}
+          {taskDetail.task_type === "TRANSCRIPTION_EDIT" && "Compare"}
+        </Button>}
       </DialogActions>
     </Dialog>
    </>

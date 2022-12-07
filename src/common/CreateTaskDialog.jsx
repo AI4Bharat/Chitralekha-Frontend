@@ -215,7 +215,7 @@ const CreateTaskDialog = ({
                 labelId="select-priority"
                 label="Select Priority"
                 value={priority}
-                onChange={(event) => setPriority(event.target.value)}
+                onChange={(event) => setPriority(event.target.value?.value)}
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
               >
