@@ -121,7 +121,7 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
           </FormControl>
         </Box>
 
-          <Box display="flex" sx={{ mb: 3 }}>
+          {/* <Box display="flex" sx={{ mb: 3 }}>
             <Typography variant="h5" width={"25%"}>
               ETA:
             </Typography>
@@ -132,9 +132,9 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
                 </Typography>
               )
             }
-          </Box>
+          </Box> */}
 
-          <Box display="flex" sx={{ mb: 3 }}>
+          {/* <Box display="flex" sx={{ mb: 3 }}>
             <Typography variant="h5" width={"25%"}>
               Select {taskDetail.task_type === "TRANSCRIPTION_EDIT" ? "Transcription" : "Translation"} Source:
             </Typography>
@@ -160,7 +160,7 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
                 ))}
               </Select>
             </FormControl>
-          </Box>
+          </Box> */}
 
           {transcriptSource.includes("Manually Uploaded") && (
             <Box display="flex" sx={{ mb: 3 }} alignItems="center">

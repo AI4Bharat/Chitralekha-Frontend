@@ -63,6 +63,8 @@ const TaskList = () => {
     }
     const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
     dispatch(APITransport(comparisonTableObj));
+
+    navigate(`/${id}/transcript`);
   }
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
@@ -163,7 +165,8 @@ const TaskList = () => {
         sx={{ borderRadius: 2}}
         label="Edit"
         onClick={() => {
-          console.log("Edit Button --- ", tableData.rowData);
+          navigate(`/${tableData.rowData[0]}/transcript`);
+          console.log("Edit Button ---- ", tableData.rowData);
           // setOpenViewTaskDialog(true);
           // setCurrentTaskDetails(tableData.rowData);
         }}
