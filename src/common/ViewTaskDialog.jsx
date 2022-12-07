@@ -23,7 +23,7 @@ import APITransport from "../redux/actions/apitransport/apitransport";
 import { useNavigate } from 'react-router-dom';
 import moment from "moment/moment";
 
-const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
+const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const [transcriptSource, setTranscriptSource] = useState([]);
@@ -45,9 +45,14 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
     const apiObj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(apiObj));
 
-    const obj = new FetchTranscriptTypesAPI();
-    dispatch(APITransport(obj));
   }, []);
+  
+  useEffect(() => {
+    if (taskDetail) {
+      const obj = new FetchTranscriptTypesAPI(taskDetail.task_type);
+      dispatch(APITransport(obj))
+    }
+  }, [taskDetail])
   
   return (
     <>
@@ -60,15 +65,15 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
     >
       <DialogContent sx={{ p: 5 }}>
         <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            Task Type:
+          <Typography variant="h5" width={"20%"}>
+            Task Type :
           </Typography>
           <Typography variant="body1">{taskDetail.task_type}</Typography>
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            Description:
+          <Typography variant="h5" width={"20%"}>
+            Description :
           </Typography>
           <Typography variant="body1" width={"70%"} textAlign="justify">
             {taskDetail.description}
@@ -76,8 +81,8 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
         </Box>
 
         <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            ETA:
+          <Typography variant="h5" width={"20%"}>
+            ETA :
           </Typography>
           {
             taskDetail.eta && (
@@ -88,12 +93,12 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           }
         </Box>
 
-        <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"25%"}>
-            Select Transcription Source:
+        <Box display="flex" sx={{ mb: 4 }}>
+          <Typography variant="h5" width={"20%"} style={{marginTop:"12px"}}>
+            Select :
           </Typography>
           <FormControl style={{ width: "70%" }}>
-            <InputLabel id="select-transcription-source">Select Transcription Source</InputLabel>
+            <InputLabel id="select-transcription-source"> Transcription Source</InputLabel>
             <Select
               fullWidth
               width="100%"
@@ -116,64 +121,111 @@ const ViewTaskDialog = ({ open, handleClose, submitHandler, id }) => {
           </FormControl>
         </Box>
 
-        {transcriptSource.includes("Manually Uploaded") && (
-          <Box display="flex" sx={{ mb: 3 }} alignItems="center">
+          <Box display="flex" sx={{ mb: 3 }}>
             <Typography variant="h5" width={"25%"}>
-              Upload SRT:
+              ETA:
             </Typography>
-            <Typography variant="body1" width="70%">
-              <TextField
-                sx={{ width: "100%" }}
-                disabled
-                value={file?.name}
-                InputProps={{
-                  endAdornment: (
-                    <label htmlFor="btn-upload" style={{ width: "30%" }}>
-                      <input
-                        id="btn-upload"
-                        name="btn-upload"
-                        style={{ display: "none" }}
-                        type="file"
-                        onChange={(event) => setFile(event.target.files[0])}
-                      />
-                      <Button
-                        variant="contained"
-                        component="span"
-                        sx={{
-                          width: "100%",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        Choose Files
-                      </Button>
-                    </label>
-                  ),
-                }}
-              />
-            </Typography>
+            {
+              taskDetail.eta && (
+                <Typography variant="body1">
+                  {moment(taskDetail.eta).format("DD/MM/YYYY")}
+                </Typography>
+              )
+            }
           </Box>
-        )}
-      </DialogContent>
-      <DialogActions style={{ padding: "24px" }}>
-        <Button
-          autoFocus
-          variant="contained"
-          sx={{ borderRadius: 2 }}
-          onClick={() => handleClose(true)}
-        >
-          Cancel
-        </Button>
-        {taskDetail.task_type && <Button
-          variant="contained"
-          sx={{ borderRadius: 2 }}
-          onClick={() => submitHandler(id,transcriptSource)}
-        >
-          {taskDetail.task_type === "TRANSLATION_EDIT" && "Submit"}
-          {taskDetail.task_type === "TRANSCRIPTION_EDIT" && "Compare"}
-        </Button>}
-      </DialogActions>
-    </Dialog>
-   </>
+
+          <Box display="flex" sx={{ mb: 3 }}>
+            <Typography variant="h5" width={"25%"}>
+              Select {taskDetail.task_type === "TRANSCRIPTION_EDIT" ? "Transcription" : "Translation"} Source:
+            </Typography>
+            <FormControl style={{ width: "70%" }}>
+              <InputLabel id="select-transcription-source">Select {taskDetail.task_type === "TRANSCRIPTION_EDIT" ? "Transcription" : "Translation"} Source</InputLabel>
+              <Select
+                fullWidth
+                width="100%"
+                labelId="select-transcription-source"
+                multiple={taskDetail.task_type === "TRANSCRIPTION_EDIT"}
+                value={transcriptSource}
+                onChange={handleChange}
+                input={<OutlinedInput label="Select Transcription Source" />}
+                renderValue={(selected) => selected.join(", ")}
+                style={{ zIndex: 0 }}
+                inputProps={{ "aria-label": "Without label" }}
+              >
+                {transcriptTypes.map((item, index) => (
+                  <MenuItem key={index} value={item.label}>
+                    <Checkbox checked={transcriptSource.indexOf(item.label) > -1} />
+                    <ListItemText primary={item.label} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {transcriptSource.includes("Manually Uploaded") && (
+            <Box display="flex" sx={{ mb: 3 }} alignItems="center">
+              <Typography variant="h5" width={"25%"}>
+                Upload SRT:
+              </Typography>
+              <Typography variant="body1" width="70%">
+                <TextField
+                  sx={{ width: "100%" }}
+                  disabled
+                  value={file?.name}
+                  InputProps={{
+                    endAdornment: (
+                      <label htmlFor="btn-upload" style={{ width: "30%" }}>
+                        <input
+                          id="btn-upload"
+                          name="btn-upload"
+                          style={{ display: "none" }}
+                          type="file"
+                          onChange={(event) => setFile(event.target.files[0])}
+                        />
+                        <Button
+                          variant="contained"
+                          component="span"
+                          sx={{
+                            width: "100%",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          Choose Files
+                        </Button>
+                      </label>
+                    ),
+                  }}
+                />
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions style={{ padding: "24px" }}>
+          <Button
+            autoFocus
+            variant="contained"
+            sx={{ borderRadius: 2 }}
+            onClick={() => handleClose(true)}
+          >
+            Cancel
+          </Button>
+          {taskDetail.task_type === "TRANSCRIPTION_EDIT" && <Button
+            variant="contained"
+            sx={{ borderRadius: 2 }}
+            onClick={() => compareHandler(id, transcriptSource, false)}
+          >
+            Compare
+          </Button>}
+          {taskDetail.task_type === "TRANSLATION_EDIT" && <Button
+            variant="contained"
+            sx={{ borderRadius: 2 }}
+            onClick={() => compareHandler(id, transcriptSource, true)}
+          >
+            Submit
+          </Button>}
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

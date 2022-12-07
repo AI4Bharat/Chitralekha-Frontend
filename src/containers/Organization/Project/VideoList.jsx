@@ -75,7 +75,7 @@ const VideoList = ({ data }) => {
   const columns = [
     {
       name: "id",
-      label: "Id",
+      label: "Video Id",
       options: {
         filter: false,
         sort: false,
@@ -99,7 +99,7 @@ const VideoList = ({ data }) => {
     },
     {
       name: "name",
-      label: "Name",
+      label: "Video Name",
       options: {
         filter: false,
         sort: false,
@@ -135,7 +135,7 @@ const VideoList = ({ data }) => {
     },
     {
       name: "Action",
-      label: "Action",
+      label: "Actions",
       options: {
         filter: false,
         sort: false,

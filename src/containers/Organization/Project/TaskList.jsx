@@ -21,6 +21,7 @@ import CompareTranscriptionSource from "../../../redux/actions/api/Project/Compa
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
+import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -51,7 +52,20 @@ const TaskList = () => {
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
-  const getTranscriptionSourceComparison = (id, source) => {
+  // const getTranscriptionSourceComparison = (id, source) => {
+
+  const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
+    const payloadData = {
+      type: Object.keys(rsp_data.payloads)[0],
+      payload : {
+        payload: rsp_data.payloads[Object.keys(rsp_data.payloads)[0]]?.payload
+      }
+    }
+    const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
+    dispatch(APITransport(comparisonTableObj));
+  }
+
+  const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
     const sourceTypeList = source.map((el) => {
       return el.toUpperCase().split(" ").join("_");
     });
@@ -63,8 +77,14 @@ const TaskList = () => {
       headers: apiObj.getHeaders().headers,
     }).then(async (res) => {
       const rsp_data = await res.json();
+      console.log("rsp_data --------- ", rsp_data);
       if (res.ok) {
         dispatch(setComparisonTable(rsp_data));
+        if(isSubmitCall){
+
+          // --------------------- if task type is translation, submit translation with trg lang ------------- //
+          await onTranslationTaskTypeSubmit(id, rsp_data);
+        }
       } else {
         console.log("failed");
       }
@@ -114,6 +134,10 @@ const TaskList = () => {
       }
 
   })
+  
+  
+  // const submitTranslation = (id, source) => {
+
   }
 
   const renderViewButton = (tableData) => {
@@ -131,8 +155,11 @@ const TaskList = () => {
   }
 
   const renderEditButton = (tableData) => {
+    console.log("tableData ---- ", tableData);
     return(
-      tableData.rowData[5] === "SELECTED_SOURCE" && <CustomButton
+      ((tableData.rowData[5] === "SELECTED_SOURCE" && (tableData.rowData[1] === "TRANSCRIPTION_EDIT" || tableData.rowData[1] === "TRANSLATION_EDIT")) 
+      || (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" || tableData.rowData[1] === "TRANSLATION_REVIEW")) && 
+      <CustomButton
         sx={{ borderRadius: 2}}
         label="Edit"
         onClick={() => {
@@ -230,7 +257,7 @@ const TaskList = () => {
     },
     {
       name: "Action",
-      label: "Action",
+      label: "Actions",
       options: {
         filter: false,
         sort: false,
@@ -313,12 +340,15 @@ const TaskList = () => {
         <ViewTaskDialog
           open={openViewTaskDialog}
           handleClose={() => setOpenViewTaskDialog(false)}
-          submitHandler={(id, source) => {
+          compareHandler={(id, source, isSubmitCall) => {
             dispatch(clearComparisonTable());
             localStorage.setItem("sourceId", id);
-            if (source.length) getTranscriptionSourceComparison(id, source);
-            navigate(`/comparison-table/${id}`);
+            if (source.length) getTranscriptionSourceComparison(id, source, isSubmitCall);
+            !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
+          // submitHandler={({id, source}) => {
+
+          // }}
           id={currentTaskDetails[0]}
         />
       )}
