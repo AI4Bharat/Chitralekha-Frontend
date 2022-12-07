@@ -36,14 +36,14 @@ const Header = () => {
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
-    dispatch(APITransport(loggedInUserObj));
-  };
+  // const getLoggedInUserData = () => {
+  //   const loggedInUserObj = new FetchLoggedInUserDataAPI();
+  //   dispatch(APITransport(loggedInUserObj));
+  // };
 
-  useEffect(() => {
-    getLoggedInUserData();
-  }, []);
+  // useEffect(() => {
+  //   getLoggedInUserData();
+  // }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -154,7 +154,7 @@ const Header = () => {
                     Organizations
                   </NavLink>
                 </Typography>
-                <Typography variant="body1">
+                {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"
                     className={({ isActive }) =>
@@ -166,7 +166,7 @@ const Header = () => {
                   >
                     Projects
                   </NavLink>
-                </Typography>
+                </Typography> */}
                 {/* <Typography variant="body1">
                   <NavLink
                     to="#"
