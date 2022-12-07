@@ -61,7 +61,9 @@ const TaskList = () => {
     };
     const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
     dispatch(APITransport(comparisonTableObj));
-  };
+
+    navigate(`/${id}/transcript`);
+  }
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
     const sourceTypeList = source.map((el) => {
@@ -143,24 +145,21 @@ const TaskList = () => {
 
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
-    return (
-      ((tableData.rowData[5] === "SELECTED_SOURCE" &&
-        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
-        tableData.rowData[1] === "TRANSLATION_REVIEW") && (
-        <CustomButton
-          sx={{ borderRadius: 2 }}
-          label="Edit"
-          onClick={() => {
-            console.log("Edit Button --- ", tableData.rowData);
-            // setOpenViewTaskDialog(true);
-            // setCurrentTaskDetails(tableData.rowData);
-          }}
-        />
-      )
-    );
-  };
+    return(
+      ((tableData.rowData[5] === "SELECTED_SOURCE" && (tableData.rowData[1] === "TRANSCRIPTION_EDIT" || tableData.rowData[1] === "TRANSLATION_EDIT")) 
+      || (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" || tableData.rowData[1] === "TRANSLATION_REVIEW")) && 
+      <CustomButton
+        sx={{ borderRadius: 2}}
+        label="Edit"
+        onClick={() => {
+          navigate(`/${tableData.rowData[0]}/transcript`);
+          console.log("Edit Button ---- ", tableData.rowData);
+          // setOpenViewTaskDialog(true);
+          // setCurrentTaskDetails(tableData.rowData);
+        }}
+      />
+    )
+  }
 
   const renderDeleteButton = (tableData) => {
     return (
