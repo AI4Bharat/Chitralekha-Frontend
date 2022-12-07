@@ -90,7 +90,6 @@ const TaskList = () => {
         sx={{ borderRadius: 2, marginLeft: 2}}
         color="error"
         label="Delete"
-        color="error"
         onClick={() => {
           console.log("Delete Button --- ", tableData.rowData);
           // setOpenViewTaskDialog(true);

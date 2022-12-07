@@ -15,6 +15,7 @@ const ProjectStyle = makeStyles({
     width: "40%",
     borderRadius: "7px",
     margin: "24px auto",
+    backgroundColor:"#0083e2"
   },
 
   waveform: {
@@ -178,10 +179,26 @@ const ProjectStyle = makeStyles({
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
-    borderColor: "rgba(0, 0, 0, 0.23)",
+    borderColor: "#616A6B",
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+  },
+  headerMenu:{
+    width: "80%",
+    // margin: "5px 15px 15px 10px",
+    margin: "5px 15px 15px 23px",
+     padding: "16.5px 12px",
+     fontSize: "1rem",
+     fontWeight: "400",
+     lineHeight: "1.4375em",
+     color: "rgba(0, 0, 0, 0.87)",
+     borderRadius: "4px",
+     borderColor: "white",
+     outlineColor: "#2C2799",
+     resize: "none",
+     fontFamily: "Roboto, sans-serif",
+
   },
 
   videoBox: {
