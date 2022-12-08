@@ -9,6 +9,7 @@ import Button from "../../../common/Button";
 import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const CreatenewProject = () => {
   const { orgId } = useParams();
@@ -34,8 +35,13 @@ const CreatenewProject = () => {
   const [creatorPhone, setCreatorPhone] = useState("");
   const [creatorOrgTitle, setCreatorOrgTitle] = useState("");
   const [creatorOrgEmail, setCreatorOrgEmail] = useState("");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
-  const handleCreateProject = () => {
+  const handleCreateProject =async () => {
     const newPrjectReqBody = {
       title: title,
       is_archived: false,
@@ -68,7 +74,27 @@ const CreatenewProject = () => {
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
-    dispatch(APITransport(apiObj));
+   // dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   };
 
   useEffect(() => {
@@ -77,8 +103,23 @@ const CreatenewProject = () => {
       }
   }, [newProjectDetails]);
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
+       {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
           Create a Project

@@ -11,6 +11,7 @@ import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
 import DatasetStyle from "../../../styles/Dataset";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
@@ -24,6 +25,11 @@ const VideoList = ({ data }) => {
   const [open, setOpen] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState({});
   const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -66,10 +72,31 @@ const VideoList = ({ data }) => {
     setTableData(result);
   }, [data]);
 
-  const createTaskHandler = (data) => {
+  const createTaskHandler = async(data) => {
     const apiObj = new CreateNewTaskAPI(data);
-    dispatch(APITransport(apiObj));
+   // dispatch(APITransport(apiObj));
     setOpenCreateTaskDialog(false);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   };
 
   const columns = [
@@ -171,6 +198,19 @@ const VideoList = ({ data }) => {
     search: false,
     jumpToPage: true,
   };
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
 
   return (
     <>
@@ -194,6 +234,7 @@ const VideoList = ({ data }) => {
           videoDetails={currentVideoDetails}
         />
       )}
+       {renderSnackBar()}
     </>
   );
 };
