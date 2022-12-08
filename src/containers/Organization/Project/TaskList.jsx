@@ -62,7 +62,7 @@ const TaskList = () => {
     const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
     dispatch(APITransport(comparisonTableObj));
 
-    navigate(`/${id}/transcript`);
+    navigate(`/${id}/translate`);
   }
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {

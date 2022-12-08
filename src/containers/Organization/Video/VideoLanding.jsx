@@ -9,6 +9,7 @@ import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDet
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FetchVideoDetailsAPI from "../../../redux/actions/api/Project/FetchVideoDetails";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
+import TranslationRightPanel from "./TranslationRightPanel";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -55,7 +56,8 @@ const VideoLanding = () => {
           setCurrentTime={setCurrentTime}
           setPlaying={setPlaying}
         />
-        <RightPanel />
+        {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" || taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && <RightPanel />}
+        {(taskDetails?.task_type === "TRANSLATION_EDIT" || taskDetails?.task_type === "TRANSLATION_REVIEW") && <TranslationRightPanel />}
       </Box>
       <Box height={"150px"} position="relative">
         <Timeline
