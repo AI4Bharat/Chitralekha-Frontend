@@ -32,8 +32,8 @@ const EditProfile = () => {
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
 
-  // const userData = JSON.parse(localStorage.getItem("userData"));
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  // const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
