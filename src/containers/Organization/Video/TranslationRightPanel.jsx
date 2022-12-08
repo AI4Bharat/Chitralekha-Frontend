@@ -1,6 +1,8 @@
+// TranslationRightPanel
+
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, TextField, CardContent, } from "@mui/material";
+import { Button, TextField, CardContent, Divider, } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +10,7 @@ import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams } from "react-router-dom";
 
-const RightPanel = () => {
+const TranslationRightPanel = () => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
@@ -29,7 +31,7 @@ const RightPanel = () => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
       if(index === i) {
-        element.text = target.value
+        element.target_text = target.value
       }
     });
 
@@ -84,7 +86,7 @@ const RightPanel = () => {
         {
           sourceText?.map((item, index) => {
             return (<>
-              <Box display="flex" padding="10px 24px 0" >
+              <Box display="flex" padding="16px" sx={{paddingX: 0, justifyContent: "space-around"}} >
                 <TextField variant="outlined" value={item.start_time} sx={{
                   "& .MuiOutlinedInput-root": {
                     width: "85%",
@@ -122,20 +124,36 @@ const RightPanel = () => {
                   <textarea className={classes.customTextarea} rows={3} {...props} />
                 )}
               /> */}
-              <CardContent>
-              <textarea rows={3} 
+              <CardContent sx={{display: "flex", paddingX: 0, borderBottom: 2}}>
+              <textarea rows={4} 
+              className={classes.textAreaTransliteration}
+              contentEditable={false}
+              //   className={({ isActive }) =>
+              //   isActive ? classes.textAreaTransliteration : classes.headerMenu
+              // }
+              // activeClassName={classes.textAreaTransliteration}
+              defaultValue={item.text} 
+            //    onChange={(event) => {
+            //     changeTranscriptHandler(event.target, index)
+                
+            //   }}
+               />
+               <textarea rows={4} 
               className={classes.textAreaTransliteration}
               //   className={({ isActive }) =>
               //   isActive ? classes.textAreaTransliteration : classes.headerMenu
               // }
               // activeClassName={classes.textAreaTransliteration}
-              value={item.text} 
+              value={item.target_text} 
                onChange={(event) => {
                 changeTranscriptHandler(event.target, index)
                 
               }}
                />
                </CardContent>
+               {/* <CardContent>
+              
+               </CardContent> */}
             </>)
           })
         }
@@ -144,4 +162,4 @@ const RightPanel = () => {
   );
 };
 
-export default RightPanel;
+export default TranslationRightPanel;

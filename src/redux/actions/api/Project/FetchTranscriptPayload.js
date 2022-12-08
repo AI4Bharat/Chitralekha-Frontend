@@ -9,7 +9,7 @@ export default class FetchTranscriptPayloadAPI extends API {
     this.id = id;
     this.payloadEndpoint = (taskType === "TRANSCRIPTION_EDIT" || taskType === "TRANSCRIPTION_REVIEW") ? ENDPOINTS.transcript : ENDPOINTS.translation
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.transcript
+      this.payloadEndpoint
     }get_payload/?task_id=${id}`;
   }
 

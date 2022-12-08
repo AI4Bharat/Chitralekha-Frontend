@@ -3,12 +3,13 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class SaveTranscriptAPI extends API {
-  constructor(payload, timeout = 2000) {
+  constructor(payload, taskType, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.SAVE_TRANSCRIPT;
     this.payload = payload;
+    this.payloadEndpoint = (taskType === "TRANSCRIPTION_EDIT" || taskType === "TRANSCRIPTION_REVIEW") ? ENDPOINTS.transcript : ENDPOINTS.translation
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.transcript
+      this.payloadEndpoint
     }save/`;
   }
 
