@@ -89,21 +89,28 @@ const RootRouter = () => {
           path="/forget-password/confirm/:key/:token"
           element={<ConfirmForgotPassword />}
         />
-       <Route
+        <Route
           path="/comparison-table/:id"
           element={ProtectedRouteWrapper(
             <Layout component={<ComparisonTable />} />
           )}
         />
-        
+
         <Route
           path="/:taskId/transcript"
           element={ProtectedRouteWrapper(
-            <Layout component={<VideoLanding />} isDrawer={true}/>
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
+          path="/:taskId/translate"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
           )}
         />
       </Routes>
-      
+
     </HashRouter>
   );
 };
