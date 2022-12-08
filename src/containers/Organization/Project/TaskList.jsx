@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 //Themes
-import { ThemeProvider, Box,Grid } from "@mui/material";
+import { ThemeProvider, Box, Grid } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
@@ -36,19 +36,17 @@ const TaskList = () => {
   });
   const [taskid, setTaskid] = useState();
 
-  
   const navigate = useNavigate();
 
-
-  const FetchTaskList = () =>{
+  const FetchTaskList = () => {
     const apiObj = new FetchTaskListAPI(projectId);
     dispatch(APITransport(apiObj));
-  }
+  };
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
-    FetchTaskList()
+    FetchTaskList();
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
@@ -57,10 +55,10 @@ const TaskList = () => {
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
       type: Object.keys(rsp_data.payloads)[0],
-      payload : {
-        payload: rsp_data.payloads[Object.keys(rsp_data.payloads)[0]]?.payload
-      }
-    }
+      payload: {
+        payload: rsp_data.payloads[Object.keys(rsp_data.payloads)[0]]?.payload,
+      },
+    };
     const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
     dispatch(APITransport(comparisonTableObj));
 
@@ -82,8 +80,7 @@ const TaskList = () => {
       console.log("rsp_data --------- ", rsp_data);
       if (res.ok) {
         dispatch(setComparisonTable(rsp_data));
-        if(isSubmitCall){
-
+        if (isSubmitCall) {
           // --------------------- if task type is translation, submit translation with trg lang ------------- //
           await onTranslationTaskTypeSubmit(id, rsp_data);
         }
@@ -94,67 +91,57 @@ const TaskList = () => {
   };
 
   useEffect(() => {
-   
-    
-     let taskId
-     taskList?.map((element, index) => {
-      taskId= element.id;
-     
+    let taskId;
+    taskList?.map((element, index) => {
+      taskId = element.id;
     });
-
     setTaskid(taskId);
-   
-  }, [ taskList]);
+  }, [taskList]);
 
-
-  const handledeletetask = async() =>{
+  const handledeletetask = async () => {
     const apiObj = new DeleteTaskAPI(taskid);
     fetch(apiObj.apiEndPoint(), {
-      method: 'DELETE',
+      method: "DELETE",
       body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers
-  }).then((response) => {
-
-     
+      headers: apiObj.getHeaders().headers,
+    }).then((response) => {
       if (response.status === 204) {
-          setSnackbarInfo({
-              ...snackbar,
-              open: true,
-              message: "",
-              variant: 'success'
-          })
-          FetchTaskList()
+        setSnackbarInfo({
+          ...snackbar,
+          open: true,
+          message: "",
+          variant: "success",
+        });
+        FetchTaskList();
+      } else {
+        setSnackbarInfo({
+          ...snackbar,
+          open: true,
+          message: " ",
+          variant: "error",
+        });
       }
-      else {
-          setSnackbarInfo({
-              ...snackbar,
-              open: true,
-              message: " ",
-              variant: 'error'
-          })
+    });
 
-      }
-
-  })
-  
-  
-  // const submitTranslation = (id, source) => {
-
-  }
+    // const submitTranslation = (id, source) => {
+  };
 
   const renderViewButton = (tableData) => {
-    console.log(tableData,"tableDatatableData")
+    console.log(tableData, "tableDatatableData");
     return (
-      (tableData.rowData[5] === "NEW" || tableData.rowData[5] === "INPROGRESS") && <CustomButton
-        sx={{ borderRadius: 2}}
-        label="View"
-        onClick={() => {
-          setOpenViewTaskDialog(true);
-          setCurrentTaskDetails(tableData.rowData);
-        }}
-      />
-    )
-  }
+      (tableData.rowData[5] === "NEW" ||
+        tableData.rowData[5] === "INPROGRESS") && (
+        <CustomButton
+          sx={{ borderRadius: 2 }}
+          label="View"
+          onClick={() => {
+            setOpenViewTaskDialog(true);
+            setCurrentTaskDetails(tableData.rowData);
+          }}
+        />
+      )
+    );
+  };
 
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
@@ -177,13 +164,13 @@ const TaskList = () => {
   const renderDeleteButton = (tableData) => {
     return (
       <CustomButton
-        sx={{ borderRadius: 2, marginLeft: 2}}
+        sx={{ borderRadius: 2, marginLeft: 2 }}
         color="error"
         label="Delete"
         onClick={handledeletetask}
       />
-    )
-  }
+    );
+  };
 
   const columns = [
     {
@@ -270,7 +257,7 @@ const TaskList = () => {
         }),
         customBodyRender: (value, tableMeta) => {
           return (
-            <Box sx={{display: 'flex'}}>
+            <Box sx={{ display: "flex" }}>
               {renderViewButton(tableMeta)}
               {renderEditButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
@@ -329,12 +316,9 @@ const TaskList = () => {
     );
   };
 
-
   return (
     <>
-     <Grid>
-        {renderSnackBar()}
-      </Grid>
+      <Grid>{renderSnackBar()}</Grid>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={taskList} columns={columns} options={options} />
       </ThemeProvider>
@@ -346,7 +330,8 @@ const TaskList = () => {
           compareHandler={(id, source, isSubmitCall) => {
             dispatch(clearComparisonTable());
             localStorage.setItem("sourceId", id);
-            if (source.length) getTranscriptionSourceComparison(id, source, isSubmitCall);
+            if (source.length)
+              getTranscriptionSourceComparison(id, source, isSubmitCall);
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
           // submitHandler={({id, source}) => {
