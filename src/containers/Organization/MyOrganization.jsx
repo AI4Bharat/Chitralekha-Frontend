@@ -91,13 +91,34 @@ const MyOrganization = () => {
     setOrganizationName(organizationDetails?.title);
   }, [organizationDetails]);
 
-  const handleOrganizationUpdate = () => {
+  const handleOrganizationUpdate = async() => {
     const userObj = new EditOrganizationDetailsAPI(
       id,
       organizationName,
       organizationDetails?.email_domain_name
     );
-    dispatch(APITransport(userObj));
+    //dispatch(APITransport(userObj));
+    const res = await fetch(userObj.apiEndPoint(), {
+      method: "PUT",
+      body: JSON.stringify(userObj.getBody()),
+      headers: userObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+  
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
+  
   };
 
   const addNewMemberHandler = async() => {
