@@ -182,7 +182,7 @@ const CreatenewProject = () => {
                 inputProps={{ "aria-label": "Without label" }}
               >
                  {managerNames.map((item, index) => (
-                  <MenuItem key={index} value={item} >
+                  <MenuItem key={index} value={item.id} >
                     {item.email}
                   </MenuItem>
                  ))} 
