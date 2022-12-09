@@ -142,6 +142,20 @@ const TaskList = () => {
       )
     );
   };
+  const renderExportButton = (tableData) => {
+    console.log(tableData, "tableDatatableData");
+    return (
+      (tableData.rowData[5] === "COMPLETE"  && (
+        <CustomButton
+          sx={{ borderRadius: 2 }}
+          label="Export"
+          onClick={() => {
+            console.log("Export Button ---- ", tableData.rowData);
+          }}
+        />
+      )
+    ));
+  };
 
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
@@ -260,6 +274,7 @@ const TaskList = () => {
             <Box sx={{ display: "flex" }}>
               {renderViewButton(tableMeta)}
               {renderEditButton(tableMeta)}
+              {renderExportButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
             </Box>
 
