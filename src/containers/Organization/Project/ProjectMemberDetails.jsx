@@ -11,6 +11,7 @@ import tableTheme from "../../../theme/tableTheme";
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
+import CustomizedSnackbars from "../../../common/Snackbar"
 
 //APIs
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
@@ -22,15 +23,40 @@ const ProjectMemberDetails = () => {
   const dispatch = useDispatch();
 
   const [tableData, setTableData] = useState([]);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
   );
+  console.log(projectMembersList,"projectMembersList")
 
-  const removeProjectMember = (id) => {
+  const removeProjectMember = async(id) => {
     const apiObj = new RemoveProjectMemberAPI(projectId, id);
-    dispatch(APITransport(apiObj));
-    getProjectMembers();
+    //dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+      getProjectMembers();
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   };
 
   const getProjectMembers = () => {
@@ -170,10 +196,27 @@ const ProjectMemberDetails = () => {
     jumpToPage: true,
   };
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={tableTheme}>
+        <MUIDataTable data={tableData} columns={columns} options={options} />
+      </ThemeProvider>
+      {renderSnackBar()}
+    </>
   );
 };
 

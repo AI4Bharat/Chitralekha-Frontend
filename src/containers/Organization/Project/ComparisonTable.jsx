@@ -27,11 +27,17 @@ import setComparisonTable from "../../../redux/actions/api/Project/SetComparison
 import Spinner from "../../../common/Spinner";
 import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
 import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
   const { projectId } = useParams();
 
   const navigate = useNavigate();
@@ -109,7 +115,7 @@ const ComparisonTable = () => {
     dispatch(APITransport(obj));
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     let data = {};
 
     if(selectedTranscriptType === "MANUALLY_CREATED") {
@@ -131,9 +137,29 @@ const ComparisonTable = () => {
     }
     
     const projectObj = new ComparisionTableAPI(taskDetails.id, data);
-    dispatch(APITransport(projectObj));
+    //dispatch(APITransport(projectObj));
 
-    navigate(`/${taskDetails.id}/transcript`)
+    
+    const res = await fetch(projectObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(projectObj.getBody()),
+      headers: projectObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+      navigate(`/${taskDetails.id}/transcript`)
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   };
 
   const postCompareTranscriptionSource = (id, sourceTypeList) => {
@@ -146,9 +172,19 @@ const ComparisonTable = () => {
     }).then(async (res) => {
       const rsp_data = await res.json();
       if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message:  rsp_data?.message,
+          variant: "success",
+        })
         dispatch(setComparisonTable(rsp_data));
       } else {
-        console.log("failed");
+        //console.log("failed");
+        setSnackbarInfo({
+          open: true,
+          message: rsp_data?.message,
+          variant: "error",
+        })
       }
     });
   };
@@ -173,6 +209,19 @@ const ComparisonTable = () => {
         return i !== indx;
       });
     });
+  };
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
   };
 
   const renderActionButton = (indx) => {
@@ -314,6 +363,7 @@ const ComparisonTable = () => {
   return (
     <Grid container spacing={1} style={{ alignItems: "center" }}>
       {loading && <Spinner  />}
+      {renderSnackBar()}
       <Card className={classes.orgCard}>
         <TaskVideoDialog 
           videoName={taskDetails.video_name} 

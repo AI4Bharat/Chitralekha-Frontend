@@ -1,4 +1,8 @@
-import { Card, Divider, Grid, Typography } from "@mui/material";
+import { Card, Divider, Grid, Typography, FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField, } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -9,6 +13,8 @@ import Button from "../../../common/Button";
 import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import CustomizedSnackbars from "../../../common/Snackbar";
+import FetchManagerNameAPI from "../../../redux/actions/api/Project/FetchManagerName";
 
 const CreatenewProject = () => {
   const { orgId } = useParams();
@@ -19,10 +25,13 @@ const CreatenewProject = () => {
   const newProjectDetails = useSelector(
     (state) => state.getNewProjectDetails.data
   );
+  const managerNames = useSelector(
+    (state) => state.getManagerName.data
+  );
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [managerUsername, setManagerUsername] = useState("");
+  const [managerUsername, setManagerUsername] = useState([]);
   const [managerFirstName, setManagerFirstName] = useState("");
   const [managerLastName, setManagerLastName] = useState("");
   const [managerPhone, setManagerPhone] = useState("");
@@ -34,41 +43,78 @@ const CreatenewProject = () => {
   const [creatorPhone, setCreatorPhone] = useState("");
   const [creatorOrgTitle, setCreatorOrgTitle] = useState("");
   const [creatorOrgEmail, setCreatorOrgEmail] = useState("");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
-  const handleCreateProject = () => {
+
+  const GetManagerName =()=>{
+    const apiObj = new FetchManagerNameAPI();
+     dispatch(APITransport(apiObj));
+  }
+
+  useEffect(() => {
+    GetManagerName()
+  }, [])
+
+  const handleCreateProject =async () => {
     const newPrjectReqBody = {
       title: title,
-      is_archived: false,
+     // is_archived: false,
       description: description,
       organization_id: orgId,
-      manager: {
-        username: managerUsername,
-        availability_status: 1,
-        enable_mail: true,
-        first_name: managerFirstName,
-        last_name: managerLastName,
-        phone: managerPhone,
-        organization: {
-          title: managerOrgTitle,
-          email_domain_name: managerOrgEmail,
-        },
-      },
-      created_by: {
-        username: creatorUsername,
-        availability_status: 1,
-        enable_mail: true,
-        first_name: creatorFirstName,
-        last_name: creatorLastName,
-        phone: creatorPhone,
-        organization: {
-          title: creatorOrgTitle,
-          email_domain_name: creatorOrgEmail,
-        },
-      },
+      managers_id: [managerUsername]
+      
+      // manager: {
+      //   username: managerUsername,
+      //   // availability_status: 1,
+      //   // enable_mail: true,
+      //   // first_name: managerFirstName,
+      //   // last_name: managerLastName,
+      //   // phone: managerPhone,
+      //   // organization: {
+      //   //   title: managerOrgTitle,
+      //   //   email_domain_name: managerOrgEmail,
+      //   // },
+      // },
+      // created_by: {
+      //   username: creatorUsername,
+      //   availability_status: 1,
+      //   enable_mail: true,
+      //   first_name: creatorFirstName,
+      //   last_name: creatorLastName,
+      //   phone: creatorPhone,
+      //   organization: {
+      //     title: creatorOrgTitle,
+      //     email_domain_name: creatorOrgEmail,
+      //   },
+      // },
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
-    dispatch(APITransport(apiObj));
+   // dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   };
 
   useEffect(() => {
@@ -77,8 +123,23 @@ const CreatenewProject = () => {
       }
   }, [newProjectDetails]);
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
+       {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
           Create a Project
@@ -105,16 +166,39 @@ const CreatenewProject = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Box>
-
-        <Divider sx={{ mt: 5 }} />
-
         <Box sx={{ mt: 3 }}>
+        <Typography gutterBottom component="div" label="Required">
+            Managers *:
+          </Typography>
+        <FormControl fullWidth>
+           
+              <Select
+                fullWidth
+                //labelId="select-UserName"
+                //label="Select UserName"
+                 value={managerUsername}
+                 onChange={(event) => setManagerUsername(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+              >
+                 {managerNames.map((item, index) => (
+                  <MenuItem key={index} value={item.id} >
+                    {item.email}
+                  </MenuItem>
+                 ))} 
+              </Select>
+            </FormControl>
+        </Box>
+
+        {/* <Divider sx={{ mt: 5 }} /> */}
+
+        {/* <Box sx={{ mt: 3 }}>
           <Typography variant="h5" gutterBottom component="div">
             Manager Details
           </Typography>
-        </Box>
+        </Box> */}
 
-        <Box display="flex" sx={{ mt: 3 }}>
+        {/* <Box display="flex" sx={{ mt: 3 }}>
           <Box width="100%" marginRight="5%">
             <Typography gutterBottom component="div" label="Required">
               Username*:
@@ -135,9 +219,9 @@ const CreatenewProject = () => {
               onChange={(e) => setManagerPhone(e.target.value)}
             />
           </Box>
-        </Box>
+        </Box> */}
 
-        <Box display="flex" sx={{ mt: 3 }}>
+        {/* <Box display="flex" sx={{ mt: 3 }}>
           <Box width="100%" marginRight="5%">
             <Typography gutterBottom component="div" label="Required">
               First Name:
@@ -258,7 +342,7 @@ const CreatenewProject = () => {
               onChange={(e) => setCreatorOrgEmail(e.target.value)}
             />
           </Box>
-        </Box>
+        </Box> */}
 
         <Box sx={{ mt: 3 }}>
           <Button
@@ -267,10 +351,8 @@ const CreatenewProject = () => {
             onClick={() => handleCreateProject()}
             disabled={
               title &&
-              managerUsername &&
-              managerOrgTitle &&
-              creatorUsername &&
-              creatorOrgTitle
+              managerUsername 
+             
                 ? false
                 : true
             }

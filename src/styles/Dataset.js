@@ -225,7 +225,10 @@ const DatasetStyle = makeStyles({
      inlineSize: "max-content", 
      marginRight: 2, 
      textDecoration: "none"
-  }
+  },
+  formControl: {
+    width: 300
+  },
 });
 
 export default DatasetStyle;
