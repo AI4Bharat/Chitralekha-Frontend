@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -35,7 +35,7 @@ const VideoLanding = () => {
   }, []);
 
   useEffect(() => {
-    if(taskDetails) {
+    if (taskDetails) {
       const apiObj = new FetchVideoDetailsAPI(
         taskDetails.video_url,
         taskDetails.src_language,
@@ -49,17 +49,25 @@ const VideoLanding = () => {
   }, [taskDetails]);
 
   return (
-    <Box sx={{ mt: 7 }} height={"calc(100% - 56px)"}>
-      <Box display={"flex"} height="calc(100% - 150px)">
-        <VideoPanel
-          setPlayer={setPlayer}
-          setCurrentTime={setCurrentTime}
-          setPlaying={setPlaying}
-        />
-        {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" || taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && <RightPanel />}
-        {(taskDetails?.task_type === "TRANSLATION_EDIT" || taskDetails?.task_type === "TRANSLATION_REVIEW") && <TranslationRightPanel />}
-      </Box>
-      <Box height={"150px"} position="relative">
+    <Grid>
+      <Grid
+        container
+        direction={"row"}
+        sx={{ marginTop: 10, overflow: "hidden" }}
+      >
+        <Grid width="100%" md={8} xs={12}>
+          <VideoPanel
+            setPlayer={setPlayer}
+            setCurrentTime={setCurrentTime}
+            setPlaying={setPlaying}
+          />
+        </Grid>
+        <Grid md={4} xs={12} sx={{ width: "100%" }}>
+          {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" || taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && <RightPanel />}
+          {(taskDetails?.task_type === "TRANSLATION_EDIT" || taskDetails?.task_type === "TRANSLATION_REVIEW") && <TranslationRightPanel />}
+        </Grid>
+      </Grid>
+      <Grid height={70} width={"100%"} position="fixed" bottom={1}>
         <Timeline
           waveform={waveform}
           setWaveform={setWaveform}
@@ -69,8 +77,31 @@ const VideoLanding = () => {
           currentTime={currentTime}
           playing={playing}
         />
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
+
+    // <Grid sx={{ mt: 7 }} height={"calc(100% - 56px)"}>
+    //   <Grid display={"flex"} height="calc(100% - 150px)">
+    //     <VideoPanel
+    //       setPlayer={setPlayer}
+    //       setCurrentTime={setCurrentTime}
+    //       setPlaying={setPlaying}
+    //     />
+    //     {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" || taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && <RightPanel />}
+    //     {(taskDetails?.task_type === "TRANSLATION_EDIT" || taskDetails?.task_type === "TRANSLATION_REVIEW") && <TranslationRightPanel />}
+    //   </Grid>
+    //   <Grid height={"150px"} position="relative">
+    //     <Timeline
+    //       waveform={waveform}
+    //       setWaveform={setWaveform}
+    //       player={player}
+    //       render={render}
+    //       setRender={setRender}
+    //       currentTime={currentTime}
+    //       playing={playing}
+    //     />
+    //   </Grid>
+    // </Grid>
   );
 };
 

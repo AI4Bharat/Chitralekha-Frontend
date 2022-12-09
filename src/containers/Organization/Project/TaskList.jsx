@@ -129,8 +129,7 @@ const TaskList = () => {
   const renderViewButton = (tableData) => {
     console.log(tableData, "tableDatatableData");
     return (
-      (tableData.rowData[5] === "NEW" ||
-        tableData.rowData[5] === "INPROGRESS") && (
+      ((tableData.rowData[5] === "NEW" || tableData.rowData[5] === "INPROGRESS") && (tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" || tableData.rowData[1] !== "TRANSLATION_REVIEW")) && (
         <CustomButton
           sx={{ borderRadius: 2 }}
           label="View"
