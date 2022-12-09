@@ -172,6 +172,11 @@ const ComparisonTable = () => {
     }).then(async (res) => {
       const rsp_data = await res.json();
       if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message:  rsp_data?.message,
+          variant: "success",
+        })
         dispatch(setComparisonTable(rsp_data));
       } else {
         console.log("failed");
