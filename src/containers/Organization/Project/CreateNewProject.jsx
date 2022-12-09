@@ -31,7 +31,7 @@ const CreatenewProject = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [managerUsername, setManagerUsername] = useState("");
+  const [managerUsername, setManagerUsername] = useState([]);
   const [managerFirstName, setManagerFirstName] = useState("");
   const [managerLastName, setManagerLastName] = useState("");
   const [managerPhone, setManagerPhone] = useState("");
@@ -65,7 +65,7 @@ const CreatenewProject = () => {
      // is_archived: false,
       description: description,
       organization_id: orgId,
-      managers_id:[1]
+      managers_id: [managerUsername]
       
       // manager: {
       //   username: managerUsername,

@@ -205,7 +205,7 @@ const MyOrganization = () => {
               onClick={() => navigate(`/my-organization/${id}/create-new-project`)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={projectList} />
+              <ProjectList data={projectList}  removeProjectList={() => getProjectList()}/>
             </div>
           </Box>
         </TabPanel>

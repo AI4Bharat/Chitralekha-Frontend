@@ -179,7 +179,7 @@ const ComparisonTable = () => {
         })
         dispatch(setComparisonTable(rsp_data));
       } else {
-        console.log("failed");
+        //console.log("failed");
         setSnackbarInfo({
           open: true,
           message: rsp_data?.message,

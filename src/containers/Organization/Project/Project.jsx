@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import DatasetStyle from "../../../styles/Dataset";
 
 //Components
-import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Card, Grid, Tab, Tabs, Typography,FormControl,Checkbox,ListItemText,ListItemIcon } from "@mui/material";
 import Button from "../../../common/Button";
 import UserList from "../UserList";
 import CreateVideoDialog from "../../../common/CreateVideoDialog";
@@ -23,6 +23,10 @@ import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
 import TaskList from "./TaskList";
 import CustomizedSnackbars from "../../../common/Snackbar";
+import AddProjectMembers from "../../../common/AddProjectMembers";
+import FetchManagerNameAPI from "../../../redux/actions/api/User/FetchUserList";
+import AddProjectMembersAPI from "../../../redux/actions/api/Project/AddProjectMembers";
+import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
 
 const data = [
   {
@@ -78,10 +82,35 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
+  const [addmembers, setAddmembers] = useState([]);
+  const [addUserDialog, setAddUserDialog] = useState(false);
+
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
+ 
+  const managerNames = useSelector((state) => state.getUserList.data
+  );
+
+
+  const getProjectMembers = () => {
+    const userObj = new FetchProjectMembersAPI(projectId);
+    dispatch(APITransport(userObj));
+  };
+
+  useEffect(() => {
+    getProjectMembers();
+  }, []);
+  const GetManagerName =()=>{
+    const apiObj = new FetchManagerNameAPI();
+     dispatch(APITransport(apiObj));
+  }
+
+  useEffect(() => {
+    GetManagerName()
+  }, [])
+
 
   const [value, setValue] = useState(0);
   const [projectDetails, SetProjectDetails] = useState({});
@@ -118,6 +147,37 @@ const Project = () => {
     getProjectnDetails();
     getProjectVideoList();
   }, []);
+
+  const addNewMemberHandler = async() => {
+
+    const selectedMemberIdArr = addmembers.map((el,i)=>{
+      return el.id;
+    })
+  
+    const apiObj = new AddProjectMembersAPI(projectId, {user_id:selectedMemberIdArr});
+   // dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+      getProjectMembers();
+
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
+  }
 
   const addNewVideoHandler = async() => {
     const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
@@ -244,7 +304,7 @@ const Project = () => {
             <Button
               className={classes.projectButton}
               label={"Add project members"}
-              onClick={() => { }}
+              onClick={() => setAddUserDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
@@ -292,6 +352,14 @@ const Project = () => {
           setLang={setLang}
         />
       )}
+      <AddProjectMembers  managerNames={managerNames}
+       open={addUserDialog}
+       handleUserDialogClose={() => setAddUserDialog(false)}
+       addBtnClickHandler={addNewMemberHandler}
+       selectFieldValue={addmembers}
+       handleSelectField={(item)=>setAddmembers(item)}
+      // handleSelectField={(items)=>console.log(items)}
+      />
     </Grid>
   );
 };
