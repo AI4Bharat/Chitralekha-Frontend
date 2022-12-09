@@ -32,6 +32,7 @@ const ProjectMemberDetails = () => {
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
   );
+  console.log(projectMembersList,"projectMembersList")
 
   const removeProjectMember = async(id) => {
     const apiObj = new RemoveProjectMemberAPI(projectId, id);

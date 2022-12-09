@@ -97,7 +97,7 @@ const TaskList = () => {
     });
     setTaskid(taskId);
   }, [taskList]);
-
+console.log(taskList,"taskList",taskid)
   const handledeletetask = async () => {
     const apiObj = new DeleteTaskAPI(taskid);
     fetch(apiObj.apiEndPoint(), {

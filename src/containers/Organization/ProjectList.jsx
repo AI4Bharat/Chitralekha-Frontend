@@ -1,8 +1,15 @@
 import React from "react";
 
 //Themes
-import { ThemeProvider } from "@mui/material";
+import {
+  ThemeProvider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+} from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import { useDispatch, useSelector } from "react-redux";
 
 //Components
 import CustomButton from "../../common/Button";
@@ -10,10 +17,59 @@ import MUIDataTable from "mui-datatables";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
+import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
+import APITransport from "../../redux/actions/apitransport/apitransport";
+import CustomizedSnackbars from "../../common/Snackbar";
 
-const ProjectList = ({ data,props }) => {
+const ProjectList = ({ data, props,removeProjectList }) => {
   const { id } = useParams();
+  const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
+  const [projectid, setprojectid] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
+
+ 
+
+  const handleok = async (id) => {
+    setOpen(false);
+    console.log("project ID ------- ", id);
+    const apiObj = new DeleteProjectAPI(id);
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "DELETE",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      removeProjectList();
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDeleteProject = (id) => {
+    setOpen(true);
+    setprojectid(id)
+  };
 
   useEffect(() => {
     const result = data.map((item) => {
@@ -21,12 +77,23 @@ const ProjectList = ({ data,props }) => {
         item.title,
         item.manager?.username,
         item.created_by?.username,
-        <Link
-          to={`/my-organization/${id}/project/${item.id}`}
-          style={{ textDecoration: "none" }}
-        > 
-          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
-        </Link>,
+        <div style={{ textAlign: "center" }}>
+          <Link
+            to={`/my-organization/${id}/project/${item.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <CustomButton
+              sx={{ borderRadius: 2, marginRight: 2 }}
+              label="View"
+            />
+          </Link>
+          <CustomButton
+            sx={{ borderRadius: 2 }}
+            color="error"
+            label="Delete"
+            onClick={()=>handleDeleteProject(item.id)}
+          />
+        </div>,
       ];
     });
 
@@ -78,7 +145,7 @@ const ProjectList = ({ data,props }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          style: { height: "30px", fontSize: "16px", textAlign: "center" },
         }),
       },
     },
@@ -109,10 +176,50 @@ const ProjectList = ({ data,props }) => {
     jumpToPage: true,
   };
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
+  const renderDialog = () => {
+    return (
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure, you want to delete this project? All the associated
+            video and tasks will be deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <CustomButton onClick={handleClose} label="Cancel" />
+          <CustomButton  onClick={()=>handleok(projectid)} label="Ok" autoFocus />
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={tableTheme}>
+        <MUIDataTable data={tableData} columns={columns} options={options} />
+      </ThemeProvider>
+      {renderSnackBar()}
+      {renderDialog()}
+    </>
   );
 };
 
