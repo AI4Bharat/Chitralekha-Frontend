@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams } from "react-router-dom";
+import '../../../styles/ScrollbarStyle.css';
 
 const RightPanel = () => {
   const { taskId } = useParams();
@@ -59,7 +60,7 @@ const RightPanel = () => {
         display: "flex",
         borderLeft: "1px solid #eaeaea",
       }}
-      width="25%"
+      // width="25%"
       flexDirection="column"
     >
       <Box display="flex">
@@ -76,10 +77,12 @@ const RightPanel = () => {
           flexDirection: "column",
           borderTop: "1px solid #eaeaea",
           overflowY: "scroll",
-          height: "100%",
+          height: window.innerHeight*0.7,
           backgroundColor:"black",
           color:"white",
+          marginTop: "5px",
         }}
+        className={"subTitleContainer"}
       >
         {
           sourceText?.map((item, index) => {
@@ -122,8 +125,20 @@ const RightPanel = () => {
                   <textarea className={classes.customTextarea} rows={3} {...props} />
                 )}
               /> */}
-              <CardContent>
-              <textarea rows={3} 
+              <CardContent sx={{display: "flex", paddingX: 0, borderBottom: 2}}>
+                <IndicTransliterate
+                lang={taskData.src_language}
+                value={item.text}
+                onChangeText={(text, index) => {
+                }}
+                onChange={(event) => {
+                  changeTranscriptHandler(event.target, index)
+                }}
+                renderComponent={(props) => (
+                  <textarea className={classes.customTextarea} rows={4} {...props} />
+                )}
+              />
+              {/* <textarea rows={3} 
               className={classes.textAreaTransliteration}
               //   className={({ isActive }) =>
               //   isActive ? classes.textAreaTransliteration : classes.headerMenu
@@ -134,7 +149,7 @@ const RightPanel = () => {
                 changeTranscriptHandler(event.target, index)
                 
               }}
-               />
+               /> */}
                </CardContent>
             </>)
           })

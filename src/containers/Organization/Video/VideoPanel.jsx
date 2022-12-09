@@ -44,7 +44,7 @@ const VideoPanel = memo(
 
     return (
       <Box margin="auto" display="flex" flexDirection="column">
-        <Typography variant="h4" textAlign="center" marginBottom="15px">{videoDetails?.video?.name}</Typography>
+        <Typography variant="h4" textAlign="center" paddingY={4}>{videoDetails?.video?.name}</Typography>
         <video
           onClick={onClick}
           src={videoDetails?.direct_video_url}
