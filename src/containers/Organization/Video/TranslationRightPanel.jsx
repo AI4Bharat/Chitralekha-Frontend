@@ -10,6 +10,7 @@ import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams,useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
+import '../../../styles/ScrollbarStyle.css';
 
 const TranslationRightPanel = () => {
   const { taskId,orgId,projectId } = useParams();
@@ -103,7 +104,7 @@ const TranslationRightPanel = () => {
         display: "flex",
         borderLeft: "1px solid #eaeaea",
       }}
-      width="25%"
+    //   width="25%"
       flexDirection="column"
     >
       <Box display="flex">
@@ -120,10 +121,12 @@ const TranslationRightPanel = () => {
           flexDirection: "column",
           borderTop: "1px solid #eaeaea",
           overflowY: "scroll",
-          height: "100%",
+          height: window.innerHeight*0.7,
           backgroundColor:"black",
           color:"white",
+          marginTop: "5px"
         }}
+        className={"subTitleContainer"}
       >
         {
           sourceText?.map((item, index) => {
@@ -180,7 +183,19 @@ const TranslationRightPanel = () => {
                 
             //   }}
                />
-               <textarea rows={4} 
+               <IndicTransliterate
+                lang={taskData?.target_language}
+                value={item.target_text}
+                onChangeText={(text, index) => {
+                }}
+                onChange={(event) => {
+                  changeTranscriptHandler(event.target, index)
+                }}
+                renderComponent={(props) => (
+                  <textarea className={classes.textAreaTransliteration} rows={4} {...props} />
+                )}
+              />
+               {/* <textarea rows={4} 
               className={classes.textAreaTransliteration}
               //   className={({ isActive }) =>
               //   isActive ? classes.textAreaTransliteration : classes.headerMenu
@@ -191,7 +206,7 @@ const TranslationRightPanel = () => {
                 changeTranscriptHandler(event.target, index)
                 
               }}
-               />
+               /> */}
                </CardContent>
                {/* <CardContent>
               

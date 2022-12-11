@@ -1,0 +1,23 @@
+/* width */
+
+.subTitleContainer::-webkit-scrollbar {
+    width: 10px;
+    padding: 5;
+  }
+  
+  /* Track */
+  .subTitleContainer::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+   
+  /* Handle */
+  .subTitleContainer::-webkit-scrollbar-thumb {
+    background: dimgrey;
+    border-radius: 50px
+  }
+  
+  /* Handle on hover */
+  .subTitleContainer::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+    border-radius: 50px
+  }
