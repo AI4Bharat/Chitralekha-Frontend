@@ -10,9 +10,11 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FetchVideoDetailsAPI from "../../../redux/actions/api/Project/FetchVideoDetails";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import TranslationRightPanel from "./TranslationRightPanel";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
+  console.log(useParams,"useParams",taskId)
   const dispatch = useDispatch();
 
   const [waveform, setWaveform] = useState();
@@ -26,14 +28,24 @@ const VideoLanding = () => {
   });
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
-  useEffect(() => {
+  const FetchTaskDetails = async() =>{
     const apiObj = new FetchTaskDetailsAPI(taskId);
     dispatch(APITransport(apiObj));
+   }
+
+  useEffect(() => {
+    FetchTaskDetails()
   }, []);
 
+ 
   useEffect(() => {
     if (taskDetails) {
       const apiObj = new FetchVideoDetailsAPI(
@@ -43,13 +55,50 @@ const VideoLanding = () => {
       );
       dispatch(APITransport(apiObj));
 
+      (async () => {
       const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id, taskDetails.task_type);
-      dispatch(APITransport(payloadObj))
+      // dispatch(APITransport(payloadObj))
+      const res = await fetch(payloadObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(payloadObj.getBody()),
+        headers: payloadObj.getHeaders().headers,
+      });
+      const resp = await res.json();
+      if (res.ok) {
+        // setSnackbarInfo({
+        //   open: true,
+        //   message: resp?.message,
+        //   variant: "success",
+        // });
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    })();
     }
   }, [taskDetails]);
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
+
   return (
     <Grid>
+       {renderSnackBar()}
       <Grid
         container
         direction={"row"}
