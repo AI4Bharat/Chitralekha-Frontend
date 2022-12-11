@@ -145,7 +145,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     },
     {
       name: "Action",
-      label: "Action",
+      label: "Actions",
       options: {
         filter: false,
         sort: false,
