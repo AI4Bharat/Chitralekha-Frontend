@@ -57,7 +57,7 @@ const VideoLanding = () => {
 
       (async () => {
       const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id, taskDetails.task_type);
-      // dispatch(APITransport(payloadObj))
+       dispatch(APITransport(payloadObj))
       const res = await fetch(payloadObj.apiEndPoint(), {
         method: "GET",
         body: JSON.stringify(payloadObj.getBody()),
