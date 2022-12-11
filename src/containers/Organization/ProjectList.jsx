@@ -7,9 +7,13 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 import { useDispatch, useSelector } from "react-redux";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 
 //Components
 import CustomButton from "../../common/Button";
@@ -21,7 +25,7 @@ import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../common/Snackbar";
 
-const ProjectList = ({ data, props,removeProjectList }) => {
+const ProjectList = ({ data, props, removeProjectList }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
@@ -33,8 +37,6 @@ const ProjectList = ({ data, props,removeProjectList }) => {
     message: "",
     variant: "success",
   });
-
- 
 
   const handleok = async (id) => {
     setOpen(false);
@@ -68,7 +70,7 @@ const ProjectList = ({ data, props,removeProjectList }) => {
 
   const handleDeleteProject = (id) => {
     setOpen(true);
-    setprojectid(id)
+    setprojectid(id);
   };
 
   useEffect(() => {
@@ -82,17 +84,21 @@ const ProjectList = ({ data, props,removeProjectList }) => {
             to={`/my-organization/${id}/project/${item.id}`}
             style={{ textDecoration: "none" }}
           >
-            <CustomButton
-              sx={{ borderRadius: 2, marginRight: 2 }}
-              label="View"
-            />
+            <Tooltip title="View">
+              <IconButton>
+                <LibraryBooksIcon color="primary" />
+              </IconButton>
+            </Tooltip>
           </Link>
-          <CustomButton
-            sx={{ borderRadius: 2 }}
-            color="error"
-            label="Delete"
-            onClick={()=>handleDeleteProject(item.id)}
-          />
+
+          <Tooltip title="Delete">
+            <IconButton>
+              <DeleteIcon
+                color="error"
+                onClick={() => handleDeleteProject(item.id)}
+              />
+            </IconButton>
+          </Tooltip>
         </div>,
       ];
     });
@@ -206,7 +212,11 @@ const ProjectList = ({ data, props,removeProjectList }) => {
         </DialogContent>
         <DialogActions>
           <CustomButton onClick={handleClose} label="Cancel" />
-          <CustomButton  onClick={()=>handleok(projectid)} label="Ok" autoFocus />
+          <CustomButton
+            onClick={() => handleok(projectid)}
+            label="Ok"
+            autoFocus
+          />
         </DialogActions>
       </Dialog>
     );

@@ -4,14 +4,16 @@ import { roles } from "../../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, Tooltip,IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
-import CustomizedSnackbars from "../../../common/Snackbar"
+import CustomizedSnackbars from "../../../common/Snackbar";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 //APIs
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
@@ -76,19 +78,20 @@ const ProjectMemberDetails = () => {
         item.email,
         item.availability_status,
         roles.map((value) => (value.id === item.role ? value.type : "")),
-        <Box>
-          <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-            <CustomButton
-              sx={{ borderRadius: 2, marginRight: 1 }}
-              label="View"
-            />
+        <Box sx={{display: "flex"}}>
+          <Tooltip title="View">
+        <IconButton>
+        <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
+          <LibraryBooksIcon color="primary" sx={{mt:"10px"}}  />
           </Link>
-          <CustomButton
-            sx={{ borderRadius: 2 }}
-            label="Remove"
-            color="error"
-            onClick={() => removeProjectMember(item.id)}
-          />
+        </IconButton>
+      </Tooltip>
+
+          <Tooltip title="Delete">
+        <IconButton>
+          <DeleteIcon color="error" onClick={() => removeProjectMember(item.id)} />
+        </IconButton>
+      </Tooltip>
         </Box>,
       ];
     });

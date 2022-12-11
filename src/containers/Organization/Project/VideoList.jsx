@@ -2,11 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 //Themes
-import { Box, Grid, ThemeProvider , Dialog,
+import {
+  Box,
+  Grid,
+  ThemeProvider,
+  Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,} from "@mui/material";
+  Tooltip,
+  IconButton,
+  DialogContentText,
+} from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
 import CustomButton from "../../../common/Button";
@@ -21,7 +31,7 @@ import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 
-const VideoList = ({ data,removeVideo }) => {
+const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
@@ -48,7 +58,7 @@ const VideoList = ({ data,removeVideo }) => {
 
   const handleok = async (id) => {
     setOpenDialog(false);
-    const apiObj = new DeleteVideoAPI({video_id:id});
+    const apiObj = new DeleteVideoAPI({ video_id: id });
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
@@ -61,7 +71,7 @@ const VideoList = ({ data,removeVideo }) => {
         message: resp?.message,
         variant: "success",
       });
-      removeVideo()
+      removeVideo();
     } else {
       setSnackbarInfo({
         open: true,
@@ -71,10 +81,10 @@ const VideoList = ({ data,removeVideo }) => {
     }
   };
 
-  const handleDeleteVideo = (id) =>{
+  const handleDeleteVideo = (id) => {
     setOpenDialog(true);
-    setprojectid(id)
-  }
+    setprojectid(id);
+  };
 
   useEffect(() => {
     const result = data.map((item) => {
@@ -85,32 +95,39 @@ const VideoList = ({ data,removeVideo }) => {
         item.url,
         item.duration,
         <>
-        <Box sx={{display: "flex"}}>
-        {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
-        <CustomButton
-        className={classes.tableButton}
-            label="View"
-            onClick={() => handleVideoDialog(item)}
-          />
-           {/* </Grid> */}
-           {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
-          <CustomButton
-           className={classes.tableButton}
-            label="Create Task"
-            onClick={() => {
-              setOpenCreateTaskDialog(true);
-              setCurrentVideoDetails(item);
-            }}
-          />
-           <CustomButton
-       className={classes.tableButton}
-        color="error"
-        label="Delete"
-        onClick={() =>handleDeleteVideo(item.id)}
-      />
-         {/* </Grid> */}
-        </Box>
-         
+          <Box sx={{ display: "flex" }}>
+            {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
+
+            <Tooltip title="View">
+              <IconButton>
+                <LibraryBooksIcon
+                  color="primary"
+                  onClick={() => handleVideoDialog(item)}
+                />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Create Task">
+              <IconButton>
+                <NoteAddIcon
+                  color="primary"
+                  onClick={() => {
+                    setOpenCreateTaskDialog(true);
+                    setCurrentVideoDetails(item);
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Delete">
+              <IconButton>
+                <DeleteIcon
+                  color="error"
+                  onClick={() => handleDeleteVideo(item.id)}
+                />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </>,
       ];
     });
@@ -118,9 +135,9 @@ const VideoList = ({ data,removeVideo }) => {
     setTableData(result);
   }, [data]);
 
-  const createTaskHandler = async(data) => {
+  const createTaskHandler = async (data) => {
     const apiObj = new CreateNewTaskAPI(data);
-   // dispatch(APITransport(apiObj));
+    // dispatch(APITransport(apiObj));
     setOpenCreateTaskDialog(false);
 
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -132,16 +149,15 @@ const VideoList = ({ data,removeVideo }) => {
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
-
+      });
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
   };
 
@@ -154,9 +170,14 @@ const VideoList = ({ data,removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({ style: { textAlign: "center"}})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -167,9 +188,14 @@ const VideoList = ({ data,removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -180,9 +206,14 @@ const VideoList = ({ data,removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -193,9 +224,14 @@ const VideoList = ({ data,removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -206,9 +242,14 @@ const VideoList = ({ data,removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -219,9 +260,14 @@ const VideoList = ({ data,removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px", textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
   ];
@@ -274,17 +320,21 @@ const VideoList = ({ data,removeVideo }) => {
       >
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-           Are you sure, you want to delete this video? All the associated tasks will be deleted.
+            Are you sure, you want to delete this video? All the associated
+            tasks will be deleted.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <CustomButton onClick={handleClose} label="Cancel" />
-          <CustomButton  onClick={()=>handleok(projectid)} label="Ok" autoFocus />
+          <CustomButton
+            onClick={() => handleok(projectid)}
+            label="Ok"
+            autoFocus
+          />
         </DialogActions>
       </Dialog>
     );
   };
-
 
   return (
     <>
@@ -308,8 +358,8 @@ const VideoList = ({ data,removeVideo }) => {
           videoDetails={currentVideoDetails}
         />
       )}
-       {renderSnackBar()}
-       {renderDialog()}
+      {renderSnackBar()}
+      {renderDialog()}
     </>
   );
 };

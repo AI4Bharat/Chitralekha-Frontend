@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 //Themes
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, Tooltip,IconButton, } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -20,7 +21,11 @@ const UserList = ({ data }) => {
             to={`/profile/${item.id}`}
           style={{ textDecoration: "none" }}
         >
-          <CustomButton sx={{ borderRadius: 2, marginRight: 2 }} label="View" />
+          <Tooltip title="View">
+              <IconButton>
+                <LibraryBooksIcon color="primary" />
+              </IconButton>
+            </Tooltip>
         </Link>,
       ];
     });
