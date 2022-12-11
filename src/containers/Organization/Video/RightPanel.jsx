@@ -104,9 +104,9 @@ const RightPanel = () => {
       flexDirection="column"
     >
       <Box display="flex">
-        <Button variant="contained" className={classes.findBtn}>
+        {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
-        </Button>
+        </Button> */}
         <Button variant="contained" className={classes.findBtn} onClick={() => saveTranscriptHandler(true)}>
           Save
         </Button>
