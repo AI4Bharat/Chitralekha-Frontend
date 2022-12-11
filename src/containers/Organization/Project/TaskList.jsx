@@ -66,7 +66,7 @@ const TaskList = () => {
   const [exportTranscription, setExportTranscription] = useState("srt");
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
-
+  const [deleteTaskid,setDeleteTaskid] = useState();
   const navigate = useNavigate();
 
   const FetchTaskList = () => {
@@ -86,7 +86,6 @@ const TaskList = () => {
     taskList.task_type === "TRANSCRIPTION_EDIT" ||
     taskList.task_type === "TRANSCRIPTION_REVIEW";
 
-  console.log(taskList.task_type, "taskListtaskList", Transcrip);
   // const getTranscriptionSourceComparison = (id, source) => {
   const datvalue = useSelector((state) => state.getExportTranscription.data);
   console.log(datvalue, "datvaluedatvalue", taskList.task_type);
@@ -97,9 +96,10 @@ const TaskList = () => {
     setOpenDialog(false);
   };
 
-  const handleClickOpen = (id) => {
+  const handleClickOpen = (id, tasttype) => {
     setOpen(true);
     setTaskdata(id);
+    setTasktype(tasttype);
   };
 
   const handleok = async () => {
@@ -191,12 +191,13 @@ const TaskList = () => {
     setTaskid(taskId);
   }, [taskList]);
 
-  const handledeletetask = async () => {
+  const handledeletetask = async (id) => {
     setOpenDialog(true);
+    setDeleteTaskid(id)
   };
   const handleokDialog = async () => {
     setOpenDialog(false);
-    const apiObj = new DeleteTaskAPI(taskid);
+    const apiObj = new DeleteTaskAPI(deleteTaskid);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
       body: JSON.stringify(apiObj.getBody()),
@@ -259,6 +260,9 @@ const TaskList = () => {
             <CloudDownloadIcon
               color="primary"
               onClick={() => handleClickOpen(tableData.rowData[0])}
+              // onClick={() =>
+              //   handleClickOpen(tableData.rowData[0], tableData.rowData[1])
+              // }
             />
           </IconButton>
         </Tooltip>
@@ -314,7 +318,7 @@ const TaskList = () => {
     return (
       <Tooltip title="Delete">
         <IconButton>
-          <DeleteIcon color="error" onClick={handledeletetask} />
+          <DeleteIcon color="error"  onClick={() => handledeletetask(tableData.rowData[0])  } />
         </IconButton>
       </Tooltip>
 
@@ -529,7 +533,10 @@ const TaskList = () => {
           <Divider />
 
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
-            Transcription
+            {tasktype === "TRANSCRIPTION_EDIT" ||
+            tasktype === "TRANSCRIPTION_REVIEW"
+              ? "Transcription"
+              : "Translation"}
           </DialogContentText>
 
           <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>

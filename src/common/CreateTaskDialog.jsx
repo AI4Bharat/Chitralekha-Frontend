@@ -128,7 +128,7 @@ const CreateTaskDialog = ({
         >
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
-              <InputLabel id="select-task">Select Task Type</InputLabel>
+              <InputLabel id="select-task">Select Task Type*</InputLabel>
               <Select
                 labelId="select-task"
                 label="Select Task Type"
@@ -151,7 +151,7 @@ const CreateTaskDialog = ({
             showAllowedTaskList && (
               <Box width={"100%"} sx={{ mt: 3 }}>
                 <FormControl fullWidth>
-                  <InputLabel id="select-allowed-task">Select Action</InputLabel>
+                  <InputLabel id="select-allowed-task">Select Action*</InputLabel>
                   <Select
                     labelId="select-allowed-task"
                     label="Select Action"
@@ -174,7 +174,7 @@ const CreateTaskDialog = ({
 
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
-              <InputLabel id="assign-user">Assign User</InputLabel>
+              <InputLabel id="assign-user">Assign User*</InputLabel>
               <Select
                 labelId="assign-user"
                 label="Assign User"
@@ -268,6 +268,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
+          disabled={ !(taskType && allowedTaskType && user)}
           onClick={() => submitHandler()}
         >
           Create Task
