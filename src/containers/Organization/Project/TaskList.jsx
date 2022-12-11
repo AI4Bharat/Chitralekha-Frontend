@@ -111,14 +111,14 @@ const TaskList = () => {
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
     });
-    const resp = await res.json();
+    const resp = await res;
     if (res.ok) {
       console.log(resp, "respresp");
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
+      // setSnackbarInfo({
+      //   open: true,
+      //   message: resp?.message,
+      //   variant: "success",
+      // });
     } else {
       setSnackbarInfo({
         open: true,

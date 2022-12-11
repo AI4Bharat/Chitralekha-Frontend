@@ -11,7 +11,7 @@ function CsvDownload(content) {
 	const blob = new Blob(["\ufeff", content]);
 	const url = URL.createObjectURL(blob);
 	downloadLink.href = url;
-	downloadLink.download = "data.csv";
+	downloadLink.download = "data.txt";
 	document.body.appendChild(downloadLink);
 	downloadLink.click();
 	document.body.removeChild(downloadLink);
