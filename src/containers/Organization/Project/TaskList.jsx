@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 //Themes
-import { ThemeProvider, Box, Grid, Dialog,
+import {
+  ThemeProvider,
+  Box,
+  Grid,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -11,9 +15,14 @@ import { ThemeProvider, Box, Grid, Dialog,
   FormControlLabel,
   FormControl,
   FormLabel,
-  } from "@mui/material";
+  Tooltip,
+  IconButton
+} from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
-
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from '@mui/icons-material/Edit';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -36,10 +45,10 @@ import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 
-const  Transcription = ["srt","vtt","txt"," ytt"]
-const  Translation = ["srt","vtt","txt"]
+const Transcription = ["srt", "vtt", "txt", " ytt"];
+const Translation = ["srt", "vtt", "txt"];
 const TaskList = () => {
-  const { orgId,projectId } = useParams();
+  const { orgId, projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
@@ -51,7 +60,7 @@ const TaskList = () => {
     variant: "success",
   });
   const [taskid, setTaskid] = useState();
-  const[tasktype,setTasktype]= useState();
+  const [tasktype, setTasktype] = useState();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [exportTranscription, setExportTranscription] = useState("srt");
@@ -71,61 +80,60 @@ const TaskList = () => {
     FetchTaskList();
   }, []);
 
- 
-
   const taskList = useSelector((state) => state.getTaskList.data);
 
-  const Transcrip = taskList.task_type === "TRANSCRIPTION_EDIT" || 	taskList.task_type === "TRANSCRIPTION_REVIEW"
-  
-  console.log(taskList.task_type,"taskListtaskList",Transcrip)
+  const Transcrip =
+    taskList.task_type === "TRANSCRIPTION_EDIT" ||
+    taskList.task_type === "TRANSCRIPTION_REVIEW";
+
+  console.log(taskList.task_type, "taskListtaskList", Transcrip);
   // const getTranscriptionSourceComparison = (id, source) => {
-    const datvalue = useSelector((state) => state.getExportTranscription.data);  
-    console.log(datvalue,"datvaluedatvalue",taskList.task_type)
-    const handleClose = () => {
-      setOpen(false);
+  const datvalue = useSelector((state) => state.getExportTranscription.data);
+  console.log(datvalue, "datvaluedatvalue", taskList.task_type);
+  const handleClose = () => {
+    setOpen(false);
   };
-  const handleCloseDialog = () =>{
+  const handleCloseDialog = () => {
     setOpenDialog(false);
-  }
+  };
 
   const handleClickOpen = (id) => {
     setOpen(true);
-    setTaskdata(id)
-};
+    setTaskdata(id);
+  };
 
-const handleok = async() => {
-  const apiObj = new exportTranscriptionAPI(taskdata,exportTranscription);
-  //dispatch(APITransport(apiObj));
-  setOpen(false);
-  const res = await fetch(apiObj.apiEndPoint(), {
-    method: "GET",
-    body: JSON.stringify(apiObj.getBody()),
-    headers: apiObj.getHeaders().headers,
-  });
-  const resp = await res.json();
-  if (res.ok) {
-    console.log(resp,"respresp")
-    setSnackbarInfo({
-      open: true,
-      message:  resp?.message,
-      variant: "success",
-    })
-   
-  } else {
-    setSnackbarInfo({
-      open: true,
-      message: resp?.message,
-      variant: "error",
-    })
-  }
-}
+  const handleok = async () => {
+    const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
+    //dispatch(APITransport(apiObj));
+    setOpen(false);
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      console.log(resp, "respresp");
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
 
-const handleClickRadioButton = (e) =>{
-  setExportTranscription(e.target.value);
-}
-const handleClickexportTranslationRadioButton =(e) =>{
-  setexportTranslation(e.target.value);
-}
+  const handleClickRadioButton = (e) => {
+    setExportTranscription(e.target.value);
+  };
+  const handleClickexportTranslationRadioButton = (e) => {
+    setexportTranslation(e.target.value);
+  };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
@@ -138,7 +146,7 @@ const handleClickexportTranslationRadioButton =(e) =>{
     dispatch(APITransport(comparisonTableObj));
 
     navigate(`/${id}/translate`);
-  }
+  };
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
     const sourceTypeList = source.map((el) => {
@@ -168,19 +176,17 @@ const handleClickexportTranslationRadioButton =(e) =>{
   useEffect(() => {
     let taskId;
     taskList?.map((element, index) => {
-      taskId = element.id;  
+      taskId = element.id;
     });
     setTaskid(taskId);
-   
   }, [taskList]);
-  
 
   const handledeletetask = async () => {
     setOpenDialog(true);
   };
-  const handleokDialog= async() =>{
+  const handleokDialog = async () => {
     setOpenDialog(false);
-     const apiObj = new DeleteTaskAPI(taskid);
+    const apiObj = new DeleteTaskAPI(taskid);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
       body: JSON.stringify(apiObj.getBody()),
@@ -190,76 +196,120 @@ const handleClickexportTranslationRadioButton =(e) =>{
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
+      });
       FetchTaskList();
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
-  }
+  };
 
   const renderViewButton = (tableData) => {
     console.log(tableData, "tableDatatableData");
-    
+
     return (
-      ((tableData.rowData[5] === "NEW" || tableData.rowData[5] === "INPROGRESS") && (tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" || tableData.rowData[1] !== "TRANSLATION_REVIEW")) && (
-        <CustomButton
-        className={classes.tableButton}
-          label="View"
+      (tableData.rowData[5] === "NEW" ||
+        tableData.rowData[5] === "INPROGRESS") &&
+      (tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" ||
+        tableData.rowData[1] !== "TRANSLATION_REVIEW") && (
+
+          <Tooltip title="View">
+          <IconButton>
+          <LibraryBooksIcon 
+          color="primary"
           onClick={() => {
             setOpenViewTaskDialog(true);
-            setCurrentTaskDetails(tableData.rowData);
-          }}
-        />
+           setCurrentTaskDetails(tableData.rowData);
+          }}/>
+          </IconButton>
+        </Tooltip>
+         
+        // <CustomButton
+        //   className={classes.tableButton}
+        //   label="View"
+        //   onClick={() => {
+        //     setOpenViewTaskDialog(true);
+        //     setCurrentTaskDetails(tableData.rowData);
+        //   }}
+        // />
       )
     );
   };
   const renderExportButton = (tableData) => {
     console.log(tableData, "tableData");
     return (
-      (tableData.rowData[5] === "COMPLETE"  && (
-        <CustomButton
-        className={classes.tableButton}
-          label="Export"
-          onClick={() =>  handleClickOpen(tableData.rowData[0]) }
-        />
+      tableData.rowData[5] === "COMPLETE" && (
+        <Tooltip title="Export">
+          <IconButton>
+          <CloudDownloadIcon 
+          color="primary"
+          onClick={() => handleClickOpen(tableData.rowData[0])}/>
+          </IconButton>
+        </Tooltip>
+        
+        // <CustomButton
+        //   className={classes.tableButton}
+        //   label="Export"
+        //   onClick={() => handleClickOpen(tableData.rowData[0])}
+        // />
       )
-    ));
-       // })
+    );
+    // })
   };
 
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
-    return(
-      ((tableData.rowData[5] === "SELECTED_SOURCE" && (tableData.rowData[1] === "TRANSCRIPTION_EDIT" || tableData.rowData[1] === "TRANSLATION_EDIT")) 
-      || (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" || tableData.rowData[1] === "TRANSLATION_REVIEW")) && 
-      <CustomButton
-      className={classes.tableButton}
-        label="Edit"
-        onClick={() => {
-          navigate(`/${tableData.rowData[0]}/transcript`);
-          console.log("Edit Button ---- ", tableData.rowData);
-          // setOpenViewTaskDialog(true);
-          // setCurrentTaskDetails(tableData.rowData);
-        }}
-      />
-    )
-      
-  }
+    return (
+      ((tableData.rowData[5] === "SELECTED_SOURCE" &&
+        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
+        tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
+        tableData.rowData[1] === "TRANSLATION_REVIEW") && (
+
+          <Tooltip title="Edit">
+        <IconButton>
+          <EditIcon color="primary" onClick={() => {
+            navigate(`/${tableData.rowData[0]}/transcript`);
+            console.log("Edit Button ---- ", tableData.rowData);
+            // setOpenViewTaskDialog(true);
+            // setCurrentTaskDetails(tableData.rowData);
+          }}/>
+        </IconButton>
+      </Tooltip> 
+        // <CustomButton
+        //   className={classes.tableButton}
+        //   label="Edit"
+        //   onClick={() => {
+        //     navigate(`/${tableData.rowData[0]}/transcript`);
+        //     console.log("Edit Button ---- ", tableData.rowData);
+        //     // setOpenViewTaskDialog(true);
+        //     // setCurrentTaskDetails(tableData.rowData);
+        //   }}
+        // />
+      )
+    );
+  };
 
   const renderDeleteButton = (tableData) => {
     return (
-      <CustomButton
-        className={classes.tableButton}
-        color="error"
-        label="Delete"
-        onClick={handledeletetask}
-      />
+      <Tooltip title="Delete">
+        <IconButton>
+          <DeleteIcon color="error" onClick={handledeletetask} />
+        </IconButton>
+      </Tooltip>
+
+      // <CustomButton
+      //   className={classes.tableButton}
+      //   //sx={{    marginInline:"auto"}}
+      //   color="error"
+      //   label="Delete"
+      //   onClick={handledeletetask}
+      // />
     );
   };
 
@@ -272,7 +322,12 @@ const handleClickexportTranslationRadioButton =(e) =>{
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
       },
     },
@@ -284,9 +339,14 @@ const handleClickexportTranslationRadioButton =(e) =>{
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -297,9 +357,14 @@ const handleClickexportTranslationRadioButton =(e) =>{
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -310,9 +375,14 @@ const handleClickexportTranslationRadioButton =(e) =>{
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -323,9 +393,14 @@ const handleClickexportTranslationRadioButton =(e) =>{
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" ,textAlign: "center"},
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -336,9 +411,14 @@ const handleClickexportTranslationRadioButton =(e) =>{
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }})
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -351,9 +431,9 @@ const handleClickexportTranslationRadioButton =(e) =>{
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", textAlign: "center" },
         }),
-        setCellProps:() =>({  style: { textAlign: "center" }}),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log(value,"valuevalue",tableMeta)
+          console.log(value, "valuevalue", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderViewButton(tableMeta)}
@@ -415,48 +495,55 @@ const handleClickexportTranslationRadioButton =(e) =>{
     );
   };
 
-  const renderDialog = () =>{
-    return(
-    <Dialog
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="alert-dialog-title"
-    aria-describedby="alert-dialog-description"
->
-    <DialogContent>
-
-        <DialogContentText id="alert-dialog-description"  align="center" sx={{mb:2,color:"black",fontSize:"25px"}}>
-        Export Subtitle
-        </DialogContentText>
-        <Divider/>
-        
-        <DialogContentText id="alert-dialog-description" sx={{mt:2}}>
-      Transcription 
-        </DialogContentText>
-       
-        <DialogActions sx={{mr:10,mb:1,mt:1}}>
-         
-    <FormControl>
-      <RadioGroup
-        row
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group"
+  const renderDialog = () => {
+    return (
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-          {Transcription?.map((item, index) => (
-        <FormControlLabel value={item} control={<Radio />} checked={exportTranscription === item} label={item}  onClick={handleClickRadioButton}/>
-        ))}
-      </RadioGroup>
-      </FormControl>
-    </DialogActions>
-    <DialogActions>
-        <CustomButton onClick={handleClose} label="Cancel" />
-        <CustomButton onClick={handleok} label="Export" autoFocus />
-    </DialogActions>
-    </DialogContent>
-   
-</Dialog>
-    )
-  }
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            align="center"
+            sx={{ mb: 2, color: "black", fontSize: "25px" }}
+          >
+            Export Subtitle
+          </DialogContentText>
+          <Divider />
+
+          <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
+            Transcription
+          </DialogContentText>
+
+          <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
+            <FormControl>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+              >
+                {Transcription?.map((item, index) => (
+                  <FormControlLabel
+                    value={item}
+                    control={<Radio />}
+                    checked={exportTranscription === item}
+                    label={item}
+                    onClick={handleClickRadioButton}
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </DialogActions>
+          <DialogActions>
+            <CustomButton onClick={handleClose} label="Cancel" />
+            <CustomButton onClick={handleok} label="Export" autoFocus />
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   return (
     <>
@@ -483,7 +570,7 @@ const handleClickexportTranslationRadioButton =(e) =>{
         />
       )}
       {renderDialog()}
-     
+
       <Dialog
         open={openDialog}
         onClose={handleClose}
@@ -492,16 +579,15 @@ const handleClickexportTranslationRadioButton =(e) =>{
       >
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          Are you sure, you want to delete this task? The associated transcript/translation will be deleted.
+            Are you sure, you want to delete this task? The associated
+            transcript/translation will be deleted.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <CustomButton onClick={handleCloseDialog} label="Cancel" />
-          <CustomButton  onClick={()=>handleokDialog()} label="Ok" autoFocus />
+          <CustomButton onClick={() => handleokDialog()} label="Ok" autoFocus />
         </DialogActions>
       </Dialog>
-
-
     </>
   );
 };
