@@ -16,13 +16,13 @@ import {
   FormControl,
   FormLabel,
   Tooltip,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from '@mui/icons-material/Edit';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import EditIcon from "@mui/icons-material/Edit";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -66,7 +66,6 @@ const TaskList = () => {
   const [exportTranscription, setExportTranscription] = useState("srt");
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
-
   const navigate = useNavigate();
 
   const FetchTaskList = () => {
@@ -97,9 +96,10 @@ const TaskList = () => {
     setOpenDialog(false);
   };
 
-  const handleClickOpen = (id) => {
+  const handleClickOpen = (id, tasttype) => {
     setOpen(true);
     setTaskdata(id);
+    setTasktype(tasttype);
   };
 
   const handleok = async () => {
@@ -215,20 +215,21 @@ const TaskList = () => {
     return (
       (tableData.rowData[5] === "NEW" ||
         tableData.rowData[5] === "INPROGRESS") &&
-      (tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
-        tableData.rowData[1] !== "TRANSLATION_REVIEW" && tableData.rowData[1] !== "TRANSLATION_EDIT") && (
-
-          <Tooltip title="View">
+      tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
+      tableData.rowData[1] !== "TRANSLATION_REVIEW" &&
+      tableData.rowData[1] !== "TRANSLATION_EDIT" && (
+        <Tooltip title="View">
           <IconButton>
-          <LibraryBooksIcon 
-          color="primary"
-          onClick={() => {
-            setOpenViewTaskDialog(true);
-           setCurrentTaskDetails(tableData.rowData);
-          }}/>
+            <LibraryBooksIcon
+              color="primary"
+              onClick={() => {
+                setOpenViewTaskDialog(true);
+                setCurrentTaskDetails(tableData.rowData);
+              }}
+            />
           </IconButton>
         </Tooltip>
-         
+
         // <CustomButton
         //   className={classes.tableButton}
         //   label="View"
@@ -246,12 +247,15 @@ const TaskList = () => {
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
           <IconButton>
-          <CloudDownloadIcon 
-          color="primary"
-          onClick={() => handleClickOpen(tableData.rowData[0])}/>
+            <CloudDownloadIcon
+              color="primary"
+              onClick={() =>
+                handleClickOpen(tableData.rowData[0], tableData.rowData[1])
+              }
+            />
           </IconButton>
         </Tooltip>
-        
+
         // <CustomButton
         //   className={classes.tableButton}
         //   label="Export"
@@ -265,23 +269,28 @@ const TaskList = () => {
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
     return (
-      (((tableData.rowData[5] === "NEW" || tableData.rowData[5] === "INPROGRESS") &&
-      tableData.rowData[1] === "TRANSLATION_EDIT")||(tableData.rowData[5] === "SELECTED_SOURCE" &&
-        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-       (tableData.rowData[5] !== "COMPLETE" &&(tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
-        tableData.rowData[1] === "TRANSLATION_REVIEW") ))&& (
-
-          <Tooltip title="Edit">
-        <IconButton>
-          <EditIcon color="primary" onClick={() => {
-            navigate(`/${tableData.rowData[0]}/transcript`);
-            console.log("Edit Button ---- ", tableData.rowData);
-            // setOpenViewTaskDialog(true);
-            // setCurrentTaskDetails(tableData.rowData);
-          }}/>
-        </IconButton>
-      </Tooltip> 
+      (((tableData.rowData[5] === "NEW" ||
+        tableData.rowData[5] === "INPROGRESS") &&
+        tableData.rowData[1] === "TRANSLATION_EDIT") ||
+        (tableData.rowData[5] === "SELECTED_SOURCE" &&
+          (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+            tableData.rowData[1] === "TRANSLATION_EDIT")) ||
+        (tableData.rowData[5] !== "COMPLETE" &&
+          (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
+            tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
+        <Tooltip title="Edit">
+          <IconButton>
+            <EditIcon
+              color="primary"
+              onClick={() => {
+                navigate(`/${tableData.rowData[0]}/transcript`);
+                console.log("Edit Button ---- ", tableData.rowData);
+                // setOpenViewTaskDialog(true);
+                // setCurrentTaskDetails(tableData.rowData);
+              }}
+            />
+          </IconButton>
+        </Tooltip>
         // <CustomButton
         //   className={classes.tableButton}
         //   label="Edit"
@@ -515,7 +524,10 @@ const TaskList = () => {
           <Divider />
 
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
-            Transcription
+            {tasktype === "TRANSCRIPTION_EDIT" ||
+            tasktype === "TRANSCRIPTION_REVIEW"
+              ? "Transcription"
+              : "Translation"}
           </DialogContentText>
 
           <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
