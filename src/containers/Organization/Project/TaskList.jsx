@@ -215,8 +215,8 @@ const TaskList = () => {
     return (
       (tableData.rowData[5] === "NEW" ||
         tableData.rowData[5] === "INPROGRESS") &&
-      (tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" ||
-        tableData.rowData[1] !== "TRANSLATION_REVIEW") && (
+      (tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
+        tableData.rowData[1] !== "TRANSLATION_REVIEW" && tableData.rowData[1] !== "TRANSLATION_EDIT") && (
 
           <Tooltip title="View">
           <IconButton>
@@ -265,11 +265,12 @@ const TaskList = () => {
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
     return (
-      ((tableData.rowData[5] === "SELECTED_SOURCE" &&
+      (((tableData.rowData[5] === "NEW" || tableData.rowData[5] === "INPROGRESS") &&
+      tableData.rowData[1] === "TRANSLATION_EDIT")||(tableData.rowData[5] === "SELECTED_SOURCE" &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
-        tableData.rowData[1] === "TRANSLATION_REVIEW") && (
+       (tableData.rowData[5] !== "COMPLETE" &&(tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
+        tableData.rowData[1] === "TRANSLATION_REVIEW") ))&& (
 
           <Tooltip title="Edit">
         <IconButton>
