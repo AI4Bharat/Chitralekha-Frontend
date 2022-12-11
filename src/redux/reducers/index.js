@@ -23,6 +23,8 @@ import getSupportedLanguages from "./Project/FetchSupportedLanguage";
 import getTranscriptPayload from "./Project/FetchTranscriptPayload";
 import getVideoTaskList from "./Project/FetchVideoTaskList";
 import getManagerName from "./Project/FetchManagerName";
+import getExportTranscription from "./Project/ExportTranscription";
+import DeleteVideo from "./Project/DeleteVideo";
 
 const rootReducer = {
     apiStatus,
@@ -50,6 +52,8 @@ const rootReducer = {
     getTranscriptPayload,
     getVideoTaskList,
     getManagerName,
+    getExportTranscription,
+    DeleteVideo,
 };
 
 export default rootReducer;

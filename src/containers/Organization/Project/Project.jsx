@@ -268,7 +268,9 @@ const Project = () => {
               onClick={() => setCreateVideoDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <VideoList data={videoList} />
+              <VideoList data={videoList} 
+              removeVideo={() => getProjectVideoList()}
+              />
             </div>
           </Box>
         </TabPanel>

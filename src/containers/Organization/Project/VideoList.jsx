@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 //Themes
-import { Box, Grid, ThemeProvider } from "@mui/material";
+import { Box, Grid, ThemeProvider , Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,} from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
@@ -16,13 +19,15 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 
-const VideoList = ({ data }) => {
+const VideoList = ({ data,removeVideo }) => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState({});
   const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
   const [snackbar, setSnackbarInfo] = useState({
@@ -30,11 +35,46 @@ const VideoList = ({ data }) => {
     message: "",
     variant: "success",
   });
+  const [projectid, setprojectid] = useState([]);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
     setCurrentVideoDetails(item);
   };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  const handleok = async (id) => {
+    setOpenDialog(false);
+    const apiObj = new DeleteVideoAPI({video_id:id});
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      removeVideo()
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
+  const handleDeleteVideo = (id) =>{
+    setOpenDialog(true);
+    setprojectid(id)
+  }
 
   useEffect(() => {
     const result = data.map((item) => {
@@ -62,6 +102,12 @@ const VideoList = ({ data }) => {
               setCurrentVideoDetails(item);
             }}
           />
+           <CustomButton
+       className={classes.tableButton}
+        color="error"
+        label="Delete"
+        onClick={() =>handleDeleteVideo(item.id)}
+      />
          {/* </Grid> */}
         </Box>
          
@@ -108,8 +154,9 @@ const VideoList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}})
       },
     },
     {
@@ -120,8 +167,9 @@ const VideoList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -132,8 +180,9 @@ const VideoList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -144,8 +193,9 @@ const VideoList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -156,8 +206,9 @@ const VideoList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -170,6 +221,7 @@ const VideoList = ({ data }) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px", textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
   ];
@@ -212,6 +264,28 @@ const VideoList = ({ data }) => {
     );
   };
 
+  const renderDialog = () => {
+    return (
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+           Are you sure, you want to delete this video? All the associated tasks will be deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <CustomButton onClick={handleClose} label="Cancel" />
+          <CustomButton  onClick={()=>handleok(projectid)} label="Ok" autoFocus />
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+
   return (
     <>
       <ThemeProvider theme={tableTheme}>
@@ -235,6 +309,7 @@ const VideoList = ({ data }) => {
         />
       )}
        {renderSnackBar()}
+       {renderDialog()}
     </>
   );
 };

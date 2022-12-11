@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams } from "react-router-dom";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const RightPanel = () => {
   const { taskId } = useParams();
@@ -18,6 +19,11 @@ const RightPanel = () => {
   
   const [sourceText, setSourceText] = useState([]);
   const [lang, setLang] = useState("hi");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
  
  
 
@@ -37,7 +43,7 @@ const RightPanel = () => {
     saveTranscriptHandler(false)
   }
 
-  const saveTranscriptHandler = (isFinal) => {
+  const saveTranscriptHandler =async(isFinal) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -50,10 +56,44 @@ const RightPanel = () => {
     }
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    dispatch(APITransport(obj));
+    //dispatch(APITransport(obj));
+    const res = await fetch(obj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(obj.getBody()),
+      headers: obj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+    //navigate(`/my-organization/:orgId/project/:projectId`)
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   }
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
 
   return (
+    <>{renderSnackBar()}
     <Box
       sx={{
         display: "flex",
@@ -141,6 +181,7 @@ const RightPanel = () => {
         }
       </Box>
     </Box>
+    </>
   );
 };
 

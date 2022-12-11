@@ -8,18 +8,25 @@ import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const TranslationRightPanel = () => {
-  const { taskId } = useParams();
+  const { taskId,orgId,projectId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const transcriptPayload = useSelector((state) => state.getTranscriptPayload.data);
   const taskData = useSelector((state)=>state.getTaskDetails.data);
   
   const [sourceText, setSourceText] = useState([]);
   const [lang, setLang] = useState("hi");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
  
  
 
@@ -39,7 +46,7 @@ const TranslationRightPanel = () => {
     saveTranscriptHandler(false)
   }
 
-  const saveTranscriptHandler = (isFinal) => {
+  const saveTranscriptHandler = async(isFinal) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -52,10 +59,45 @@ const TranslationRightPanel = () => {
     }
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    dispatch(APITransport(obj));
+    //dispatch(APITransport(obj));
+    const res = await fetch(obj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(obj.getBody()),
+      headers: obj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+      //navigate(`/my-organization/:${orgId}/project/:${projectId}`)
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   }
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
   return (
+    <>{renderSnackBar()}
     <Box
       sx={{
         display: "flex",
@@ -159,6 +201,7 @@ const TranslationRightPanel = () => {
         }
       </Box>
     </Box>
+    </>
   );
 };
 

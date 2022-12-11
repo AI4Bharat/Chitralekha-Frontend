@@ -105,8 +105,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px" ,textAlign: "center"},
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -117,8 +118,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -129,8 +131,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center",textAlign: "center"}}),
       },
     },
     {
@@ -141,8 +144,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -153,8 +157,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -165,8 +170,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
   ];

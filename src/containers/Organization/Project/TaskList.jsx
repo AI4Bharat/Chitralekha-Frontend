@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
 
 //Themes
-import { ThemeProvider, Box, Grid } from "@mui/material";
+import { ThemeProvider, Box, Grid, Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Divider,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
+
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -17,15 +28,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import { useNavigate } from "react-router-dom";
+import DatasetStyle from "../../../styles/Dataset";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
+import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 
+const  Transcription = ["srt","vtt","txt"," ytt"]
+const  Translation = ["srt","vtt","txt"]
 const TaskList = () => {
-  const { projectId } = useParams();
+  const { orgId,projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -35,6 +51,12 @@ const TaskList = () => {
     variant: "success",
   });
   const [taskid, setTaskid] = useState();
+  const[tasktype,setTasktype]= useState();
+  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [exportTranscription, setExportTranscription] = useState("srt");
+  const [exportTranslation, setexportTranslation] = useState("srt");
+  const [taskdata, setTaskdata] = useState();
 
   const navigate = useNavigate();
 
@@ -49,8 +71,61 @@ const TaskList = () => {
     FetchTaskList();
   }, []);
 
+ 
+
   const taskList = useSelector((state) => state.getTaskList.data);
+
+  const Transcrip = taskList.task_type === "TRANSCRIPTION_EDIT" || 	taskList.task_type === "TRANSCRIPTION_REVIEW"
+  
+  console.log(taskList.task_type,"taskListtaskList",Transcrip)
   // const getTranscriptionSourceComparison = (id, source) => {
+    const datvalue = useSelector((state) => state.getExportTranscription.data);  
+    console.log(datvalue,"datvaluedatvalue",taskList.task_type)
+    const handleClose = () => {
+      setOpen(false);
+  };
+  const handleCloseDialog = () =>{
+    setOpenDialog(false);
+  }
+
+  const handleClickOpen = (id) => {
+    setOpen(true);
+    setTaskdata(id)
+};
+
+const handleok = async() => {
+  const apiObj = new exportTranscriptionAPI(taskdata,exportTranscription);
+  //dispatch(APITransport(apiObj));
+  setOpen(false);
+  const res = await fetch(apiObj.apiEndPoint(), {
+    method: "GET",
+    body: JSON.stringify(apiObj.getBody()),
+    headers: apiObj.getHeaders().headers,
+  });
+  const resp = await res.json();
+  if (res.ok) {
+    console.log(resp,"respresp")
+    setSnackbarInfo({
+      open: true,
+      message:  resp?.message,
+      variant: "success",
+    })
+   
+  } else {
+    setSnackbarInfo({
+      open: true,
+      message: resp?.message,
+      variant: "error",
+    })
+  }
+}
+
+const handleClickRadioButton = (e) =>{
+  setExportTranscription(e.target.value);
+}
+const handleClickexportTranslationRadioButton =(e) =>{
+  setexportTranslation(e.target.value);
+}
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
@@ -93,46 +168,49 @@ const TaskList = () => {
   useEffect(() => {
     let taskId;
     taskList?.map((element, index) => {
-      taskId = element.id;
+      taskId = element.id;  
     });
     setTaskid(taskId);
+   
   }, [taskList]);
-console.log(taskList,"taskList",taskid)
+  
+
   const handledeletetask = async () => {
-    const apiObj = new DeleteTaskAPI(taskid);
-    fetch(apiObj.apiEndPoint(), {
+    setOpenDialog(true);
+  };
+  const handleokDialog= async() =>{
+    setOpenDialog(false);
+     const apiObj = new DeleteTaskAPI(taskid);
+    const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
-    }).then((response) => {
-      if (response.status === 204) {
-        setSnackbarInfo({
-          ...snackbar,
-          open: true,
-          message: "",
-          variant: "success",
-        });
-        FetchTaskList();
-      } else {
-        setSnackbarInfo({
-          ...snackbar,
-          open: true,
-          message: " ",
-          variant: "error",
-        });
-      }
     });
-
-    // const submitTranslation = (id, source) => {
-  };
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+      FetchTaskList();
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
+  }
 
   const renderViewButton = (tableData) => {
     console.log(tableData, "tableDatatableData");
+    
     return (
       (tableData.rowData[5] === "NEW" ||
         tableData.rowData[5] === "INPROGRESS") && (
         <CustomButton
-          sx={{ borderRadius: 2 }}
+        className={classes.tableButton}
           label="View"
           onClick={() => {
             setOpenViewTaskDialog(true);
@@ -143,18 +221,17 @@ console.log(taskList,"taskList",taskid)
     );
   };
   const renderExportButton = (tableData) => {
-    console.log(tableData, "tableDatatableData");
+    console.log(tableData, "tableData");
     return (
       (tableData.rowData[5] === "COMPLETE"  && (
         <CustomButton
-          sx={{ borderRadius: 2 }}
+        className={classes.tableButton}
           label="Export"
-          onClick={() => {
-            console.log("Export Button ---- ", tableData.rowData);
-          }}
+          onClick={() =>  handleClickOpen(tableData.rowData[0]) }
         />
       )
     ));
+       // })
   };
 
   const renderEditButton = (tableData) => {
@@ -163,7 +240,7 @@ console.log(taskList,"taskList",taskid)
       ((tableData.rowData[5] === "SELECTED_SOURCE" && (tableData.rowData[1] === "TRANSCRIPTION_EDIT" || tableData.rowData[1] === "TRANSLATION_EDIT")) 
       || (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" || tableData.rowData[1] === "TRANSLATION_REVIEW")) && 
       <CustomButton
-        sx={{ borderRadius: 2}}
+      className={classes.tableButton}
         label="Edit"
         onClick={() => {
           navigate(`/${tableData.rowData[0]}/transcript`);
@@ -173,12 +250,13 @@ console.log(taskList,"taskList",taskid)
         }}
       />
     )
+      
   }
 
   const renderDeleteButton = (tableData) => {
     return (
       <CustomButton
-        sx={{ borderRadius: 2, marginLeft: 2 }}
+        className={classes.tableButton}
         color="error"
         label="Delete"
         onClick={handledeletetask}
@@ -195,7 +273,7 @@ console.log(taskList,"taskList",taskid)
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
       },
     },
@@ -207,8 +285,9 @@ console.log(taskList,"taskList",taskid)
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -219,20 +298,22 @@ console.log(taskList,"taskList",taskid)
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
-      name: "source_language",
+      name: "src_language",
       label: "Source Language",
       options: {
         filter: false,
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -243,8 +324,9 @@ console.log(taskList,"taskList",taskid)
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px" ,textAlign: "center"},
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -255,8 +337,9 @@ console.log(taskList,"taskList",taskid)
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }})
       },
     },
     {
@@ -269,7 +352,9 @@ console.log(taskList,"taskList",taskid)
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", textAlign: "center" },
         }),
+        setCellProps:() =>({  style: { textAlign: "center" }}),
         customBodyRender: (value, tableMeta) => {
+          console.log(value,"valuevalue",tableMeta)
           return (
             <Box sx={{ display: "flex" }}>
               {renderViewButton(tableMeta)}
@@ -331,6 +416,49 @@ console.log(taskList,"taskList",taskid)
     );
   };
 
+  const renderDialog = () =>{
+    return(
+    <Dialog
+    open={open}
+    onClose={handleClose}
+    aria-labelledby="alert-dialog-title"
+    aria-describedby="alert-dialog-description"
+>
+    <DialogContent>
+
+        <DialogContentText id="alert-dialog-description"  align="center" sx={{mb:2,color:"black",fontSize:"25px"}}>
+        Export Subtitle
+        </DialogContentText>
+        <Divider/>
+        
+        <DialogContentText id="alert-dialog-description" sx={{mt:2}}>
+      Transcription 
+        </DialogContentText>
+       
+        <DialogActions sx={{mr:10,mb:1,mt:1}}>
+         
+    <FormControl>
+      <RadioGroup
+        row
+        aria-labelledby="demo-row-radio-buttons-group-label"
+        name="row-radio-buttons-group"
+      >
+          {Transcription?.map((item, index) => (
+        <FormControlLabel value={item} control={<Radio />} checked={exportTranscription === item} label={item}  onClick={handleClickRadioButton}/>
+        ))}
+      </RadioGroup>
+      </FormControl>
+    </DialogActions>
+    <DialogActions>
+        <CustomButton onClick={handleClose} label="Cancel" />
+        <CustomButton onClick={handleok} label="Export" autoFocus />
+    </DialogActions>
+    </DialogContent>
+   
+</Dialog>
+    )
+  }
+
   return (
     <>
       <Grid>{renderSnackBar()}</Grid>
@@ -355,6 +483,26 @@ console.log(taskList,"taskList",taskid)
           id={currentTaskDetails[0]}
         />
       )}
+      {renderDialog()}
+     
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+          Are you sure, you want to delete this task? The associated transcript/translation will be deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <CustomButton onClick={handleCloseDialog} label="Cancel" />
+          <CustomButton  onClick={()=>handleokDialog()} label="Ok" autoFocus />
+        </DialogActions>
+      </Dialog>
+
+
     </>
   );
 };
