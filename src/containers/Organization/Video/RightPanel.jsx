@@ -109,10 +109,17 @@ const RightPanel = ({ currentIndex }) => {
       <Box
         sx={{
           display: "flex",
-          borderLeft: "1px solid #eaeaea",
+          flexDirection: "column",
+          borderTop: "1px solid #eaeaea",
+          overflowY: "scroll",
+          overflowX: "hidden",
+          height: window.innerHeight*0.75,
+          backgroundColor:"black",
+          color:"white",
+          marginTop: "5px",
+          width: "100%",
+          textAlign: "center"
         }}
-        // width="25%"
-        flexDirection="column"
       >
         <Box display="flex">
           {/* <Button variant="contained" className={classes.findBtn}>
@@ -144,7 +151,7 @@ const RightPanel = ({ currentIndex }) => {
           {sourceText?.map((item, index) => {
             return (
               <>
-                <Box display="flex" padding="10px 24px 0">
+                <Box display="flex" padding="10px 0px 0" width={"100%"} justifyContent="center" >
                   <TextField
                     variant="outlined"
                     value={item.start_time}
@@ -180,7 +187,7 @@ const RightPanel = ({ currentIndex }) => {
                 </Box>
 
                 <CardContent
-                  sx={{ display: "flex", paddingX: 0, borderBottom: 2 }}
+                  sx={{ display: "flex", paddingX: 0, borderBottom: 2, alignItems: "center" }}
                 >
                   <IndicTransliterate
                     lang={taskData.src_language}

@@ -235,13 +235,13 @@ const CreateTaskDialog = ({
                 labelId="select-priority"
                 label="Select Priority"
                 value={priority}
-                onChange={(event) => setPriority(event.target.value?.value)}
+                onChange={(event) => setPriority(event.target.value)}
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
               >
                  {PriorityTypes.map((item, index) => (
-                  <MenuItem key={index} value={item}>
-                    {item.value}
+                  <MenuItem key={index} value={item?.value}>
+                    {item?.value}
                   </MenuItem>
                 ))}
               </Select>

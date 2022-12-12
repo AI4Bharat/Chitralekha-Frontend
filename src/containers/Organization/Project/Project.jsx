@@ -27,6 +27,7 @@ import AddProjectMembers from "../../../common/AddProjectMembers";
 import FetchManagerNameAPI from "../../../redux/actions/api/User/FetchUserList";
 import AddProjectMembersAPI from "../../../redux/actions/api/Project/AddProjectMembers";
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
+import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
 
 const data = [
   {
@@ -78,7 +79,7 @@ const TabPanel = (props) => {
 };
 
 const Project = () => {
-  const { projectId } = useParams();
+  const { projectId,orgId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
@@ -89,11 +90,12 @@ const Project = () => {
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
- 
-  const managerNames = useSelector((state) => state.getUserList.data
-  );
 
+  // const managerNames = useSelector((state) => state.getUserList.data
+  // );
 
+ const userList = useSelector((state) => state.getOrganizatioUsers.data);
+console.log(userList,"userList")
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
     dispatch(APITransport(userObj));
@@ -142,10 +144,15 @@ const Project = () => {
     const apiObj = new FetchVideoListAPI(projectId);
     dispatch(APITransport(apiObj));
   };
+  const getOrganizatioUsersList = () => {
+    const userObj = new FetchOrganizatioUsersAPI(orgId);
+    dispatch(APITransport(userObj));
+  };
 
   useEffect(() => {
     getProjectnDetails();
-    getProjectVideoList();
+    getProjectVideoList(); 
+    getOrganizatioUsersList();
   }, []);
 
   const addNewMemberHandler = async() => {
@@ -193,11 +200,12 @@ const Project = () => {
     const resp = await res.json();
   
     if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      })
+      // setSnackbarInfo({
+      //   open: true,
+      //   message: resp?.message,
+      //   variant: "success",
+      // })
+      getProjectVideoList();
 
     } else {
       setSnackbarInfo({
@@ -354,7 +362,8 @@ const Project = () => {
           setLang={setLang}
         />
       )}
-      <AddProjectMembers  managerNames={managerNames}
+      <AddProjectMembers 
+       managerNames={userList}
        open={addUserDialog}
        handleUserDialogClose={() => setAddUserDialog(false)}
        addBtnClickHandler={addNewMemberHandler}

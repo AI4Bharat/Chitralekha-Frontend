@@ -109,7 +109,7 @@ const VideoLanding = () => {
         direction={"row"}
         sx={{ marginTop: 7, overflow: "hidden" }}
       >
-        <Grid width="100%" md={8} xs={12}>
+        <Grid width="100%" height={window.innerHeight*0.75} overflow="hidden" md={8} xs={12}>
           <VideoPanel
             setPlayer={setPlayer}
             setCurrentTime={setCurrentTime}
