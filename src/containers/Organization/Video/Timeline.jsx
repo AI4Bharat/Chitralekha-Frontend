@@ -13,6 +13,7 @@ import DT from "duration-time-conversion";
 import { throttle } from "lodash";
 import Metronome from "./Metronome";
 import { useSelector } from "react-redux";
+import SubtitleBoxes from "./SubtitleBoxes";
 
 const WaveForm = memo(
   ({ player, setWaveform, setRender }) => {
@@ -208,9 +209,9 @@ const Timeline = ({
   setRender,
   currentTime,
   playing,
+  subtitles,
 }) => {
   const $footer = createRef();
-  const transcriptPayload = useSelector((state) => state.getTranscriptPayload.data);
 
   const onWheel = useCallback(
     (event) => {
@@ -249,7 +250,7 @@ const Timeline = ({
         // display: "flex",
         // flexDirection: "column",
         height: "150px",
-        width: "100%"
+        width: "100%",
       }}
       ref={$footer}
     >
@@ -268,6 +269,13 @@ const Timeline = ({
           />
           <Grab player={player} waveform={waveform} />
           <Metronome render={render} player={player} playing={playing} />
+          <SubtitleBoxes
+            render={render}
+            player={player}
+            playing={playing}
+            currentTime={currentTime}
+            subtitles={subtitles}
+          />
         </>
       )}
     </Box>

@@ -28,8 +28,6 @@ const RightPanel = () => {
     variant: "success",
   });
  
- 
-
   useEffect(() => {
     setSourceText(transcriptPayload?.payload?.payload)
   }, [transcriptPayload?.payload?.payload]);

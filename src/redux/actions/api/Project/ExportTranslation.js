@@ -2,17 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchProjectMembersAPI extends API {
-  constructor(id, taskType, allowedTaskType,timeout = 2000) {
-    console.log(allowedTaskType,"allowedTaskTypeallowedTaskType")
+export default class exportTranslationAPI extends API {
+  constructor(projectId,exportType,data, timeout = 2000) {
+    console.log(data,"datadata")
     super("GET", timeout, false);
-    this.type = C.GET_PROJECT_MEMBERS;
-    this.id = id;
-    this.taskType = taskType;
-    this.queryStr = taskType ? `?task_type=${taskType}`:""
-    this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.project
-    }${id}/users/${this.queryStr}`;
+    this.type = C.EXPORT_TRANLATION;
+    this.data = data;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.translation}export_translation/?task_id=${projectId}&export_type=${exportType}`;
   }
 
   processResponse(res) {
@@ -26,7 +22,9 @@ export default class FetchProjectMembersAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return this.data;
+  }
 
   getHeaders() {
     this.headers = {

@@ -2,17 +2,11 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchProjectMembersAPI extends API {
-  constructor(id, taskType, allowedTaskType,timeout = 2000) {
-    console.log(allowedTaskType,"allowedTaskTypeallowedTaskType")
+export default class FetchOrganizatioUsersAPI extends API {
+  constructor(id, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_PROJECT_MEMBERS;
-    this.id = id;
-    this.taskType = taskType;
-    this.queryStr = taskType ? `?task_type=${taskType}`:""
-    this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.project
-    }${id}/users/${this.queryStr}`;
+    this.type = C.GET_ORGANIZATION_USERS;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/users/`;
   }
 
   processResponse(res) {
@@ -32,7 +26,7 @@ export default class FetchProjectMembersAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
+        "Authorization":`JWT ${localStorage.getItem('token')}`
       },
     };
     return this.headers;
