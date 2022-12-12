@@ -44,6 +44,7 @@ import clearComparisonTable from "../../../redux/actions/api/Project/ClearCompar
 import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
+import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -66,7 +67,7 @@ const TaskList = () => {
   const [exportTranscription, setExportTranscription] = useState("srt");
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
-  const [deleteTaskid,setDeleteTaskid] = useState();
+  const [deleteTaskid, setDeleteTaskid] = useState();
   const navigate = useNavigate();
 
   const FetchTaskList = () => {
@@ -101,7 +102,7 @@ const TaskList = () => {
     setTaskdata(id);
     setTasktype(tasttype);
   };
-
+  console.log(tasktype, "tasktype");
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -138,10 +139,42 @@ const TaskList = () => {
     }
   };
 
+  const handleokTranslation =async() =>{
+    const apiObj = new exportTranslationAPI(taskdata, exportTranslation);
+    //dispatch(APITransport(apiObj));
+    setOpen(false);
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.blob();
+    if (res.ok) {
+      const newBlob = new Blob([resp]);
+      const blobUrl = window.URL.createObjectURL(newBlob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+
+  }
+
   const handleClickRadioButton = (e) => {
     setExportTranscription(e.target.value);
   };
-  const handleClickexportTranslationRadioButton = (e) => {
+  const handleClickRadioButtonTranslation = (e) => {
     setexportTranslation(e.target.value);
   };
 
@@ -193,7 +226,7 @@ const TaskList = () => {
 
   const handledeletetask = async (id) => {
     setOpenDialog(true);
-    setDeleteTaskid(id)
+    setDeleteTaskid(id);
   };
   const handleokDialog = async () => {
     setOpenDialog(false);
@@ -259,7 +292,9 @@ const TaskList = () => {
           <IconButton>
             <CloudDownloadIcon
               color="primary"
-              onClick={() => handleClickOpen(tableData.rowData[0])}
+              onClick={() =>
+                handleClickOpen(tableData.rowData[0], tableData.rowData[1])
+              }
               // onClick={() =>
               //   handleClickOpen(tableData.rowData[0], tableData.rowData[1])
               // }
@@ -280,10 +315,9 @@ const TaskList = () => {
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
     return (
-      (
-        (tableData.rowData[5] === "SELECTED_SOURCE" &&
-          (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-            tableData.rowData[1] === "TRANSLATION_EDIT")) ||
+      ((tableData.rowData[5] === "SELECTED_SOURCE" &&
+        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
         (tableData.rowData[5] !== "COMPLETE" &&
           (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
@@ -292,13 +326,15 @@ const TaskList = () => {
             <EditIcon
               color="primary"
               onClick={() => {
-                if(tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"){
+                if (
+                  tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+                  tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
+                ) {
                   navigate(`/${tableData.rowData[0]}/transcript`);
                 } else {
                   navigate(`/${tableData.rowData[0]}/translate`);
                 }
-                
+
                 console.log("Edit Button ---- ", tableData.rowData);
                 // setOpenViewTaskDialog(true);
                 // setCurrentTaskDetails(tableData.rowData);
@@ -324,7 +360,10 @@ const TaskList = () => {
     return (
       <Tooltip title="Delete">
         <IconButton>
-          <DeleteIcon color="error"  onClick={() => handledeletetask(tableData.rowData[0])  } />
+          <DeleteIcon
+            color="error"
+            onClick={() => handledeletetask(tableData.rowData[0])}
+          />
         </IconButton>
       </Tooltip>
 
@@ -519,7 +558,6 @@ const TaskList = () => {
       />
     );
   };
-
   const renderDialog = () => {
     return (
       <Dialog
@@ -544,29 +582,56 @@ const TaskList = () => {
               ? "Transcription"
               : "Translation"}
           </DialogContentText>
-
-          <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
-            <FormControl>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-              >
-                {Transcription?.map((item, index) => (
-                  <FormControlLabel
-                    value={item}
-                    control={<Radio />}
-                    checked={exportTranscription === item}
-                    label={item}
-                    onClick={handleClickRadioButton}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </DialogActions>
+          {tasktype === "TRANSCRIPTION_EDIT" ||
+          tasktype === "TRANSCRIPTION_REVIEW" ? (
+            <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  {Transcription?.map((item, index) => (
+                    <FormControlLabel
+                      value={item}
+                      control={<Radio />}
+                      checked={exportTranscription === item}
+                      label={item}
+                      onClick={handleClickRadioButton}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
+          ) : (
+            <DialogActions sx={{ mr: 17, mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  {Translation?.map((item, index) => (
+                    <FormControlLabel
+                      value={item}
+                      control={<Radio />}
+                      checked={exportTranslation === item}
+                      label={item}
+                      onClick={handleClickRadioButtonTranslation}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
+          )}
           <DialogActions>
             <CustomButton onClick={handleClose} label="Cancel" />
-            <CustomButton onClick={handleok} label="Export" autoFocus />
+            {tasktype === "TRANSCRIPTION_EDIT" ||
+            tasktype === "TRANSCRIPTION_REVIEW" ? (
+              <CustomButton onClick={handleok} label="Export" autoFocus />
+            ) : (
+              <CustomButton onClick={handleokTranslation} label="Export" autoFocus />
+            )}
           </DialogActions>
         </DialogContent>
       </Dialog>
