@@ -2,13 +2,11 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class exportTranscriptionAPI extends API {
-  constructor(projectId,exportType,data, timeout = 2000) {
-    console.log(data,"datadata")
+export default class FetchOrganizatioUsersAPI extends API {
+  constructor(id, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.EXPORT_TRANSCRIPTION;
-    this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.transcript}export_transcript/?task_id=${projectId}&export_type=${exportType}`;
+    this.type = C.GET_ORGANIZATION_USERS;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/users/`;
   }
 
   processResponse(res) {
@@ -22,15 +20,13 @@ export default class exportTranscriptionAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.data;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
+        "Authorization":`JWT ${localStorage.getItem('token')}`
       },
     };
     return this.headers;

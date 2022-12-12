@@ -10,7 +10,7 @@ export default class FetchProjectMembersAPI extends API {
     this.taskType = taskType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.project
-    }${id}/users?task_type=${taskType}`;
+    }${id}/users/`;
   }
 
   processResponse(res) {
