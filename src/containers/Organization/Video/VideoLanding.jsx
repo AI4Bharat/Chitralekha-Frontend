@@ -103,7 +103,7 @@ const VideoLanding = () => {
       <Grid
         container
         direction={"row"}
-        sx={{ marginTop: 10, overflow: "hidden" }}
+        sx={{ marginTop: 7, overflow: "hidden" }}
       >
         <Grid width="100%" md={8} xs={12}>
           <VideoPanel

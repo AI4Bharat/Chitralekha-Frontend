@@ -6,7 +6,7 @@ import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import '../../../styles/ScrollbarStyle.css';
 
@@ -14,9 +14,11 @@ const RightPanel = () => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const transcriptPayload = useSelector((state) => state.getTranscriptPayload.data);
   const taskData = useSelector((state)=>state.getTaskDetails.data);
+  const assignedOrgId = JSON.parse(localStorage.getItem('userData'))?.organization?.id
   
   const [sourceText, setSourceText] = useState([]);
   const [lang, setLang] = useState("hi");
@@ -69,7 +71,12 @@ const RightPanel = () => {
         open: true,
         message:  resp?.message,
         variant: "success",
-      })
+      });
+      if(isFinal){
+        setTimeout(() => {
+            navigate(`/my-organization/:${assignedOrgId}/project/:${taskData?.project}`);
+        }, 2000);
+    }
     //navigate(`/my-organization/:orgId/project/:projectId`)
     } else {
       setSnackbarInfo({
@@ -104,9 +111,9 @@ const RightPanel = () => {
       flexDirection="column"
     >
       <Box display="flex">
-        <Button variant="contained" className={classes.findBtn}>
+        {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
-        </Button>
+        </Button> */}
         <Button variant="contained" className={classes.findBtn} onClick={() => saveTranscriptHandler(true)}>
           Save
         </Button>
@@ -117,10 +124,12 @@ const RightPanel = () => {
           flexDirection: "column",
           borderTop: "1px solid #eaeaea",
           overflowY: "scroll",
-          height: window.innerHeight*0.7,
+          overflowX: "hidden",
+          height: window.innerHeight*0.75,
           backgroundColor:"black",
           color:"white",
           marginTop: "5px",
+          width: "100%"
         }}
         className={"subTitleContainer"}
       >
@@ -173,6 +182,9 @@ const RightPanel = () => {
                 }}
                 onChange={(event) => {
                   changeTranscriptHandler(event.target, index)
+                }}
+                containerStyles={{
+                  width: "100%"
                 }}
                 renderComponent={(props) => (
                   <textarea className={classes.customTextarea} rows={4} {...props} />

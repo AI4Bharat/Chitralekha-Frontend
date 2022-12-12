@@ -20,6 +20,7 @@ const TranslationRightPanel = () => {
 
   const transcriptPayload = useSelector((state) => state.getTranscriptPayload.data);
   const taskData = useSelector((state)=>state.getTaskDetails.data);
+  const assignedOrgId = JSON.parse(localStorage.getItem('userData'))?.organization?.id
   
   const [sourceText, setSourceText] = useState([]);
   const [lang, setLang] = useState("hi");
@@ -73,6 +74,11 @@ const TranslationRightPanel = () => {
         message:  resp?.message,
         variant: "success",
       })
+      if(isFinal){
+          setTimeout(() => {
+              navigate(`/my-organization/:${assignedOrgId}/project/:${taskData?.project}`);
+          }, 2000);
+      }
       //navigate(`/my-organization/:${orgId}/project/:${projectId}`)
     } else {
       setSnackbarInfo({
@@ -108,9 +114,9 @@ const TranslationRightPanel = () => {
       flexDirection="column"
     >
       <Box display="flex">
-        <Button variant="contained" className={classes.findBtn}>
+        {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
-        </Button>
+        </Button> */}
         <Button variant="contained" className={classes.findBtn} onClick={() => saveTranscriptHandler(true)}>
           Save
         </Button>
@@ -121,7 +127,8 @@ const TranslationRightPanel = () => {
           flexDirection: "column",
           borderTop: "1px solid #eaeaea",
           overflowY: "scroll",
-          height: window.innerHeight*0.7,
+          overflowX: "hidden",
+          height: window.innerHeight*0.75,
           backgroundColor:"black",
           color:"white",
           marginTop: "5px"
@@ -191,6 +198,10 @@ const TranslationRightPanel = () => {
                 onChange={(event) => {
                   changeTranscriptHandler(event.target, index)
                 }}
+                containerStyles={{
+                    width: "100%"
+                }}
+                
                 renderComponent={(props) => (
                   <textarea className={classes.textAreaTransliteration} rows={4} {...props} />
                 )}

@@ -45,7 +45,7 @@ import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 
-const Transcription = ["srt", "vtt", "txt", " ytt"];
+const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
 const TaskList = () => {
   const { orgId, projectId } = useParams();
@@ -111,9 +111,19 @@ const TaskList = () => {
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
     });
-    const resp = await res;
+    const resp = await res.blob();
     if (res.ok) {
-      console.log(resp, "respresp");
+      const newBlob = new Blob([resp]);
+      const blobUrl = window.URL.createObjectURL(newBlob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", `${taskdata}.${exportTranscription}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+
+      // clean up Url
+      window.URL.revokeObjectURL(blobUrl);
       // setSnackbarInfo({
       //   open: true,
       //   message: resp?.message,
@@ -217,8 +227,7 @@ const TaskList = () => {
       (tableData.rowData[5] === "NEW" ||
         tableData.rowData[5] === "INPROGRESS") &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
-      tableData.rowData[1] !== "TRANSLATION_REVIEW" &&
-      tableData.rowData[1] !== "TRANSLATION_EDIT" && (
+      tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
           <IconButton>
             <LibraryBooksIcon
@@ -250,9 +259,10 @@ const TaskList = () => {
           <IconButton>
             <CloudDownloadIcon
               color="primary"
-              onClick={() =>
-                handleClickOpen(tableData.rowData[0], tableData.rowData[1])
-              }
+              onClick={() => handleClickOpen(tableData.rowData[0])}
+              // onClick={() =>
+              //   handleClickOpen(tableData.rowData[0], tableData.rowData[1])
+              // }
             />
           </IconButton>
         </Tooltip>
@@ -270,9 +280,7 @@ const TaskList = () => {
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
     return (
-      (((tableData.rowData[5] === "NEW" ||
-        tableData.rowData[5] === "INPROGRESS") &&
-        tableData.rowData[1] === "TRANSLATION_EDIT") ||
+      (
         (tableData.rowData[5] === "SELECTED_SOURCE" &&
           (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
             tableData.rowData[1] === "TRANSLATION_EDIT")) ||
@@ -284,7 +292,13 @@ const TaskList = () => {
             <EditIcon
               color="primary"
               onClick={() => {
-                navigate(`/${tableData.rowData[0]}/transcript`);
+                if(tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"){
+                  navigate(`/${tableData.rowData[0]}/transcript`);
+                } else {
+                  navigate(`/${tableData.rowData[0]}/translate`);
+                }
+                
                 console.log("Edit Button ---- ", tableData.rowData);
                 // setOpenViewTaskDialog(true);
                 // setCurrentTaskDetails(tableData.rowData);
