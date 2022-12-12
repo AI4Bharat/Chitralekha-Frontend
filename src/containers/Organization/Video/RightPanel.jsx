@@ -127,14 +127,15 @@ const RightPanel = () => {
           backgroundColor:"black",
           color:"white",
           marginTop: "5px",
-          width: "100%"
+          width: "100%",
+          textAlign: "center"
         }}
         className={"subTitleContainer"}
       >
         {
           sourceText?.map((item, index) => {
             return (<>
-              <Box display="flex" padding="10px 24px 0" >
+              <Box display="flex" padding="10px 0px 0" width={"100%"} justifyContent="center" >
                 <TextField variant="outlined" value={item.start_time} sx={{
                   "& .MuiOutlinedInput-root": {
                     width: "85%",
@@ -172,7 +173,7 @@ const RightPanel = () => {
                   <textarea className={classes.customTextarea} rows={3} {...props} />
                 )}
               /> */}
-              <CardContent sx={{display: "flex", paddingX: 0, borderBottom: 2}}>
+              <CardContent sx={{display: "flex", paddingX: 0, borderBottom: 2, alignItems: "center"}}>
                 <IndicTransliterate
                 lang={taskData.src_language}
                 value={item.text}
