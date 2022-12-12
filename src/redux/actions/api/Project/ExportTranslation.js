@@ -2,13 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class exportTranscriptionAPI extends API {
+export default class exportTranslationAPI extends API {
   constructor(projectId,exportType,data, timeout = 2000) {
     console.log(data,"datadata")
     super("GET", timeout, false);
-    this.type = C.EXPORT_TRANSCRIPTION;
+    this.type = C.EXPORT_TRANLATION;
     this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.transcript}export_transcript/?task_id=${projectId}&export_type=${exportType}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.translation}export_translation/?task_id=${projectId}&export_type=${exportType}`;
   }
 
   processResponse(res) {
