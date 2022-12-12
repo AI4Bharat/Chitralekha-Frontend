@@ -362,7 +362,8 @@ console.log(userList,"userList")
           setLang={setLang}
         />
       )}
-      <AddProjectMembers  managerNames={userList}
+      <AddProjectMembers 
+       managerNames={userList}
        open={addUserDialog}
        handleUserDialogClose={() => setAddUserDialog(false)}
        addBtnClickHandler={addNewMemberHandler}

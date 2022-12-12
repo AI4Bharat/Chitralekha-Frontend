@@ -3,10 +3,10 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchOrganizatioProjectManagersUserAPI extends API {
-  constructor(id, timeout = 2000) {
+  constructor(id,projectrole, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_ORGANIZATION_PROJECT_MANAGER_USER;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/users/?role=PROJECT_MANAGER`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/users/?role=${projectrole}`;
   }
 
   processResponse(res) {
