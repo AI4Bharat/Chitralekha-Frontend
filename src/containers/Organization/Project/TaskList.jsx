@@ -292,7 +292,13 @@ const TaskList = () => {
             <EditIcon
               color="primary"
               onClick={() => {
-                navigate(`/${tableData.rowData[0]}/transcript`);
+                if(tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"){
+                  navigate(`/${tableData.rowData[0]}/transcript`);
+                } else {
+                  navigate(`/${tableData.rowData[0]}/translate`);
+                }
+                
                 console.log("Edit Button ---- ", tableData.rowData);
                 // setOpenViewTaskDialog(true);
                 // setCurrentTaskDetails(tableData.rowData);
