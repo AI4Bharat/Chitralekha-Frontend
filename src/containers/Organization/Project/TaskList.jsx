@@ -347,7 +347,7 @@ const TaskList = () => {
         //   label="Edit"
         //   onClick={() => {
         //     navigate(`/${tableData.rowData[0]}/transcript`);
-        //     console.log("Edit Button ----- ", tableData.rowData);
+        //     console.log("Edit Button ---- ", tableData.rowData);
         //     // setOpenViewTaskDialog(true);
         //     // setCurrentTaskDetails(tableData.rowData);
         //   }}
