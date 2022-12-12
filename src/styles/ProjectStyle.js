@@ -172,7 +172,7 @@ const ProjectStyle = makeStyles({
   textAreaTransliteration: {
     width: "80%",
    // margin: "5px 15px 15px 10px",
-   margin: "5px 15px 15px 23px",
+   margin: "5px 10px 15px 20px",
     padding: "16.5px 12px",
     fontSize: "1rem",
     fontWeight: "400",
