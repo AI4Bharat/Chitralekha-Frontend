@@ -14,13 +14,24 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppInfo from "./AppInfo";
 import CustomizedSnackbars from "../../common/Snackbar";
 import LoginAPI from "../../redux/actions/api/User/Login";
+import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
+import { useDispatch, useSelector } from "react-redux";
+import APITransport from "../../redux/actions/apitransport/apitransport";
 
 const Login = () => {
   const classes = LoginStyle();
+  const dispatch = useDispatch();
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
+
+  // const [userAccessToken, setUserAccessToken ] = useState();
+  const accessToken = localStorage.getItem('token');
+
+  const userTokenData = useSelector((state) => state.getUserAccessToken.data?.access);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const loginApiStatus = useSelector((state) => state.apiStatus);
 
   const navigate = useNavigate();
 
@@ -50,6 +61,33 @@ const Login = () => {
     setIsPressed(false);
   };
 
+  const getLoggedInUserData = () => {
+    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    dispatch(APITransport(loggedInUserObj));
+  };
+
+  useEffect(() => {
+    if (loginApiStatus?.error) {
+      setSnackbarInfo({
+        open: true,
+        variant: "error",
+        message: "Username or Password incorrect.",
+      });
+    }
+  }, [loginApiStatus])
+
+  useEffect(() => {
+    if (accessToken) {
+      getLoggedInUserData();
+    }
+  }, [userTokenData])
+
+  useEffect(() => {
+    if (userData && accessToken) {
+      navigate(`/my-organization/${userData?.organization?.id}`)
+    }
+  }, [userData])
+
   useEffect(() => {
     window.addEventListener("keydown", keyPress);
     window.addEventListener("keyup", keyRelease);
@@ -77,31 +115,33 @@ const Login = () => {
 
   const createToken = () => {
     const apiObj = new LoginAPI(credentials.email, credentials.password);
-    fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (res) => {
-        const rsp_data = await res.json();
-        if (!res.ok) {
-          setSnackbarInfo({
-            open: true,
-            variant: "error",
-            message: "Username or Password incorrect.",
-          });
-        } else {
-          localStorage.setItem("token", rsp_data.access);
-          navigate("/projects");
-        }
-      })
-      .catch((error) => {
-        setSnackbarInfo({
-          open: true,
-          variant: "error",
-          message: "Something went wrong. Please try again.",
-        });
-      });
+    dispatch(APITransport(apiObj));
+    // fetch(apiObj.apiEndPoint(), {
+    //   method: "POST",
+    //   body: JSON.stringify(apiObj.getBody()),
+    //   headers: apiObj.getHeaders().headers,
+    // })
+    //   .then(async (res) => {
+    //     const rsp_data = await res.json();
+    //     if (!res.ok) {
+    //       setSnackbarInfo({
+    //         open: true,
+    //         variant: "error",
+    //         message: "Username or Password incorrect.",
+    //       });
+    //     } else {
+    //       localStorage.setItem("token", rsp_data.access);
+    //       setUserAccessToken(rsp_data.access);
+    //       // navigate("/projects");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setSnackbarInfo({
+    //       open: true,
+    //       variant: "error",
+    //       message: "Something went wrong. Please try again.",
+    //     });
+    //   });
   };
 
   const TextFields = () => {

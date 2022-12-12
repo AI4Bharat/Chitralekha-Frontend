@@ -1,0 +1,40 @@
+import API from "../../../api";
+import ENDPOINTS from "../../../../config/apiendpoint";
+import C from "../../../constants";
+
+export default class FetchAllowedTasksAPI extends API {
+  constructor(videoId, taskType, timeout = 2000) {
+    super("GET", timeout, false);
+    this.type = C.GET_ALLOWED_TASK;
+    this.videoId = videoId;
+    this.taskType = taskType;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}get_allowed_task/?video_id=${videoId}&type=${taskType}`;
+  }
+
+  processResponse(res) {
+    super.processResponse(res);
+    if (res) {
+      this.report = res;
+    }
+  }
+
+  apiEndPoint() {
+    return this.endpoint;
+  }
+
+  getBody() {}
+
+  getHeaders() {
+    this.headers = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("token")}`,
+      },
+    };
+    return this.headers;
+  }
+
+  getPayload() {
+    return this.report;
+  }
+}

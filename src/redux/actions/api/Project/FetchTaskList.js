@@ -7,7 +7,7 @@ export default class FetchTaskListAPI extends API {
     super("GET", timeout, false);
     this.type = C.GET_TASK_LIST;
     this.id = id;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.project}${this.id}/list_project_tasks/`;
   }
 
   processResponse(res) {

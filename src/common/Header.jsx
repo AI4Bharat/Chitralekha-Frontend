@@ -34,16 +34,17 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  // const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
-    dispatch(APITransport(loggedInUserObj));
-  };
+  // const getLoggedInUserData = () => {
+  //   const loggedInUserObj = new FetchLoggedInUserDataAPI();
+  //   dispatch(APITransport(loggedInUserObj));
+  // };
 
-  useEffect(() => {
-    getLoggedInUserData();
-  }, []);
+  // useEffect(() => {
+  //   getLoggedInUserData();
+  // }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -117,7 +118,7 @@ const Header = () => {
       {isMobile ? (
         <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
       ) : (
-        <AppBar position="fixed">
+        <AppBar position="fixed"  sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Container maxWidth="xl">
             <Toolbar disableGutters className={classes.toolbar}>
               <Box display="flex" alignItems="center">
@@ -154,7 +155,7 @@ const Header = () => {
                     Organizations
                   </NavLink>
                 </Typography>
-                <Typography variant="body1">
+                {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"
                     className={({ isActive }) =>
@@ -166,7 +167,7 @@ const Header = () => {
                   >
                     Projects
                   </NavLink>
-                </Typography>
+                </Typography> */}
                 {/* <Typography variant="body1">
                   <NavLink
                     to="#"

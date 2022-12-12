@@ -3,12 +3,15 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class CreateNewVideoAPI extends API {
-  constructor(url, isAudio, timeout = 2000) {
+  constructor(url, isAudio, projectId, language, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.CREATE_NEW_VIDEO;
     this.url = url;
     this.isAudio = isAudio;
-    this.endpoint = `https://backend.chitralekha.ai4bharat.org/video/?multimedia_url=${url}&save_original_transcript=true&is_audio_only=${isAudio}`;
+    this.projectId = projectId;
+    this.projectId = projectId;
+    this.language = language;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.video}?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}`;
   }
 
   processResponse(res) {

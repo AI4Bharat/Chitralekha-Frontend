@@ -4,13 +4,16 @@ import { roles } from "../../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, Tooltip,IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
 import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
+import CustomizedSnackbars from "../../../common/Snackbar";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 //APIs
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
@@ -22,15 +25,40 @@ const ProjectMemberDetails = () => {
   const dispatch = useDispatch();
 
   const [tableData, setTableData] = useState([]);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
   );
+  console.log(projectMembersList,"projectMembersList")
 
-  const removeProjectMember = (id) => {
+  const removeProjectMember = async(id) => {
     const apiObj = new RemoveProjectMemberAPI(projectId, id);
-    dispatch(APITransport(apiObj));
-    getProjectMembers();
+    //dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message:  resp?.message,
+        variant: "success",
+      })
+      getProjectMembers();
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      })
+    }
   };
 
   const getProjectMembers = () => {
@@ -50,19 +78,20 @@ const ProjectMemberDetails = () => {
         item.email,
         item.availability_status,
         roles.map((value) => (value.id === item.role ? value.type : "")),
-        <Box>
-          <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-            <CustomButton
-              sx={{ borderRadius: 2, marginRight: 1 }}
-              label="View"
-            />
+        <Box sx={{display: "flex"}}>
+          <Tooltip title="View">
+        <IconButton>
+        <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
+          <LibraryBooksIcon color="primary" sx={{mt:"10px"}}  />
           </Link>
-          <CustomButton
-            sx={{ borderRadius: 2 }}
-            label="Remove"
-            color="error"
-            onClick={() => removeProjectMember(item.id)}
-          />
+        </IconButton>
+      </Tooltip>
+
+          <Tooltip title="Delete">
+        <IconButton>
+          <DeleteIcon color="error" onClick={() => removeProjectMember(item.id)} />
+        </IconButton>
+      </Tooltip>
         </Box>,
       ];
     });
@@ -79,8 +108,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px" ,textAlign: "center"},
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -91,8 +121,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -103,8 +134,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center",textAlign: "center"}}),
       },
     },
     {
@@ -115,8 +147,9 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
@@ -127,20 +160,22 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
     {
       name: "Action",
-      label: "Action",
+      label: "Actions",
       options: {
         filter: false,
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
         }),
+        setCellProps:() =>({ style: { textAlign: "center"}}),
       },
     },
   ];
@@ -164,16 +199,33 @@ const ProjectMemberDetails = () => {
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
-    viewColumns: false,
+    viewColumns: true,
     selectableRows: "none",
     search: false,
     jumpToPage: true,
   };
 
+  const renderSnackBar = () => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  };
+
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={tableTheme}>
+        <MUIDataTable data={tableData} columns={columns} options={options} />
+      </ThemeProvider>
+      {renderSnackBar()}
+    </>
   );
 };
 
