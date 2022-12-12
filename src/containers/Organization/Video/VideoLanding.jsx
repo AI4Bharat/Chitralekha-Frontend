@@ -1,5 +1,6 @@
-import { Box, Grid } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Grid } from "@mui/material";
+import ReactTextareaAutosize from "react-textarea-autosize";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import RightPanel from "./RightPanel";
@@ -12,10 +13,12 @@ import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchT
 import TranslationRightPanel from "./TranslationRightPanel";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Sub from "../../../utils/Sub";
+import ProjectStyle from "../../../styles/ProjectStyle";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
   const dispatch = useDispatch();
+  const classes = ProjectStyle();
 
   const [waveform, setWaveform] = useState();
   const [player, setPlayer] = useState();
@@ -34,6 +37,8 @@ const VideoLanding = () => {
     variant: "success",
   });
   const [subs, setSubs] = useState([]);
+  const [currentSubs, setCurrentSubs] = useState();
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -45,7 +50,6 @@ const VideoLanding = () => {
     dispatch(APITransport(apiObj));
   }, []);
 
- 
   useEffect(() => {
     if (taskDetails) {
       const apiObj = new FetchVideoDetailsAPI(
@@ -56,33 +60,12 @@ const VideoLanding = () => {
       dispatch(APITransport(apiObj));
 
       (async () => {
-      const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id, taskDetails.task_type);
-       dispatch(APITransport(payloadObj))
-      //  fetch(payloadObj.apiEndPoint(), {
-      //   method: "GET",
-      //   body: JSON.stringify(payloadObj.getBody()),
-      //   headers: payloadObj.getHeaders().headers,
-      // })
-      // .then(async (res) => {
-      //       const rsp_data = await res.json();
-      //   if (res.ok) {
-      //     // setSnackbarInfo({
-      //     //   open: true,
-      //     //   message: resp?.message,
-      //     //   variant: "success",
-      //     // });
-      //   } else {
-      //     setSnackbarInfo({
-      //       open: true,
-      //       message: rsp_data?.message,
-      //       variant: "error",
-      //     });
-      //   }
-      // })
-
-     // const resp = await res.json();
-     
-    })();
+        const payloadObj = new FetchTranscriptPayloadAPI(
+          taskDetails.id,
+          taskDetails.task_type
+        );
+        dispatch(APITransport(payloadObj));
+      })();
     }
   }, [taskDetails]);
 
@@ -92,6 +75,17 @@ const VideoLanding = () => {
     );
     setSubs(sub);
   }, [transcriptPayload?.payload?.payload]);
+
+  useMemo(() => {
+    const currentIndex = subs?.findIndex(
+      (item) => item.startTime <= currentTime && item.endTime > currentTime
+    );
+    setCurrentIndex(currentIndex);
+  }, [currentTime, subs]);
+
+  useMemo(() => {
+    subs && setCurrentSubs(subs[currentIndex]);
+  }, [subs, currentIndex]);
 
   const renderSnackBar = () => {
     return (
@@ -107,10 +101,9 @@ const VideoLanding = () => {
     );
   };
 
-
   return (
     <Grid>
-       {renderSnackBar()}
+      {renderSnackBar()}
       <Grid
         container
         direction={"row"}
@@ -121,11 +114,32 @@ const VideoLanding = () => {
             setPlayer={setPlayer}
             setCurrentTime={setCurrentTime}
             setPlaying={setPlaying}
+            playing={playing}
+            currentTime={currentTime}
           />
+
+          {currentSubs ? (
+            <div className={classes.subtitlePanel}>
+              <ReactTextareaAutosize
+                className={`${classes.playerTextarea} ${
+                  !playing ? classes.pause : ""
+                }`}
+                value={currentSubs.targetText ? currentSubs.targetText : currentSubs.text}
+                spellCheck={false}
+              />
+            </div>
+          ) : null}
         </Grid>
+
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
-          {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" || taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && <RightPanel />}
-          {(taskDetails?.task_type === "TRANSLATION_EDIT" || taskDetails?.task_type === "TRANSLATION_REVIEW") && <TranslationRightPanel />}
+          {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
+            taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
+            <RightPanel currentIndex={currentIndex}/>
+          )}
+          {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
+            taskDetails?.task_type === "TRANSLATION_REVIEW") && (
+            <TranslationRightPanel currentIndex={currentIndex} />
+          )}
         </Grid>
       </Grid>
       <Grid height={70} width={"100%"} position="fixed" bottom={1}>
@@ -141,29 +155,6 @@ const VideoLanding = () => {
         />
       </Grid>
     </Grid>
-
-    // <Grid sx={{ mt: 7 }} height={"calc(100% - 56px)"}>
-    //   <Grid display={"flex"} height="calc(100% - 150px)">
-    //     <VideoPanel
-    //       setPlayer={setPlayer}
-    //       setCurrentTime={setCurrentTime}
-    //       setPlaying={setPlaying}
-    //     />
-    //     {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" || taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && <RightPanel />}
-    //     {(taskDetails?.task_type === "TRANSLATION_EDIT" || taskDetails?.task_type === "TRANSLATION_REVIEW") && <TranslationRightPanel />}
-    //   </Grid>
-    //   <Grid height={"150px"} position="relative">
-    //     <Timeline
-    //       waveform={waveform}
-    //       setWaveform={setWaveform}
-    //       player={player}
-    //       render={render}
-    //       setRender={setRender}
-    //       currentTime={currentTime}
-    //       playing={playing}
-    //     />
-    //   </Grid>
-    // </Grid>
   );
 };
 

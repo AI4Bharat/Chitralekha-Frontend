@@ -6,7 +6,7 @@ export default class Sub {
         this.start = obj.start_time;
         this.end = obj.end_time;
         this.text = obj.text;
-        this.text2 = obj.text2;
+        this.targetText = obj.target_text;
     }
 
     get check() {
