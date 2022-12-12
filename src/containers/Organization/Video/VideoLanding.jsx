@@ -11,10 +11,10 @@ import FetchVideoDetailsAPI from "../../../redux/actions/api/Project/FetchVideoD
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import TranslationRightPanel from "./TranslationRightPanel";
 import CustomizedSnackbars from "../../../common/Snackbar";
+import Sub from "../../../utils/Sub";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
-  console.log(useParams,"useParams",taskId)
   const dispatch = useDispatch();
 
   const [waveform, setWaveform] = useState();
@@ -33,8 +33,12 @@ const VideoLanding = () => {
     message: "",
     variant: "success",
   });
+  const [subs, setSubs] = useState([]);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -82,6 +86,13 @@ const VideoLanding = () => {
     }
   }, [taskDetails]);
 
+  useEffect(() => {
+    const sub = transcriptPayload?.payload?.payload.map(
+      (item) => new Sub(item)
+    );
+    setSubs(sub);
+  }, [transcriptPayload?.payload?.payload]);
+
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
@@ -126,6 +137,7 @@ const VideoLanding = () => {
           setRender={setRender}
           currentTime={currentTime}
           playing={playing}
+          subtitles={subs}
         />
       </Grid>
     </Grid>

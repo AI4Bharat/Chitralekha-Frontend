@@ -15,7 +15,7 @@ const ProjectStyle = makeStyles({
     width: "40%",
     borderRadius: "7px",
     margin: "24px auto",
-    backgroundColor:"#0083e2"
+    backgroundColor: "#0083e2",
   },
 
   waveform: {
@@ -171,8 +171,8 @@ const ProjectStyle = makeStyles({
   },
   textAreaTransliteration: {
     width: "80%",
-   // margin: "5px 15px 15px 10px",
-   margin: "5px 15px 15px 23px",
+    // margin: "5px 15px 15px 10px",
+    margin: "5px 15px 15px 23px",
     padding: "16.5px 12px",
     fontSize: "1rem",
     fontWeight: "400",
@@ -184,21 +184,20 @@ const ProjectStyle = makeStyles({
     resize: "none",
     fontFamily: "Roboto, sans-serif",
   },
-  headerMenu:{
+  headerMenu: {
     width: "80%",
     // margin: "5px 15px 15px 10px",
     margin: "5px 15px 15px 23px",
-     padding: "16.5px 12px",
-     fontSize: "1rem",
-     fontWeight: "400",
-     lineHeight: "1.4375em",
-     color: "rgba(0, 0, 0, 0.87)",
-     borderRadius: "4px",
-     borderColor: "white",
-     outlineColor: "#2C2799",
-     resize: "none",
-     fontFamily: "Roboto, sans-serif",
-
+    padding: "16.5px 12px",
+    fontSize: "1rem",
+    fontWeight: "400",
+    lineHeight: "1.4375em",
+    color: "rgba(0, 0, 0, 0.87)",
+    borderRadius: "4px",
+    borderColor: "white",
+    outlineColor: "#2C2799",
+    resize: "none",
+    fontFamily: "Roboto, sans-serif",
   },
 
   videoBox: {
@@ -216,15 +215,103 @@ const ProjectStyle = makeStyles({
     zIndex: 9,
     inset: 0,
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
 
   video: {
-    position: "relative", 
-    maxWidth: "100%", 
+    position: "relative",
+    maxWidth: "100%",
     maxHeight: "90%",
     height: "100vh",
-  }
+  },
+
+  parentSubtitleBox: {
+    position: "absolute",
+    zIndex: "9",
+    top: "0",
+    right: "0",
+    bottom: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+  },
+
+  subItem: {
+    position: "absolute",
+    top: "40%",
+    left: "0",
+    height: "40%",
+    overflow: "hidden",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    wordWrap: "break-word",
+    color: "#fff",
+    fontSize: "14px",
+    cursor: "move",
+    userSelect: "none",
+    pointerEvents: "all",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+
+    "&:hover": {
+      backgroundColor: " rgba(255, 255, 255, 0.3)",
+    },
+  },
+
+  subHighlight: {
+    backgroundColor: "rgba(33, 150, 243, 0.5)",
+    border: "1px solid rgba(33, 150, 243, 0.5)",
+  },
+
+  subIllegal: {
+    backgroundColor: "rgba(199, 81, 35, 0.5)",
+  },
+
+  subHandle: {
+    position: "absolute",
+    top: "0",
+    bottom: "0",
+    zIndex: "1",
+    height: "100%",
+    cursor: "col-resize",
+    userSelect: "none",
+
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+    },
+  },
+
+  subText: {
+    position: "relative",
+    zIndex: "0",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+    height: "100%",
+    wordWrap: "break-word",
+  },
+
+  subTextP: {
+    margin: "2px 0",
+    lineHeight: "1",
+  },
+
+  subDuration: {
+    opacity: "0.5",
+    position: "absolute",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    width: "100%",
+    textAlign: "center",
+    fontSize: "12px",
+  },
 });
 
 export default ProjectStyle;
