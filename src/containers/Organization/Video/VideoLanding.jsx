@@ -36,13 +36,9 @@ const VideoLanding = () => {
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
-  const FetchTaskDetails = async() =>{
+  useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
     dispatch(APITransport(apiObj));
-   }
-
-  useEffect(() => {
-    FetchTaskDetails()
   }, []);
 
  
@@ -58,25 +54,30 @@ const VideoLanding = () => {
       (async () => {
       const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id, taskDetails.task_type);
        dispatch(APITransport(payloadObj))
-      const res = await fetch(payloadObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(payloadObj.getBody()),
-        headers: payloadObj.getHeaders().headers,
-      });
-      const resp = await res.json();
-      if (res.ok) {
-        // setSnackbarInfo({
-        //   open: true,
-        //   message: resp?.message,
-        //   variant: "success",
-        // });
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
+      //  fetch(payloadObj.apiEndPoint(), {
+      //   method: "GET",
+      //   body: JSON.stringify(payloadObj.getBody()),
+      //   headers: payloadObj.getHeaders().headers,
+      // })
+      // .then(async (res) => {
+      //       const rsp_data = await res.json();
+      //   if (res.ok) {
+      //     // setSnackbarInfo({
+      //     //   open: true,
+      //     //   message: resp?.message,
+      //     //   variant: "success",
+      //     // });
+      //   } else {
+      //     setSnackbarInfo({
+      //       open: true,
+      //       message: rsp_data?.message,
+      //       variant: "error",
+      //     });
+      //   }
+      // })
+
+     // const resp = await res.json();
+     
     })();
     }
   }, [taskDetails]);
