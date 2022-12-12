@@ -11,10 +11,10 @@ import FetchVideoDetailsAPI from "../../../redux/actions/api/Project/FetchVideoD
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import TranslationRightPanel from "./TranslationRightPanel";
 import CustomizedSnackbars from "../../../common/Snackbar";
+import Sub from "../../../utils/Sub";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
-  console.log(useParams,"useParams",taskId)
   const dispatch = useDispatch();
 
   const [waveform, setWaveform] = useState();
@@ -33,16 +33,16 @@ const VideoLanding = () => {
     message: "",
     variant: "success",
   });
+  const [subs, setSubs] = useState([]);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
-
-  const FetchTaskDetails = async() =>{
-    const apiObj = new FetchTaskDetailsAPI(taskId);
-    dispatch(APITransport(apiObj));
-   }
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
 
   useEffect(() => {
-    FetchTaskDetails()
+    const apiObj = new FetchTaskDetailsAPI(taskId);
+    dispatch(APITransport(apiObj));
   }, []);
 
  
@@ -58,28 +58,40 @@ const VideoLanding = () => {
       (async () => {
       const payloadObj = new FetchTranscriptPayloadAPI(taskDetails.id, taskDetails.task_type);
        dispatch(APITransport(payloadObj))
-      const res = await fetch(payloadObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(payloadObj.getBody()),
-        headers: payloadObj.getHeaders().headers,
-      });
-      const resp = await res.json();
-      if (res.ok) {
-        // setSnackbarInfo({
-        //   open: true,
-        //   message: resp?.message,
-        //   variant: "success",
-        // });
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
+      //  fetch(payloadObj.apiEndPoint(), {
+      //   method: "GET",
+      //   body: JSON.stringify(payloadObj.getBody()),
+      //   headers: payloadObj.getHeaders().headers,
+      // })
+      // .then(async (res) => {
+      //       const rsp_data = await res.json();
+      //   if (res.ok) {
+      //     // setSnackbarInfo({
+      //     //   open: true,
+      //     //   message: resp?.message,
+      //     //   variant: "success",
+      //     // });
+      //   } else {
+      //     setSnackbarInfo({
+      //       open: true,
+      //       message: rsp_data?.message,
+      //       variant: "error",
+      //     });
+      //   }
+      // })
+
+     // const resp = await res.json();
+     
     })();
     }
   }, [taskDetails]);
+
+  useEffect(() => {
+    const sub = transcriptPayload?.payload?.payload.map(
+      (item) => new Sub(item)
+    );
+    setSubs(sub);
+  }, [transcriptPayload?.payload?.payload]);
 
   const renderSnackBar = () => {
     return (
@@ -125,6 +137,7 @@ const VideoLanding = () => {
           setRender={setRender}
           currentTime={currentTime}
           playing={playing}
+          subtitles={subs}
         />
       </Grid>
     </Grid>
