@@ -4,6 +4,7 @@ import C from "../../../constants";
 
 export default class exportTranscriptionAPI extends API {
   constructor(projectId,exportType,data, timeout = 2000) {
+    console.log(data,"datadata")
     super("GET", timeout, false);
     this.type = C.EXPORT_TRANSCRIPTION;
     this.data = data;

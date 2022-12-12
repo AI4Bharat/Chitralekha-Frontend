@@ -347,5 +347,18 @@ export function sub2txt(sub) {
 export const parseSubtitles = async (subtitles) => {
   const suburl = vtt2url(subtitles);
   const urlsub = await url2sub(suburl);
-   return urlsub;
+  return urlsub;
 };
+
+export function getKeyCode(event) {
+  const tag = document.activeElement.tagName.toUpperCase();
+  const editable = document.activeElement.getAttribute("contenteditable");
+  if (
+    tag !== "INPUT" &&
+    tag !== "TEXTAREA" &&
+    editable !== "" &&
+    editable !== "true"
+  ) {
+    return Number(event.keyCode);
+  }
+}
