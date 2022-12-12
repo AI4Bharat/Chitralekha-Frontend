@@ -2,6 +2,9 @@ import { Card, Divider, Grid, Typography, FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
   TextField, } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
@@ -15,6 +18,18 @@ import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import FetchManagerNameAPI from "../../../redux/actions/api/Project/FetchManagerName";
+import FetchOrganizatioProjectManagersUserAPI from "../../../redux/actions/api/Organization/FetchOrganizatioProjectManagersUser";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
 
 const CreatenewProject = () => {
   const { orgId } = useParams();
@@ -28,6 +43,7 @@ const CreatenewProject = () => {
   const managerNames = useSelector(
     (state) => state.getManagerName.data
   );
+  const userList = useSelector((state) => state.getOrganizatioProjectManagersUser.data);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -48,24 +64,43 @@ const CreatenewProject = () => {
     message: "",
     variant: "success",
   });
-
-
+  
   const GetManagerName =()=>{
     const apiObj = new FetchManagerNameAPI();
      dispatch(APITransport(apiObj));
   }
-
+  const getOrganizatioUsersList = () => {
+    const userObj = new FetchOrganizatioProjectManagersUserAPI(orgId);
+    dispatch(APITransport(userObj));
+  };
+console.log(managerUsername,"userList",userList)
   useEffect(() => {
     GetManagerName()
+    getOrganizatioUsersList()
   }, [])
 
+  const handeleselectManager=(event,item) =>{
+ 
+  const {
+    target: { value }
+  } = event;
+  setManagerUsername(
+    // On autofill we get a stringified value.
+    typeof value === "string" ? value.split(",") : value
+  );
+  //setManagerUsername(item)
+  }
+
   const handleCreateProject =async () => {
+    const selectedMemberIdArr = managerUsername.map((el,i)=>{
+      return el.id;
+    })
     const newPrjectReqBody = {
       title: title,
      // is_archived: false,
       description: description,
       organization_id: orgId,
-      managers_id: [managerUsername]
+      managers_id: managerUsername
       
       // manager: {
       //   username: managerUsername,
@@ -171,25 +206,23 @@ const CreatenewProject = () => {
             Managers *:
           </Typography>
         <FormControl fullWidth>
-           
-              <Select
-                fullWidth
-                //labelId="select-UserName"
-                //label="Select UserName"
-                 value={managerUsername}
-                 onChange={(event) => setManagerUsername(event.target.value)}
-                style={{ zIndex: "0" }}
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                 {managerNames.map((item, index) => (
-                  <MenuItem key={index} value={item.id} >
-                    {item.email}
-                  </MenuItem>
-                 ))} 
-              </Select>
+            <Select
+         // labelId="demo-multiple-name-label"
+          id="demo-multiple-name"
+          multiple
+          value={managerUsername}
+          onChange={handeleselectManager}
+         // input={<OutlinedInput label="Name" />}
+          MenuProps={MenuProps}
+        >
+          {userList.map((name) => (
+            <MenuItem key={name.id} value={name.id}>
+              {name.email}
+            </MenuItem>
+          ))}
+        </Select>
             </FormControl>
         </Box>
-
         {/* <Divider sx={{ mt: 5 }} /> */}
 
         {/* <Box sx={{ mt: 3 }}>
