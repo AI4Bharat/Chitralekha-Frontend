@@ -72,7 +72,7 @@ const RightPanel = () => {
       });
       if(isFinal){
         setTimeout(() => {
-            navigate(`/my-organization/:${assignedOrgId}/project/:${taskData?.project}`);
+            navigate(`/my-organization/${assignedOrgId}/project/${taskData?.project}`);
         }, 2000);
     }
     //navigate(`/my-organization/:orgId/project/:projectId`)

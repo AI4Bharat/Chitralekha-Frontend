@@ -31,6 +31,8 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
   const [openTaskVideo, setopenTaskVideo] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState({});
 
+  const [dropDownText, setdropDownText] = useState("");
+
   const handleChange = (event) => {
     const {
       target: { value },
@@ -49,6 +51,8 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
   
   useEffect(() => {
     if (taskDetail) {
+      taskDetail?.task_type === "TRANSCRIPTION_EDIT" ? setdropDownText("Transcription") : setdropDownText("Translation");
+
       const obj = new FetchTranscriptTypesAPI(taskDetail.task_type);
       dispatch(APITransport(obj))
     }
@@ -98,7 +102,7 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
             Select :
           </Typography>
           <FormControl style={{ width: "70%" }}>
-            <InputLabel id="select-transcription-source"> Transcription Source</InputLabel>
+            <InputLabel id="select-transcription-source"> {dropDownText} Source</InputLabel>
             <Select
               fullWidth
               width="100%"
@@ -106,7 +110,7 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
               multiple
               value={transcriptSource}
               onChange={handleChange}
-              input={<OutlinedInput label="Select Transcription Source"/>}
+              input={<OutlinedInput label={`Select ${dropDownText} Source`}/>}
               renderValue={(selected) => selected.join(", ")}
               style={{ zIndex: 0 }}
               inputProps={{ "aria-label": "Without label" }}
