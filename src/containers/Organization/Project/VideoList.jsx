@@ -110,7 +110,7 @@ const VideoList = ({ data, removeVideo }) => {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Create Task">
+            {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToCreateTask &&<Tooltip title="Create Task">
               <IconButton>
                 <NoteAddIcon
                   color="primary"
@@ -120,7 +120,7 @@ const VideoList = ({ data, removeVideo }) => {
                   }}
                 />
               </IconButton>
-            </Tooltip>
+            </Tooltip>}
 
             {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteVideoAudio && <Tooltip title="Delete">
               <IconButton>

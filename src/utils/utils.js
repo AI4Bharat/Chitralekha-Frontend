@@ -65,43 +65,50 @@ export const roles = [
     label: "Transcript editor",
     value: "TRANSCRIPT_EDITOR", 
     permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
     permittedToCreateVideoAudio: false,
   },
   {
     label: "Transcript Reviewer",
     value: "TRANSCRIPT_REVIEWER",
     permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
     permittedToCreateVideoAudio: false,
   },
   {
     label: "Translation editor",
     value: "TRANSLATION_EDITOR",
     permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
     permittedToCreateVideoAudio: false,
   },
   {
     label: "Translation Reviewer",
     value: "TRANSLATION_REVIEWER",
     permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
     permittedToCreateVideoAudio: false,
   },
   {
     label: "Universal Editor",
     value: "UNIVERSAL_EDITOR",
     permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
     permittedToCreateVideoAudio: false,
   },
   {
     label: "Project Manager",
     value: "PROJECT_MANAGER",
     permittedToDeleteVideoAudio: true,
+    permittedToCreateTask: true,
     permittedToCreateVideoAudio: true,
   },
   {
     label: "Organization Owner",
     value: "ORG_OWNER",
-    permittedToDeleteVideoAudio: false,
-    permittedToCreateVideoAudio: false,
+    permittedToDeleteVideoAudio: true,
+    permittedToCreateTask: true,
+    permittedToCreateVideoAudio: true,
   }
 ];
 
