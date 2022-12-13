@@ -313,11 +313,11 @@ console.log(userList,"userList")
             justifyContent="center"
             alignItems="center"
           >
-            <Button
+            {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToAddMembersInProject && <Button
               className={classes.projectButton}
               label={"Add project members"}
               onClick={() => setAddUserDialog(true)}
-            />
+            />}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
             </div>
