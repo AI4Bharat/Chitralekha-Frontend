@@ -9,6 +9,7 @@ import isEqual from "lodash/isEqual";
 import DT from "duration-time-conversion";
 import { getKeyCode } from "../../../utils/utils";
 import ProjectStyle from "../../../styles/ProjectStyle";
+import Sub from "../../../utils/Sub";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -41,15 +42,12 @@ export default React.memo(
   function ({
     player,
     subtitles,
-    subtitleEnglish,
     render,
     currentTime,
-    removeSub,
-    hasSub,
     updateSub,
     mergeSub,
     updateSubEnglish,
-    configuration,
+    setSubtitles,
   }) {
     const classes = ProjectStyle();
     const $blockRef = React.createRef();
@@ -67,34 +65,65 @@ export default React.memo(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
-    // const onMouseDown = (sub, event, type) => {
-    //   lastSub = sub;
-    //   if (event.button !== 0) return;
-    //   isDroging = true;
-    //   lastType = type;
-    //   lastX = event.pageX;
-    //   lastIndex = subtitles.indexOf(sub);
-    //   lastTarget = $subsRef.current.children[lastIndex];
-    //   lastWidth = parseFloat(lastTarget.style.width);
-    // };
+    const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
+    
+    const newSub = useCallback((item) => new Sub(item), []);
 
-    // const onDoubleClick = (sub, event) => {
-    //   const $subs = event.currentTarget;
-    //   const index = hasSub(sub);
-    //   const previou = subtitles[index - 1];
-    //   const next = subtitles[index + 1];
-    //   if (previou && next) {
-    //     const width = (next.startTime - previou.endTime) * 10 * gridGap;
-    //     $subs.style.width = `${width}px`;
-    //     const start = DT.d2t(previou.endTime);
-    //     const end = DT.d2t(next.startTime);
+    const formatSub = useCallback(
+      (sub) => {
+        if (Array.isArray(sub)) {
+          return sub.map((item) => newSub(item));
+        }
+        return newSub(sub);
+      },
+      [newSub]
+    );
 
-    //     updateSub(sub, {
-    //       start,
-    //       end,
-    //     });
-    //   }
-    // };
+    const copySubs = useCallback(
+      () => formatSub(subtitles),
+      [subtitles, formatSub]
+    );
+
+    const removeSub = useCallback(
+      (sub) => {
+        const index = hasSub(sub);
+
+        if (index >= 0) {
+          subtitles.splice(index, 1)
+          setSubtitles(subtitles);
+        }
+      },
+      [hasSub, copySubs, setSubtitles]
+    );
+
+    const onMouseDown = (sub, event, type) => {
+      lastSub = sub;
+      if (event.button !== 0) return;
+      isDroging = true;
+      lastType = type;
+      lastX = event.pageX;
+      lastIndex = subtitles.indexOf(sub);
+      lastTarget = $subsRef.current.children[lastIndex];
+      lastWidth = parseFloat(lastTarget.style.width);
+    };
+
+    const onDoubleClick = (sub, event) => {
+      const $subs = event.currentTarget;
+      const index = hasSub(sub);
+      const previou = subtitles[index - 1];
+      const next = subtitles[index + 1];
+      if (previou && next) {
+        const width = (next.startTime - previou.endTime) * 10 * gridGap;
+        $subs.style.width = `${width}px`;
+        const start = DT.d2t(previou.endTime);
+        const end = DT.d2t(next.startTime);
+
+        updateSub(sub, {
+          start,
+          end,
+        });
+      }
+    };
 
     const onDocumentMouseMove = useCallback((event) => {
       if (isDroging && lastTarget) {
@@ -208,17 +237,25 @@ export default React.memo(
 
     const DynamicMenu = (props) => {
       const { id, trigger } = props;
-
       return (
-        <ContextMenu id={id}>
+        <ContextMenu id={id} className={classes.menuItemNav}>
           {trigger && (
-            <MenuItem onClick={() => removeSub(lastSub)}>"Delete"</MenuItem>
+            <MenuItem
+              className={classes.menuItem}
+              onClick={() => removeSub(lastSub)}
+            >
+              Delete Subtitle
+            </MenuItem>
           )}
           {trigger &&
-            configuration === "Same Language Subtitling" &&
-            trigger.parentSub !==
-              subtitleEnglish[subtitleEnglish.length - 1] && (
-              <MenuItem onClick={() => mergeSub(lastSub)}>"Merge"</MenuItem>
+            !trigger.parentSub.targetText &&
+            trigger.parentSub !== subtitles[subtitles.length - 1] && (
+              <MenuItem
+                className={classes.menuItem}
+                onClick={() => mergeSub(lastSub)}
+              >
+                Merge Next
+              </MenuItem>
             )}
         </ContextMenu>
       );
@@ -258,7 +295,7 @@ export default React.memo(
                     player.currentTime = sub.startTime + 0.001;
                   }
                 }}
-                // onDoubleClick={(event) => onDoubleClick(sub, event)}
+                onDoubleClick={(event) => onDoubleClick(sub, event)}
               >
                 <ContextMenuTrigger
                   id="contextmenu"
@@ -272,13 +309,13 @@ export default React.memo(
                       left: 0,
                       width: 10,
                     }}
-                    // onMouseDown={(event) => onMouseDown(sub, event, "left")}
+                    onMouseDown={(event) => onMouseDown(sub, event, "left")}
                   ></div>
 
                   <div
                     className={classes.subText}
                     title={sub.text}
-                    // onMouseDown={(event) => onMouseDown(sub, event)}
+                    onMouseDown={(event) => onMouseDown(sub, event)}
                   >
                     <p className={classes.subTextP}>
                       {sub.targetText ? sub.targetText : sub.text}
@@ -291,7 +328,7 @@ export default React.memo(
                       right: 0,
                       width: 10,
                     }}
-                    // onMouseDown={(event) => onMouseDown(sub, event, "right")}
+                    onMouseDown={(event) => onMouseDown(sub, event, "right")}
                   ></div>
                   <div className={classes.subDuration}>{sub.duration}</div>
                 </ContextMenuTrigger>

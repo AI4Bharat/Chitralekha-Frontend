@@ -152,6 +152,7 @@ const VideoLanding = () => {
           currentTime={currentTime}
           playing={playing}
           subtitles={subs}
+          setSubtitles={setSubs}
         />
       </Grid>
     </Grid>

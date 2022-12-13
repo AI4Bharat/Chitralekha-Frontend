@@ -354,6 +354,20 @@ const ProjectStyle = makeStyles({
     border: "1px solid rgba(255, 255, 255, 0.3)",
     color: "#fff",
   },
+
+  menuItem: {
+    padding: "5px 15px",
+    backgroundColor: "#fff",
+    cursor: "pointer",
+    
+    "&:hover": {
+      backgroundColor: "skyblue"
+    }
+  },
+
+  menuItemNav: {
+    borderRadius: "6px"
+  }
 });
 
 export default ProjectStyle;
