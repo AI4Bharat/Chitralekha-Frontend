@@ -2,13 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchTranscriptTypesAPI extends API {
+export default class FetchTranslationTypesAPI extends API {
   constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_TRANSCRIPT_TYPES;
+    this.type = C.GET_TRANSLATION_TYPES;
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.transcript
-    }get_transcript_types/`;
+      ENDPOINTS.translation
+    }get_translation_types/`;
   }
 
   processResponse(res) {
