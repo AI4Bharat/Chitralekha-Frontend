@@ -1,12 +1,10 @@
-import { TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { createRef, memo, useCallback, useEffect } from "react";
+import React, { createRef, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import ProjectStyle from "../../../styles/ProjectStyle";
 
 const VideoPanel = memo(
   ({ setPlayer, setCurrentTime, setPlaying }) => {
-    const classes = ProjectStyle();
     const $video = createRef();
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
@@ -44,7 +42,10 @@ const VideoPanel = memo(
 
     return (
       <Box margin="auto" display="flex" flexDirection="column">
-        <Typography variant="h4" textAlign="center" paddingY={4}>{videoDetails?.video?.name}</Typography>
+        <Typography variant="h4" textAlign="center" paddingY={4}>
+          {videoDetails?.video?.name}
+        </Typography>
+
         <video
           onClick={onClick}
           src={videoDetails?.direct_video_url}

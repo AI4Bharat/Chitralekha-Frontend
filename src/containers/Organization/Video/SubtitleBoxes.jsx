@@ -58,9 +58,9 @@ export default React.memo(
     const [currentSubs, setCurrentSubs] = useState([]);
 
     useEffect(() => {
-        let subs = getCurrentSubs(subtitles, render.beginTime, render.duration);
-        setCurrentSubs(subs);
-    }, [subtitles, render])
+      let subs = getCurrentSubs(subtitles, render.beginTime, render.duration);
+      setCurrentSubs(subs);
+    }, [subtitles, render]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
     const currentIndex = subtitles?.findIndex(
@@ -280,7 +280,9 @@ export default React.memo(
                     title={sub.text}
                     // onMouseDown={(event) => onMouseDown(sub, event)}
                   >
-                    <p className={classes.subTextP}>{sub.text}</p>
+                    <p className={classes.subTextP}>
+                      {sub.targetText ? sub.targetText : sub.text}
+                    </p>
                   </div>
 
                   <div

@@ -171,8 +171,8 @@ const ProjectStyle = makeStyles({
   },
   textAreaTransliteration: {
     width: "80%",
-    // margin: "5px 15px 15px 10px",
-    margin: "5px 15px 15px 23px",
+   // margin: "5px 15px 15px 10px",
+    margin: "5px 10px 15px 20px",
     padding: "16.5px 12px",
     fontSize: "1rem",
     fontWeight: "400",
@@ -311,6 +311,48 @@ const ProjectStyle = makeStyles({
     width: "100%",
     textAlign: "center",
     fontSize: "12px",
+  },
+
+  subtitlePanel: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    zIndex: "20",
+    left: "0",
+    right: "0",
+    bottom: "15%",
+    width: "63%",
+    padding: "0 30px",
+    userSelect: "none",
+    pointerEvents: "none",
+  },
+
+  playerTextarea: {
+    width: "100%",
+    outline: "none",
+    resize: "none",
+    textAlign: "center",
+    lineHeight: "1.2",
+    border: "none",
+    color: "#fff",
+    fontSize: "20px",
+    padding: "5px 10px",
+    pointerEvents: "all",
+    backgroundColor: "rgb(0 0 0 / 0)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  },
+
+  pause: {
+    backgroundColor: "rgb(0 0 0 / 50%)",
+  },
+
+  boxHighlight: {
+    backgroundColor: "rgb(0 87 158)",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    color: "#fff",
   },
 });
 
