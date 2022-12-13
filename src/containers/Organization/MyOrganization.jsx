@@ -232,6 +232,20 @@ const MyOrganization = () => {
           index={1}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
+        <Typography>No records to be fetched</Typography></TabPanel>
+
+        <TabPanel
+          value={value}
+          index={2}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+        <Typography>No records to be updated</Typography></TabPanel>
+
+        {/* <TabPanel
+          value={value}
+          index={1}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
           <Box
             display={"flex"}
             flexDirection="Column"
@@ -247,9 +261,9 @@ const MyOrganization = () => {
               <UserList data={userList} />
             </div>
           </Box>
-        </TabPanel>
+        </TabPanel> */}
 
-        <TabPanel
+        {/* <TabPanel
           value={value}
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
@@ -266,7 +280,7 @@ const MyOrganization = () => {
             onClick={() => handleOrganizationUpdate()}
             sx={{ mt: 5, width: "100%" }}
           />
-        </TabPanel>
+        </TabPanel> */}
       </Card>
 
       {addUserDialog && (
