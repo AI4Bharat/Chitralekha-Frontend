@@ -107,24 +107,10 @@ const RightPanel = ({ currentIndex }) => {
     <>
       {renderSnackBar()}
       <Box
-        // sx={{
-        //   display: "flex",
-        //   flexDirection: "column",
-        //   borderTop: "1px solid #eaeaea",
-        //   overflowY: "scroll",
-        //   overflowX: "hidden",
-        //   height: window.innerHeight*0.75,
-        //   backgroundColor:"black",
-        //   color:"white",
-        //   marginTop: "5px",
-        //   width: "100%",
-        //   textAlign: "center"
-        // }}
         sx={{
           display: "flex",
           borderLeft: "1px solid #eaeaea",
         }}
-        //   width="25%"
         flexDirection="column"
       >
         <Box display="flex">
@@ -171,6 +157,7 @@ const RightPanel = ({ currentIndex }) => {
                       "& .MuiOutlinedInput-input": {
                         fontSize: "12px",
                         padding: "7px 14px",
+                        textAlign: "center",
                       },
                     }}
                   />
@@ -188,6 +175,7 @@ const RightPanel = ({ currentIndex }) => {
                       "& .MuiOutlinedInput-input": {
                         fontSize: "12px",
                         padding: "7px 14px",
+                        textAlign: "center",
                       },
                     }}
                   />

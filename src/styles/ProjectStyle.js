@@ -322,7 +322,7 @@ const ProjectStyle = makeStyles({
     zIndex: "20",
     left: "0",
     right: "0",
-    bottom: "15%",
+    bottom: "23%",
     width: "63%",
     padding: "0 30px",
     userSelect: "none",
