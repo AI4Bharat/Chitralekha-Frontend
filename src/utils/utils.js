@@ -64,6 +64,7 @@ export const roles = [
   {
     label: "Transcript editor",
     value: "TRANSCRIPT_EDITOR", 
+    permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
@@ -72,6 +73,7 @@ export const roles = [
   {
     label: "Transcript Reviewer",
     value: "TRANSCRIPT_REVIEWER",
+    permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
@@ -80,6 +82,7 @@ export const roles = [
   {
     label: "Translation editor",
     value: "TRANSLATION_EDITOR",
+    permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
@@ -88,6 +91,7 @@ export const roles = [
   {
     label: "Translation Reviewer",
     value: "TRANSLATION_REVIEWER",
+    permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
@@ -96,6 +100,7 @@ export const roles = [
   {
     label: "Universal Editor",
     value: "UNIVERSAL_EDITOR",
+    permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
@@ -104,6 +109,7 @@ export const roles = [
   {
     label: "Project Manager",
     value: "PROJECT_MANAGER",
+    permittedToDeleteProject: true,
     permittedToDeleteVideoAudio: true,
     permittedToCreateTask: true,
     permittedToAddMembersInProject: true,
@@ -112,6 +118,7 @@ export const roles = [
   {
     label: "Organization Owner",
     value: "ORG_OWNER",
+    permittedToDeleteProject: true,
     permittedToDeleteVideoAudio: true,
     permittedToCreateTask: true,
     permittedToAddMembersInProject: true,
