@@ -34,17 +34,17 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  // const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  // const userData = JSON.parse(localStorage.getItem("userData"));
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
-  // const getLoggedInUserData = () => {
-  //   const loggedInUserObj = new FetchLoggedInUserDataAPI();
-  //   dispatch(APITransport(loggedInUserObj));
-  // };
+  const getLoggedInUserData = () => {
+    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    dispatch(APITransport(loggedInUserObj));
+  };
 
-  // useEffect(() => {
-  //   getLoggedInUserData();
-  // }, []);
+  useEffect(() => {
+    getLoggedInUserData();
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);

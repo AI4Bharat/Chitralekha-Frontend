@@ -107,19 +107,25 @@ const RightPanel = ({ currentIndex }) => {
     <>
       {renderSnackBar()}
       <Box
+        // sx={{
+        //   display: "flex",
+        //   flexDirection: "column",
+        //   borderTop: "1px solid #eaeaea",
+        //   overflowY: "scroll",
+        //   overflowX: "hidden",
+        //   height: window.innerHeight*0.75,
+        //   backgroundColor:"black",
+        //   color:"white",
+        //   marginTop: "5px",
+        //   width: "100%",
+        //   textAlign: "center"
+        // }}
         sx={{
           display: "flex",
-          flexDirection: "column",
-          borderTop: "1px solid #eaeaea",
-          overflowY: "scroll",
-          overflowX: "hidden",
-          height: window.innerHeight*0.75,
-          backgroundColor:"black",
-          color:"white",
-          marginTop: "5px",
-          width: "100%",
-          textAlign: "center"
+          borderLeft: "1px solid #eaeaea",
         }}
+        //   width="25%"
+        flexDirection="column"
       >
         <Box display="flex">
           {/* <Button variant="contained" className={classes.findBtn}>
@@ -145,6 +151,7 @@ const RightPanel = ({ currentIndex }) => {
             color: "white",
             marginTop: "5px",
             width: "100%",
+            textAlign: "center"
           }}
           className={"subTitleContainer"}
         >

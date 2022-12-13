@@ -28,6 +28,7 @@ import FetchManagerNameAPI from "../../../redux/actions/api/User/FetchUserList";
 import AddProjectMembersAPI from "../../../redux/actions/api/Project/AddProjectMembers";
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
 import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
+import { roles } from "../../../utils/utils";
 
 const data = [
   {
@@ -90,6 +91,7 @@ const Project = () => {
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
   // const managerNames = useSelector((state) => state.getUserList.data
   // );
@@ -270,11 +272,11 @@ console.log(userList,"userList")
             justifyContent="center"
             alignItems="center"
           >
-            <Button
+            {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToCreateVideoAudio && <Button
               className={classes.projectButton}
               label={"Create a New Video/Audio"}
               onClick={() => setCreateVideoDialog(true)}
-            />
+            />}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <VideoList data={videoList} 
               removeVideo={() => getProjectVideoList()}

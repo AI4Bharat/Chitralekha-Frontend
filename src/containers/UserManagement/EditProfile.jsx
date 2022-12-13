@@ -32,8 +32,8 @@ const EditProfile = () => {
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  // const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  // const userData = JSON.parse(localStorage.getItem("userData"));
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
@@ -54,9 +54,9 @@ const EditProfile = () => {
 
   const getRoles = () => {
     const res = roles.filter((value) =>
-      value.id === userDetails?.role ? value.type : ""
+      value.value === userDetails?.role ? value.label : ""
     );
-    return res[0]?.type;
+    return res[0]?.label;
   };
 
   const handleFieldChange = (event) => {
