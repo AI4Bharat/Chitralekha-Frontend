@@ -9,6 +9,7 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
+import FindAndReplace from "../../../common/FindAndReplace";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -117,6 +118,7 @@ const RightPanel = ({ currentIndex }) => {
           {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
+          {/* <FindAndReplace /> */}
           <Button
             variant="contained"
             className={classes.findBtn}
@@ -184,25 +186,34 @@ const RightPanel = ({ currentIndex }) => {
                 <CardContent
                   sx={{ display: "flex", paddingX: 0, borderBottom: 2, alignItems: "center" }}
                 >
-                  <IndicTransliterate
-                    lang={taskData.src_language}
-                    value={item.text}
-                    onChange={(event) => {
-                      changeTranscriptHandler(event.target, index);
-                    }}
-                    containerStyles={{
-                      width: "100%",
-                    }}
-                    renderComponent={(props) => (
-                      <textarea
-                        className={`${classes.customTextarea} ${
-                          currentIndex === index ? classes.boxHighlight : ""
+                  {taskData?.src_language === "en" ?
+                    <textarea
+                      onChange={(event) => {
+                        changeTranscriptHandler(event.target, index);
+                      }}
+                      value={item.text}
+                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
                         }`}
-                        rows={4}
-                        {...props}
-                      />
-                    )}
-                  />
+                      rows={4}
+                    />
+                    : <IndicTransliterate
+                      lang={taskData?.src_language}
+                      value={item.text}
+                      onChange={(event) => {
+                        changeTranscriptHandler(event.target, index);
+                      }}
+                      containerStyles={{
+                        width: "100%",
+                      }}
+                      renderComponent={(props) => (
+                        <textarea
+                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                          rows={4}
+                          {...props}
+                        />
+                      )}
+                    />}
                 </CardContent>
               </>
             );

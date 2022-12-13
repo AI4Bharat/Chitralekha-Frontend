@@ -11,6 +11,7 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
+import FindAndReplace from "../../../common/FindAndReplace";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId, orgId, projectId } = useParams();
@@ -121,6 +122,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
+        {/* <FindAndReplace /> */}
           <Button
             variant="contained"
             className={classes.findBtn}
@@ -196,7 +198,18 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     contentEditable={false}
                     defaultValue={item.text}
                   />
-                  <IndicTransliterate
+                  {taskData?.target_language === "en" ?
+                      <textarea
+                      rows={4}
+                      className={`${classes.textAreaTransliteration} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      onChange={(event) => {
+                        changeTranscriptHandler(event.target, index);
+                      }}
+                      value={item.target_text}
+                    />
+                      : <IndicTransliterate
                     lang={taskData?.target_language}
                     value={item.target_text}
                     onChangeText={(text, index) => {}}
@@ -215,7 +228,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         {...props}
                       />
                     )}
-                  />
+                  />}
                 </CardContent>
               </>
             );
