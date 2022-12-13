@@ -33,14 +33,12 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const video = useSelector((state) => state.getVideoDetails.data);
 
   return (
-    
     <Dialog
       fullScreen={fullScreen}
       maxWidth={"xl"}
       open={open}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
-      
     >
       <DialogTitle id="responsive-dialog-title">
         <Typography variant="h4" style={{ marginRight: "auto" }}>
@@ -49,7 +47,6 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       </DialogTitle>
       <DialogContent>
         <Box className={classes.videoBox}>
-          <div className={classes.backlight}></div>
           <video
             style={{ width: "500px", height: "300px" }}
             controls
@@ -66,12 +63,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
           Close
         </Button>
       </DialogActions>
-      <div style={{padding:"0px 20px 20px 20px"}}>
-      <VideoTaskList videoDetails={videoDetails.id} />
+      <div style={{ padding: "0px 20px 20px 20px" }}>
+        <VideoTaskList videoDetails={videoDetails.id} />
       </div>
-    
     </Dialog>
-   
   );
 };
 

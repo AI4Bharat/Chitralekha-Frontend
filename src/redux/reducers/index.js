@@ -25,6 +25,9 @@ import getVideoTaskList from "./Project/FetchVideoTaskList";
 import getManagerName from "./Project/FetchManagerName";
 import getExportTranscription from "./Project/ExportTranscription";
 import DeleteVideo from "./Project/DeleteVideo";
+import getOrganizatioUsers from "./Organization/FetchOrganizatioUsers";
+import getOrganizatioProjectManagersUser from "./Organization/FetchOrganizatioProjectManagersUser";
+import getUserRoles from "./User/FetchUsersRoles";
 
 const rootReducer = {
     apiStatus,
@@ -54,6 +57,9 @@ const rootReducer = {
     getManagerName,
     getExportTranscription,
     DeleteVideo,
+    getOrganizatioUsers,
+    getOrganizatioProjectManagersUser,
+    getUserRoles,
 };
 
 export default rootReducer;

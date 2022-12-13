@@ -8,6 +8,8 @@ import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
 import ProjectList from "./ProjectList";
 import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import FetchUserRolesAPI from "../../redux/actions/api/User/FetchUsersRoles";
+import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
 
 
 import { useDispatch, useSelector } from "react-redux";
@@ -64,14 +66,26 @@ const MyOrganization = () => {
 
   const projectList = useSelector((state) => state.getProjectList.data);
   const userList = useSelector((state) => state.getUserList.data);
-
+  const userRoles = useSelector((state) => state.getUserRoles.data);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+ 
   const getOrganizationDetails = () => {
     const userObj = new FetchOrganizationDetailsAPI(id);
     dispatch(APITransport(userObj));
   };
 
-  const getProjectList = () => {
-    const userObj = new ProjectListAPI();
+  const getUserRolesList = () => {
+    const userObj = new FetchUserRolesAPI();
+    dispatch(APITransport(userObj));
+  };
+
+   const getLoggedInUserData = () => {
+    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    dispatch(APITransport(loggedInUserObj));
+  };
+
+  const getProjectList = (orgId) => {
+    const userObj = new ProjectListAPI(orgId);
     dispatch(APITransport(userObj));
   };
 
@@ -83,9 +97,14 @@ const MyOrganization = () => {
 
   useEffect(() => {
     getOrganizationDetails();
-    getProjectList();
     getUserList();
+    getUserRolesList();
+    // getLoggedInUserData()
   }, []);
+
+  useEffect(()=>{
+      userData?.organization?.id && getProjectList(userData?.organization?.id);
+  }, [userData])
 
   useEffect(() => {
     setOrganizationName(organizationDetails?.title);
@@ -199,18 +218,33 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
+            { userData?.role === "ORG_OWNER" &&
             <Button
               className={classes.projectButton}
               label={"Add New Project"}
               onClick={() => navigate(`/my-organization/${id}/create-new-project`)}
-            />
+            />}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={projectList}  removeProjectList={() => getProjectList()}/>
+              <ProjectList data={projectList}  removeProjectList={() => getProjectList(userData?.organization?.id)}/>
             </div>
           </Box>
         </TabPanel>
 
         <TabPanel
+          value={value}
+          index={1}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+        <Typography>No records to be fetched</Typography></TabPanel>
+
+        <TabPanel
+          value={value}
+          index={2}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+        <Typography>No records to be updated</Typography></TabPanel>
+
+        {/* <TabPanel
           value={value}
           index={1}
           style={{ textAlign: "center", maxWidth: "100%" }}
@@ -230,9 +264,9 @@ const MyOrganization = () => {
               <UserList data={userList} />
             </div>
           </Box>
-        </TabPanel>
+        </TabPanel> */}
 
-        <TabPanel
+        {/* <TabPanel
           value={value}
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
@@ -249,7 +283,7 @@ const MyOrganization = () => {
             onClick={() => handleOrganizationUpdate()}
             sx={{ mt: 5, width: "100%" }}
           />
-        </TabPanel>
+        </TabPanel> */}
       </Card>
 
       {addUserDialog && (

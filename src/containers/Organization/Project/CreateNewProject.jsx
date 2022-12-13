@@ -2,6 +2,9 @@ import { Card, Divider, Grid, Typography, FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
   TextField, } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
@@ -14,7 +17,18 @@ import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewPro
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import FetchManagerNameAPI from "../../../redux/actions/api/Project/FetchManagerName";
+import FetchOrganizatioProjectManagersUserAPI from "../../../redux/actions/api/Organization/FetchOrganizatioProjectManagersUser";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
 
 const CreatenewProject = () => {
   const { orgId } = useParams();
@@ -25,72 +39,44 @@ const CreatenewProject = () => {
   const newProjectDetails = useSelector(
     (state) => state.getNewProjectDetails.data
   );
-  const managerNames = useSelector(
-    (state) => state.getManagerName.data
-  );
+ 
+  const userList = useSelector((state) => state.getOrganizatioProjectManagersUser.data);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [managerUsername, setManagerUsername] = useState([]);
-  const [managerFirstName, setManagerFirstName] = useState("");
-  const [managerLastName, setManagerLastName] = useState("");
-  const [managerPhone, setManagerPhone] = useState("");
-  const [managerOrgTitle, setManagerOrgTitle] = useState("");
-  const [managerOrgEmail, setManagerOrgEmail] = useState("");
-  const [creatorUsername, setCreatorUsername] = useState("");
-  const [creatorFirstName, setCreatorFirstName] = useState("");
-  const [creatorLastName, setCreatorLastName] = useState("");
-  const [creatorPhone, setCreatorPhone] = useState("");
-  const [creatorOrgTitle, setCreatorOrgTitle] = useState("");
-  const [creatorOrgEmail, setCreatorOrgEmail] = useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
-
-
-  const GetManagerName =()=>{
-    const apiObj = new FetchManagerNameAPI();
-     dispatch(APITransport(apiObj));
-  }
+  
+  const getOrganizatioUsersList = () => {
+    const projectrole = "PROJECT_MANAGER"
+    const userObj = new FetchOrganizatioProjectManagersUserAPI(orgId,projectrole);
+    dispatch(APITransport(userObj));
+  };
 
   useEffect(() => {
-    GetManagerName()
+    getOrganizatioUsersList()
   }, [])
+
+  const handeleselectManager=(event,item) =>{
+ 
+  const {
+    target: { value }
+  } = event;
+  setManagerUsername(
+    typeof value === "string" ? value.split(",") : value
+  );
+  }
 
   const handleCreateProject =async () => {
     const newPrjectReqBody = {
       title: title,
-     // is_archived: false,
       description: description,
       organization_id: orgId,
-      managers_id: [managerUsername]
-      
-      // manager: {
-      //   username: managerUsername,
-      //   // availability_status: 1,
-      //   // enable_mail: true,
-      //   // first_name: managerFirstName,
-      //   // last_name: managerLastName,
-      //   // phone: managerPhone,
-      //   // organization: {
-      //   //   title: managerOrgTitle,
-      //   //   email_domain_name: managerOrgEmail,
-      //   // },
-      // },
-      // created_by: {
-      //   username: creatorUsername,
-      //   availability_status: 1,
-      //   enable_mail: true,
-      //   first_name: creatorFirstName,
-      //   last_name: creatorLastName,
-      //   phone: creatorPhone,
-      //   organization: {
-      //     title: creatorOrgTitle,
-      //     email_domain_name: creatorOrgEmail,
-      //   },
-      // },
+      managers_id: managerUsername 
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
@@ -171,179 +157,23 @@ const CreatenewProject = () => {
             Managers *:
           </Typography>
         <FormControl fullWidth>
-           
-              <Select
-                fullWidth
-                //labelId="select-UserName"
-                //label="Select UserName"
-                 value={managerUsername}
-                 onChange={(event) => setManagerUsername(event.target.value)}
-                style={{ zIndex: "0" }}
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                 {managerNames.map((item, index) => (
-                  <MenuItem key={index} value={item.id} >
-                    {item.email}
-                  </MenuItem>
-                 ))} 
-              </Select>
+            <Select
+         // labelId="demo-multiple-name-label"
+          id="demo-multiple-name"
+          multiple
+          value={managerUsername}
+          onChange={handeleselectManager}
+         // input={<OutlinedInput label="Name" />}
+          MenuProps={MenuProps}
+        >
+          {userList.map((name) => (
+            <MenuItem key={name.id} value={name.id}>
+              {name.email}
+            </MenuItem>
+          ))}
+        </Select>
             </FormControl>
         </Box>
-
-        {/* <Divider sx={{ mt: 5 }} /> */}
-
-        {/* <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" gutterBottom component="div">
-            Manager Details
-          </Typography>
-        </Box> */}
-
-        {/* <Box display="flex" sx={{ mt: 3 }}>
-          <Box width="100%" marginRight="5%">
-            <Typography gutterBottom component="div" label="Required">
-              Username*:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={managerUsername}
-              onChange={(e) => setManagerUsername(e.target.value)}
-            />
-          </Box>
-          <Box width="100%">
-            <Typography gutterBottom component="div" label="Required">
-              Phone:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={managerPhone}
-              onChange={(e) => setManagerPhone(e.target.value)}
-            />
-          </Box>
-        </Box> */}
-
-        {/* <Box display="flex" sx={{ mt: 3 }}>
-          <Box width="100%" marginRight="5%">
-            <Typography gutterBottom component="div" label="Required">
-              First Name:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={managerFirstName}
-              onChange={(e) => setManagerFirstName(e.target.value)}
-            />
-          </Box>
-          <Box width="100%">
-            <Typography gutterBottom component="div" label="Required">
-              Last Name:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={managerLastName}
-              onChange={(e) => setManagerLastName(e.target.value)}
-            />
-          </Box>
-        </Box>
-
-        <Box display="flex" sx={{ mt: 3 }}>
-          <Box width="100%" marginRight="5%">
-            <Typography gutterBottom component="div" label="Required">
-              Organization Title*:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={managerOrgTitle}
-              onChange={(e) => setManagerOrgTitle(e.target.value)}
-            />
-          </Box>
-          <Box width="100%">
-            <Typography gutterBottom component="div" label="Required">
-              Organization Domain Email:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={managerOrgEmail}
-              onChange={(e) => setManagerOrgEmail(e.target.value)}
-            />
-          </Box>
-        </Box>
-
-        <Divider sx={{ mt: 5 }} />
-
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" gutterBottom component="div">
-            Creator Details
-          </Typography>
-        </Box>
-
-        <Box display="flex" sx={{ mt: 3 }}>
-          <Box width="100%" marginRight="5%">
-            <Typography gutterBottom component="div" label="Required">
-              Username*:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={creatorUsername}
-              onChange={(e) => setCreatorUsername(e.target.value)}
-            />
-          </Box>
-          <Box width="100%">
-            <Typography gutterBottom component="div" label="Required">
-              Phone:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={creatorPhone}
-              onChange={(e) => setCreatorPhone(e.target.value)}
-            />
-          </Box>
-        </Box>
-
-        <Box display="flex" sx={{ mt: 3 }}>
-          <Box width="100%" marginRight="5%">
-            <Typography gutterBottom component="div" label="Required">
-              First Name:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={creatorFirstName}
-              onChange={(e) => setCreatorFirstName(e.target.value)}
-            />
-          </Box>
-          <Box width="100%">
-            <Typography gutterBottom component="div" label="Required">
-              Last Name:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={creatorLastName}
-              onChange={(e) => setCreatorLastName(e.target.value)}
-            />
-          </Box>
-        </Box>
-
-        <Box display="flex" sx={{ mt: 3 }}>
-          <Box width="100%" marginRight="5%">
-            <Typography gutterBottom component="div" label="Required">
-              Organization Title*:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={creatorOrgTitle}
-              onChange={(e) => setCreatorOrgTitle(e.target.value)}
-            />
-          </Box>
-          <Box width="100%">
-            <Typography gutterBottom component="div" label="Required">
-              Organization Domain Email:
-            </Typography>
-            <OutlinedTextField
-              fullWidth
-              value={creatorOrgEmail}
-              onChange={(e) => setCreatorOrgEmail(e.target.value)}
-            />
-          </Box>
-        </Box> */}
-
         <Box sx={{ mt: 3 }}>
           <Button
             style={{ margin: "0px 20px 0px 0px" }}
