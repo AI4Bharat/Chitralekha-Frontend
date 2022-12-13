@@ -62,33 +62,47 @@ export const steps = [
 
 export const roles = [
   {
-    id: 1,
-    type: "Transcript editor",
+    label: "Transcript editor",
+    value: "TRANSCRIPT_EDITOR", 
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 2,
-    type: "Transcript Reviewer",
+    label: "Transcript Reviewer",
+    value: "TRANSCRIPT_REVIEWER",
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 3,
-    type: "Translation editor",
+    label: "Translation editor",
+    value: "TRANSLATION_EDITOR",
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 4,
-    type: "Translation Reviewer",
+    label: "Translation Reviewer",
+    value: "TRANSLATION_REVIEWER",
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 5,
-    type: "Universal Editor",
+    label: "Universal Editor",
+    value: "UNIVERSAL_EDITOR",
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 6,
-    type: "Project Manager",
+    label: "Project Manager",
+    value: "PROJECT_MANAGER",
+    permittedToDeleteVideoAudio: true,
+    permittedToCreateVideoAudio: true,
   },
   {
-    id: 7,
-    type: "Organization Owner",
-  },
+    label: "Organization Owner",
+    value: "ORG_OWNER",
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateVideoAudio: false,
+  }
 ];
 
 export const tasks = [

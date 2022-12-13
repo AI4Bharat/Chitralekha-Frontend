@@ -138,7 +138,7 @@ const ProfilePage = () => {
               }}
             >
               {roles.map((value) =>
-                value.id === userDetails?.role ? value.type : ""
+                value.value === userDetails?.role ? value.label : ""
               )}
             </Typography>
           </CardContent>

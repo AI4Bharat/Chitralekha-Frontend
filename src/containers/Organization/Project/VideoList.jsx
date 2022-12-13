@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 //Themes
 import {
@@ -30,6 +30,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
+import { roles } from "../../../utils/utils";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
@@ -46,6 +47,8 @@ const VideoList = ({ data, removeVideo }) => {
     variant: "success",
   });
   const [projectid, setprojectid] = useState([]);
+
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -119,14 +122,14 @@ const VideoList = ({ data, removeVideo }) => {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Delete">
+            {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteVideoAudio && <Tooltip title="Delete">
               <IconButton>
                 <DeleteIcon
                   color="error"
                   onClick={() => handleDeleteVideo(item.id)}
                 />
               </IconButton>
-            </Tooltip>
+            </Tooltip>}
           </Box>
         </>,
       ];
