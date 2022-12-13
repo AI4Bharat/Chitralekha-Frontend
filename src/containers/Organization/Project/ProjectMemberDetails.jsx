@@ -13,7 +13,7 @@ import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import PreviewIcon from '@mui/icons-material/Preview';
 
 //APIs
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
@@ -82,7 +82,7 @@ const ProjectMemberDetails = () => {
           <Tooltip title="View">
         <IconButton>
         <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-          <LibraryBooksIcon color="primary" sx={{mt:"10px"}}  />
+          <PreviewIcon color="primary" sx={{mt:"10px"}}  />
           </Link>
         </IconButton>
       </Tooltip>

@@ -13,7 +13,7 @@ import {
 import tableTheme from "../../theme/tableTheme";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PreviewIcon from '@mui/icons-material/Preview';
 
 //Components
 import CustomButton from "../../common/Button";
@@ -86,7 +86,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
           >
             <Tooltip title="View">
               <IconButton>
-                <LibraryBooksIcon color="primary" />
+                <PreviewIcon color="primary" />
               </IconButton>
             </Tooltip>
           </Link>

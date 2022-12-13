@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PreviewIcon from '@mui/icons-material/Preview';
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
@@ -103,7 +103,7 @@ const VideoList = ({ data, removeVideo }) => {
 
             <Tooltip title="View">
               <IconButton>
-                <LibraryBooksIcon
+                <PreviewIcon
                   color="primary"
                   onClick={() => handleVideoDialog(item)}
                 />

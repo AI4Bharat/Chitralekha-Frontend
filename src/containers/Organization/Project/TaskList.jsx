@@ -21,7 +21,7 @@ import {
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PreviewIcon from '@mui/icons-material/Preview';
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 //Components
@@ -263,7 +263,7 @@ const TaskList = () => {
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
           <IconButton>
-            <LibraryBooksIcon
+            <PreviewIcon
               color="primary"
               onClick={() => {
                 setOpenViewTaskDialog(true);

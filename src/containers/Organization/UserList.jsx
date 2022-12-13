@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 //Themes
 import { ThemeProvider, Tooltip,IconButton, } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import PreviewIcon from '@mui/icons-material/Preview';
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -23,7 +23,7 @@ const UserList = ({ data }) => {
         >
           <Tooltip title="View">
               <IconButton>
-                <LibraryBooksIcon color="primary" />
+                <PreviewIcon color="primary" />
               </IconButton>
             </Tooltip>
         </Link>,
