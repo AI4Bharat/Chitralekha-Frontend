@@ -246,9 +246,9 @@ const Timeline = ({
   return (
     <Box
       style={{
-        // position: "relative",
-        // display: "flex",
-        // flexDirection: "column",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
         height: "150px",
         width: "100%",
       }}

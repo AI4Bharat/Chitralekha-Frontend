@@ -109,7 +109,7 @@ const VideoLanding = () => {
         direction={"row"}
         sx={{ marginTop: 7, overflow: "hidden" }}
       >
-        <Grid width="100%" height={window.innerHeight*0.75} overflow="hidden" md={8} xs={12}>
+        <Grid width="100%" overflow="hidden" md={8} xs={12}>
           <VideoPanel
             setPlayer={setPlayer}
             setCurrentTime={setCurrentTime}
@@ -142,7 +142,7 @@ const VideoLanding = () => {
           )}
         </Grid>
       </Grid>
-      <Grid height={70} width={"100%"} position="fixed" bottom={1}>
+      <Grid width={"100%"} position="fixed" bottom={1}>
         <Timeline
           waveform={waveform}
           setWaveform={setWaveform}
