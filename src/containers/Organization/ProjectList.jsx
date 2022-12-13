@@ -24,6 +24,7 @@ import { useState } from "react";
 import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../common/Snackbar";
+import { roles } from "../../utils/utils";
 
 const ProjectList = ({ data, props, removeProjectList }) => {
   const { id } = useParams();
@@ -37,6 +38,8 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     message: "",
     variant: "success",
   });
+
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
   const handleok = async (id) => {
     setOpen(false);
@@ -91,14 +94,14 @@ const ProjectList = ({ data, props, removeProjectList }) => {
             </Tooltip>
           </Link>
 
-          <Tooltip title="Delete">
+          {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteProject && <Tooltip title="Delete">
             <IconButton>
               <DeleteIcon
                 color="error"
                 onClick={() => handleDeleteProject(item.id)}
               />
             </IconButton>
-          </Tooltip>
+          </Tooltip>}
         </div>,
       ];
     });

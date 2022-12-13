@@ -68,6 +68,7 @@ export const roles = [
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -77,6 +78,7 @@ export const roles = [
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -86,6 +88,7 @@ export const roles = [
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -95,6 +98,7 @@ export const roles = [
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -104,6 +108,7 @@ export const roles = [
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
     permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -113,6 +118,7 @@ export const roles = [
     permittedToDeleteVideoAudio: true,
     permittedToCreateTask: true,
     permittedToAddMembersInProject: true,
+    permittedToDeleteProject: true,
     permittedToCreateVideoAudio: true,
   },
   {
@@ -122,6 +128,7 @@ export const roles = [
     permittedToDeleteVideoAudio: true,
     permittedToCreateTask: true,
     permittedToAddMembersInProject: true,
+    permittedToDeleteProject: true,
     permittedToCreateVideoAudio: true,
   }
 ];
