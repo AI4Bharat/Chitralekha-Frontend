@@ -99,13 +99,11 @@ const MyOrganization = () => {
     getOrganizationDetails();
     getUserList();
     getUserRolesList();
-    getLoggedInUserData()
+    // getLoggedInUserData()
   }, []);
 
   useEffect(()=>{
-    if(userData){
-      getProjectList(userData?.organization?.id);
-    }
+      userData?.organization?.id && getProjectList(userData?.organization?.id);
   }, [userData])
 
   useEffect(() => {
