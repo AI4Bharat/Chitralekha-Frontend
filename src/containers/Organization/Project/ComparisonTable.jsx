@@ -300,8 +300,6 @@ const ComparisonTable = () => {
           const firstItem = indx === 0 ? <MenuItem key={"first_item"} value={selectValue[indx]?.value}>
           {selectValue[indx]?.value}
         </MenuItem> : false;
-          console.log("selectValue[indx]?.value ------ ", selectValue[indx]?.value);
-          console.log("select ------ ", select);
           return (
             <Grid key={indx} item xs={12} sm={12} md={4} lg={4} xl={4}>
               <FormControl fullWidth>
