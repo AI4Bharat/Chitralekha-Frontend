@@ -10,6 +10,10 @@ import DT from "duration-time-conversion";
 import { getKeyCode } from "../../../utils/utils";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import Sub from "../../../utils/Sub";
+import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -45,13 +49,14 @@ export default React.memo(
     render,
     currentTime,
     updateSub,
-    mergeSub,
     updateSubEnglish,
     setSubtitles,
   }) {
+    const { taskId } = useParams();
     const classes = ProjectStyle();
     const $blockRef = React.createRef();
     const $subsRef = React.createRef();
+    const dispatch = useDispatch();
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
@@ -66,7 +71,7 @@ export default React.memo(
     );
 
     const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
-    
+
     const newSub = useCallback((item) => new Sub(item), []);
 
     const formatSub = useCallback(
@@ -89,11 +94,58 @@ export default React.memo(
         const index = hasSub(sub);
 
         if (index >= 0) {
-          subtitles.splice(index, 1)
+          subtitles.splice(index, 1);
           setSubtitles(subtitles);
+
+          let subs = getCurrentSubs(
+            subtitles,
+            render.beginTime,
+            render.duration
+          );
+          setCurrentSubs(subs);
+
+          const reqBody = {
+            task_id: taskId,
+            payload: {
+              payload: subtitles,
+            },
+          };
+
+          const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
+          dispatch(APITransport(obj));
         }
       },
       [hasSub, copySubs, setSubtitles]
+    );
+
+    const mergeSub = useCallback(
+      (sub) => {
+        const index = hasSub(sub);
+        if (index >= 0) {
+          const next = subtitles[index + 1];
+          if (next) {
+            const merge = newSub({
+              start_time: sub.start_time,
+              end_time: next.end_time,
+              text: sub.text.trim() + "\n" + next.text.trim(),
+            });
+            subtitles[index] = merge;
+            subtitles.splice(index + 1, 1);
+            setSubtitles(subtitles);
+
+            const reqBody = {
+              task_id: taskId,
+              payload: {
+                payload: subtitles,
+              },
+            };
+  
+            const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
+            dispatch(APITransport(obj));
+          }
+        }
+      },
+      [hasSub, copySubs, setSubtitles, newSub]
     );
 
     const onMouseDown = (sub, event, type) => {

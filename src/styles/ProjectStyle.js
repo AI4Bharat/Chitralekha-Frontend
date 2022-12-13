@@ -171,7 +171,7 @@ const ProjectStyle = makeStyles({
   },
   textAreaTransliteration: {
     width: "80%",
-   // margin: "5px 15px 15px 10px",
+    // margin: "5px 15px 15px 10px",
     margin: "5px 10px 15px 20px",
     padding: "16.5px 12px",
     fontSize: "1rem",
@@ -359,15 +359,27 @@ const ProjectStyle = makeStyles({
     padding: "5px 15px",
     backgroundColor: "#fff",
     cursor: "pointer",
-    
+
     "&:hover": {
-      backgroundColor: "skyblue"
-    }
+      backgroundColor: "skyblue",
+    },
   },
 
   menuItemNav: {
-    borderRadius: "6px"
-  }
+    borderRadius: "6px",
+  },
+
+  operate: {
+    padding: "5px 15px",
+    color: "#fff",
+    fontSize: "13px",
+    borderRadius: "3px",
+    marginBottom: "5px",
+    backgroundColor: "rgb(0 0 0 / 75%)",
+    border: "1px solid rgb(255 255 255 / 20%)",
+    cursor: "pointer",
+    pointerEvents: "all",
+  },
 });
 
 export default ProjectStyle;
