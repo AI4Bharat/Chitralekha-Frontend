@@ -5,10 +5,10 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class ProjectListAPI extends API {
-  constructor(timeout = 2000) {
+  constructor(id, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_PROJECT_LIST;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.project}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/list_projects/`;
   }
 
   processResponse(res) {

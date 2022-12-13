@@ -84,8 +84,8 @@ const MyOrganization = () => {
     dispatch(APITransport(loggedInUserObj));
   };
 
-  const getProjectList = () => {
-    const userObj = new ProjectListAPI();
+  const getProjectList = (orgId) => {
+    const userObj = new ProjectListAPI(orgId);
     dispatch(APITransport(userObj));
   };
 
@@ -97,11 +97,16 @@ const MyOrganization = () => {
 
   useEffect(() => {
     getOrganizationDetails();
-    getProjectList();
     getUserList();
     getUserRolesList();
     getLoggedInUserData()
   }, []);
+
+  useEffect(()=>{
+    if(userData){
+      getProjectList(userData?.organization?.id);
+    }
+  }, [userData])
 
   useEffect(() => {
     setOrganizationName(organizationDetails?.title);
@@ -222,7 +227,7 @@ const MyOrganization = () => {
               onClick={() => navigate(`/my-organization/${id}/create-new-project`)}
             />}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={projectList}  removeProjectList={() => getProjectList()}/>
+              <ProjectList data={projectList}  removeProjectList={() => getProjectList(userData?.organization?.id)}/>
             </div>
           </Box>
         </TabPanel>

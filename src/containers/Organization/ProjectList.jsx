@@ -77,7 +77,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     const result = data.map((item) => {
       return [
         item.title,
-        item.manager?.username,
+        item.managers[0]?.email,
         item.created_by?.username,
         <div style={{ textAlign: "center" }}>
           <Link
