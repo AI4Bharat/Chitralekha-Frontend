@@ -38,11 +38,11 @@ const TranslationRightPanel = ({ currentIndex }) => {
     setSourceText(transcriptPayload?.payload?.payload);
   }, [transcriptPayload?.payload?.payload]);
 
-  const changeTranscriptHandler = (target, index) => {
+  const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
       if (index === i) {
-        element.target_text = target.value;
+        element.target_text = text;
       }
     });
 
@@ -205,16 +205,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
                       onChange={(event) => {
-                        changeTranscriptHandler(event.target, index);
+                        changeTranscriptHandler(event.target.value, index);
                       }}
                       value={item.target_text}
                     />
                       : <IndicTransliterate
                     lang={taskData?.target_language}
                     value={item.target_text}
-                    onChangeText={(text, index) => {}}
-                    onChange={(event) => {
-                      changeTranscriptHandler(event.target, index);
+                    // onChangeText={(text, index) => {}}
+                    onChangeText={(text) => {
+                      changeTranscriptHandler(text, index);
                     }}
                     containerStyles={{
                       width: "100%",
