@@ -523,7 +523,7 @@ const TaskList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",

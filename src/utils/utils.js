@@ -66,6 +66,7 @@ export const roles = [
     value: "TRANSCRIPT_EDITOR", 
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -73,6 +74,7 @@ export const roles = [
     value: "TRANSCRIPT_REVIEWER",
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -80,6 +82,7 @@ export const roles = [
     value: "TRANSLATION_EDITOR",
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -87,6 +90,7 @@ export const roles = [
     value: "TRANSLATION_REVIEWER",
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -94,6 +98,7 @@ export const roles = [
     value: "UNIVERSAL_EDITOR",
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
     permittedToCreateVideoAudio: false,
   },
   {
@@ -101,6 +106,7 @@ export const roles = [
     value: "PROJECT_MANAGER",
     permittedToDeleteVideoAudio: true,
     permittedToCreateTask: true,
+    permittedToAddMembersInProject: true,
     permittedToCreateVideoAudio: true,
   },
   {
@@ -108,6 +114,7 @@ export const roles = [
     value: "ORG_OWNER",
     permittedToDeleteVideoAudio: true,
     permittedToCreateTask: true,
+    permittedToAddMembersInProject: true,
     permittedToCreateVideoAudio: true,
   }
 ];
