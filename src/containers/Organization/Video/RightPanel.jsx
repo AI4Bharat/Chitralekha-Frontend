@@ -36,11 +36,11 @@ const RightPanel = ({ currentIndex }) => {
     setSourceText(transcriptPayload?.payload?.payload);
   }, [transcriptPayload?.payload?.payload]);
 
-  const changeTranscriptHandler = (target, index) => {
+  const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
       if (index === i) {
-        element.text = target.value;
+        element.text = text;
       }
     });
 
@@ -189,7 +189,7 @@ const RightPanel = ({ currentIndex }) => {
                   {taskData?.src_language === "en" ?
                     <textarea
                       onChange={(event) => {
-                        changeTranscriptHandler(event.target, index);
+                        changeTranscriptHandler(event.target.value, index);
                       }}
                       value={item.text}
                       className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
@@ -199,8 +199,8 @@ const RightPanel = ({ currentIndex }) => {
                     : <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
-                      onChange={(event) => {
-                        changeTranscriptHandler(event.target, index);
+                      onChangeText={(text) => {
+                        changeTranscriptHandler(text, index);
                       }}
                       containerStyles={{
                         width: "100%",
