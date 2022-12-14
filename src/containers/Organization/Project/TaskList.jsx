@@ -21,13 +21,17 @@ import {
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+// import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+ import FileDownloadIcon from '@mui/icons-material/FileDownload';
+
 
 //Components
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../../common/Button";
 import CustomizedSnackbars from "../../../common/Snackbar";
+import Search from "../../../common/Search";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -82,14 +86,11 @@ const TaskList = () => {
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
-
-  const Transcrip =
-    taskList.task_type === "TRANSCRIPTION_EDIT" ||
-    taskList.task_type === "TRANSCRIPTION_REVIEW";
+  const SearchProject = useSelector((state) => state.searchList.data);
 
   // const getTranscriptionSourceComparison = (id, source) => {
   const datvalue = useSelector((state) => state.getExportTranscription.data);
-  console.log(datvalue, "datvaluedatvalue", taskList.task_type);
+ 
   const handleClose = () => {
     setOpen(false);
   };
@@ -216,13 +217,13 @@ const TaskList = () => {
     });
   };
 
-  useEffect(() => {
-    let taskId;
-    taskList?.map((element, index) => {
-      taskId = element.id;
-    });
-    setTaskid(taskId);
-  }, [taskList]);
+  // useEffect(() => {
+  //   let taskId;
+  //   taskList?.map((element, index) => {
+  //     taskId = element.id;
+  //   });
+  //   setTaskid(taskId);
+  // }, [taskList]);
 
   const handledeletetask = async (id) => {
     setOpenDialog(true);
@@ -257,13 +258,12 @@ const TaskList = () => {
     console.log(tableData, "tableDatatableData");
 
     return (
-      (tableData.rowData[5] === "NEW" ||
-        tableData.rowData[5] === "INPROGRESS") &&
+      tableData.rowData[5] === "NEW" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
           <IconButton>
-            <LibraryBooksIcon
+            <PreviewIcon
               color="primary"
               onClick={() => {
                 setOpenViewTaskDialog(true);
@@ -290,7 +290,7 @@ const TaskList = () => {
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
           <IconButton>
-            <CloudDownloadIcon
+            <FileDownloadIcon
               color="primary"
               onClick={() =>
                 handleClickOpen(tableData.rowData[0], tableData.rowData[1])
@@ -304,7 +304,7 @@ const TaskList = () => {
 
         // <CustomButton
         //   className={classes.tableButton}
-        //   label="Export"
+        //   label="Export" 
         //   onClick={() => handleClickOpen(tableData.rowData[0])}
         // />
       )
@@ -315,7 +315,7 @@ const TaskList = () => {
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
     return (
-      ((tableData.rowData[5] === "SELECTED_SOURCE" &&
+      (((tableData.rowData[5] === "SELECTED_SOURCE" || tableData.rowData[5] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
         (tableData.rowData[5] !== "COMPLETE" &&
@@ -376,6 +376,54 @@ const TaskList = () => {
       // />
     );
   };
+  const pageSearch = () => {
+    return taskList.filter((el) => {
+      if (SearchProject == "") {
+        return el;
+      } else if (
+        el.id.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.task_type?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.video_name?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }
+      else if (
+        el.src_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.target_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.status?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }
+    });
+  };
+
+  const result =
+  taskList && taskList.length > 0
+    ? pageSearch().map((item, i) => {
+        return [
+          item.id,
+          item.task_type,
+          item.video_name,
+          item.src_language,
+          item.target_language,
+          item.status,
+          
+        ];
+      })
+    : [];
+
 
   const columns = [
     {
@@ -640,9 +688,10 @@ const TaskList = () => {
 
   return (
     <>
+    <Search/>
       <Grid>{renderSnackBar()}</Grid>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={taskList} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
 
       {openViewTaskDialog && (

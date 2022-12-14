@@ -229,6 +229,33 @@ const DatasetStyle = makeStyles({
   formControl: {
     width: 300
   },
+  search: {
+    //position: "relative",
+    borderRadius: "24px",
+    backgroundColor: "#F3F3F3",
+    marginLeft: "0px",
+    width: "300px",
+    //textAlign: "left",
+    //justifyContent:"center"
+   //float: "right",
+    marginBottom:"10px",
+  //   position: "absolute",
+  //  Right: "200px",
+  //  top:"155px",
+  
+  },
+  searchIcon: {
+    // padding: theme.spacing(0, 2),
+   // height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#00000029",
+    marginLeft: "10px",
+    marginTop:"10px",
+  },
 });
 
 export default DatasetStyle;

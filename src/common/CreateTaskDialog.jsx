@@ -43,7 +43,6 @@ const CreateTaskDialog = ({
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
   const supportedLanguages = useSelector((state) => state.getSupportedLanguages.data);
-
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
@@ -57,7 +56,7 @@ const CreateTaskDialog = ({
     message: "",
     variant: "success",
   });
-
+console.log(language,"languagelanguage",taskType === "TRANSCRIPTION")
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
@@ -85,8 +84,17 @@ const CreateTaskDialog = ({
     setTaskType(event.target.value);
     setShowAllowedTaskList(true);
 
+    if(event.target.value === "TRANSCRIPTION"){
     const allowedTaskObj = new FetchAllowedTasksAPI(videoDetails.id, event.target.value);
     dispatch(APITransport(allowedTaskObj));
+  }
+  }
+
+  const selectTranslationLanguageHandler = (event) =>{
+    setLanguage(event.target.value)
+    const allowedTaskObj = new FetchAllowedTasksAPI(videoDetails.id, taskType,event.target.value);
+    dispatch(APITransport(allowedTaskObj));
+
   }
 
   const selectAllowedTaskHandler = (value) => {
@@ -147,6 +155,31 @@ const CreateTaskDialog = ({
             </FormControl>
           </Box>
 
+          {(taskType === "TRANSLATION") && (
+              <Box width={"100%"} sx={{ mt: 3 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="select-lang">Select Translation Language</InputLabel>
+                  <Select
+                    fullWidth
+                    labelId="select-lang"
+                    label="Select Translation Language"
+                    value={language}
+                   // onChange={(event) => setLanguage(event.target.value)}
+                    onChange={(event) => selectTranslationLanguageHandler(event)}
+                    style={{ zIndex: "0" }}
+                    inputProps={{ "aria-label": "Without label" }}
+                  >
+                    {supportedLanguages?.map((item, index) => (
+                      <MenuItem key={index} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
+
+
           {
             showAllowedTaskList && (
               <Box width={"100%"} sx={{ mt: 3 }}>
@@ -204,29 +237,7 @@ const CreateTaskDialog = ({
             />
           </Box>
 
-          {(taskType === "TRANSLATION") && (
-              <Box width={"100%"} sx={{ mt: 3 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="select-lang">Select Translation Language</InputLabel>
-                  <Select
-                    fullWidth
-                    labelId="select-lang"
-                    label="Select Translation Language"
-                    value={language}
-                    onChange={(event) => setLanguage(event.target.value)}
-                    style={{ zIndex: "0" }}
-                    inputProps={{ "aria-label": "Without label" }}
-                  >
-                    {supportedLanguages?.map((item, index) => (
-                      <MenuItem key={index} value={item.value}>
-                        {item.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            )}
-
+         
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
               <InputLabel id="select-priority">Select Priority</InputLabel>
