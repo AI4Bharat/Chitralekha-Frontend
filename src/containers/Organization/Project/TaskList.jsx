@@ -21,8 +21,11 @@ import {
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import PreviewIcon from '@mui/icons-material/Preview';
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+// import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+ import FileDownloadIcon from '@mui/icons-material/FileDownload';
+
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -255,8 +258,7 @@ const TaskList = () => {
     console.log(tableData, "tableDatatableData");
 
     return (
-      (tableData.rowData[5] === "NEW" ||
-        tableData.rowData[5] === "INPROGRESS") &&
+      tableData.rowData[5] === "NEW" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
@@ -288,7 +290,7 @@ const TaskList = () => {
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
           <IconButton>
-            <CloudDownloadIcon
+            <FileDownloadIcon
               color="primary"
               onClick={() =>
                 handleClickOpen(tableData.rowData[0], tableData.rowData[1])
@@ -302,7 +304,7 @@ const TaskList = () => {
 
         // <CustomButton
         //   className={classes.tableButton}
-        //   label="Export"
+        //   label="Export" 
         //   onClick={() => handleClickOpen(tableData.rowData[0])}
         // />
       )
@@ -313,7 +315,7 @@ const TaskList = () => {
   const renderEditButton = (tableData) => {
     console.log("tableData ---- ", tableData);
     return (
-      ((tableData.rowData[5] === "SELECTED_SOURCE" &&
+      (((tableData.rowData[5] === "SELECTED_SOURCE" || tableData.rowData[5] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
         (tableData.rowData[5] !== "COMPLETE" &&
