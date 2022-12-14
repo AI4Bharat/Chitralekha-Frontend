@@ -9,6 +9,11 @@ import isEqual from "lodash/isEqual";
 import DT from "duration-time-conversion";
 import { getKeyCode } from "../../../utils/utils";
 import ProjectStyle from "../../../styles/ProjectStyle";
+import Sub from "../../../utils/Sub";
+import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -41,19 +46,16 @@ export default React.memo(
   function ({
     player,
     subtitles,
-    subtitleEnglish,
     render,
     currentTime,
-    removeSub,
-    hasSub,
-    updateSub,
-    mergeSub,
     updateSubEnglish,
-    configuration,
+    setSubtitles,
   }) {
+    const { taskId } = useParams();
     const classes = ProjectStyle();
     const $blockRef = React.createRef();
     const $subsRef = React.createRef();
+    const dispatch = useDispatch();
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
@@ -67,34 +69,102 @@ export default React.memo(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
-    // const onMouseDown = (sub, event, type) => {
-    //   lastSub = sub;
-    //   if (event.button !== 0) return;
-    //   isDroging = true;
-    //   lastType = type;
-    //   lastX = event.pageX;
-    //   lastIndex = subtitles.indexOf(sub);
-    //   lastTarget = $subsRef.current.children[lastIndex];
-    //   lastWidth = parseFloat(lastTarget.style.width);
-    // };
+    const saveTranscript = () => {
+      const reqBody = {
+        task_id: taskId,
+        payload: {
+          payload: subtitles,
+        },
+      };
 
-    // const onDoubleClick = (sub, event) => {
-    //   const $subs = event.currentTarget;
-    //   const index = hasSub(sub);
-    //   const previou = subtitles[index - 1];
-    //   const next = subtitles[index + 1];
-    //   if (previou && next) {
-    //     const width = (next.startTime - previou.endTime) * 10 * gridGap;
-    //     $subs.style.width = `${width}px`;
-    //     const start = DT.d2t(previou.endTime);
-    //     const end = DT.d2t(next.startTime);
+      const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
+      dispatch(APITransport(obj));
+    }
 
-    //     updateSub(sub, {
-    //       start,
-    //       end,
-    //     });
-    //   }
-    // };
+    const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
+
+    const newSub = useCallback((item) => new Sub(item), []);
+
+    const formatSub = useCallback(
+      (sub) => {
+        if (Array.isArray(sub)) {
+          return sub.map((item) => newSub(item));
+        }
+        return newSub(sub);
+      },
+      [newSub]
+    );
+
+    const copySubs = useCallback(
+      () => formatSub(subtitles),
+      [subtitles, formatSub]
+    );
+
+    const removeSub = useCallback(
+      (sub) => {
+        const index = hasSub(sub);
+
+        if (index >= 0) {
+          subtitles.splice(index, 1);
+          setSubtitles(subtitles);
+
+          let subs = getCurrentSubs(
+            subtitles,
+            render.beginTime,
+            render.duration
+          );
+          setCurrentSubs(subs);
+          saveTranscript();
+        }
+      },
+      [hasSub, copySubs, setSubtitles]
+    );
+
+    const mergeSub = useCallback(
+      (sub) => {
+        const index = hasSub(sub);
+        if (index >= 0) {
+          const next = subtitles[index + 1];
+          if (next) {
+            const merge = newSub({
+              start_time: sub.start_time,
+              end_time: next.end_time,
+              text: sub.text.trim() + "\n" + next.text.trim(),
+            });
+            subtitles[index] = merge;
+            subtitles.splice(index + 1, 1);
+            setSubtitles(subtitles);
+            saveTranscript();
+          }
+        }
+      },
+      [hasSub, copySubs, setSubtitles, newSub]
+    );
+
+    const updateSub = useCallback(
+      (sub, obj) => {
+        const index = hasSub(sub);
+        if (index < 0) return;
+        const subClone = formatSub(sub);
+        Object.assign(subClone, obj);
+        if (subClone.check) {
+          subtitles[index] = subClone;
+          setSubtitles(subtitles);
+        }
+      },
+      [hasSub, setSubtitles, formatSub]
+    );
+
+    const onMouseDown = (sub, event, type) => {
+      lastSub = sub;
+      if (event.button !== 0) return;
+      isDroging = true;
+      lastType = type;
+      lastX = event.pageX;
+      lastIndex = subtitles.indexOf(sub);
+      lastTarget = $subsRef.current.children[lastIndex];
+      lastWidth = parseFloat(lastTarget.style.width);
+    };
 
     const onDocumentMouseMove = useCallback((event) => {
       if (isDroging && lastTarget) {
@@ -129,35 +199,28 @@ export default React.memo(
 
         if (lastType === "left") {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
-            const start = DT.d2t(startTime);
-            console.log(start, startTime, "start");
-            updateSub(lastSub, { start });
+            const start_time = DT.d2t(startTime);
+            updateSub(lastSub, { start_time });
 
-            updateSubEnglish(lastSub, { start });
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === "right") {
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
-            const end = DT.d2t(endTime);
-            updateSub(lastSub, { end });
+            const end_time = DT.d2t(endTime);
+            updateSub(lastSub, { end_time });
 
-            updateSubEnglish(lastSub, { end });
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else {
           if (startTime > 0 && endTime > 0 && endTime - startTime >= 0.2) {
-            const start = DT.d2t(startTime);
-            const end = DT.d2t(endTime);
+            const start_time = DT.d2t(startTime);
+            const end_time = DT.d2t(endTime);
 
             updateSub(lastSub, {
-              start,
-              end,
-            });
-            updateSubEnglish(lastSub, {
-              start,
-              end,
+              start_time,
+              end_time,
             });
           } else {
             lastTarget.style.width = `${width}px`;
@@ -165,6 +228,8 @@ export default React.memo(
         }
         lastTarget.style.transform = `translate(0)`;
       }
+
+      saveTranscript();
 
       lastType = "";
       lastX = 0;
@@ -182,15 +247,15 @@ export default React.memo(
           switch (keyCode) {
             case 37:
               updateSub(sub, {
-                start: DT.d2t(sub.startTime - 0.1),
-                end: DT.d2t(sub.endTime - 0.1),
+                start_time: DT.d2t(sub.startTime - 0.1),
+                end_time: DT.d2t(sub.endTime - 0.1),
               });
               player.currentTime = sub.startTime - 0.1;
               break;
             case 39:
               updateSub(sub, {
-                start: DT.d2t(sub.startTime + 0.1),
-                end: DT.d2t(sub.endTime + 0.1),
+                start_time: DT.d2t(sub.startTime + 0.1),
+                end_time: DT.d2t(sub.endTime + 0.1),
               });
               player.currentTime = sub.startTime + 0.1;
               break;
@@ -208,17 +273,25 @@ export default React.memo(
 
     const DynamicMenu = (props) => {
       const { id, trigger } = props;
-
       return (
-        <ContextMenu id={id}>
+        <ContextMenu id={id} className={classes.menuItemNav}>
           {trigger && (
-            <MenuItem onClick={() => removeSub(lastSub)}>"Delete"</MenuItem>
+            <MenuItem
+              className={classes.menuItem}
+              onClick={() => removeSub(lastSub)}
+            >
+              Delete Subtitle
+            </MenuItem>
           )}
           {trigger &&
-            configuration === "Same Language Subtitling" &&
-            trigger.parentSub !==
-              subtitleEnglish[subtitleEnglish.length - 1] && (
-              <MenuItem onClick={() => mergeSub(lastSub)}>"Merge"</MenuItem>
+            !trigger.parentSub.targetText &&
+            trigger.parentSub !== subtitles[subtitles.length - 1] && (
+              <MenuItem
+                className={classes.menuItem}
+                onClick={() => mergeSub(lastSub)}
+              >
+                Merge Next
+              </MenuItem>
             )}
         </ContextMenu>
       );
@@ -258,7 +331,6 @@ export default React.memo(
                     player.currentTime = sub.startTime + 0.001;
                   }
                 }}
-                // onDoubleClick={(event) => onDoubleClick(sub, event)}
               >
                 <ContextMenuTrigger
                   id="contextmenu"
@@ -272,13 +344,13 @@ export default React.memo(
                       left: 0,
                       width: 10,
                     }}
-                    // onMouseDown={(event) => onMouseDown(sub, event, "left")}
+                    onMouseDown={(event) => onMouseDown(sub, event, "left")}
                   ></div>
 
                   <div
                     className={classes.subText}
                     title={sub.text}
-                    // onMouseDown={(event) => onMouseDown(sub, event)}
+                    onMouseDown={(event) => onMouseDown(sub, event)}
                   >
                     <p className={classes.subTextP}>
                       {sub.targetText ? sub.targetText : sub.text}
@@ -291,7 +363,7 @@ export default React.memo(
                       right: 0,
                       width: 10,
                     }}
-                    // onMouseDown={(event) => onMouseDown(sub, event, "right")}
+                    onMouseDown={(event) => onMouseDown(sub, event, "right")}
                   ></div>
                   <div className={classes.subDuration}>{sub.duration}</div>
                 </ContextMenuTrigger>

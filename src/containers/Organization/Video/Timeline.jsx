@@ -210,6 +210,7 @@ const Timeline = ({
   currentTime,
   playing,
   subtitles,
+  setSubtitles,
 }) => {
   const $footer = createRef();
 
@@ -275,6 +276,7 @@ const Timeline = ({
             playing={playing}
             currentTime={currentTime}
             subtitles={subtitles}
+            setSubtitles={setSubtitles}
           />
         </>
       )}

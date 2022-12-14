@@ -3,8 +3,8 @@ import DT from 'duration-time-conversion';
 
 export default class Sub {
     constructor(obj) {
-        this.start = obj.start_time;
-        this.end = obj.end_time;
+        this.start_time = obj.start_time;
+        this.end_time = obj.end_time;
         this.text = obj.text;
         this.targetText = obj.target_text;
     }
@@ -18,19 +18,19 @@ export default class Sub {
     }
 
     get startTime() {
-        return DT.t2d(this.start);
+        return DT.t2d(this.start_time);
     }
 
     set startTime(time) {
-        this.start = DT.d2t(clamp(time, 0, Infinity));
+        this.start_time = DT.d2t(clamp(time, 0, Infinity));
     }
 
     get endTime() {
-        return DT.t2d(this.end);
+        return DT.t2d(this.end_time);
     }
 
     set endTime(time) {
-        this.end = DT.d2t(clamp(time, 0, Infinity));
+        this.end_time = DT.d2t(clamp(time, 0, Infinity));
     }
 
     get duration() {
