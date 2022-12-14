@@ -11,6 +11,7 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
+import FindAndReplace from "../../../common/FindAndReplace";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId, orgId, projectId } = useParams();
@@ -37,11 +38,11 @@ const TranslationRightPanel = ({ currentIndex }) => {
     setSourceText(transcriptPayload?.payload?.payload);
   }, [transcriptPayload?.payload?.payload]);
 
-  const changeTranscriptHandler = (target, index) => {
+  const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
       if (index === i) {
-        element.target_text = target.value;
+        element.target_text = text;
       }
     });
 
@@ -121,6 +122,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
+        {/* <FindAndReplace /> */}
           <Button
             variant="contained"
             className={classes.findBtn}
@@ -196,12 +198,23 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     contentEditable={false}
                     defaultValue={item.text}
                   />
-                  <IndicTransliterate
+                  {taskData?.target_language === "en" ?
+                      <textarea
+                      rows={4}
+                      className={`${classes.textAreaTransliteration} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      onChange={(event) => {
+                        changeTranscriptHandler(event.target.value, index);
+                      }}
+                      value={item.target_text}
+                    />
+                      : <IndicTransliterate
                     lang={taskData?.target_language}
                     value={item.target_text}
-                    onChangeText={(text, index) => {}}
-                    onChange={(event) => {
-                      changeTranscriptHandler(event.target, index);
+                    // onChangeText={(text, index) => {}}
+                    onChangeText={(text) => {
+                      changeTranscriptHandler(text, index);
                     }}
                     containerStyles={{
                       width: "100%",
@@ -215,7 +228,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         {...props}
                       />
                     )}
-                  />
+                  />}
                 </CardContent>
               </>
             );

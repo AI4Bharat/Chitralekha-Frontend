@@ -25,6 +25,7 @@ import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../common/Snackbar";
 import Search from "../../common/Search";
+import { roles } from "../../utils/utils";
 
 const ProjectList = ({ data, props, removeProjectList }) => {
   const { id } = useParams();
@@ -40,6 +41,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
   });
 
   const SearchProject = useSelector((state) => state.searchList.data);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
   const handleok = async (id) => {
     setOpen(false);
@@ -97,8 +99,37 @@ const ProjectList = ({ data, props, removeProjectList }) => {
       ) {
         return el;
       }
-    });
-  };
+})};
+  // useEffect(() => {
+  //   const result = data.map((item) => {
+  //     return [
+  //       item.title,
+  //       item.managers[0]?.email,
+  //       item.created_by?.username,
+  //       <div style={{ textAlign: "center" }}>
+  //         <Link
+  //           to={`/my-organization/${id}/project/${item.id}`}
+  //           style={{ textDecoration: "none" }}
+  //         >
+  //           <Tooltip title="View">
+  //             <IconButton>
+  //               <LibraryBooksIcon color="primary" />
+  //             </IconButton>
+  //           </Tooltip>
+  //         </Link>
+
+  //         {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteProject && <Tooltip title="Delete">
+  //           <IconButton>
+  //             <DeleteIcon
+  //               color="error"
+  //               onClick={() => handleDeleteProject(item.id)}
+  //             />
+  //           </IconButton>
+  //         </Tooltip>}
+  //       </div>,
+  //     ];
+  //   });
+  // });
 
   const result =
     data && data.length > 0
