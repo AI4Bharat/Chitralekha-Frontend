@@ -194,9 +194,9 @@ const Duration = ({ player, currentTime }) => {
 
   return (
     <div className={classes.duration}>
-      <span className={classes.durationSpan}>
+      {currentTime > 0 && <span className={classes.durationSpan}>
         {getDuration(currentTime)} / {getDuration(player.duration || 0)}
-      </span>
+      </span>}
     </div>
   );
 };
