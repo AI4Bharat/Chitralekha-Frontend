@@ -10,6 +10,7 @@ import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/Edi
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchUserRolesAPI from "../../redux/actions/api/User/FetchUsersRoles";
 import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
+import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers"
 
 
 import { useDispatch, useSelector } from "react-redux";
@@ -44,7 +45,7 @@ const TabPanel = (props) => {
 };
 
 const MyOrganization = () => {
-  const { id } = useParams();
+  const {id} = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
@@ -65,17 +66,13 @@ const MyOrganization = () => {
   );
 
   const projectList = useSelector((state) => state.getProjectList.data);
-  const userList = useSelector((state) => state.getUserList.data);
-  const userRoles = useSelector((state) => state.getUserRoles.data);
+  //const userList = useSelector((state) => state.getUserList.data);
+
   const userData = useSelector((state) => state.getLoggedInUserDetails.data)
- 
+  const usersList = useSelector((state) => state.getOrganizatioUsers.data);
+
   const getOrganizationDetails = () => {
     const userObj = new FetchOrganizationDetailsAPI(id);
-    dispatch(APITransport(userObj));
-  };
-
-  const getUserRolesList = () => {
-    const userObj = new FetchUserRolesAPI();
     dispatch(APITransport(userObj));
   };
 
@@ -93,13 +90,17 @@ const MyOrganization = () => {
     const userObj = new FetchUserListAPI();
     dispatch(APITransport(userObj));
   };
+  const getOrganizatioUsersList = () => {
+    const userObj = new FetchOrganizatioUsersAPI(id);
+    dispatch(APITransport(userObj));
+  };
  
 
   useEffect(() => {
     getOrganizationDetails();
     getUserList();
-    getUserRolesList();
     // getLoggedInUserData()
+    getOrganizatioUsersList()
   }, []);
 
   useEffect(()=>{
@@ -160,7 +161,7 @@ const MyOrganization = () => {
       message:  resp?.message,
       variant: "success",
     })
-
+    getOrganizatioUsersList()
   } else {
     setSnackbarInfo({
       open: true,
@@ -262,7 +263,7 @@ const MyOrganization = () => {
               onClick={() => setAddUserDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList data={userList} />
+              <UserList data={usersList} />
             </div>
           </Box>
         </TabPanel>

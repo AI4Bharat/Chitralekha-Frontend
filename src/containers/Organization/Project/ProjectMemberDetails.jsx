@@ -4,7 +4,7 @@ import { roles } from "../../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
-import { ThemeProvider, Tooltip,IconButton } from "@mui/material";
+import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
@@ -13,7 +13,8 @@ import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import PreviewIcon from "@mui/icons-material/Preview";
+import Search from "../../../common/Search";
 
 //APIs
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
@@ -34,9 +35,10 @@ const ProjectMemberDetails = () => {
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
   );
-  console.log(projectMembersList,"projectMembersList")
 
-  const removeProjectMember = async(id) => {
+  const SearchProject = useSelector((state) => state.searchList.data);
+
+  const removeProjectMember = async (id) => {
     const apiObj = new RemoveProjectMemberAPI(projectId, id);
     //dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -48,16 +50,16 @@ const ProjectMemberDetails = () => {
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
+      });
       getProjectMembers();
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
   };
 
@@ -70,34 +72,65 @@ const ProjectMemberDetails = () => {
     getProjectMembers();
   }, []);
 
-  useEffect(() => {
-    const result = projectMembersList.map((item) => {
-      return [
-        `${item.first_name} ${item.last_name}`,
-        item.username,
-        item.email,
-        item.availability_status,
-        roles.map((value) => (value.id === item.role ? value.type : "")),
-        <Box sx={{display: "flex"}}>
-          <Tooltip title="View">
-        <IconButton>
-        <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-          <LibraryBooksIcon color="primary" sx={{mt:"10px"}}  />
-          </Link>
-        </IconButton>
-      </Tooltip>
+  // useEffect(() => {
+  //   const result = projectMembersList.map((item) => {
 
-          <Tooltip title="Delete">
-        <IconButton>
-          <DeleteIcon color="error" onClick={() => removeProjectMember(item.id)} />
-        </IconButton>
-      </Tooltip>
-        </Box>,
-      ];
+  const pageSearch = () => {
+    return projectMembersList.filter((el) => {
+      if (SearchProject == "") {
+        return el;
+      } else if (
+        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.email?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }
     });
+  };
+  const result =
+    projectMembersList && projectMembersList.length > 0
+      ? pageSearch().map((item, i) => {
+          return [
+            `${item.first_name} ${item.last_name}`,
+            item.username,
+            item.email,
+            item.role,
+            // item.availability_status,
+            //roles.map((value) => (value.id === item.role ? value.type : "")),
+            <Box sx={{ display: "flex" }}>
+              <Tooltip title="View">
+                <IconButton>
+                  <Link
+                    to={`/profile/${item.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <PreviewIcon color="primary" sx={{ mt: "10px" }} />
+                  </Link>
+                </IconButton>
+              </Tooltip>
 
-    setTableData(result);
-  }, [projectMembersList]);
+              <Tooltip title="Delete">
+                <IconButton>
+                  <DeleteIcon
+                    color="error"
+                    onClick={() => removeProjectMember(item.id)}
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>,
+          ];
+        })
+      : [];
+
+  //   setTableData(result);
+  // }, [projectMembersList]);
 
   const columns = [
     {
@@ -108,9 +141,14 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" ,textAlign: "center"},
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({ style: { textAlign: "center"}}),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -121,9 +159,14 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({ style: { textAlign: "center"}}),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -134,24 +177,19 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({ style: { textAlign: "center",textAlign: "center"}}),
+        setCellProps: () => ({
+          style: { textAlign: "center"},
+        }),
       },
     },
-    {
-      name: "availability_status",
-      label: "Availability Status",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
-        }),
-        setCellProps:() =>({ style: { textAlign: "center"}}),
-      },
-    },
+
     {
       name: "role",
       label: "Role",
@@ -160,9 +198,14 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({ style: { textAlign: "center"}}),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
     {
@@ -173,9 +216,14 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
-        setCellProps:() =>({ style: { textAlign: "center"}}),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
       },
     },
   ];
@@ -221,8 +269,9 @@ const ProjectMemberDetails = () => {
 
   return (
     <>
+      <Search />
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={tableData} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
       {renderSnackBar()}
     </>
