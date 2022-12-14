@@ -11,7 +11,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 
-const RightPanel = ({ currentIndex }) => {
+const RightPanel = ({ currentIndex, subtitles }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
@@ -33,8 +33,8 @@ const RightPanel = ({ currentIndex }) => {
   });
 
   useEffect(() => {
-    setSourceText(transcriptPayload?.payload?.payload);
-  }, [transcriptPayload?.payload?.payload]);
+    setSourceText(subtitles);
+  }, [subtitles]);
 
   const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];

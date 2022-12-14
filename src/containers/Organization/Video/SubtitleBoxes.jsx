@@ -48,7 +48,6 @@ export default React.memo(
     subtitles,
     render,
     currentTime,
-    updateSub,
     updateSubEnglish,
     setSubtitles,
   }) {
@@ -69,6 +68,18 @@ export default React.memo(
     const currentIndex = subtitles?.findIndex(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
+
+    const saveTranscript = () => {
+      const reqBody = {
+        task_id: taskId,
+        payload: {
+          payload: subtitles,
+        },
+      };
+
+      const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
+      dispatch(APITransport(obj));
+    }
 
     const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
 
@@ -103,16 +114,7 @@ export default React.memo(
             render.duration
           );
           setCurrentSubs(subs);
-
-          const reqBody = {
-            task_id: taskId,
-            payload: {
-              payload: subtitles,
-            },
-          };
-
-          const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
-          dispatch(APITransport(obj));
+          saveTranscript();
         }
       },
       [hasSub, copySubs, setSubtitles]
@@ -132,20 +134,25 @@ export default React.memo(
             subtitles[index] = merge;
             subtitles.splice(index + 1, 1);
             setSubtitles(subtitles);
-
-            const reqBody = {
-              task_id: taskId,
-              payload: {
-                payload: subtitles,
-              },
-            };
-  
-            const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
-            dispatch(APITransport(obj));
+            saveTranscript();
           }
         }
       },
       [hasSub, copySubs, setSubtitles, newSub]
+    );
+
+    const updateSub = useCallback(
+      (sub, obj) => {
+        const index = hasSub(sub);
+        if (index < 0) return;
+        const subClone = formatSub(sub);
+        Object.assign(subClone, obj);
+        if (subClone.check) {
+          subtitles[index] = subClone;
+          setSubtitles(subtitles);
+        }
+      },
+      [hasSub, setSubtitles, formatSub]
     );
 
     const onMouseDown = (sub, event, type) => {
@@ -157,24 +164,6 @@ export default React.memo(
       lastIndex = subtitles.indexOf(sub);
       lastTarget = $subsRef.current.children[lastIndex];
       lastWidth = parseFloat(lastTarget.style.width);
-    };
-
-    const onDoubleClick = (sub, event) => {
-      const $subs = event.currentTarget;
-      const index = hasSub(sub);
-      const previou = subtitles[index - 1];
-      const next = subtitles[index + 1];
-      if (previou && next) {
-        const width = (next.startTime - previou.endTime) * 10 * gridGap;
-        $subs.style.width = `${width}px`;
-        const start = DT.d2t(previou.endTime);
-        const end = DT.d2t(next.startTime);
-
-        updateSub(sub, {
-          start,
-          end,
-        });
-      }
     };
 
     const onDocumentMouseMove = useCallback((event) => {
@@ -210,35 +199,28 @@ export default React.memo(
 
         if (lastType === "left") {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
-            const start = DT.d2t(startTime);
-            console.log(start, startTime, "start");
-            updateSub(lastSub, { start });
+            const start_time = DT.d2t(startTime);
+            updateSub(lastSub, { start_time });
 
-            updateSubEnglish(lastSub, { start });
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === "right") {
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
-            const end = DT.d2t(endTime);
-            updateSub(lastSub, { end });
+            const end_time = DT.d2t(endTime);
+            updateSub(lastSub, { end_time });
 
-            updateSubEnglish(lastSub, { end });
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else {
           if (startTime > 0 && endTime > 0 && endTime - startTime >= 0.2) {
-            const start = DT.d2t(startTime);
-            const end = DT.d2t(endTime);
+            const start_time = DT.d2t(startTime);
+            const end_time = DT.d2t(endTime);
 
             updateSub(lastSub, {
-              start,
-              end,
-            });
-            updateSubEnglish(lastSub, {
-              start,
-              end,
+              start_time,
+              end_time,
             });
           } else {
             lastTarget.style.width = `${width}px`;
@@ -246,6 +228,8 @@ export default React.memo(
         }
         lastTarget.style.transform = `translate(0)`;
       }
+
+      saveTranscript();
 
       lastType = "";
       lastX = 0;
@@ -263,15 +247,15 @@ export default React.memo(
           switch (keyCode) {
             case 37:
               updateSub(sub, {
-                start: DT.d2t(sub.startTime - 0.1),
-                end: DT.d2t(sub.endTime - 0.1),
+                start_time: DT.d2t(sub.startTime - 0.1),
+                end_time: DT.d2t(sub.endTime - 0.1),
               });
               player.currentTime = sub.startTime - 0.1;
               break;
             case 39:
               updateSub(sub, {
-                start: DT.d2t(sub.startTime + 0.1),
-                end: DT.d2t(sub.endTime + 0.1),
+                start_time: DT.d2t(sub.startTime + 0.1),
+                end_time: DT.d2t(sub.endTime + 0.1),
               });
               player.currentTime = sub.startTime + 0.1;
               break;
@@ -347,7 +331,6 @@ export default React.memo(
                     player.currentTime = sub.startTime + 0.001;
                   }
                 }}
-                onDoubleClick={(event) => onDoubleClick(sub, event)}
               >
                 <ContextMenuTrigger
                   id="contextmenu"

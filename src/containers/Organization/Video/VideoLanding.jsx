@@ -15,6 +15,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import Sub from "../../../utils/Sub";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import DT from "duration-time-conversion";
+import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -179,6 +180,17 @@ const VideoLanding = () => {
       })
     );
     setSubs(subs);
+    setCurrentSubs(subs[currentIndex]);
+
+    const reqBody = {
+      task_id: taskId,
+      payload: {
+        payload: subs,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
+    dispatch(APITransport(obj));
   }, [inputItemCursor]);
 
   return (
@@ -229,7 +241,7 @@ const VideoLanding = () => {
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} />
+            <RightPanel currentIndex={currentIndex} subtitles={subs}/>
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
