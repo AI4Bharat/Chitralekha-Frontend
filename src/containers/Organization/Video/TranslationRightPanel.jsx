@@ -47,10 +47,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     setSourceText(arr);
-    // saveTranscriptHandler(false);
+    saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal) => {
+  const saveTranscriptHandler = async (isFinal, isAutosave) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -72,8 +72,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setSnackbarInfo({
-        open: true,
-        message: resp?.message,
+        open: isAutosave,
+        message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "",
         variant: "success",
       });
       if (isFinal) {
@@ -86,8 +86,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
       //navigate(`/my-organization/:${orgId}/project/:${projectId}`)
     } else {
       setSnackbarInfo({
-        open: true,
-        message: resp?.message,
+        open: isAutosave,
+        message: "Failed",
         variant: "error",
       });
     }
@@ -126,14 +126,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <Button
             variant="contained"
             className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(false)}
+            onClick={() => saveTranscriptHandler(false, true)}
           >
             Save
           </Button>
           <Button
             variant="contained"
             className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(true)}
+            onClick={() => saveTranscriptHandler(true, true)}
           >
             Submit
           </Button>

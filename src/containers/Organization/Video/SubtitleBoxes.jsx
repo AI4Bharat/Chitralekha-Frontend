@@ -229,7 +229,7 @@ export default React.memo(
         lastTarget.style.transform = `translate(0)`;
       }
 
-      saveTranscript();
+      // saveTranscript();
 
       lastType = "";
       lastX = 0;

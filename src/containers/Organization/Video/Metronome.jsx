@@ -19,7 +19,7 @@ const findIndex = (subs, startTime) => {
 export default React.memo(
   function Component({
     render,
-    subtitle,
+    subtitles,
     subtitleEnglish,
     newSub,
     addSub,
@@ -73,16 +73,16 @@ export default React.memo(
         ) {
           const index =
             findIndex(
-              configuration === "Subtitling" ? subtitle : subtitleEnglish,
+              subtitles,
               drogStartTime
             ) + 1;
-          const start = DT.d2t(drogStartTime);
-          const end = DT.d2t(drogEndTime);
+          const start_time = DT.d2t(drogStartTime);
+          const end_time = DT.d2t(drogEndTime);
           addSub(
             index,
             newSub({
-              start,
-              end,
+              start_time,
+              end_time,
               text: "SUB_TEXT",
             })
           );
@@ -95,7 +95,7 @@ export default React.memo(
       isDroging,
       drogStartTime,
       drogEndTime,
-      subtitle,
+      subtitles,
       subtitleEnglish,
       addSub,
       newSub,
