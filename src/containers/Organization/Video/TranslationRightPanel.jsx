@@ -13,21 +13,17 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 
-const TranslationRightPanel = ({ currentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, subtitles }) => {
   const { taskId, orgId, projectId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const transcriptPayload = useSelector(
-    (state) => state.getTranscriptPayload.data
-  );
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
 
   const [sourceText, setSourceText] = useState([]);
-  const [lang, setLang] = useState("hi");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -35,8 +31,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
   });
 
   useEffect(() => {
-    setSourceText(transcriptPayload?.payload?.payload);
-  }, [transcriptPayload?.payload?.payload]);
+    setSourceText(subtitles);
+  }, [subtitles]);
 
   const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
@@ -172,6 +168,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       "& .MuiOutlinedInput-input": {
                         fontSize: "12px",
                         padding: "7px 14px",
+                        textAlign: "center",
                       },
                     }}
                   />
@@ -188,6 +185,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       },
                       "& .MuiOutlinedInput-input": {
                         fontSize: "12px",
+                        textAlign: "center",
                         padding: "7px 14px",
                       },
                     }}

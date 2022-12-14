@@ -266,7 +266,7 @@ const VideoLanding = () => {
 
           {currentSubs ? (
             <div className={classes.subtitlePanel}>
-              {focusing ? (
+              {!currentSubs.target_text && focusing ? (
                 <div className={classes.operate} onClick={onSplit}>
                   Split Subtitle
                 </div>
@@ -277,8 +277,8 @@ const VideoLanding = () => {
                   !playing ? classes.pause : ""
                 }`}
                 value={
-                  currentSubs.targetText
-                    ? currentSubs.targetText
+                  currentSubs.target_text
+                    ? currentSubs.target_text
                     : currentSubs.text
                 }
                 spellCheck={false}
@@ -299,7 +299,7 @@ const VideoLanding = () => {
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
-            <TranslationRightPanel currentIndex={currentIndex} />
+            <TranslationRightPanel currentIndex={currentIndex} subtitles={subs} />
           )}
         </Grid>
       </Grid>
