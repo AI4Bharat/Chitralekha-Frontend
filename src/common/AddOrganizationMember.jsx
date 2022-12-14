@@ -11,8 +11,13 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React from "react";
+import { useEffect, useState } from "react";
 import { roles } from "../utils/utils";
+import { useDispatch, useSelector } from "react-redux";
+import {  useParams } from "react-router-dom";
+import APITransport from "../redux/actions/apitransport/apitransport";
+import FetchUserRolesAPI from "../redux/actions/api/User/FetchUsersRoles";
+
 
 const AddOrganizationMember = ({
   open,
@@ -25,9 +30,22 @@ const AddOrganizationMember = ({
   selectFieldValue,
   handleSelectField,
 }) => {
+  const dispatch = useDispatch();
+  const {id} = useParams();
+
+  const userRoles = useSelector((state) => state.getUserRoles.data);
+
+  const getUserRolesList = () => {
+    const userObj = new FetchUserRolesAPI();
+    dispatch(APITransport(userObj));
+  };
+
+  useEffect(() => {
+    getUserRolesList()
+  }, []);
 
   return (
-    <Dialog open={open} onClose={handleUserDialogClose} close>
+    <Dialog open={open} onClose={handleUserDialogClose} close >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
         <TextField
@@ -47,8 +65,8 @@ const AddOrganizationMember = ({
             label="Select Role"
             onChange={(event) => handleSelectField(event.target.value)}
           >
-            {roles.map((item) => {
-              return <MenuItem value={item.id}>{item.type}</MenuItem>;
+            {userRoles.map((item) => {
+              return <MenuItem value={item.value}>{item.label}</MenuItem>;
             })}
           </Select>
         </FormControl>

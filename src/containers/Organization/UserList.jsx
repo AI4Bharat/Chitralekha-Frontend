@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 //Themes
 import { ThemeProvider, Tooltip,IconButton, } from "@mui/material";
@@ -9,14 +10,38 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../common/Button";
 import { Link } from "react-router-dom";
+import Search from "../../common/Search";
+
 
 const UserList = ({ data }) => {
   const [tableData, setTableData] = useState([]);
+  const SearchProject = useSelector((state) => state.searchList.data);
 
-  useEffect(() => {
-    const result = data.map((item) => {
+  const pageSearch = () => {
+    return data.filter((el) => {
+      if (SearchProject == "") {
+        return el;
+      } else if (
+        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (el.email?.toLowerCase().includes(SearchProject?.toLowerCase())) {
+        return el;
+      } else if (
+        el.role?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }
+    });
+  };
+ 
+    const result =
+    data && data.length > 0
+      ? pageSearch().map((item, i) => {
       return [
+        item.username,
         item.email,
+        item.role,
         <Link
             to={`/profile/${item.id}`}
           style={{ textDecoration: "none" }}
@@ -28,15 +53,39 @@ const UserList = ({ data }) => {
             </Tooltip>
         </Link>,
       ];
-    });
+    }):[];
 
-    setTableData(result);
-  }, [data]);
+    //setTableData(result);
+ 
 
   const columns = [
     {
+      name: "username",
+      label: "Username",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
       name: "email",
       label: "Email",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "role",
+      label: "Role",
       options: {
         filter: false,
         sort: false,
@@ -86,9 +135,12 @@ const UserList = ({ data }) => {
   };
 
   return (
+    <>
+    <Search/>
     <ThemeProvider theme={tableTheme}>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
+      <MUIDataTable data={result} columns={columns} options={options} />
     </ThemeProvider>
+    </>
   );
 };
 

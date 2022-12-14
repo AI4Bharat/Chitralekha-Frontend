@@ -113,7 +113,6 @@ const VideoList = ({ data, removeVideo }) => {
       ? pageSearch().map((item, i) => {
           return [
             item.id,
-            item.project_id,
             item.name,
             item.url,
             item.duration,
@@ -194,24 +193,6 @@ const VideoList = ({ data, removeVideo }) => {
     {
       name: "id",
       label: "Video Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-            textAlign: "center",
-          },
-        }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
-      },
-    },
-    {
-      name: "projectId",
-      label: "Project Id",
       options: {
         filter: false,
         sort: false,

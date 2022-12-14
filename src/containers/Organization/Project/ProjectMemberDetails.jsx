@@ -101,8 +101,9 @@ const ProjectMemberDetails = () => {
             `${item.first_name} ${item.last_name}`,
             item.username,
             item.email,
-            item.availability_status,
-            roles.map((value) => (value.id === item.role ? value.type : "")),
+            item.role,
+            // item.availability_status,
+            //roles.map((value) => (value.id === item.role ? value.type : "")),
             <Box sx={{ display: "flex" }}>
               <Tooltip title="View">
                 <IconButton>
@@ -184,28 +185,11 @@ const ProjectMemberDetails = () => {
           },
         }),
         setCellProps: () => ({
-          style: { textAlign: "center", textAlign: "center" },
+          style: { textAlign: "center"},
         }),
       },
     },
-    {
-      name: "availability_status",
-      label: "Availability Status",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-            textAlign: "center",
-          },
-        }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
-      },
-    },
+
     {
       name: "role",
       label: "Role",

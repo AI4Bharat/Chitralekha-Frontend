@@ -391,6 +391,19 @@ const TaskList = () => {
       ) {
         return el;
       }
+      else if (
+        el.src_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.target_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.status?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }
     });
   };
 
