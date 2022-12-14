@@ -231,7 +231,7 @@ const MyOrganization = () => {
           </Box>
         </TabPanel>
 
-        <TabPanel
+        {/* <TabPanel
           value={value}
           index={1}
           style={{ textAlign: "center", maxWidth: "100%" }}
@@ -243,9 +243,9 @@ const MyOrganization = () => {
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
-        <Typography>No records to be updated</Typography></TabPanel>
+        <Typography>No records to be updated</Typography></TabPanel> */}
 
-        {/* <TabPanel
+        <TabPanel
           value={value}
           index={1}
           style={{ textAlign: "center", maxWidth: "100%" }}
@@ -265,9 +265,9 @@ const MyOrganization = () => {
               <UserList data={userList} />
             </div>
           </Box>
-        </TabPanel> */}
+        </TabPanel>
 
-        {/* <TabPanel
+        <TabPanel
           value={value}
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
@@ -284,7 +284,7 @@ const MyOrganization = () => {
             onClick={() => handleOrganizationUpdate()}
             sx={{ mt: 5, width: "100%" }}
           />
-        </TabPanel> */}
+        </TabPanel>
       </Card>
 
       {addUserDialog && (
