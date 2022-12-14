@@ -188,7 +188,7 @@ const TaskList = () => {
     const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
     dispatch(APITransport(comparisonTableObj));
 
-    navigate(`/${id}/translate`);
+    navigate(`/task/${id}/translate`);
   };
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
@@ -330,9 +330,9 @@ const TaskList = () => {
                   tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
                   tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
                 ) {
-                  navigate(`/${tableData.rowData[0]}/transcript`);
+                  navigate(`/task/${tableData.rowData[0]}/transcript`);
                 } else {
-                  navigate(`/${tableData.rowData[0]}/translate`);
+                  navigate(`/task/${tableData.rowData[0]}/translate`);
                 }
 
                 console.log("Edit Button ---- ", tableData.rowData);

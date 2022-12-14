@@ -45,7 +45,7 @@ const RightPanel = ({ currentIndex }) => {
     });
 
     setSourceText(arr);
-    saveTranscriptHandler(false);
+    // saveTranscriptHandler(false);
   };
 
   const saveTranscriptHandler = async (isFinal) => {
@@ -122,9 +122,16 @@ const RightPanel = ({ currentIndex }) => {
           <Button
             variant="contained"
             className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(true)}
+            onClick={() => saveTranscriptHandler(false)}
           >
             Save
+          </Button>
+          <Button
+            variant="contained"
+            className={classes.findBtn}
+            onClick={() => saveTranscriptHandler(true)}
+          >
+            Submit
           </Button>
         </Box>
         <Box
