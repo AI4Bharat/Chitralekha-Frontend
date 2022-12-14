@@ -97,14 +97,14 @@ const RootRouter = () => {
         />
 
         <Route
-          path="/:taskId/transcript"
+          path="/task/:taskId/transcript"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true} />
           )}
         />
 
         <Route
-          path="/:taskId/translate"
+          path="/task/:taskId/translate"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true} />
           )}

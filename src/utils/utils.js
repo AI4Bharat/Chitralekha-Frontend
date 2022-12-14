@@ -62,33 +62,75 @@ export const steps = [
 
 export const roles = [
   {
-    id: 1,
-    type: "Transcript editor",
+    label: "Transcript editor",
+    value: "TRANSCRIPT_EDITOR", 
+    permittedToDeleteProject: false,
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 2,
-    type: "Transcript Reviewer",
+    label: "Transcript Reviewer",
+    value: "TRANSCRIPT_REVIEWER",
+    permittedToDeleteProject: false,
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 3,
-    type: "Translation editor",
+    label: "Translation editor",
+    value: "TRANSLATION_EDITOR",
+    permittedToDeleteProject: false,
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 4,
-    type: "Translation Reviewer",
+    label: "Translation Reviewer",
+    value: "TRANSLATION_REVIEWER",
+    permittedToDeleteProject: false,
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 5,
-    type: "Universal Editor",
+    label: "Universal Editor",
+    value: "UNIVERSAL_EDITOR",
+    permittedToDeleteProject: false,
+    permittedToDeleteVideoAudio: false,
+    permittedToCreateTask: false,
+    permittedToAddMembersInProject: false,
+    permittedToDeleteProject: false,
+    permittedToCreateVideoAudio: false,
   },
   {
-    id: 6,
-    type: "Project Manager",
+    label: "Project Manager",
+    value: "PROJECT_MANAGER",
+    permittedToDeleteProject: true,
+    permittedToDeleteVideoAudio: true,
+    permittedToCreateTask: true,
+    permittedToAddMembersInProject: true,
+    permittedToDeleteProject: true,
+    permittedToCreateVideoAudio: true,
   },
   {
-    id: 7,
-    type: "Organization Owner",
-  },
+    label: "Organization Owner",
+    value: "ORG_OWNER",
+    permittedToDeleteProject: true,
+    permittedToDeleteVideoAudio: true,
+    permittedToCreateTask: true,
+    permittedToAddMembersInProject: true,
+    permittedToDeleteProject: true,
+    permittedToCreateVideoAudio: true,
+  }
 ];
 
 export const tasks = [
@@ -347,5 +389,18 @@ export function sub2txt(sub) {
 export const parseSubtitles = async (subtitles) => {
   const suburl = vtt2url(subtitles);
   const urlsub = await url2sub(suburl);
-   return urlsub;
+  return urlsub;
 };
+
+export function getKeyCode(event) {
+  const tag = document.activeElement.tagName.toUpperCase();
+  const editable = document.activeElement.getAttribute("contenteditable");
+  if (
+    tag !== "INPUT" &&
+    tag !== "TEXTAREA" &&
+    editable !== "" &&
+    editable !== "true"
+  ) {
+    return Number(event.keyCode);
+  }
+}

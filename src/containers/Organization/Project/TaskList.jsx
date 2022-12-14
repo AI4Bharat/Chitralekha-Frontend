@@ -188,7 +188,7 @@ const TaskList = () => {
     const comparisonTableObj = new ComparisionTableAPI(id, payloadData);
     dispatch(APITransport(comparisonTableObj));
 
-    navigate(`/${id}/translate`);
+    navigate(`/task/${id}/translate`);
   };
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
@@ -330,9 +330,9 @@ const TaskList = () => {
                   tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
                   tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
                 ) {
-                  navigate(`/${tableData.rowData[0]}/transcript`);
+                  navigate(`/task/${tableData.rowData[0]}/transcript`);
                 } else {
-                  navigate(`/${tableData.rowData[0]}/translate`);
+                  navigate(`/task/${tableData.rowData[0]}/translate`);
                 }
 
                 console.log("Edit Button ---- ", tableData.rowData);
@@ -347,7 +347,7 @@ const TaskList = () => {
         //   label="Edit"
         //   onClick={() => {
         //     navigate(`/${tableData.rowData[0]}/transcript`);
-        //     console.log("Edit Button --- ", tableData.rowData);
+        //     console.log("Edit Button ------ ", tableData.rowData);
         //     // setOpenViewTaskDialog(true);
         //     // setCurrentTaskDetails(tableData.rowData);
         //   }}
@@ -523,7 +523,7 @@ const TaskList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",

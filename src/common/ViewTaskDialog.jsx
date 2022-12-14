@@ -20,10 +20,17 @@ import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import FetchTranscriptTypesAPI from "../redux/actions/api/Project/FetchTranscriptTypes";
 import APITransport from "../redux/actions/apitransport/apitransport";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import moment from "moment/moment";
+import FetchTranslationTypesAPI from "../redux/actions/api/Project/FetchTranslationTypes";
 
-const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }) => {
+const ViewTaskDialog = ({
+  open,
+  handleClose,
+  compareHandler,
+  submitHandler,
+  id,
+}) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const [transcriptSource, setTranscriptSource] = useState([]);
@@ -46,84 +53,95 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(apiObj));
-
   }, []);
-  
-  useEffect(() => {
-    if (taskDetail) {
-      taskDetail?.task_type === "TRANSCRIPTION_EDIT" ? setdropDownText("Transcription") : setdropDownText("Translation");
 
-      const obj = new FetchTranscriptTypesAPI(taskDetail.task_type);
-      dispatch(APITransport(obj))
+  useEffect(() => {
+    if (taskDetail.task_type === "TRANSCRIPTION_EDIT") {
+      setdropDownText("Transcription");
+      const obj = new FetchTranscriptTypesAPI();
+      dispatch(APITransport(obj));
+    } else {
+      setdropDownText("Translation");
+      const obj = new FetchTranslationTypesAPI();
+      dispatch(APITransport(obj));
     }
-  }, [taskDetail])
-  
+  }, [taskDetail]);
+
   return (
     <>
-    <Dialog
-      fullWidth={true}
-      maxWidth={"md"}
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="responsive-dialog-title"
-    >
-      <DialogContent sx={{ p: 5 }}>
-        <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"20%"}>
-            Task Type :
-          </Typography>
-          <Typography variant="body1">{taskDetail.task_type}</Typography>
-        </Box>
+      <Dialog
+        fullWidth={true}
+        maxWidth={"md"}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogContent sx={{ p: 5 }}>
+          <Box display="flex" sx={{ mb: 3 }}>
+            <Typography variant="h5" width={"20%"}>
+              Task Type :
+            </Typography>
+            <Typography variant="body1">{taskDetail.task_type}</Typography>
+          </Box>
 
-        <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"20%"}>
-            Description :
-          </Typography>
-          <Typography variant="body1" width={"70%"} textAlign="justify">
-            {taskDetail.description}
-          </Typography>
-        </Box>
+          <Box display="flex" sx={{ mb: 3 }}>
+            <Typography variant="h5" width={"20%"}>
+              Description :
+            </Typography>
+            <Typography variant="body1" width={"70%"} textAlign="justify">
+              {taskDetail.description}
+            </Typography>
+          </Box>
 
-        <Box display="flex" sx={{ mb: 3 }}>
-          <Typography variant="h5" width={"20%"}>
-            ETA :
-          </Typography>
-          {
-            taskDetail.eta && (
+          <Box display="flex" sx={{ mb: 3 }}>
+            <Typography variant="h5" width={"20%"}>
+              ETA :
+            </Typography>
+            {taskDetail.eta && (
               <Typography variant="body1">
                 {moment(taskDetail.eta).format("DD/MM/YYYY")}
               </Typography>
-            )
-          }
-        </Box>
+            )}
+          </Box>
 
-        <Box display="flex" sx={{ mb: 4 }}>
-          <Typography variant="h5" width={"20%"} style={{marginTop:"12px"}}>
-            Select :
-          </Typography>
-          <FormControl style={{ width: "70%" }}>
-            <InputLabel id="select-transcription-source"> {dropDownText} Source</InputLabel>
-            <Select
-              fullWidth
-              width="100%"
-              labelId="select-transcription-source"
-              multiple
-              value={transcriptSource}
-              onChange={handleChange}
-              input={<OutlinedInput label={`Select ${dropDownText} Source`}/>}
-              renderValue={(selected) => selected.join(", ")}
-              style={{ zIndex: 0 }}
-              inputProps={{ "aria-label": "Without label" }}
+          <Box display="flex" sx={{ mb: 4 }}>
+            <Typography
+              variant="h5"
+              width={"20%"}
+              style={{ marginTop: "12px" }}
             >
-              {transcriptTypes.map((item, index) => (
-                <MenuItem key={index} value={item.label}>
-                  <Checkbox checked={transcriptSource.indexOf(item.label) > -1} />
-                  <ListItemText primary={item.label} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+              Select :
+            </Typography>
+            <FormControl style={{ width: "70%" }}>
+              <InputLabel id="select-transcription-source">
+                {" "}
+                {dropDownText} Source
+              </InputLabel>
+              <Select
+                fullWidth
+                width="100%"
+                labelId="select-transcription-source"
+                multiple
+                value={transcriptSource}
+                onChange={handleChange}
+                input={
+                  <OutlinedInput label={`Select ${dropDownText} Source`} />
+                }
+                renderValue={(selected) => selected.join(", ")}
+                style={{ zIndex: 0 }}
+                inputProps={{ "aria-label": "Without label" }}
+              >
+                {transcriptTypes.map((item, index) => (
+                  <MenuItem key={index} value={item.label}>
+                    <Checkbox
+                      checked={transcriptSource.indexOf(item.label) > -1}
+                    />
+                    <ListItemText primary={item.label} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
 
           {/* <Box display="flex" sx={{ mb: 3 }}>
             <Typography variant="h5" width={"25%"}>
@@ -213,20 +231,24 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, submitHandler, id }
           >
             Cancel
           </Button>
-          {taskDetail.task_type === "TRANSCRIPTION_EDIT" && <Button
-            variant="contained"
-            sx={{ borderRadius: 2 }}
-            onClick={() => compareHandler(id, transcriptSource, false)}
-          >
-            Compare
-          </Button>}
-          {taskDetail.task_type === "TRANSLATION_EDIT" && <Button
-            variant="contained"
-            sx={{ borderRadius: 2 }}
-            onClick={() => compareHandler(id, transcriptSource, true)}
-          >
-            Submit
-          </Button>}
+          {taskDetail.task_type === "TRANSCRIPTION_EDIT" && (
+            <Button
+              variant="contained"
+              sx={{ borderRadius: 2 }}
+              onClick={() => compareHandler(id, transcriptSource, false)}
+            >
+              Compare
+            </Button>
+          )}
+          {taskDetail.task_type === "TRANSLATION_EDIT" && (
+            <Button
+              variant="contained"
+              sx={{ borderRadius: 2 }}
+              onClick={() => compareHandler(id, transcriptSource, true)}
+            >
+              Submit
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </>

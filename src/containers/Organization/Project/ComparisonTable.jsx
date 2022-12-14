@@ -113,7 +113,7 @@ const ComparisonTable = () => {
 
     const obj = new FetchTranscriptTypesAPI();
     dispatch(APITransport(obj));
-  }, []);
+  }, [taskDetails]);
 
   const handleSubmit = async() => {
     let data = {};
@@ -152,7 +152,7 @@ const ComparisonTable = () => {
         message:  resp?.message,
         variant: "success",
       })
-      navigate(`/${taskDetails.id}/transcript`)
+      navigate(`/task/${taskDetails.id}/transcript`)
     } else {
       setSnackbarInfo({
         open: true,
@@ -179,7 +179,7 @@ const ComparisonTable = () => {
         })
         dispatch(setComparisonTable(rsp_data));
       } else {
-        //console.log("failed");
+        ///console.log("failed");
         setSnackbarInfo({
           open: true,
           message: rsp_data?.message,
@@ -309,7 +309,7 @@ const ComparisonTable = () => {
                   id="demo-multi-select"
                   label="Compare with"
                   onChange={(e) => handleChange(e, indx)}
-                  value={selectValue[indx].value}
+                  value={selectValue[indx]?.value}
                 >
                   {transcriptTypes.map((el, i) => {
                     return (

@@ -1,14 +1,14 @@
-//API to get the list of all the projects in the organization.
-
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class ProjectListAPI extends API {
-  constructor(id, timeout = 2000) {
+export default class FetchTranslationTypesAPI extends API {
+  constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_PROJECT_LIST;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/list_projects/`;
+    this.type = C.GET_TRANSLATION_TYPES;
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.translation
+    }get_translation_types/`;
   }
 
   processResponse(res) {
@@ -28,7 +28,7 @@ export default class ProjectListAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };
     return this.headers;
