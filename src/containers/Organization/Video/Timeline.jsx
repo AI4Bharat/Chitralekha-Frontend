@@ -211,6 +211,8 @@ const Timeline = ({
   playing,
   subtitles,
   setSubtitles,
+  newSub,
+  addSub,
 }) => {
   const $footer = createRef();
 
@@ -269,7 +271,7 @@ const Timeline = ({
             setRender={setRender}
           />
           <Grab player={player} waveform={waveform} />
-          <Metronome render={render} player={player} playing={playing} />
+          <Metronome render={render} player={player} playing={playing} subtitles={subtitles} newSub={newSub} addSub={addSub}/>
           <SubtitleBoxes
             render={render}
             player={player}

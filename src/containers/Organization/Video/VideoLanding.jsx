@@ -117,15 +117,12 @@ const VideoLanding = () => {
     }
   }, []);
 
-  const onClick = useCallback(
-    (event) => {
-      // player.pause();
-      if (event.target.selectionStart) {
-        setInputItemCursor(event.target.selectionStart);
-      }
-    },
-    []
-  );
+  const onClick = useCallback((event) => {
+    // player.pause();
+    if (event.target.selectionStart) {
+      setInputItemCursor(event.target.selectionStart);
+    }
+  }, []);
 
   const onFocus = useCallback((event) => {
     setFocusing(true);
@@ -193,6 +190,63 @@ const VideoLanding = () => {
     dispatch(APITransport(obj));
   }, [inputItemCursor]);
 
+  function getKeyCode(event) {
+    const tag = document.activeElement.tagName.toUpperCase();
+    const editable = document.activeElement.getAttribute("contenteditable");
+    if (
+      tag !== "INPUT" &&
+      tag !== "TEXTAREA" &&
+      editable !== "" &&
+      editable !== "true"
+    ) {
+      return Number(event.keyCode);
+    }
+  }
+
+  const onKeyDown = useCallback(
+    (event) => {
+      const keyCode = getKeyCode(event);
+      switch (keyCode) {
+        case 32:
+          event.preventDefault();
+          if (player) {
+            if (playing) {
+              player.pause();
+            } else {
+              player.play();
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    [player, playing]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onKeyDown]);
+
+  const formatSub = useCallback(
+    (sub) => {
+      if (Array.isArray(sub)) {
+        return sub.map((item) => newSub(item));
+      }
+      return newSub(sub);
+    },
+    [newSub]
+  );
+
+  const addSub = useCallback(
+    (index, sub) => {
+      subs.splice(index, 0, formatSub(sub));
+      setSubs(subs);
+    },
+    [setSubs, formatSub]
+  );
+
   return (
     <Grid>
       {renderSnackBar()}
@@ -241,7 +295,7 @@ const VideoLanding = () => {
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} subtitles={subs}/>
+            <RightPanel currentIndex={currentIndex} subtitles={subs} />
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
@@ -260,6 +314,8 @@ const VideoLanding = () => {
           playing={playing}
           subtitles={subs}
           setSubtitles={setSubs}
+          newSub={newSub}
+          addSub={addSub}
         />
       </Grid>
     </Grid>
