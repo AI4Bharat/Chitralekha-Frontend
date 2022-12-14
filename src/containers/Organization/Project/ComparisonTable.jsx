@@ -325,7 +325,12 @@ const ComparisonTable = () => {
               </FormControl>
               {renderActionButton(indx)}
               {loading && currentLoadingSectionIndex == indx ? 
-                <div className={classes.tableData} style={{textAlign: "center", justifyContent: "center"}}><CircularProgress /></div> 
+                <div 
+                  className={classes.tableData} 
+                  style={{textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column"}}
+                >
+                  <CircularProgress sx={{alignSelf: "center"}} />
+                </div> 
                 : renderTableData(selectValue[indx]?.value)}
             </Grid>
           );

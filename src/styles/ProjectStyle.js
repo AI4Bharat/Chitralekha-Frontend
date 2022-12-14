@@ -167,7 +167,7 @@ const ProjectStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
-    width: "75%",
+    width: "100%",
   },
   textAreaTransliteration: {
     width: "80%",
