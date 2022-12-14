@@ -3,6 +3,7 @@ import ReactTextareaAutosize from "react-textarea-autosize";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import ProjectStyle from "../../../styles/ProjectStyle";
 import RightPanel from "./RightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./VideoPanel";
@@ -13,7 +14,6 @@ import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchT
 import TranslationRightPanel from "./TranslationRightPanel";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Sub from "../../../utils/Sub";
-import ProjectStyle from "../../../styles/ProjectStyle";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
