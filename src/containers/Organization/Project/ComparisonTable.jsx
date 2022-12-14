@@ -33,6 +33,7 @@ const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [currentLoadingSectionIndex, setCurrentLoadingSectionIndex] = useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -53,6 +54,7 @@ const ComparisonTable = () => {
   useEffect(()=>{
     if(comparsionData){
       setLoading(false);
+      setCurrentLoadingSectionIndex("");
     }
   },[comparsionData])
   
@@ -162,8 +164,9 @@ const ComparisonTable = () => {
     }
   };
 
-  const postCompareTranscriptionSource = (id, sourceTypeList) => {
+  const postCompareTranscriptionSource = (id, sourceTypeList, loadingIndex) => {
     setLoading(true);
+    setCurrentLoadingSectionIndex(loadingIndex);
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
     fetch(apiObj.apiEndPoint(), {
       method: "post",
@@ -193,7 +196,7 @@ const ComparisonTable = () => {
     const sourceTypeList = JSON.parse(localStorage.getItem("sourceTypeList"));
     const id = localStorage.getItem("sourceId");
     if (!!sourceTypeList && sourceTypeList.length)
-      postCompareTranscriptionSource(id, sourceTypeList);
+      postCompareTranscriptionSource(id, sourceTypeList, 0);
   }, []);
 
   const addType = (indx) => {
@@ -256,7 +259,7 @@ const ComparisonTable = () => {
           const id = JSON.parse(
             JSON.stringify(localStorage.getItem("sourceId"))
           );
-          postCompareTranscriptionSource(id, [value]);
+          postCompareTranscriptionSource(id, [value], indx);
           result[i].value = value;
         }
       });
@@ -321,7 +324,9 @@ const ComparisonTable = () => {
                 </Select>
               </FormControl>
               {renderActionButton(indx)}
-              {renderTableData(selectValue[indx]?.value)}
+              {loading && currentLoadingSectionIndex == indx ? 
+                <div className={classes.tableData} style={{textAlign: "center", justifyContent: "center"}}><CircularProgress /></div> 
+                : renderTableData(selectValue[indx]?.value)}
             </Grid>
           );
         })}
@@ -362,7 +367,7 @@ const ComparisonTable = () => {
 
   return (
     <Grid container spacing={1} style={{ alignItems: "center" }}>
-      {loading && <Spinner  />}
+      {/* {loading && <Spinner  />} */}
       {renderSnackBar()}
       <Card className={classes.orgCard}>
         <TaskVideoDialog 
