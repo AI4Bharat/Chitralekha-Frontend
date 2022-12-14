@@ -28,6 +28,7 @@ import DeleteVideo from "./Project/DeleteVideo";
 import getOrganizatioUsers from "./Organization/FetchOrganizatioUsers";
 import getOrganizatioProjectManagersUser from "./Organization/FetchOrganizatioProjectManagersUser";
 import getUserRoles from "./User/FetchUsersRoles";
+import searchList from "./Project/Search";
 
 const rootReducer = {
     apiStatus,
@@ -60,6 +61,7 @@ const rootReducer = {
     getOrganizatioUsers,
     getOrganizatioProjectManagersUser,
     getUserRoles,
+    searchList,
 };
 
 export default rootReducer;
