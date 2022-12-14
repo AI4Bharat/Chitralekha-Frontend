@@ -152,7 +152,7 @@ const ComparisonTable = () => {
         message:  resp?.message,
         variant: "success",
       })
-      navigate(`/${taskDetails.id}/transcript`)
+      navigate(`/task/${taskDetails.id}/transcript`)
     } else {
       setSnackbarInfo({
         open: true,
@@ -179,7 +179,7 @@ const ComparisonTable = () => {
         })
         dispatch(setComparisonTable(rsp_data));
       } else {
-        //console.log("failed");
+        ///console.log("failed");
         setSnackbarInfo({
           open: true,
           message: rsp_data?.message,
