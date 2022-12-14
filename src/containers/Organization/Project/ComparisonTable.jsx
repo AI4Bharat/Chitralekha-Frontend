@@ -152,7 +152,7 @@ const ComparisonTable = () => {
         message:  resp?.message,
         variant: "success",
       })
-      navigate(`/${taskDetails.id}/transcript`)
+      navigate(`/task/${taskDetails.id}/transcript`)
     } else {
       setSnackbarInfo({
         open: true,
