@@ -49,7 +49,12 @@ const ViewTaskDialog = ({
 
   const taskDetail = useSelector((state) => state.getTaskDetails.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
+  const TranslationTypes = useSelector((state) => state.getTranslationTypes.data);
+  
+console.log(transcriptTypes,"transcriptTypes")
 
+const transcriptTranslationType = taskDetail.task_type === "TRANSCRIPTION_EDIT"?transcriptTypes:TranslationTypes
+console.log(transcriptTranslationType,"transcriptTranslationType")
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(apiObj));
@@ -131,7 +136,7 @@ const ViewTaskDialog = ({
                 style={{ zIndex: 0 }}
                 inputProps={{ "aria-label": "Without label" }}
               >
-                {transcriptTypes.map((item, index) => (
+                {transcriptTranslationType.map((item, index) => (
                   <MenuItem key={index} value={item.label}>
                     <Checkbox
                       checked={transcriptSource.indexOf(item.label) > -1}
