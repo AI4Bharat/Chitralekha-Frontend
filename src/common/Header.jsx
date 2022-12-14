@@ -174,7 +174,7 @@ const Header = () => {
                     className={`${classes.headerMenu} workspace`}
                     activeClassName={classes.highlightedMenu}
                   >
-                    Workspace
+                    Analytics
                   </NavLink>
                 </Typography> */}
               </Grid>

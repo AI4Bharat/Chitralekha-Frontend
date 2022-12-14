@@ -113,7 +113,7 @@ const ComparisonTable = () => {
 
     const obj = new FetchTranscriptTypesAPI();
     dispatch(APITransport(obj));
-  }, []);
+  }, [taskDetails]);
 
   const handleSubmit = async() => {
     let data = {};
@@ -297,9 +297,6 @@ const ComparisonTable = () => {
     return (
       <Grid container spacing={8}>
         {selectValue.map((select, indx) => {
-          const firstItem = indx === 0 ? <MenuItem key={"first_item"} value={selectValue[indx]?.value}>
-          {selectValue[indx]?.value}
-        </MenuItem> : false;
           return (
             <Grid key={indx} item xs={12} sm={12} md={4} lg={4} xl={4}>
               <FormControl fullWidth>
@@ -314,7 +311,6 @@ const ComparisonTable = () => {
                   onChange={(e) => handleChange(e, indx)}
                   value={selectValue[indx]?.value}
                 >
-                  {firstItem}
                   {transcriptTypes.map((el, i) => {
                     return (
                       <MenuItem key={i} value={el.value}>
