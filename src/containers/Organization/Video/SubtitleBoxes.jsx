@@ -11,7 +11,7 @@ import { getKeyCode } from "../../../utils/utils";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import Sub from "../../../utils/Sub";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 
@@ -56,6 +56,7 @@ export default React.memo(
     const $blockRef = React.createRef();
     const $subsRef = React.createRef();
     const dispatch = useDispatch();
+    const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
@@ -69,7 +70,7 @@ export default React.memo(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
-    const saveTranscript = () => {
+    const saveTranscript = (taskType) => {
       const reqBody = {
         task_id: taskId,
         payload: {
@@ -77,7 +78,7 @@ export default React.memo(
         },
       };
 
-      const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
+      const obj = new SaveTranscriptAPI(reqBody, taskType);
       dispatch(APITransport(obj));
     }
 
@@ -114,7 +115,7 @@ export default React.memo(
             render.duration
           );
           setCurrentSubs(subs);
-          saveTranscript();
+          saveTranscript(taskDetails?.task_type);
         }
       },
       [hasSub, copySubs, setSubtitles]
@@ -134,7 +135,7 @@ export default React.memo(
             subtitles[index] = merge;
             subtitles.splice(index + 1, 1);
             setSubtitles(subtitles);
-            saveTranscript();
+            saveTranscript(taskDetails?.task_type);
           }
         }
       },
@@ -145,7 +146,9 @@ export default React.memo(
       (sub, obj) => {
         const index = hasSub(sub);
         if (index < 0) return;
+
         const subClone = formatSub(sub);
+        console.log(subClone,'subClone');
         Object.assign(subClone, obj);
         if (subClone.check) {
           subtitles[index] = subClone;
@@ -229,7 +232,7 @@ export default React.memo(
         lastTarget.style.transform = `translate(0)`;
       }
 
-      // saveTranscript();
+      saveTranscript(taskDetails?.task_type);
 
       lastType = "";
       lastX = 0;
@@ -284,7 +287,7 @@ export default React.memo(
             </MenuItem>
           )}
           {trigger &&
-            !trigger.parentSub.targetText &&
+            !trigger.parentSub.target_text &&
             trigger.parentSub !== subtitles[subtitles.length - 1] && (
               <MenuItem
                 className={classes.menuItem}
@@ -353,7 +356,7 @@ export default React.memo(
                     onMouseDown={(event) => onMouseDown(sub, event)}
                   >
                     <p className={classes.subTextP}>
-                      {sub.targetText ? sub.targetText : sub.text}
+                      {sub.target_text ? sub.target_text : sub.text}
                     </p>
                   </div>
 

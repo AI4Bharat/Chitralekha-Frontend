@@ -14,18 +14,13 @@ import FindAndReplace from "../../../common/FindAndReplace";
 const RightPanel = ({ currentIndex, subtitles }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const transcriptPayload = useSelector(
-    (state) => state.getTranscriptPayload.data
-  );
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
 
   const [sourceText, setSourceText] = useState([]);
-  const [lang, setLang] = useState("hi");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
