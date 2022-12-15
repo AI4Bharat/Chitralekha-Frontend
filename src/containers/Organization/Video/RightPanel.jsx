@@ -126,7 +126,7 @@ const RightPanel = ({ currentIndex, subtitles }) => {
             className={classes.findBtn}
             onClick={() => saveTranscriptHandler(true, true)}
           >
-            Submit
+            Complete
           </Button>
         </Box>
         <Box
