@@ -12,7 +12,7 @@ const ProjectStyle = makeStyles({
   },
 
   findBtn: {
-    width: "40%",
+    width: "30%",
     borderRadius: "7px",
     margin: "24px auto",
     backgroundColor: "#0083e2",

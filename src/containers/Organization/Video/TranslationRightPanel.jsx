@@ -35,6 +35,11 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
+  const onReplacementDone = (updatedSource) => {
+    setSourceText(updatedSource);
+    saveTranscriptHandler(false, true);
+  }
+
   const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
@@ -119,7 +124,11 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
           {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
-        {/* <FindAndReplace /> */}
+        <FindAndReplace 
+            sourceData={sourceText}
+            subtitleDataKey={"target_text"}
+            onReplacementDone={onReplacementDone}
+        />
           <Button
             variant="contained"
             className={classes.findBtn}

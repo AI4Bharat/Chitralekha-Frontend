@@ -18,9 +18,9 @@ export default function AppInfo() {
           <Hidden only="xs">
             <Grid item xs={10} sm={10} md={10} lg={10} xl={10}>
               <img
-                src={"ai4bharat.png"}
+                src={"Chitralekha_Logo.png"}
                 alt="logo"
-                style={{ width: "85px", margin: "10% 0px 0% 35px" }}
+                style={{ width: "85px", margin: "10% 0px 0% 35px", borderRadius: 20 }}
               />{" "}
             </Grid>{" "}
           </Hidden>
