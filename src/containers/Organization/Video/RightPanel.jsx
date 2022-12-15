@@ -19,6 +19,7 @@ const RightPanel = ({ currentIndex, subtitles }) => {
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
+  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -105,7 +106,7 @@ const RightPanel = ({ currentIndex, subtitles }) => {
       <Box
         sx={{
           display: "flex",
-          borderLeft: "1px solid #eaeaea",
+          border: fullscreen ? "" : "1px solid #eaeaea",
         }}
         flexDirection="column"
       >
@@ -136,7 +137,7 @@ const RightPanel = ({ currentIndex, subtitles }) => {
             borderTop: "1px solid #eaeaea",
             overflowY: "scroll",
             overflowX: "hidden",
-            height: window.innerHeight * 0.75,
+            height: window.innerHeight * 0.665,
             backgroundColor: "black",
             color: "white",
             marginTop: "5px",

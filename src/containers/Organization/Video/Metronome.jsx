@@ -14,7 +14,7 @@ const findIndex = (subs, startTime) => {
         startTime < subs[index + 1].startTime)
     );
   });
-}
+};
 
 export default React.memo(
   function Component({
@@ -65,17 +65,13 @@ export default React.memo(
     );
 
     const onDocumentMouseUp = useCallback(() => {
-      if (isDroging && configuration !== "") {
+      if (isDroging) {
         if (
           drogStartTime > 0 &&
           drogEndTime > 0 &&
           drogEndTime - drogStartTime >= 0.2
         ) {
-          const index =
-            findIndex(
-              subtitles,
-              drogStartTime
-            ) + 1;
+          const index = findIndex(subtitles, drogStartTime) + 1;
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
           addSub(
@@ -108,7 +104,11 @@ export default React.memo(
     }, [onDocumentMouseUp]);
 
     return (
-      <Box className={classes.Metronome} onMouseDown={onMouseDown} onMouseMove={onMouseMove}>
+      <Box
+        className={classes.Metronome}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+      >
         {player &&
         !playing &&
         drogStartTime &&

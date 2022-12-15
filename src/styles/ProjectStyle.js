@@ -380,6 +380,36 @@ const ProjectStyle = makeStyles({
     cursor: "pointer",
     pointerEvents: "all",
   },
+
+  fullscreenBtn: {
+    position: "absolute",
+    bottom: "25px",
+    right: "25px",
+    zIndex: "999",
+    borderRadius: "4px",
+    backgroundColor: "#0083e2",
+    minWidth: "45px",
+    padding: 0,
+  },
+
+  fullscreenStyle: {
+    position: "relative",
+    top: "55%",
+    transform: "translateY(-50%)",
+    "-webkit-transform": "translateY(-50%)",
+    "-ms-transform": "translateY(-50%)",
+    overflow: "hidden"
+  },
+
+  fullscreenVideoBtn: {
+    position: "absolute",
+    bottom: "18%",
+    right: "35%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+  }
 });
 
 export default ProjectStyle;
