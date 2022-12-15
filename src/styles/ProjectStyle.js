@@ -167,11 +167,11 @@ const ProjectStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
-    width: "75%",
+    width: "100%",
   },
   textAreaTransliteration: {
     width: "80%",
-   // margin: "5px 15px 15px 10px",
+    // margin: "5px 15px 15px 10px",
     margin: "5px 10px 15px 20px",
     padding: "16.5px 12px",
     fontSize: "1rem",
@@ -353,6 +353,32 @@ const ProjectStyle = makeStyles({
     backgroundColor: "rgb(0 87 158)",
     border: "1px solid rgba(255, 255, 255, 0.3)",
     color: "#fff",
+  },
+
+  menuItem: {
+    padding: "5px 15px",
+    backgroundColor: "#fff",
+    cursor: "pointer",
+
+    "&:hover": {
+      backgroundColor: "skyblue",
+    },
+  },
+
+  menuItemNav: {
+    borderRadius: "6px",
+  },
+
+  operate: {
+    padding: "5px 15px",
+    color: "#fff",
+    fontSize: "13px",
+    borderRadius: "3px",
+    marginBottom: "5px",
+    backgroundColor: "rgb(0 0 0 / 75%)",
+    border: "1px solid rgb(255 255 255 / 20%)",
+    cursor: "pointer",
+    pointerEvents: "all",
   },
 });
 

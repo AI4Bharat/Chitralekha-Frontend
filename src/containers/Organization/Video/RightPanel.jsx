@@ -11,21 +11,16 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 
-const RightPanel = ({ currentIndex }) => {
+const RightPanel = ({ currentIndex, subtitles }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const transcriptPayload = useSelector(
-    (state) => state.getTranscriptPayload.data
-  );
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
 
   const [sourceText, setSourceText] = useState([]);
-  const [lang, setLang] = useState("hi");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -33,22 +28,22 @@ const RightPanel = ({ currentIndex }) => {
   });
 
   useEffect(() => {
-    setSourceText(transcriptPayload?.payload?.payload);
-  }, [transcriptPayload?.payload?.payload]);
+    setSourceText(subtitles);
+  }, [subtitles]);
 
-  const changeTranscriptHandler = (target, index) => {
+  const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
       if (index === i) {
-        element.text = target.value;
+        element.text = text;
       }
     });
 
     setSourceText(arr);
-    saveTranscriptHandler(false);
+    saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal) => {
+  const saveTranscriptHandler = async (isFinal, isAutosave) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -70,8 +65,8 @@ const RightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setSnackbarInfo({
-        open: true,
-        message: resp?.message,
+        open: isAutosave,
+        message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "",
         variant: "success",
       });
       if (isFinal) {
@@ -84,8 +79,8 @@ const RightPanel = ({ currentIndex }) => {
       //navigate(`/my-organization/:orgId/project/:projectId`)
     } else {
       setSnackbarInfo({
-        open: true,
-        message: resp?.message,
+        open: isAutosave,
+        message: "Failed",
         variant: "error",
       });
     }
@@ -122,9 +117,16 @@ const RightPanel = ({ currentIndex }) => {
           <Button
             variant="contained"
             className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(true)}
+            onClick={() => saveTranscriptHandler(false, true)}
           >
             Save
+          </Button>
+          <Button
+            variant="contained"
+            className={classes.findBtn}
+            onClick={() => saveTranscriptHandler(true, true)}
+          >
+            Complete
           </Button>
         </Box>
         <Box
@@ -189,7 +191,7 @@ const RightPanel = ({ currentIndex }) => {
                   {taskData?.src_language === "en" ?
                     <textarea
                       onChange={(event) => {
-                        changeTranscriptHandler(event.target, index);
+                        changeTranscriptHandler(event.target.value, index);
                       }}
                       value={item.text}
                       className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
@@ -199,8 +201,8 @@ const RightPanel = ({ currentIndex }) => {
                     : <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
-                      onChange={(event) => {
-                        changeTranscriptHandler(event.target, index);
+                      onChangeText={(text) => {
+                        changeTranscriptHandler(text, index);
                       }}
                       containerStyles={{
                         width: "100%",

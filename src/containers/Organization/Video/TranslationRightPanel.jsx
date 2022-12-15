@@ -13,21 +13,17 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 
-const TranslationRightPanel = ({ currentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, subtitles }) => {
   const { taskId, orgId, projectId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const transcriptPayload = useSelector(
-    (state) => state.getTranscriptPayload.data
-  );
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
 
   const [sourceText, setSourceText] = useState([]);
-  const [lang, setLang] = useState("hi");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -35,22 +31,22 @@ const TranslationRightPanel = ({ currentIndex }) => {
   });
 
   useEffect(() => {
-    setSourceText(transcriptPayload?.payload?.payload);
-  }, [transcriptPayload?.payload?.payload]);
+    setSourceText(subtitles);
+  }, [subtitles]);
 
-  const changeTranscriptHandler = (target, index) => {
+  const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
       if (index === i) {
-        element.target_text = target.value;
+        element.target_text = text;
       }
     });
 
     setSourceText(arr);
-    saveTranscriptHandler(false);
+    saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal) => {
+  const saveTranscriptHandler = async (isFinal, isAutosave) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -72,8 +68,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setSnackbarInfo({
-        open: true,
-        message: resp?.message,
+        open: isAutosave,
+        message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "",
         variant: "success",
       });
       if (isFinal) {
@@ -86,8 +82,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
       //navigate(`/my-organization/:${orgId}/project/:${projectId}`)
     } else {
       setSnackbarInfo({
-        open: true,
-        message: resp?.message,
+        open: isAutosave,
+        message: "Failed",
         variant: "error",
       });
     }
@@ -126,9 +122,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <Button
             variant="contained"
             className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(true)}
+            onClick={() => saveTranscriptHandler(false, true)}
           >
             Save
+          </Button>
+          <Button
+            variant="contained"
+            className={classes.findBtn}
+            onClick={() => saveTranscriptHandler(true, true)}
+          >
+            Complete
           </Button>
         </Box>
         <Box
@@ -165,6 +168,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       "& .MuiOutlinedInput-input": {
                         fontSize: "12px",
                         padding: "7px 14px",
+                        textAlign: "center",
                       },
                     }}
                   />
@@ -181,6 +185,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       },
                       "& .MuiOutlinedInput-input": {
                         fontSize: "12px",
+                        textAlign: "center",
                         padding: "7px 14px",
                       },
                     }}
@@ -205,16 +210,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
                       onChange={(event) => {
-                        changeTranscriptHandler(event.target, index);
+                        changeTranscriptHandler(event.target.value, index);
                       }}
                       value={item.target_text}
                     />
                       : <IndicTransliterate
                     lang={taskData?.target_language}
                     value={item.target_text}
-                    onChangeText={(text, index) => {}}
-                    onChange={(event) => {
-                      changeTranscriptHandler(event.target, index);
+                    // onChangeText={(text, index) => {}}
+                    onChangeText={(text) => {
+                      changeTranscriptHandler(text, index);
                     }}
                     containerStyles={{
                       width: "100%",

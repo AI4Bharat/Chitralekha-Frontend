@@ -33,6 +33,7 @@ const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [currentLoadingSectionIndex, setCurrentLoadingSectionIndex] = useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -53,6 +54,7 @@ const ComparisonTable = () => {
   useEffect(()=>{
     if(comparsionData){
       setLoading(false);
+      setCurrentLoadingSectionIndex("");
     }
   },[comparsionData])
   
@@ -152,7 +154,7 @@ const ComparisonTable = () => {
         message:  resp?.message,
         variant: "success",
       })
-      navigate(`/${taskDetails.id}/transcript`)
+      navigate(`/task/${taskDetails.id}/transcript`)
     } else {
       setSnackbarInfo({
         open: true,
@@ -162,8 +164,9 @@ const ComparisonTable = () => {
     }
   };
 
-  const postCompareTranscriptionSource = (id, sourceTypeList) => {
+  const postCompareTranscriptionSource = (id, sourceTypeList, loadingIndex) => {
     setLoading(true);
+    setCurrentLoadingSectionIndex(loadingIndex);
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
     fetch(apiObj.apiEndPoint(), {
       method: "post",
@@ -179,7 +182,7 @@ const ComparisonTable = () => {
         })
         dispatch(setComparisonTable(rsp_data));
       } else {
-        //console.log("failed");
+        ///console.log("failed");
         setSnackbarInfo({
           open: true,
           message: rsp_data?.message,
@@ -193,7 +196,7 @@ const ComparisonTable = () => {
     const sourceTypeList = JSON.parse(localStorage.getItem("sourceTypeList"));
     const id = localStorage.getItem("sourceId");
     if (!!sourceTypeList && sourceTypeList.length)
-      postCompareTranscriptionSource(id, sourceTypeList);
+      postCompareTranscriptionSource(id, sourceTypeList, 0);
   }, []);
 
   const addType = (indx) => {
@@ -256,7 +259,7 @@ const ComparisonTable = () => {
           const id = JSON.parse(
             JSON.stringify(localStorage.getItem("sourceId"))
           );
-          postCompareTranscriptionSource(id, [value]);
+          postCompareTranscriptionSource(id, [value], indx);
           result[i].value = value;
         }
       });
@@ -321,7 +324,14 @@ const ComparisonTable = () => {
                 </Select>
               </FormControl>
               {renderActionButton(indx)}
-              {renderTableData(selectValue[indx]?.value)}
+              {loading && currentLoadingSectionIndex == indx ? 
+                <div 
+                  className={classes.tableData} 
+                  style={{textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column"}}
+                >
+                  <CircularProgress sx={{alignSelf: "center"}} />
+                </div> 
+                : renderTableData(selectValue[indx]?.value)}
             </Grid>
           );
         })}
@@ -362,7 +372,7 @@ const ComparisonTable = () => {
 
   return (
     <Grid container spacing={1} style={{ alignItems: "center" }}>
-      {loading && <Spinner  />}
+      {/* {loading && <Spinner  />} */}
       {renderSnackBar()}
       <Card className={classes.orgCard}>
         <TaskVideoDialog 

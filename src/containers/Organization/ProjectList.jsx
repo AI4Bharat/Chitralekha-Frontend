@@ -13,7 +13,7 @@ import {
 import tableTheme from "../../theme/tableTheme";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
 import CustomButton from "../../common/Button";
@@ -24,6 +24,7 @@ import { useState } from "react";
 import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../common/Snackbar";
+import Search from "../../common/Search";
 import { roles } from "../../utils/utils";
 
 const ProjectList = ({ data, props, removeProjectList }) => {
@@ -39,6 +40,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     variant: "success",
   });
 
+  const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
   const handleok = async (id) => {
@@ -76,38 +78,92 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     setprojectid(id);
   };
 
-  useEffect(() => {
-    const result = data.map((item) => {
-      return [
-        item.title,
-        item.managers[0]?.email,
-        item.created_by?.username,
-        <div style={{ textAlign: "center" }}>
-          <Link
-            to={`/my-organization/${id}/project/${item.id}`}
-            style={{ textDecoration: "none" }}
-          >
-            <Tooltip title="View">
-              <IconButton>
-                <LibraryBooksIcon color="primary" />
-              </IconButton>
-            </Tooltip>
-          </Link>
+  const pageSearch = () => {
+    return data?.filter((el) => {
+      if (SearchProject == "") {
+        return el;
+      } else if (
+        el.title?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.managers?.some((val) =>
+          val.email?.toLowerCase().includes(SearchProject?.toLowerCase())
+        )
+      ) {
+        return el;
+      } else if (
+        el.created_by?.username
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }
+})};
+  // useEffect(() => {
+  //   const result = data.map((item) => {
+  //     return [
+  //       item.title,
+  //       item.managers[0]?.email,
+  //       item.created_by?.username,
+  //       <div style={{ textAlign: "center" }}>
+  //         <Link
+  //           to={`/my-organization/${id}/project/${item.id}`}
+  //           style={{ textDecoration: "none" }}
+  //         >
+  //           <Tooltip title="View">
+  //             <IconButton>
+  //               <LibraryBooksIcon color="primary" />
+  //             </IconButton>
+  //           </Tooltip>
+  //         </Link>
 
-          {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteProject && <Tooltip title="Delete">
-            <IconButton>
-              <DeleteIcon
-                color="error"
-                onClick={() => handleDeleteProject(item.id)}
-              />
-            </IconButton>
-          </Tooltip>}
-        </div>,
-      ];
-    });
+  //         {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteProject && <Tooltip title="Delete">
+  //           <IconButton>
+  //             <DeleteIcon
+  //               color="error"
+  //               onClick={() => handleDeleteProject(item.id)}
+  //             />
+  //           </IconButton>
+  //         </Tooltip>}
+  //       </div>,
+  //     ];
+  //   });
+  // });
 
-    setTableData(result);
-  }, [data]);
+  const result =
+    data && data.length > 0
+      ? pageSearch().map((item, i) => {
+          return [
+            item.title,
+            item.managers[0]?.email,
+            item.created_by?.username,
+            <div style={{ textAlign: "center" }}>
+              <Link
+                to={`/my-organization/${id}/project/${item.id}`}
+                style={{ textDecoration: "none" }}
+              >
+                <Tooltip title="View">
+                  <IconButton>
+                    <PreviewIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </Link>
+
+              <Tooltip title="Delete">
+                <IconButton>
+                  <DeleteIcon
+                    color="error"
+                    onClick={() => handleDeleteProject(item.id)}
+                  />
+                </IconButton>
+              </Tooltip>
+            </div>,
+          ];
+        })
+      : [];
+
+  // setTableData(result);
 
   const columns = [
     {
@@ -227,8 +283,9 @@ const ProjectList = ({ data, props, removeProjectList }) => {
 
   return (
     <>
+      <Search />
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={tableData} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
       {renderSnackBar()}
       {renderDialog()}

@@ -1,52 +1,48 @@
-import { InputBase,ThemeProvider } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import { InputBase, ThemeProvider, Grid } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useRef, useState } from "react";
-import themeDefault from '../../../theme/theme'
- import DatasetStyle from "../../../styles/Dataset";
- import { useDispatch, useSelector } from "react-redux";
- import SearchProjectCards from "../../../../redux/actions/api/ProjectDetails/SearchProjectCards"
+import themeDefault from "../theme/tableTheme";
+import DatasetStyle from "../styles/Dataset";
+import { useDispatch, useSelector } from "react-redux";
+import SearchList from "../redux/actions/api/Project/Search";
 
 const Search = (props) => {
   const ref = useRef(null);
   const classes = DatasetStyle();
   const dispatch = useDispatch();
-  
-  const SearchProject = useSelector((state) => state.SearchProjectCards.data);
-  const [searchValue, setSearchValue] = useState("");
 
+  //const SearchProject = useSelector((state) => state.searchList.data);
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     if (ref) ref.current.focus();
   }, [ref]);
 
   useEffect(() => {
-   
-    dispatch(SearchProjectCards(""));
-}, [])
+    dispatch(SearchList(""));
+  }, []);
 
   const handleChangeName = (value) => {
     setSearchValue(value);
-    dispatch(SearchProjectCards(value));
+    dispatch(SearchList(value));
   };
- 
 
   return (
-    <ThemeProvider theme={themeDefault}>
-                <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                        <SearchIcon fontSize="small" />
-                    </div>
-                    <InputBase
-                        sx={{ ml: 4 }}
-                        inputRef={ref}
-                        placeholder="Search..."
-                        value={searchValue}
-                        onChange={(e) => handleChangeName(e.target.value)}
-
-                        inputProps={{ "aria-label": "search" }}
-                    />
-                </div>
-            </ThemeProvider>
+    <Grid container justifyContent="end" sx={{ marginTop: "0px" }}>
+      <Grid className={classes.search}>
+        <Grid className={classes.searchIcon}>
+          <SearchIcon fontSize="small" />
+        </Grid>
+        <InputBase
+          sx={{ ml: 4 }}
+          inputRef={ref}
+          placeholder="Search..."
+          value={searchValue}
+          onChange={(e) => handleChangeName(e.target.value)}
+          inputProps={{ "aria-label": "search" }}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
