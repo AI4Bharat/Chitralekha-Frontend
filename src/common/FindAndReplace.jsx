@@ -29,8 +29,17 @@ const FindAndReplace = (props) => {
         setSubtitlesData(sourceData);
     }, [sourceData, subtitleDataKey])
 
+    const resetComponentValue = () => {
+        // setSubtitlesData();
+        setFindValue("");
+        setReplaceValue("");
+        setFoundIndices([]);
+        setCurrentFound()
+    }
+
     const handleCloseModel = () => {
         setShowFindReplaceModel(false);
+        resetComponentValue()
     }
     const handleOpenModel = () => {
         setShowFindReplaceModel(true);
