@@ -58,12 +58,11 @@ export default React.memo(
     const dispatch = useDispatch();
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
-    const [currentSubs, setCurrentSubs] = useState([]);
-
-    useEffect(() => {
-      let subs = getCurrentSubs(subtitles, render.beginTime, render.duration);
-      setCurrentSubs(subs);
-    }, [subtitles, render]);
+    let currentSubs = getCurrentSubs(
+      subtitles,
+      render.beginTime,
+      render.duration
+    );
 
     const gridGap = document.body.clientWidth / render.gridNum;
     const currentIndex = subtitles?.findIndex(
@@ -80,7 +79,7 @@ export default React.memo(
 
       const obj = new SaveTranscriptAPI(reqBody, taskType);
       dispatch(APITransport(obj));
-    }
+    };
 
     const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
 
@@ -114,7 +113,7 @@ export default React.memo(
             render.beginTime,
             render.duration
           );
-          setCurrentSubs(subs);
+          // setCurrentSubs(subs);
           saveTranscript(taskDetails?.task_type);
         }
       },
@@ -148,7 +147,6 @@ export default React.memo(
         if (index < 0) return;
 
         const subClone = formatSub(sub);
-        console.log(subClone,'subClone');
         Object.assign(subClone, obj);
         if (subClone.check) {
           subtitles[index] = subClone;
@@ -204,7 +202,6 @@ export default React.memo(
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
             const start_time = DT.d2t(startTime);
             updateSub(lastSub, { start_time });
-
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -212,7 +209,6 @@ export default React.memo(
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
             updateSub(lastSub, { end_time });
-
           } else {
             lastTarget.style.width = `${width}px`;
           }

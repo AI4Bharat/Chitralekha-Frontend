@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -16,7 +16,6 @@ import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -35,7 +34,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   // const userData = JSON.parse(localStorage.getItem("userData"));
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
 
   const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
@@ -118,7 +118,17 @@ const Header = () => {
       {isMobile ? (
         <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
       ) : (
-        <AppBar position="fixed"  sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <AppBar
+          position="fixed"
+          sx={
+            fullscreen
+              ? {
+                  zIndex: (theme) => theme.zIndex.drawer + 1,
+                  visibility: "hidden",
+                }
+              : { zIndex: (theme) => theme.zIndex.drawer + 1 }
+          }
+        >
           <Container maxWidth="xl">
             <Toolbar disableGutters className={classes.toolbar}>
               <Box display="flex" alignItems="center">

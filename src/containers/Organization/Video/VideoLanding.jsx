@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Button, Grid, IconButton } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +16,11 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import Sub from "../../../utils/Sub";
 import DT from "duration-time-conversion";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import { Box } from "@mui/system";
+import { FullScreen } from "../../../redux/actions/Common";
+import C from "../../../redux/constants";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -48,6 +53,7 @@ const VideoLanding = () => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -247,8 +253,37 @@ const VideoLanding = () => {
     [setSubs, formatSub]
   );
 
+  const handleFullscreen = () => {
+    let doc = window.document;
+    let docEl = doc.documentElement;
+
+    const requestFullScreen =
+      docEl.requestFullscreen ||
+      docEl.mozRequestFullScreen ||
+      docEl.webkitRequestFullScreen ||
+      docEl.msRequestFullscreen;
+    const cancelFullScreen =
+      doc.exitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.webkitExitFullscreen ||
+      doc.msExitFullscreen;
+
+    if (
+      !doc.fullscreenElement &&
+      !doc.mozFullScreenElement &&
+      !doc.webkitFullscreenElement &&
+      !doc.msFullscreenElement
+    ) {
+      requestFullScreen.call(docEl);
+      dispatch(FullScreen(true, C.FULLSCREEN));
+    } else {
+      dispatch(FullScreen(false, C.FULLSCREEN));
+      cancelFullScreen.call(doc);
+    }
+  };
+
   return (
-    <Grid>
+    <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
       <Grid
         container
@@ -265,7 +300,10 @@ const VideoLanding = () => {
           />
 
           {currentSubs ? (
-            <div className={classes.subtitlePanel}>
+            <div
+              className={classes.subtitlePanel}
+              style={fullscreen ? { bottom: "5%" } : {}}
+            >
               {!currentSubs.target_text && focusing ? (
                 <div className={classes.operate} onClick={onSplit}>
                   Split Subtitle
@@ -299,11 +337,19 @@ const VideoLanding = () => {
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
-            <TranslationRightPanel currentIndex={currentIndex} subtitles={subs} />
+            <TranslationRightPanel
+              currentIndex={currentIndex}
+              subtitles={subs}
+            />
           )}
         </Grid>
       </Grid>
-      <Grid width={"100%"} position="fixed" bottom={1}>
+      <Grid
+        width={"100%"}
+        position="fixed"
+        bottom={1}
+        style={fullscreen ? { visibility: "hidden" } : {}}
+      >
         <Timeline
           waveform={waveform}
           setWaveform={setWaveform}
@@ -318,6 +364,28 @@ const VideoLanding = () => {
           addSub={addSub}
         />
       </Grid>
+
+      <Box>
+        {fullscreen ? (
+          <Button
+            className={classes.fullscreenBtn}
+            aria-label="fullscreen"
+            onClick={() => handleFullscreen()}
+            variant="contained"
+          >
+            <FullscreenExitIcon />
+          </Button>
+        ) : (
+          <Button
+            className={classes.fullscreenBtn}
+            aria-label="fullscreenExit"
+            onClick={() => handleFullscreen()}
+            variant="contained"
+          >
+            <FullscreenIcon />
+          </Button>
+        )}
+      </Box>
     </Grid>
   );
 };

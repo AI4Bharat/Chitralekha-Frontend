@@ -18,7 +18,8 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
   const classes = ProjectStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  
+  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -109,7 +110,7 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
       <Box
         sx={{
           display: "flex",
-          borderLeft: "1px solid #eaeaea",
+          border: fullscreen ? "" : "1px solid #eaeaea",
         }}
         //   width="25%"
         flexDirection="column"
@@ -141,7 +142,7 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
             borderTop: "1px solid #eaeaea",
             overflowY: "scroll",
             overflowX: "hidden",
-            height: window.innerHeight * 0.75,
+            height: window.innerHeight * 0.665,
             backgroundColor: "black",
             color: "white",
             marginTop: "5px",
