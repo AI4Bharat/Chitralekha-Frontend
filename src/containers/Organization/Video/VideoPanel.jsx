@@ -9,11 +9,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import C from "../../../redux/constants";
 import ProjectStyle from "../../../styles/ProjectStyle";
-import FullscreenIcon from "@mui/icons-material/Fullscreen";
-import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import { FullScreenVideo } from "../../../redux/actions/Common";
 
 const VideoPanel = memo(
   ({ setPlayer, setCurrentTime, setPlaying }) => {
@@ -57,38 +53,14 @@ const VideoPanel = memo(
       }
     }, [$video]);
 
-    const handleFullscreenVideo = () => {
-      let doc = window.document;
-      let elem = document.getElementById("video");
-
-      const requestFullScreen =
-        elem.requestFullscreen ||
-        elem.mozRequestFullScreen ||
-        elem.webkitRequestFullScreen ||
-        elem.msRequestFullscreen;
-      const cancelFullScreen =
-        doc.exitFullscreen ||
-        doc.mozCancelFullScreen ||
-        doc.webkitExitFullscreen ||
-        doc.msExitFullscreen;
-
-      if (
-        !doc.fullscreenElement &&
-        !doc.mozFullScreenElement &&
-        !doc.webkitFullscreenElement &&
-        !doc.msFullscreenElement
-      ) {
-        requestFullScreen.call(elem);
-        dispatch(FullScreenVideo(true, C.FULLSCREEN_VIDEO));
-      } else {
-        dispatch(FullScreenVideo(false, C.FULLSCREEN_VIDEO));
-        cancelFullScreen.call(doc);
-      }
-    };
-
     return (
-      <Box margin="auto" display="flex" flexDirection="column" id="video">
-        <Typography variant="h4" textAlign="center" paddingY={4}>
+      <Box margin="auto" display="flex" flexDirection="column">
+        <Typography
+          variant="h4"
+          textAlign="center"
+          paddingY={4}
+          style={fullscreenVideo ? { color: "white" } : {}}
+        >
           {videoDetails?.video?.name}
         </Typography>
 
@@ -97,29 +69,8 @@ const VideoPanel = memo(
           src={videoDetails?.direct_video_url}
           ref={$video}
           // className={classes.videoPlayer}
+          style={fullscreenVideo ? { margin: "auto" } : {}}
         />
-
-        {/* <Box>
-          {fullscreenVideo ? (
-            <Button
-              className={classes.fullscreenVideoBtn}
-              aria-label="fullscreen"
-              onClick={() => handleFullscreenVideo()}
-              variant="outlined"
-            >
-              <FullscreenExitIcon />
-            </Button>
-          ) : (
-            <Button
-              className={classes.fullscreenVideoBtn}
-              aria-label="fullscreenExit"
-              onClick={() => handleFullscreenVideo()}
-              variant="outlined"
-            >
-              <FullscreenIcon />
-            </Button>
-          )}
-        </Box> */}
       </Box>
     );
   },

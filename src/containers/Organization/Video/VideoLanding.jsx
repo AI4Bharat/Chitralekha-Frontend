@@ -21,6 +21,7 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import { Box } from "@mui/system";
 import { FullScreen } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
+import { FullScreenVideo } from "../../../redux/actions/Common";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -54,6 +55,9 @@ const VideoLanding = () => {
     (state) => state.getTranscriptPayload.data
   );
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
+  const fullscreenVideo = useSelector(
+    (state) => state.commonReducer.fullscreenVideo
+  );
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -282,6 +286,35 @@ const VideoLanding = () => {
     }
   };
 
+  const handleFullscreenVideo = () => {
+    let doc = window.document;
+    let elem = document.getElementById("video");
+
+    const requestFullScreen =
+      elem.requestFullscreen ||
+      elem.mozRequestFullScreen ||
+      elem.webkitRequestFullScreen ||
+      elem.msRequestFullscreen;
+    const cancelFullScreen =
+      doc.exitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.webkitExitFullscreen ||
+      doc.msExitFullscreen;
+
+    if (
+      !doc.fullscreenElement &&
+      !doc.mozFullScreenElement &&
+      !doc.webkitFullscreenElement &&
+      !doc.msFullscreenElement
+    ) {
+      requestFullScreen.call(elem);
+      dispatch(FullScreenVideo(true, C.FULLSCREEN_VIDEO));
+    } else {
+      dispatch(FullScreenVideo(false, C.FULLSCREEN_VIDEO));
+      cancelFullScreen.call(doc);
+    }
+  };
+
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
@@ -290,7 +323,7 @@ const VideoLanding = () => {
         direction={"row"}
         sx={{ marginTop: 7, overflow: "hidden" }}
       >
-        <Grid width="100%" overflow="hidden" md={8} xs={12}>
+        <Grid width="100%" overflow="hidden" md={8} xs={12} id="video">
           <VideoPanel
             setPlayer={setPlayer}
             setCurrentTime={setCurrentTime}
@@ -302,7 +335,10 @@ const VideoLanding = () => {
           {currentSubs ? (
             <div
               className={classes.subtitlePanel}
-              style={fullscreen ? { bottom: "5%" } : {}}
+              style={{
+                bottom: fullscreen ? "5%" : fullscreenVideo ? "15%" : "",
+                margin: fullscreenVideo ? "auto" : "",
+              }}
             >
               {!currentSubs.target_text && focusing ? (
                 <div className={classes.operate} onClick={onSplit}>
@@ -328,6 +364,34 @@ const VideoLanding = () => {
               />
             </div>
           ) : null}
+
+          {!fullscreen && (
+            <Box>
+              {fullscreenVideo ? (
+                <Button
+                  className={classes.fullscreenVideoBtn}
+                  aria-label="fullscreen"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="outlined"
+                  style={{
+                    bottom: fullscreenVideo ? "28%" : "",
+                    right: fullscreenVideo ? "20%" : "",
+                  }}
+                >
+                  <FullscreenExitIcon />
+                </Button>
+              ) : (
+                <Button
+                  className={classes.fullscreenVideoBtn}
+                  aria-label="fullscreenExit"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="outlined"
+                >
+                  <FullscreenIcon />
+                </Button>
+              )}
+            </Box>
+          )}
         </Grid>
 
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
