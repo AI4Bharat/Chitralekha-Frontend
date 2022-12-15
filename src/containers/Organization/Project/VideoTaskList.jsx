@@ -38,6 +38,18 @@ const VideoTaskList = (props) => {
       },
     },
     {
+      name: "user_email",
+      label: "Assigned User",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
       name: "status",
       label: "Status",
       options: {
