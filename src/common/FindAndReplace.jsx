@@ -110,12 +110,12 @@ const FindAndReplace = (props) => {
                 TransitionComponent={Transition}
                 onClose={handleCloseModel}
                 aria-labelledby="responsive-dialog-title"
-                maxWidth={"md"}
+                maxWidth={"lg"}
             >
                 <Grid
                     display="flex"
                     justifyContent={"space-between"}
-                    sx={{ backgroundImage: "linear-gradient(to right, #f1f1f1, #ffffff)", width: "100%", paddingX: 10 }}
+                    sx={{ backgroundImage: "linear-gradient(to right, #f1f1f1, #ffffff)", width: "100%", paddingX: 1 }}
                 >
                     <Grid item sx={{ alignSelf: "center" }}><DialogTitle
                     >Find and Replace</DialogTitle>
