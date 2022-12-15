@@ -4,7 +4,6 @@ import C from "../../../constants";
 
 export default class FetchProjectMembersAPI extends API {
   constructor(id, taskType, allowedTaskType,timeout = 2000) {
-    console.log(allowedTaskType,"allowedTaskTypeallowedTaskType")
     super("GET", timeout, false);
     this.type = C.GET_PROJECT_MEMBERS;
     this.id = id;

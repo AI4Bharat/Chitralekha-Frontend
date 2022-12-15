@@ -18,7 +18,6 @@
      super.processResponse(res);
      if (res) {
        localStorage.setItem('token', res.access);
-        console.log("api login ---- ", res);
          this.report = res;
      }
  }

@@ -49,12 +49,15 @@ const ViewTaskDialog = ({
 
   const taskDetail = useSelector((state) => state.getTaskDetails.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
-  const TranslationTypes = useSelector((state) => state.getTranslationTypes.data);
-  
-console.log(transcriptTypes,"transcriptTypes")
+  const TranslationTypes = useSelector(
+    (state) => state.getTranslationTypes.data
+  );
 
-const transcriptTranslationType = taskDetail.task_type === "TRANSCRIPTION_EDIT"?transcriptTypes:TranslationTypes
-console.log(transcriptTranslationType,"transcriptTranslationType")
+  const transcriptTranslationType =
+    taskDetail.task_type === "TRANSCRIPTION_EDIT"
+      ? transcriptTypes
+      : TranslationTypes;
+
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(apiObj));

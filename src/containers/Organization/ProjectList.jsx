@@ -45,7 +45,6 @@ const ProjectList = ({ data, props, removeProjectList }) => {
 
   const handleok = async (id) => {
     setOpen(false);
-    console.log("project ID ------- ", id);
     const apiObj = new DeleteProjectAPI(id);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
