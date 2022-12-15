@@ -13,7 +13,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 
-const TranslationRightPanel = ({ currentIndex, subtitles }) => {
+const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId, orgId, projectId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
@@ -23,6 +23,7 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
+  const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({

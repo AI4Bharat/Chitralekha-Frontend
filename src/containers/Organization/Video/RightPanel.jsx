@@ -11,7 +11,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 
-const RightPanel = ({ currentIndex, subtitles }) => {
+const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ const RightPanel = ({ currentIndex, subtitles }) => {
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
+  const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({

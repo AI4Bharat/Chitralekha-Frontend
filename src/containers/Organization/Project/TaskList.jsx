@@ -104,7 +104,6 @@ const TaskList = () => {
     setTaskdata(id);
     setTasktype(tasttype);
   };
-  console.log(tasktype, "tasktype");
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -205,7 +204,6 @@ const TaskList = () => {
       headers: apiObj.getHeaders().headers,
     }).then(async (res) => {
       const rsp_data = await res.json();
-      console.log("rsp_data --------- ", rsp_data);
       if (res.ok) {
         dispatch(setComparisonTable(rsp_data));
         if (isSubmitCall) {
@@ -256,7 +254,6 @@ const TaskList = () => {
   };
 
   const renderViewButton = (tableData) => {
-    console.log(tableData, "tableDatatableData");
 
     return (
       tableData.rowData[5] === "NEW" &&
@@ -286,7 +283,6 @@ const TaskList = () => {
     );
   };
   const renderExportButton = (tableData) => {
-    console.log(tableData, "tableData");
     return (
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
@@ -314,7 +310,6 @@ const TaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
-    console.log("tableData ---- ", tableData);
     return (
       (((tableData.rowData[5] === "SELECTED_SOURCE" || tableData.rowData[5] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -336,23 +331,11 @@ const TaskList = () => {
                   navigate(`/task/${tableData.rowData[0]}/translate`);
                 }
 
-                console.log("Edit Button ---- ", tableData.rowData);
-                // setOpenViewTaskDialog(true);
-                // setCurrentTaskDetails(tableData.rowData);
               }}
             />
           </IconButton>
         </Tooltip>
-        // <CustomButton
-        //   className={classes.tableButton}
-        //   label="Edit"
-        //   onClick={() => {
-        //     navigate(`/${tableData.rowData[0]}/transcript`);
-        //     console.log("Edit Button ------ ", tableData.rowData);
-        //     // setOpenViewTaskDialog(true);
-        //     // setCurrentTaskDetails(tableData.rowData);
-        //   }}
-        // />
+        
       )
     );
   };
@@ -546,7 +529,6 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log(value, "valuevalue", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderViewButton(tableMeta)}

@@ -11,3 +11,10 @@ export const FullScreenVideo = (data, type) => {
     payload: data,
   };
 }
+
+export const setSubtitles = (data, type) => {
+  return {
+    type: type,
+    payload: data,
+  }
+}

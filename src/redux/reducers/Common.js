@@ -3,6 +3,7 @@ import C from "../constants";
 const initialState = {
   fullscreen: false,
   fullscreenVideo: false,
+  subtitles: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -16,6 +17,12 @@ const reducer = (state = initialState, action) => {
     case C.FULLSCREEN_VIDEO: {
       let result = state;
       result.fullscreenVideo = action.payload;
+      return result;
+    }
+
+    case C.SUBTITLES: {
+      let result = state;
+      result.subtitles = action.payload;
       return result;
     }
     

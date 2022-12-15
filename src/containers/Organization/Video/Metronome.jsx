@@ -3,6 +3,7 @@ import DT from "duration-time-conversion";
 import isEqual from "lodash/isEqual";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { Box } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -19,7 +20,6 @@ const findIndex = (subs, startTime) => {
 export default React.memo(
   function Component({
     render,
-    subtitles,
     subtitleEnglish,
     newSub,
     addSub,
@@ -33,6 +33,8 @@ export default React.memo(
     const [drogStartTime, setDrogStartTime] = useState(0);
     const [drogEndTime, setDrogEndTime] = useState(0);
     const gridGap = document.body.clientWidth / render.gridNum;
+
+    const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
     const getEventTime = useCallback(
       (event) => {

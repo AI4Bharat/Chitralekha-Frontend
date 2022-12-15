@@ -60,6 +60,7 @@ const constants = {
     //Common
     FULLSCREEN: "FULLSCREEN",
     FULLSCREEN_VIDEO: "FULLSCREEN_VIDEO",
+    SUBTITLES: "SUBTITLES",
 };
 
 export default constants;

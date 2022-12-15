@@ -211,8 +211,6 @@ const Timeline = ({
   setRender,
   currentTime,
   playing,
-  subtitles,
-  setSubtitles,
   newSub,
   addSub,
 }) => {
@@ -277,7 +275,6 @@ const Timeline = ({
             render={render}
             player={player}
             playing={playing}
-            subtitles={subtitles}
             newSub={newSub}
             addSub={addSub}
           />
@@ -286,8 +283,6 @@ const Timeline = ({
             player={player}
             playing={playing}
             currentTime={currentTime}
-            subtitles={subtitles}
-            setSubtitles={setSubtitles}
           />
         </>
       )}
