@@ -108,7 +108,7 @@ const FindAndReplace = (props) => {
         <>
             <Button
                 variant="contained"
-                className={classes.findBtn}
+                className={classes.findreplBtn}
                 onClick={handleOpenModel}
             >
                 Find / Replace
