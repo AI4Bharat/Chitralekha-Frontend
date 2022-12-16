@@ -50,6 +50,7 @@ import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
+import { roles } from "../../../utils/utils";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -73,6 +74,7 @@ const TaskList = () => {
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
   const [deleteTaskid, setDeleteTaskid] = useState();
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const navigate = useNavigate();
 
   const FetchTaskList = () => {
@@ -525,15 +527,18 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", textAlign: "center" },
+          style: { height: "30px", fontSize: "16px",padding: "16px",textAlign: "center" },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {renderViewButton(tableMeta)}
-              {renderEditButton(tableMeta)}
-              {renderExportButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                  ?.taskAction &&  renderViewButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                  ?.taskAction && renderEditButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                  ?.taskAction && renderExportButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
             </Box>
 

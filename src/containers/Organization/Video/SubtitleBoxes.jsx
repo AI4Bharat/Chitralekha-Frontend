@@ -37,9 +37,10 @@ let isDroging = false;
 function getCurrentSubs(subs, beginTime, duration) {
   return subs?.filter((item) => {
     return (
-      (item.startTime >= beginTime && item.startTime <= beginTime + duration) ||
-      (item.endTime >= beginTime && item.endTime <= beginTime + duration) ||
-      (item.startTime < beginTime && item.endTime > beginTime + duration)
+      (item.startTime <= beginTime && item.endTime >= beginTime + duration) ||
+      (item.startTime <= beginTime && item.endTime <= beginTime + duration) ||
+      (item.startTime >= beginTime && item.endTime >= beginTime + duration) ||
+      (item.startTime >= beginTime && item.endTime <= beginTime + duration)
     );
   });
 }
@@ -107,11 +108,7 @@ export default React.memo(
           copySub.splice(index, 1);
           dispatch(setSubtitles(copySub, C.SUBTITLES));
 
-          let subs = getCurrentSubs(
-            copySub,
-            render.beginTime,
-            render.duration
-          );
+          let subs = getCurrentSubs(copySub, render.beginTime, render.duration);
 
           setCurrentSubs(subs);
           saveTranscript(taskDetails?.task_type);
@@ -160,14 +157,19 @@ export default React.memo(
     );
 
     const onMouseDown = (sub, event, type) => {
-      lastSub = sub;
-      if (event.button !== 0) return;
-      isDroging = true;
-      lastType = type;
-      lastX = event.pageX;
-      lastIndex = subtitles.indexOf(sub);
-      lastTarget = $subsRef.current.children[lastIndex];
-      lastWidth = parseFloat(lastTarget.style.width);
+      if (
+        taskDetails.task_type !== "TRANSLATION_EDIT" &&
+        taskDetails.task_type !== "TRANSLATION_REVIEW"
+      ) {
+        lastSub = sub;
+        if (event.button !== 0) return;
+        isDroging = true;
+        lastType = type;
+        lastX = event.pageX;
+        lastIndex = subtitles.indexOf(sub);
+        lastTarget = $subsRef.current.children[lastIndex];
+        lastWidth = parseFloat(lastTarget.style.width);
+      }
     };
 
     const onDocumentMouseMove = useCallback((event) => {
@@ -279,7 +281,7 @@ export default React.memo(
       const { id, trigger } = props;
       return (
         <ContextMenu id={id} className={classes.menuItemNav}>
-          {trigger && (
+          {trigger && !trigger.parentSub.target_text && (
             <MenuItem
               className={classes.menuItem}
               onClick={() => removeSub(lastSub)}
@@ -314,6 +316,10 @@ export default React.memo(
       };
     }, [onDocumentMouseMove, onDocumentMouseUp, onKeyDown]);
 
+    const attributes = {
+      className: classes.contextMenu,
+    };
+
     return (
       <div className={classes.parentSubtitleBox} ref={$blockRef}>
         <div ref={$subsRef}>
@@ -341,6 +347,7 @@ export default React.memo(
                   holdToDisplay={-1}
                   parentSub={sub}
                   collect={(props) => props}
+                  attributes={attributes}
                 >
                   <div
                     className={classes.subHandle}

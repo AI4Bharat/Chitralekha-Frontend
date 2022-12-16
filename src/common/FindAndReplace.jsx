@@ -108,7 +108,7 @@ const FindAndReplace = (props) => {
         <>
             <Button
                 variant="contained"
-                className={classes.findBtn}
+                className={classes.findreplBtn}
                 onClick={handleOpenModel}
             >
                 Find / Replace
@@ -129,9 +129,16 @@ const FindAndReplace = (props) => {
                     >Find and Replace</DialogTitle>
                     </Grid>
                     <Grid item><Button
-                        variant="contained"
-                        className={classes.findBtn}
+                        variant="outlined"
                         onClick={handleCloseModel}
+                        sx={{
+                            color: "#000",
+                            border: "none",
+                            height: "60px",
+                            "&:hover": {
+                                border: "none"
+                            }
+                        }}
                     >
                         <CloseIcon />
                     </Button></Grid>
@@ -220,6 +227,7 @@ const FindAndReplace = (props) => {
                                     className={classes.findBtn}
                                     disabled={!replaceValue}
                                     onClick={onReplaceAllClick}
+                                    style={{width: "auto"}}
                                 >
                                     Replace All
                                 </Button>

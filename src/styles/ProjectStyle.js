@@ -17,7 +17,12 @@ const ProjectStyle = makeStyles({
     margin: "24px auto",
     backgroundColor: "#0083e2",
   },
-
+  findreplBtn: {
+    width: "30%",
+    borderRadius: "7px",
+    margin: "24px auto",
+    backgroundColor: "#19ab27",
+  },
   waveform: {
     position: "absolute",
     top: "0",
@@ -398,7 +403,7 @@ const ProjectStyle = makeStyles({
     transform: "translateY(-50%)",
     "-webkit-transform": "translateY(-50%)",
     "-ms-transform": "translateY(-50%)",
-    overflow: "hidden"
+    overflow: "hidden",
   },
 
   fullscreenVideoBtn: {
@@ -412,7 +417,19 @@ const ProjectStyle = makeStyles({
     backgroundColor: "rgb(0 0 0 / 50%)",
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
-  }
+  },
+
+  contextMenu: {
+    position: "absolute",
+    zIndex: "9",
+    top: "0",
+    right: "0",
+    bottom: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "all",
+  },
 });
 
 export default ProjectStyle;
