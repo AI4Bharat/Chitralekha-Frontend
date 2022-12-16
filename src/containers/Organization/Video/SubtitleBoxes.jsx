@@ -37,7 +37,7 @@ let isDroging = false;
 function getCurrentSubs(subs, beginTime, duration) {
   return subs?.filter((item) => {
     return (
-      (item.startTime <= beginTime && item.endTime >= beginTime + duration) || 
+      (item.startTime <= beginTime && item.endTime >= beginTime + duration) ||
       (item.startTime <= beginTime && item.endTime <= beginTime + duration) ||
       (item.startTime >= beginTime && item.endTime >= beginTime + duration) ||
       (item.startTime >= beginTime && item.endTime <= beginTime + duration)
@@ -108,11 +108,7 @@ export default React.memo(
           copySub.splice(index, 1);
           dispatch(setSubtitles(copySub, C.SUBTITLES));
 
-          let subs = getCurrentSubs(
-            copySub,
-            render.beginTime,
-            render.duration
-          );
+          let subs = getCurrentSubs(copySub, render.beginTime, render.duration);
 
           setCurrentSubs(subs);
           saveTranscript(taskDetails?.task_type);
@@ -315,6 +311,10 @@ export default React.memo(
       };
     }, [onDocumentMouseMove, onDocumentMouseUp, onKeyDown]);
 
+    const attributes = {
+      className: classes.contextMenu,
+    }
+
     return (
       <div className={classes.parentSubtitleBox} ref={$blockRef}>
         <div ref={$subsRef}>
@@ -342,6 +342,7 @@ export default React.memo(
                   holdToDisplay={-1}
                   parentSub={sub}
                   collect={(props) => props}
+                  attributes={attributes}
                 >
                   <div
                     className={classes.subHandle}
