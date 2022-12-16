@@ -83,15 +83,6 @@ export default React.memo(
 
           const copySub = [...subtitles];
 
-          // if(copySub[0].target_text) {
-          //   copySub.splice(
-          //     index,
-          //     0,
-          //     newSub({ start_time, end_time, text: "SUB_TEXT", target_text: "SUB_TEXT" })
-          //   );
-          // } else {
-
-          // }
           copySub.splice(
             index,
             0,
