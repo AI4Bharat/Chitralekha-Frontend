@@ -20,13 +20,7 @@ const findIndex = (subs, startTime) => {
 };
 
 export default React.memo(
-  function Component({
-    render,
-    newSub,
-    player,
-    playing,
-    configuration,
-  }) {
+  function Component({ render, newSub, player, playing }) {
     const classes = ProjectStyle();
     const dispatch = useDispatch();
 
@@ -36,6 +30,7 @@ export default React.memo(
     const gridGap = document.body.clientWidth / render.gridNum;
 
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
+    const taskData = useSelector((state) => state.getTaskDetails.data);
 
     const getEventTime = useCallback(
       (event) => {
@@ -59,7 +54,11 @@ export default React.memo(
 
     const onMouseMove = useCallback(
       (event) => {
-        if (isDroging) {
+        if (
+          isDroging &&
+          taskData.task_type !== "TRANSLATION_EDIT" &&
+          taskData.task_type !== "TRANSLATION_REVIEW"
+        ) {
           if (playing) player.pause();
           setDrogEndTime(getEventTime(event));
         }
@@ -68,7 +67,11 @@ export default React.memo(
     );
 
     const onDocumentMouseUp = useCallback(() => {
-      if (isDroging) {
+      if (
+        isDroging &&
+        taskData.task_type !== "TRANSLATION_EDIT" &&
+        taskData.task_type !== "TRANSLATION_REVIEW"
+      ) {
         if (
           drogStartTime > 0 &&
           drogEndTime > 0 &&
@@ -79,6 +82,16 @@ export default React.memo(
           const end_time = DT.d2t(drogEndTime);
 
           const copySub = [...subtitles];
+
+          // if(copySub[0].target_text) {
+          //   copySub.splice(
+          //     index,
+          //     0,
+          //     newSub({ start_time, end_time, text: "SUB_TEXT", target_text: "SUB_TEXT" })
+          //   );
+          // } else {
+
+          // }
           copySub.splice(
             index,
             0,
@@ -91,14 +104,7 @@ export default React.memo(
       setIsDroging(false);
       setDrogStartTime(0);
       setDrogEndTime(0);
-    }, [
-      isDroging,
-      drogStartTime,
-      drogEndTime,
-      subtitles,
-      newSub,
-      configuration,
-    ]);
+    }, [isDroging, drogStartTime, drogEndTime, subtitles, newSub]);
 
     useEffect(() => {
       document.addEventListener("mouseup", onDocumentMouseUp);
