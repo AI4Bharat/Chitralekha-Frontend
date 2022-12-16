@@ -17,7 +17,12 @@ const ProjectStyle = makeStyles({
     margin: "24px auto",
     backgroundColor: "#0083e2",
   },
-
+  findreplBtn: {
+    width: "30%",
+    borderRadius: "7px",
+    margin: "24px auto",
+    backgroundColor: "#19ab27",
+  },
   waveform: {
     position: "absolute",
     top: "0",
