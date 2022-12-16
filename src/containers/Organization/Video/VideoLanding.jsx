@@ -160,7 +160,7 @@ const VideoLanding = () => {
   const onSplit = useCallback(() => {
     const copySub = copySubs();
 
-    const index = hasSub(copySub[currentIndex]);
+    const index = hasSub(subs[currentIndex]);
 
     const text1 = copySub[currentIndex].text.slice(0, inputItemCursor).trim();
     const text2 = copySub[currentIndex].text.slice(inputItemCursor).trim();
@@ -180,8 +180,9 @@ const VideoLanding = () => {
 
     copySub.splice(index, 1);
     const middleTime = DT.d2t(
-      copySub[currentIndex].startTime + parseFloat(splitDuration)
+      subs[currentIndex].startTime + parseFloat(splitDuration)
     );
+
     copySub.splice(
       index,
       0,
@@ -191,12 +192,13 @@ const VideoLanding = () => {
         text: text1,
       })
     );
+    
     copySub.splice(
       index + 1,
       0,
       newSub({
         start_time: middleTime,
-        end_time: copySub[currentIndex].end_time,
+        end_time: subs[currentIndex].end_time,
         text: text2,
       })
     );
