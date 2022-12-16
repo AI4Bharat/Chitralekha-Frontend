@@ -10,11 +10,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
+import { setSubtitles } from "../../../redux/actions/Common";
+import C from "../../../redux/constants";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -35,6 +38,7 @@ const RightPanel = ({ currentIndex }) => {
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
+    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
   }
 
@@ -46,6 +50,7 @@ const RightPanel = ({ currentIndex }) => {
       }
     });
 
+    dispatch(setSubtitles(arr, C.SUBTITLES));
     setSourceText(arr);
     saveTranscriptHandler(false, false);
   };

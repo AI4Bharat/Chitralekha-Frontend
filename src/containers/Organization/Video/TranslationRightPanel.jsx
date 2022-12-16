@@ -12,6 +12,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
+import C from "../../../redux/constants";
+import { setSubtitles } from "../../../redux/actions/Common";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId, orgId, projectId } = useParams();
@@ -38,6 +40,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
+    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
   }
 
@@ -49,6 +52,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       }
     });
 
+    dispatch(setSubtitles(arr, C.SUBTITLES));
     setSourceText(arr);
     saveTranscriptHandler(false, false);
   };

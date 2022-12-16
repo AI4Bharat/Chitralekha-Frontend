@@ -351,7 +351,7 @@ const ComparisonTable = () => {
             onChange={(e) => setSelectTranscriptType(e.target.value)}
             value={selectedTranscriptType}
           >
-            <MenuItem key={0} value={"MANUALLY_CREATED"}>Manually Created</MenuItem>
+            {/* <MenuItem key={0} value={"MANUALLY_CREATED"}>Manually Created</MenuItem> */}
             {filteredDropDown.map((el, i) => {
               return (
                 <MenuItem key={i} value={el.value}>
