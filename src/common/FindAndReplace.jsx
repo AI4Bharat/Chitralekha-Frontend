@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Slide, Box } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Slide, Box, Typography, Alert } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ProjectStyle from '../styles/ProjectStyle';
 import OutlinedTextField from './OutlinedTextField';
@@ -25,7 +25,7 @@ const FindAndReplace = (props) => {
     const [foundIndices, setFoundIndices] = useState([]);
     const [currentFound, setCurrentFound] = useState();
 
-    useEffect(()=>{
+    useEffect(() => {
         setSubtitlesData(sourceData);
     }, [sourceData, subtitleDataKey])
 
@@ -48,15 +48,15 @@ const FindAndReplace = (props) => {
     const onFindClick = () => {
         const textToFind = findValue.toLowerCase()
         const indexListInDataOfTextOccurence = [];
-        subtitlesData.map((item, index)=> {
-            if(item[subtitleDataKey].toLowerCase().includes(textToFind)){
+        subtitlesData.map((item, index) => {
+            if (item[subtitleDataKey].toLowerCase().includes(textToFind)) {
                 indexListInDataOfTextOccurence.push(index);
             }
         });
 
         setFoundIndices(indexListInDataOfTextOccurence);
 
-        if(indexListInDataOfTextOccurence?.length > 0) {
+        if (indexListInDataOfTextOccurence?.length > 0) {
             setCurrentFound(0)
         }
     }
@@ -64,20 +64,20 @@ const FindAndReplace = (props) => {
     const previousOccurenceClick = () => {
         setCurrentFound(currentFound - 1);
         const scrollableElement = document.getElementById("subtitle_scroll_view");
-        scrollableElement.querySelector(`#sub_${foundIndices[currentFound - 1]}`).scrollIntoViewIfNeeded();
+        scrollableElement.querySelector(`#sub_${foundIndices[currentFound - 1]}`).scrollIntoView(true, {block: "start"});
     }
-    
+
     const nextOccurenceClick = () => {
         setCurrentFound(currentFound + 1);
         const scrollableElement = document.getElementById("subtitle_scroll_view");
-        scrollableElement.querySelector(`#sub_${foundIndices[currentFound + 1]}`).scrollIntoViewIfNeeded();
+        scrollableElement.querySelector(`#sub_${foundIndices[currentFound + 1]}`).scrollIntoView(true, {block: "start"});
     }
 
     const onReplaceClick = () => {
         const currentSubtitleSource = [...subtitlesData];
         const updatedSubtitleData = [];
-        currentSubtitleSource.map((ele,index)=>{
-            if(foundIndices[currentFound] === index){
+        currentSubtitleSource.map((ele, index) => {
+            if (foundIndices[currentFound] === index) {
                 const textToReplace = ele[subtitleDataKey].replace(new RegExp(findValue, 'gi'), replaceValue);
                 ele[subtitleDataKey] = textToReplace;
             }
@@ -92,8 +92,8 @@ const FindAndReplace = (props) => {
     const onReplaceAllClick = () => {
         const currentSubtitleSource = [...subtitlesData];
         const updatedSubtitleData = [];
-        currentSubtitleSource.map((ele,index)=>{
-            if(foundIndices?.includes(index)){
+        currentSubtitleSource.map((ele, index) => {
+            if (foundIndices?.includes(index)) {
                 const textToReplace = ele[subtitleDataKey].replace(new RegExp(findValue, 'gi'), replaceValue);
                 ele[subtitleDataKey] = textToReplace;
             }
@@ -114,7 +114,6 @@ const FindAndReplace = (props) => {
                 Find / Replace
             </Button>
             <Dialog
-                // fullScreen
                 open={showFindReplaceModel}
                 TransitionComponent={Transition}
                 onClose={handleCloseModel}
@@ -137,10 +136,10 @@ const FindAndReplace = (props) => {
                         <CloseIcon />
                     </Button></Grid>
                 </Grid>
-
                 <DialogContent
-                    sx={{ overflow: "hidden" }}
+                    sx={{ overflow: "hidden", position: "unset", overscrollBehavior: "none" }}
                 >
+
                     <Grid
                         container
                         flexDirection={"flex"}
@@ -148,7 +147,7 @@ const FindAndReplace = (props) => {
                     >
                         <Grid
                             md={4}
-                            sx={{marginTop: 2}}
+                            sx={{ marginTop: 2 }}
                         >
                             <OutlinedTextField
                                 autoFocus
@@ -161,10 +160,11 @@ const FindAndReplace = (props) => {
                                 fullWidth
                                 variant="standard"
                             />
+                            <Typography variant="caption" display={"flex"} sx={{justifyContent: "end", paddingTop: 1}}>{ foundIndices?.length > 0 && `${currentFound+1} / ${foundIndices?.length}` }</Typography>
                             <Grid
                                 display={"flex"}
                                 justifyContent={"space-between"}
-                                sx={{ textAlign: foundIndices?.length > 0 ? "center" : "end"}}
+                                sx={{ textAlign: foundIndices?.length > 0 ? "center" : "end" }}
                             >
                                 {foundIndices?.length > 0 && <Button
                                     variant="contained"
@@ -200,6 +200,7 @@ const FindAndReplace = (props) => {
                                 type="Replace"
                                 fullWidth
                                 variant="standard"
+                                disabled={!(foundIndices?.length > 0)}
                             />
                             <Grid
                                 display={"flex"}
@@ -228,7 +229,7 @@ const FindAndReplace = (props) => {
                             md={8}
                             width={"100%"}
                             textAlign={"-webkit-center"}
-                            height={window.innerHeight * 0.9}
+                            height={window.innerHeight * 0.7}
                             sx={{ overflowY: "scroll" }}
                             paddingBottom={5}
                             id={"subtitle_scroll_view"}
@@ -238,9 +239,10 @@ const FindAndReplace = (props) => {
                                     <Box
                                         id={`sub_${i}`}
                                         textAlign={"start"}
-                                        sx={{ marginY: 2, padding: 2, border: "1px solid #000000", borderRadius: 2, width: "50%",
+                                        sx={{
+                                            marginY: 2, padding: 2, border: "1px solid #000000", borderRadius: 2, width: "50%",
                                             backgroundColor: foundIndices.includes(i) ? foundIndices[currentFound] === i ? "yellow" : "black" : "#ffffff",
-                                            color: foundIndices.includes(i) ?  foundIndices[currentFound] === i ? "red" : "#ffffff" : "black",
+                                            color: foundIndices.includes(i) ? foundIndices[currentFound] === i ? "red" : "#ffffff" : "black",
                                         }}
                                     >
                                         {el[subtitleDataKey]}
