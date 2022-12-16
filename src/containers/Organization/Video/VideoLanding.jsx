@@ -254,14 +254,6 @@ const VideoLanding = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
 
-  const addSub = useCallback(
-    (index, sub) => {
-      subs.splice(index, 0, formatSub(sub));
-      dispatch(setSubtitles(subs, C.SUBTITLES));
-    },
-    [formatSub]
-  );
-
   const handleFullscreen = () => {
     let doc = window.document;
     let docEl = doc.documentElement;
@@ -425,7 +417,6 @@ const VideoLanding = () => {
           currentTime={currentTime}
           playing={playing}
           newSub={newSub}
-          addSub={addSub}
         />
       </Grid>
 

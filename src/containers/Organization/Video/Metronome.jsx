@@ -3,7 +3,9 @@ import DT from "duration-time-conversion";
 import isEqual from "lodash/isEqual";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { Box } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSubtitles } from "../../../redux/actions/Common";
+import C from "../../../redux/constants";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -20,14 +22,13 @@ const findIndex = (subs, startTime) => {
 export default React.memo(
   function Component({
     render,
-    subtitleEnglish,
     newSub,
-    addSub,
     player,
     playing,
     configuration,
   }) {
     const classes = ProjectStyle();
+    const dispatch = useDispatch();
 
     const [isDroging, setIsDroging] = useState(false);
     const [drogStartTime, setDrogStartTime] = useState(0);
@@ -76,14 +77,15 @@ export default React.memo(
           const index = findIndex(subtitles, drogStartTime) + 1;
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
-          addSub(
+
+          const copySub = [...subtitles];
+          copySub.splice(
             index,
-            newSub({
-              start_time,
-              end_time,
-              text: "SUB_TEXT",
-            })
+            0,
+            newSub({ start_time, end_time, text: "SUB_TEXT" })
           );
+
+          dispatch(setSubtitles(copySub, C.SUBTITLES));
         }
       }
       setIsDroging(false);
@@ -94,8 +96,6 @@ export default React.memo(
       drogStartTime,
       drogEndTime,
       subtitles,
-      subtitleEnglish,
-      addSub,
       newSub,
       configuration,
     ]);
@@ -131,7 +131,6 @@ export default React.memo(
   },
   (prevProps, nextProps) => {
     return (
-      isEqual(prevProps.subtitleEnglish, nextProps.subtitleEnglish) &&
       isEqual(prevProps.subtitle, nextProps.subtitle) &&
       isEqual(prevProps.render, nextProps.render)
     );

@@ -212,7 +212,6 @@ const Timeline = ({
   currentTime,
   playing,
   newSub,
-  addSub,
 }) => {
   const $footer = createRef();
 
@@ -276,7 +275,6 @@ const Timeline = ({
             player={player}
             playing={playing}
             newSub={newSub}
-            addSub={addSub}
           />
           <SubtitleBoxes
             render={render}
