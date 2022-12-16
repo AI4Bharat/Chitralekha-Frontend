@@ -30,6 +30,7 @@ import getOrganizatioProjectManagersUser from "./Organization/FetchOrganizatioPr
 import getUserRoles from "./User/FetchUsersRoles";
 import searchList from "./Project/Search";
 import getTranslationTypes from "./Project/FetchTranslationTypes";
+import commonReducer from "./Common";
 
 const rootReducer = {
     apiStatus,
@@ -64,6 +65,7 @@ const rootReducer = {
     getUserRoles,
     searchList,
     getTranslationTypes,
+    commonReducer,
 };
 
 export default rootReducer;

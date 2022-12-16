@@ -3,6 +3,9 @@ import DT from "duration-time-conversion";
 import isEqual from "lodash/isEqual";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { Box } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { setSubtitles } from "../../../redux/actions/Common";
+import C from "../../../redux/constants";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -14,25 +17,25 @@ const findIndex = (subs, startTime) => {
         startTime < subs[index + 1].startTime)
     );
   });
-}
+};
 
 export default React.memo(
   function Component({
     render,
-    subtitles,
-    subtitleEnglish,
     newSub,
-    addSub,
     player,
     playing,
     configuration,
   }) {
     const classes = ProjectStyle();
+    const dispatch = useDispatch();
 
     const [isDroging, setIsDroging] = useState(false);
     const [drogStartTime, setDrogStartTime] = useState(0);
     const [drogEndTime, setDrogEndTime] = useState(0);
     const gridGap = document.body.clientWidth / render.gridNum;
+
+    const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
     const getEventTime = useCallback(
       (event) => {
@@ -65,27 +68,24 @@ export default React.memo(
     );
 
     const onDocumentMouseUp = useCallback(() => {
-      if (isDroging && configuration !== "") {
+      if (isDroging) {
         if (
           drogStartTime > 0 &&
           drogEndTime > 0 &&
           drogEndTime - drogStartTime >= 0.2
         ) {
-          const index =
-            findIndex(
-              subtitles,
-              drogStartTime
-            ) + 1;
+          const index = findIndex(subtitles, drogStartTime) + 1;
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
-          addSub(
+
+          const copySub = [...subtitles];
+          copySub.splice(
             index,
-            newSub({
-              start_time,
-              end_time,
-              text: "SUB_TEXT",
-            })
+            0,
+            newSub({ start_time, end_time, text: "SUB_TEXT" })
           );
+
+          dispatch(setSubtitles(copySub, C.SUBTITLES));
         }
       }
       setIsDroging(false);
@@ -96,8 +96,6 @@ export default React.memo(
       drogStartTime,
       drogEndTime,
       subtitles,
-      subtitleEnglish,
-      addSub,
       newSub,
       configuration,
     ]);
@@ -108,7 +106,11 @@ export default React.memo(
     }, [onDocumentMouseUp]);
 
     return (
-      <Box className={classes.Metronome} onMouseDown={onMouseDown} onMouseMove={onMouseMove}>
+      <Box
+        className={classes.Metronome}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+      >
         {player &&
         !playing &&
         drogStartTime &&
@@ -129,7 +131,6 @@ export default React.memo(
   },
   (prevProps, nextProps) => {
     return (
-      isEqual(prevProps.subtitleEnglish, nextProps.subtitleEnglish) &&
       isEqual(prevProps.subtitle, nextProps.subtitle) &&
       isEqual(prevProps.render, nextProps.render)
     );

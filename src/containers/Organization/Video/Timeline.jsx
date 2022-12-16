@@ -194,9 +194,11 @@ const Duration = ({ player, currentTime }) => {
 
   return (
     <div className={classes.duration}>
-      {currentTime > 0 && <span className={classes.durationSpan}>
-        {getDuration(currentTime)} / {getDuration(player.duration || 0)}
-      </span>}
+      {currentTime > 0 && (
+        <span className={classes.durationSpan}>
+          {getDuration(currentTime)} / {getDuration(player.duration || 0)}
+        </span>
+      )}
     </div>
   );
 };
@@ -209,10 +211,7 @@ const Timeline = ({
   setRender,
   currentTime,
   playing,
-  subtitles,
-  setSubtitles,
   newSub,
-  addSub,
 }) => {
   const $footer = createRef();
 
@@ -271,14 +270,17 @@ const Timeline = ({
             setRender={setRender}
           />
           <Grab player={player} waveform={waveform} />
-          <Metronome render={render} player={player} playing={playing} subtitles={subtitles} newSub={newSub} addSub={addSub}/>
+          <Metronome
+            render={render}
+            player={player}
+            playing={playing}
+            newSub={newSub}
+          />
           <SubtitleBoxes
             render={render}
             player={player}
             playing={playing}
             currentTime={currentTime}
-            subtitles={subtitles}
-            setSubtitles={setSubtitles}
           />
         </>
       )}

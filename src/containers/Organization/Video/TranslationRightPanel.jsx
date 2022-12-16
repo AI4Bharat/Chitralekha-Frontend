@@ -12,16 +12,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
+import C from "../../../redux/constants";
+import { setSubtitles } from "../../../redux/actions/Common";
 
-const TranslationRightPanel = ({ currentIndex, subtitles }) => {
+const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId, orgId, projectId } = useParams();
   const classes = ProjectStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  
+  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
+  const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -34,6 +38,12 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
+  const onReplacementDone = (updatedSource) => {
+    setSourceText(updatedSource);
+    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
+    saveTranscriptHandler(false, true);
+  }
+
   const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
     arr.forEach((element, i) => {
@@ -42,6 +52,7 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
       }
     });
 
+    dispatch(setSubtitles(arr, C.SUBTITLES));
     setSourceText(arr);
     saveTranscriptHandler(false, false);
   };
@@ -109,7 +120,7 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
       <Box
         sx={{
           display: "flex",
-          borderLeft: "1px solid #eaeaea",
+          border: fullscreen ? "" : "1px solid #eaeaea",
         }}
         //   width="25%"
         flexDirection="column"
@@ -118,7 +129,11 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
           {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
-        {/* <FindAndReplace /> */}
+        <FindAndReplace 
+            sourceData={sourceText}
+            subtitleDataKey={"target_text"}
+            onReplacementDone={onReplacementDone}
+        />
           <Button
             variant="contained"
             className={classes.findBtn}
@@ -141,7 +156,7 @@ const TranslationRightPanel = ({ currentIndex, subtitles }) => {
             borderTop: "1px solid #eaeaea",
             overflowY: "scroll",
             overflowX: "hidden",
-            height: window.innerHeight * 0.75,
+            height: window.innerHeight * 0.665,
             backgroundColor: "black",
             color: "white",
             marginTop: "5px",

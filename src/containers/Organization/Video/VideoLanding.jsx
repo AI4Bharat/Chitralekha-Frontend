@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Button, Grid, IconButton } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +16,12 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import Sub from "../../../utils/Sub";
 import DT from "duration-time-conversion";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import { Box } from "@mui/system";
+import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
+import C from "../../../redux/constants";
+import { FullScreenVideo } from "../../../redux/actions/Common";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -38,7 +44,6 @@ const VideoLanding = () => {
     message: "",
     variant: "success",
   });
-  const [subs, setSubs] = useState([]);
   const [currentSubs, setCurrentSubs] = useState();
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [focusing, setFocusing] = useState(false);
@@ -48,6 +53,27 @@ const VideoLanding = () => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
+  const fullscreenVideo = useSelector(
+    (state) => state.commonReducer.fullscreenVideo
+  );
+  const subs = useSelector((state) => state.commonReducer.subtitles);
+
+  const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
+
+  const newSub = useCallback((item) => new Sub(item), []);
+
+  const formatSub = useCallback(
+    (sub) => {
+      if (Array.isArray(sub)) {
+        return sub.map((item) => newSub(item));
+      }
+      return newSub(sub);
+    },
+    [newSub]
+  );
+
+  const copySubs = useCallback(() => formatSub(subs), [subs, formatSub]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -78,7 +104,7 @@ const VideoLanding = () => {
       (item) => new Sub(item)
     );
 
-    setSubs(sub);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   }, [transcriptPayload?.payload?.payload]);
 
   useMemo(() => {
@@ -106,10 +132,6 @@ const VideoLanding = () => {
     );
   };
 
-  const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
-
-  const newSub = useCallback((item) => new Sub(item), []);
-
   const onChange = useCallback((event) => {
     player.pause();
     if (event.target.selectionStart) {
@@ -136,29 +158,31 @@ const VideoLanding = () => {
   }, []);
 
   const onSplit = useCallback(() => {
-    const index = hasSub(subs[currentIndex]);
+    const copySub = copySubs();
 
-    const text1 = subs[currentIndex].text.slice(0, inputItemCursor).trim();
-    const text2 = subs[currentIndex].text.slice(inputItemCursor).trim();
+    const index = hasSub(copySub[currentIndex]);
+
+    const text1 = copySub[currentIndex].text.slice(0, inputItemCursor).trim();
+    const text2 = copySub[currentIndex].text.slice(inputItemCursor).trim();
 
     if (!text1 || !text2) return;
 
     const splitDuration = (
-      subs[currentIndex].duration *
-      (inputItemCursor / subs[currentIndex].text.length)
+      copySub[currentIndex].duration *
+      (inputItemCursor / copySub[currentIndex].text.length)
     ).toFixed(3);
 
     if (
       splitDuration < 0.2 ||
-      subs[currentIndex].duration - splitDuration < 0.2
+      copySub[currentIndex].duration - splitDuration < 0.2
     )
       return;
 
-    subs.splice(index, 1);
+    copySub.splice(index, 1);
     const middleTime = DT.d2t(
-      subs[currentIndex].startTime + parseFloat(splitDuration)
+      copySub[currentIndex].startTime + parseFloat(splitDuration)
     );
-    subs.splice(
+    copySub.splice(
       index,
       0,
       newSub({
@@ -167,22 +191,23 @@ const VideoLanding = () => {
         text: text1,
       })
     );
-    subs.splice(
+    copySub.splice(
       index + 1,
       0,
       newSub({
         start_time: middleTime,
-        end_time: subs[currentIndex].end_time,
+        end_time: copySub[currentIndex].end_time,
         text: text2,
       })
     );
-    setSubs(subs);
-    setCurrentSubs(subs[currentIndex]);
+
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    setCurrentSubs(copySub[currentIndex]);
 
     const reqBody = {
       task_id: taskId,
       payload: {
-        payload: subs,
+        payload: copySub,
       },
     };
 
@@ -229,33 +254,73 @@ const VideoLanding = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
 
-  const formatSub = useCallback(
-    (sub) => {
-      if (Array.isArray(sub)) {
-        return sub.map((item) => newSub(item));
-      }
-      return newSub(sub);
-    },
-    [newSub]
-  );
+  const handleFullscreen = () => {
+    let doc = window.document;
+    let docEl = doc.documentElement;
 
-  const addSub = useCallback(
-    (index, sub) => {
-      subs.splice(index, 0, formatSub(sub));
-      setSubs(subs);
-    },
-    [setSubs, formatSub]
-  );
+    const requestFullScreen =
+      docEl.requestFullscreen ||
+      docEl.mozRequestFullScreen ||
+      docEl.webkitRequestFullScreen ||
+      docEl.msRequestFullscreen;
+    const cancelFullScreen =
+      doc.exitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.webkitExitFullscreen ||
+      doc.msExitFullscreen;
+
+    if (
+      !doc.fullscreenElement &&
+      !doc.mozFullScreenElement &&
+      !doc.webkitFullscreenElement &&
+      !doc.msFullscreenElement
+    ) {
+      requestFullScreen.call(docEl);
+      dispatch(FullScreen(true, C.FULLSCREEN));
+    } else {
+      dispatch(FullScreen(false, C.FULLSCREEN));
+      cancelFullScreen.call(doc);
+    }
+  };
+
+  const handleFullscreenVideo = () => {
+    let doc = window.document;
+    let elem = document.getElementById("video");
+
+    const requestFullScreen =
+      elem.requestFullscreen ||
+      elem.mozRequestFullScreen ||
+      elem.webkitRequestFullScreen ||
+      elem.msRequestFullscreen;
+    const cancelFullScreen =
+      doc.exitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.webkitExitFullscreen ||
+      doc.msExitFullscreen;
+
+    if (
+      !doc.fullscreenElement &&
+      !doc.mozFullScreenElement &&
+      !doc.webkitFullscreenElement &&
+      !doc.msFullscreenElement
+    ) {
+      requestFullScreen.call(elem);
+      dispatch(FullScreenVideo(true, C.FULLSCREEN_VIDEO));
+    } else {
+      dispatch(FullScreenVideo(false, C.FULLSCREEN_VIDEO));
+      cancelFullScreen.call(doc);
+    }
+  };
 
   return (
-    <Grid>
+    <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
       <Grid
         container
         direction={"row"}
         sx={{ marginTop: 7, overflow: "hidden" }}
       >
-        <Grid width="100%" overflow="hidden" md={8} xs={12}>
+        <Grid width="100%" overflow="hidden" md={8} xs={12} id="video">
           <VideoPanel
             setPlayer={setPlayer}
             setCurrentTime={setCurrentTime}
@@ -265,7 +330,13 @@ const VideoLanding = () => {
           />
 
           {currentSubs ? (
-            <div className={classes.subtitlePanel}>
+            <div
+              className={classes.subtitlePanel}
+              style={{
+                bottom: fullscreen ? "5%" : fullscreenVideo ? "15%" : "",
+                margin: fullscreenVideo ? "auto" : "",
+              }}
+            >
               {!currentSubs.target_text && focusing ? (
                 <div className={classes.operate} onClick={onSplit}>
                   Split Subtitle
@@ -290,20 +361,53 @@ const VideoLanding = () => {
               />
             </div>
           ) : null}
+
+          {!fullscreen && (
+            <Box>
+              {fullscreenVideo ? (
+                <Button
+                  className={classes.fullscreenVideoBtn}
+                  aria-label="fullscreen"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                  style={{
+                    bottom: fullscreenVideo ? "28%" : "",
+                    right: fullscreenVideo ? "20%" : "",
+                  }}
+                >
+                  <FullscreenExitIcon />
+                </Button>
+              ) : (
+                <Button
+                  className={classes.fullscreenVideoBtn}
+                  aria-label="fullscreenExit"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                >
+                  <FullscreenIcon />
+                </Button>
+              )}
+            </Box>
+          )}
         </Grid>
 
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} subtitles={subs} />
+            <RightPanel currentIndex={currentIndex} />
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
-            <TranslationRightPanel currentIndex={currentIndex} subtitles={subs} />
+            <TranslationRightPanel currentIndex={currentIndex} />
           )}
         </Grid>
       </Grid>
-      <Grid width={"100%"} position="fixed" bottom={1}>
+      <Grid
+        width={"100%"}
+        position="fixed"
+        bottom={1}
+        style={fullscreen ? { visibility: "hidden" } : {}}
+      >
         <Timeline
           waveform={waveform}
           setWaveform={setWaveform}
@@ -312,12 +416,31 @@ const VideoLanding = () => {
           setRender={setRender}
           currentTime={currentTime}
           playing={playing}
-          subtitles={subs}
-          setSubtitles={setSubs}
           newSub={newSub}
-          addSub={addSub}
         />
       </Grid>
+
+      <Box>
+        {fullscreen ? (
+          <Button
+            className={classes.fullscreenBtn}
+            aria-label="fullscreen"
+            onClick={() => handleFullscreen()}
+            variant="contained"
+          >
+            <FullscreenExitIcon />
+          </Button>
+        ) : (
+          <Button
+            className={classes.fullscreenBtn}
+            aria-label="fullscreenExit"
+            onClick={() => handleFullscreen()}
+            variant="contained"
+          >
+            <FullscreenIcon />
+          </Button>
+        )}
+      </Box>
     </Grid>
   );
 };

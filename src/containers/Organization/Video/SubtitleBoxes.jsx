@@ -14,6 +14,8 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import { setSubtitles } from "../../../redux/actions/Common";
+import C from "../../../redux/constants";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -35,28 +37,24 @@ let isDroging = false;
 function getCurrentSubs(subs, beginTime, duration) {
   return subs?.filter((item) => {
     return (
-      (item.startTime >= beginTime && item.startTime <= beginTime + duration) ||
-      (item.endTime >= beginTime && item.endTime <= beginTime + duration) ||
-      (item.startTime < beginTime && item.endTime > beginTime + duration)
+      (item.startTime <= beginTime && item.endTime >= beginTime + duration) || 
+      (item.startTime <= beginTime && item.endTime <= beginTime + duration) ||
+      (item.startTime >= beginTime && item.endTime >= beginTime + duration) ||
+      (item.startTime >= beginTime && item.endTime <= beginTime + duration)
     );
   });
 }
 
 export default React.memo(
-  function ({
-    player,
-    subtitles,
-    render,
-    currentTime,
-    updateSubEnglish,
-    setSubtitles,
-  }) {
+  function ({ player, render, currentTime, updateSubEnglish }) {
     const { taskId } = useParams();
     const classes = ProjectStyle();
     const $blockRef = React.createRef();
     const $subsRef = React.createRef();
     const dispatch = useDispatch();
+
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
+    const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
@@ -80,7 +78,7 @@ export default React.memo(
 
       const obj = new SaveTranscriptAPI(reqBody, taskType);
       dispatch(APITransport(obj));
-    }
+    };
 
     const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
 
@@ -104,58 +102,62 @@ export default React.memo(
     const removeSub = useCallback(
       (sub) => {
         const index = hasSub(sub);
+        const copySub = copySubs();
 
         if (index >= 0) {
-          subtitles.splice(index, 1);
-          setSubtitles(subtitles);
+          copySub.splice(index, 1);
+          dispatch(setSubtitles(copySub, C.SUBTITLES));
 
           let subs = getCurrentSubs(
-            subtitles,
+            copySub,
             render.beginTime,
             render.duration
           );
+
           setCurrentSubs(subs);
           saveTranscript(taskDetails?.task_type);
         }
       },
-      [hasSub, copySubs, setSubtitles]
+      [hasSub, copySubs]
     );
 
     const mergeSub = useCallback(
       (sub) => {
         const index = hasSub(sub);
+        const copySub = copySubs();
         if (index >= 0) {
-          const next = subtitles[index + 1];
+          const next = copySub[index + 1];
           if (next) {
             const merge = newSub({
               start_time: sub.start_time,
               end_time: next.end_time,
               text: sub.text.trim() + "\n" + next.text.trim(),
             });
-            subtitles[index] = merge;
-            subtitles.splice(index + 1, 1);
-            setSubtitles(subtitles);
+            copySub[index] = merge;
+            copySub.splice(index + 1, 1);
+            dispatch(setSubtitles(copySub, C.SUBTITLES));
             saveTranscript(taskDetails?.task_type);
           }
         }
       },
-      [hasSub, copySubs, setSubtitles, newSub]
+      [hasSub, copySubs, newSub]
     );
 
     const updateSub = useCallback(
       (sub, obj) => {
         const index = hasSub(sub);
+        const copySub = copySubs();
+
         if (index < 0) return;
 
         const subClone = formatSub(sub);
-        console.log(subClone,'subClone');
         Object.assign(subClone, obj);
         if (subClone.check) {
-          subtitles[index] = subClone;
-          setSubtitles(subtitles);
+          copySub[index] = subClone;
+          dispatch(setSubtitles(copySub, C.SUBTITLES));
         }
       },
-      [hasSub, setSubtitles, formatSub]
+      [hasSub, formatSub]
     );
 
     const onMouseDown = (sub, event, type) => {
@@ -204,7 +206,6 @@ export default React.memo(
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
             const start_time = DT.d2t(startTime);
             updateSub(lastSub, { start_time });
-
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -212,7 +213,6 @@ export default React.memo(
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
             updateSub(lastSub, { end_time });
-
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -232,7 +232,7 @@ export default React.memo(
         lastTarget.style.transform = `translate(0)`;
       }
 
-      saveTranscript(taskDetails?.task_type);
+      // saveTranscript(taskDetails?.task_type);
 
       lastType = "";
       lastX = 0;
@@ -243,7 +243,9 @@ export default React.memo(
 
     const onKeyDown = useCallback(
       (event) => {
-        const sub = subtitles[lastIndex];
+        const copySub = copySubs();
+
+        const sub = copySub[lastIndex];
         if (sub && lastTarget) {
           const keyCode = getKeyCode(event);
 

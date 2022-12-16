@@ -1,12 +1,25 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { createRef, memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import React, {
+  createRef,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ProjectStyle from "../../../styles/ProjectStyle";
 
 const VideoPanel = memo(
   ({ setPlayer, setCurrentTime, setPlaying }) => {
+    const dispatch = useDispatch();
+    const classes = ProjectStyle();
     const $video = createRef();
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
+    const fullscreenVideo = useSelector(
+      (state) => state.commonReducer.fullscreenVideo
+    );
 
     const isPlaying = ($video) => {
       return !!(
@@ -42,7 +55,12 @@ const VideoPanel = memo(
 
     return (
       <Box margin="auto" display="flex" flexDirection="column">
-        <Typography variant="h4" textAlign="center" paddingY={4}>
+        <Typography
+          variant="h4"
+          textAlign="center"
+          paddingY={4}
+          style={fullscreenVideo ? { color: "white" } : {}}
+        >
           {videoDetails?.video?.name}
         </Typography>
 
@@ -51,6 +69,7 @@ const VideoPanel = memo(
           src={videoDetails?.direct_video_url}
           ref={$video}
           // className={classes.videoPlayer}
+          style={fullscreenVideo ? { margin: "auto" } : {}}
         />
       </Box>
     );

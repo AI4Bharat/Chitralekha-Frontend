@@ -12,12 +12,17 @@ const ProjectStyle = makeStyles({
   },
 
   findBtn: {
-    width: "40%",
+    width: "30%",
     borderRadius: "7px",
     margin: "24px auto",
     backgroundColor: "#0083e2",
   },
-
+  findreplBtn: {
+    width: "30%",
+    borderRadius: "7px",
+    margin: "24px auto",
+    backgroundColor: "#19ab27",
+  },
   waveform: {
     position: "absolute",
     top: "0",
@@ -380,6 +385,39 @@ const ProjectStyle = makeStyles({
     cursor: "pointer",
     pointerEvents: "all",
   },
+
+  fullscreenBtn: {
+    position: "absolute",
+    bottom: "25px",
+    right: "25px",
+    zIndex: "999",
+    borderRadius: "4px",
+    backgroundColor: "#0083e2",
+    minWidth: "45px",
+    padding: 0,
+  },
+
+  fullscreenStyle: {
+    position: "relative",
+    top: "55%",
+    transform: "translateY(-50%)",
+    "-webkit-transform": "translateY(-50%)",
+    "-ms-transform": "translateY(-50%)",
+    overflow: "hidden"
+  },
+
+  fullscreenVideoBtn: {
+    position: "absolute",
+    bottom: "18%",
+    right: "35%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  }
 });
 
 export default ProjectStyle;

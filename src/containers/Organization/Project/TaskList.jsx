@@ -50,6 +50,7 @@ import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
+import { roles } from "../../../utils/utils";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -73,6 +74,7 @@ const TaskList = () => {
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
   const [deleteTaskid, setDeleteTaskid] = useState();
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const navigate = useNavigate();
 
   const FetchTaskList = () => {
@@ -104,7 +106,6 @@ const TaskList = () => {
     setTaskdata(id);
     setTasktype(tasttype);
   };
-  console.log(tasktype, "tasktype");
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -205,7 +206,6 @@ const TaskList = () => {
       headers: apiObj.getHeaders().headers,
     }).then(async (res) => {
       const rsp_data = await res.json();
-      console.log("rsp_data --------- ", rsp_data);
       if (res.ok) {
         dispatch(setComparisonTable(rsp_data));
         if (isSubmitCall) {
@@ -256,7 +256,6 @@ const TaskList = () => {
   };
 
   const renderViewButton = (tableData) => {
-    console.log(tableData, "tableDatatableData");
 
     return (
       tableData.rowData[5] === "NEW" &&
@@ -286,7 +285,6 @@ const TaskList = () => {
     );
   };
   const renderExportButton = (tableData) => {
-    console.log(tableData, "tableData");
     return (
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
@@ -314,7 +312,6 @@ const TaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
-    console.log("tableData ---- ", tableData);
     return (
       (((tableData.rowData[5] === "SELECTED_SOURCE" || tableData.rowData[5] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -336,23 +333,11 @@ const TaskList = () => {
                   navigate(`/task/${tableData.rowData[0]}/translate`);
                 }
 
-                console.log("Edit Button ---- ", tableData.rowData);
-                // setOpenViewTaskDialog(true);
-                // setCurrentTaskDetails(tableData.rowData);
               }}
             />
           </IconButton>
         </Tooltip>
-        // <CustomButton
-        //   className={classes.tableButton}
-        //   label="Edit"
-        //   onClick={() => {
-        //     navigate(`/${tableData.rowData[0]}/transcript`);
-        //     console.log("Edit Button ------ ", tableData.rowData);
-        //     // setOpenViewTaskDialog(true);
-        //     // setCurrentTaskDetails(tableData.rowData);
-        //   }}
-        // />
+        
       )
     );
   };
@@ -542,16 +527,18 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", textAlign: "center" },
+          style: { height: "30px", fontSize: "16px",padding: "16px",textAlign: "center" },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log(value, "valuevalue", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
-              {renderViewButton(tableMeta)}
-              {renderEditButton(tableMeta)}
-              {renderExportButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                  ?.taskAction &&  renderViewButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                  ?.taskAction && renderEditButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                  ?.taskAction && renderExportButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
             </Box>
 
