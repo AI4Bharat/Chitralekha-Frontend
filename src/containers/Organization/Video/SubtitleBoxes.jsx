@@ -157,14 +157,19 @@ export default React.memo(
     );
 
     const onMouseDown = (sub, event, type) => {
-      lastSub = sub;
-      if (event.button !== 0) return;
-      isDroging = true;
-      lastType = type;
-      lastX = event.pageX;
-      lastIndex = subtitles.indexOf(sub);
-      lastTarget = $subsRef.current.children[lastIndex];
-      lastWidth = parseFloat(lastTarget.style.width);
+      if (
+        taskDetails.task_type !== "TRANSLATION_EDIT" &&
+        taskDetails.task_type !== "TRANSLATION_REVIEW"
+      ) {
+        lastSub = sub;
+        if (event.button !== 0) return;
+        isDroging = true;
+        lastType = type;
+        lastX = event.pageX;
+        lastIndex = subtitles.indexOf(sub);
+        lastTarget = $subsRef.current.children[lastIndex];
+        lastWidth = parseFloat(lastTarget.style.width);
+      }
     };
 
     const onDocumentMouseMove = useCallback((event) => {
@@ -276,7 +281,7 @@ export default React.memo(
       const { id, trigger } = props;
       return (
         <ContextMenu id={id} className={classes.menuItemNav}>
-          {trigger && (
+          {trigger && !trigger.parentSub.target_text && (
             <MenuItem
               className={classes.menuItem}
               onClick={() => removeSub(lastSub)}
@@ -313,7 +318,7 @@ export default React.memo(
 
     const attributes = {
       className: classes.contextMenu,
-    }
+    };
 
     return (
       <div className={classes.parentSubtitleBox} ref={$blockRef}>
