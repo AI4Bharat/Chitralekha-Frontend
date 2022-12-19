@@ -22,6 +22,8 @@ import { Box } from "@mui/system";
 import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
+import FastForwardIcon from "@mui/icons-material/FastForward";
+import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -48,6 +50,7 @@ const VideoLanding = () => {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [focusing, setFocusing] = useState(false);
   const [inputItemCursor, setInputItemCursor] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -194,7 +197,7 @@ const VideoLanding = () => {
         text: text1,
       })
     );
-    
+
     copySub.splice(
       index + 1,
       0,
@@ -316,6 +319,11 @@ const VideoLanding = () => {
     }
   };
 
+  const playbackRateHandler = (rate) => {
+    player.playbackRate = rate;
+    setPlaybackRate(rate);
+  };
+
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
@@ -366,6 +374,34 @@ const VideoLanding = () => {
             </div>
           ) : null}
 
+          <div
+            className={classes.playbackRate}
+            style={{
+              bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "",
+              right: fullscreenVideo ? "23%" : fullscreen ? "35%" : "",
+            }}
+          >
+            <Button
+              onClick={() =>
+                playbackRate >= 0.2 && playbackRateHandler(playbackRate - 0.1)
+              }
+              sx={{ color: " #fff" }}
+            >
+              <FastRewindIcon />
+            </Button>
+            <p style={{ margin: 0, color: " #fff" }}>
+              {Math.round(playbackRate * 10) / 10}x
+            </p>
+            <Button
+              onClick={() =>
+                playbackRate <= 15.9 && playbackRateHandler(playbackRate + 0.1)
+              }
+              sx={{ color: " #fff" }}
+            >
+              <FastForwardIcon />
+            </Button>
+          </div>
+
           {!fullscreen && (
             <Box>
               {fullscreenVideo ? (
@@ -398,7 +434,7 @@ const VideoLanding = () => {
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} />
+            <RightPanel currentIndex={currentIndex} player={player}/>
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (

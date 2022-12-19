@@ -430,6 +430,21 @@ const ProjectStyle = makeStyles({
     height: "100%",
     pointerEvents: "all",
   },
+
+  playbackRate: {
+    position: "absolute",
+    bottom: "18%",
+    right: "38%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+    display: "flex",
+    alignItems: "center",
+  },
 });
 
 export default ProjectStyle;
