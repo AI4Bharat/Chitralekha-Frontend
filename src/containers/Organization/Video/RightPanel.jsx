@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, TextField, CardContent } from "@mui/material";
+import {
+  Button,
+  TextField,
+  CardContent,
+  Grid,
+  Typography,
+  Switch,
+} from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +19,7 @@ import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
+import SplitPopOver from "../../../common/SplitPopOver";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -32,9 +40,36 @@ const RightPanel = ({ currentIndex, player }) => {
     variant: "success",
   });
 
+  const [showPopOver, setShowPopOver] = useState(false);
+  const [enableTransliteration, setTransliteration] = useState(true);
+
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
+
+  const onMergeClick = (item, index) => {
+    const existingsourceData = [...sourceText];
+    const newItemObj = existingsourceData[index];
+
+    newItemObj["end_time"] = existingsourceData[index + 1]["end_time"];
+    newItemObj["text"] =
+      newItemObj["text"] + existingsourceData[index + 1]["text"];
+
+    existingsourceData[index] = newItemObj;
+    existingsourceData.splice(index + 1, 1);
+
+    dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
+    setSourceText(existingsourceData);
+    saveTranscriptHandler(false, true, existingsourceData);
+  };
+
+  const onMouseUp = (e) => {
+    // setShowPopOver(true)
+    // e.preventDefault();
+    // console.log("event ---- ", e);
+    // console.log("selection start --- ", e.target.selectionStart);
+    // console.log("text length --- ", e.target.value.length);
+  };
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
@@ -55,11 +90,15 @@ const RightPanel = ({ currentIndex, player }) => {
     saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal, isAutosave) => {
+  const saveTranscriptHandler = async (
+    isFinal,
+    isAutosave,
+    payload = sourceText
+  ) => {
     const reqBody = {
       task_id: taskId,
       payload: {
-        payload: sourceText,
+        payload: payload,
       },
     };
 
@@ -138,7 +177,7 @@ const RightPanel = ({ currentIndex, player }) => {
         }}
         flexDirection="column"
       >
-        <Box display="flex">
+        <Grid display={"flex"} direction={"row"} flexWrap={"wrap"}>
           {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
@@ -161,7 +200,14 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Complete
           </Button>
-        </Box>
+          <Grid display={"flex"} alignItems={"center"} paddingX={2}>
+            <Typography>Transliteration</Typography>
+            <Switch
+              checked={enableTransliteration}
+              onChange={() => setTransliteration(!enableTransliteration)}
+            />
+          </Grid>
+        </Grid>
         <Box
           sx={{
             display: "flex",
@@ -223,7 +269,6 @@ const RightPanel = ({ currentIndex, player }) => {
                     sx={{
                       width: "25%",
                       "& .MuiOutlinedInput-root": {
-                        marginLeft: "auto",
                         backgroundColor: "#616A6B",
                         color: "white",
                       },
@@ -237,31 +282,16 @@ const RightPanel = ({ currentIndex, player }) => {
                 </Box>
 
                 <CardContent
-                  sx={{
-                    display: "flex",
-                    paddingX: 0,
-                    borderBottom: 2,
-                    alignItems: "center",
-                  }}
+                  sx={{ paddingX: 0, borderBottom: 2, alignItems: "center" }}
                 >
-                  {taskData?.src_language === "en" ? (
-                    <textarea
-                      onChange={(event) => {
-                        changeTranscriptHandler(event.target.value, index);
-                      }}
-                      value={item.text}
-                      className={`${classes.customTextarea} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
-                      rows={4}
-                    />
-                  ) : (
+                  {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index);
                       }}
+                      onMouseUp={onMouseUp}
                       containerStyles={{
                         width: "100%",
                       }}
@@ -275,11 +305,40 @@ const RightPanel = ({ currentIndex, player }) => {
                         />
                       )}
                     />
+                  ) : (
+                    <textarea
+                      onChange={(event) => {
+                        changeTranscriptHandler(event.target.value, index);
+                      }}
+                      onMouseUp={onMouseUp}
+                      value={item.text}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      rows={4}
+                    />
                   )}
+                  <Grid display={"flex"} justifyContent={"space-around"}>
+                    {index < sourceText.length - 1 && (
+                      <Button
+                        variant="contained"
+                        onClick={() => onMergeClick(item, index)}
+                      >
+                        Merge Next
+                      </Button>
+                    )}
+                  </Grid>
                 </CardContent>
               </>
             );
           })}
+          <SplitPopOver
+            open={showPopOver}
+            handleClosePopOver={() => {
+              setShowPopOver(false);
+            }}
+            // anchorEl={}
+          />
         </Box>
       </Box>
     </>
