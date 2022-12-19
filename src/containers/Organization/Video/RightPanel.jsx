@@ -7,6 +7,7 @@ import {
   Grid,
   Typography,
   Switch,
+  IconButton,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -20,6 +21,8 @@ import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import SplitPopOver from "../../../common/SplitPopOver";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
 
@@ -258,6 +261,12 @@ const RightPanel = ({ currentIndex, player }) => {
     setSourceText(copySub);
   };
 
+  const onDelete = (index) => {
+    const copySub = [...sourceText];
+    copySub.splice(index, 1);
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -269,9 +278,6 @@ const RightPanel = ({ currentIndex, player }) => {
         flexDirection="column"
       >
         <Grid display={"flex"} direction={"row"} flexWrap={"wrap"}>
-          {/* <Button variant="contained" className={classes.findBtn}>
-          Find/Search
-        </Button> */}
           <FindAndReplace
             sourceData={sourceText}
             subtitleDataKey={"text"}
@@ -420,11 +426,39 @@ const RightPanel = ({ currentIndex, player }) => {
                     {index < sourceText.length - 1 && (
                       <Button
                         variant="contained"
+                        sx={{
+                          backgroundColor: "#0083e2",
+                          borderRadius: "7px",
+                        }}
                         onClick={() => onMergeClick(item, index)}
                       >
                         Merge Next
                       </Button>
                     )}
+
+                    <Box>
+                      {/* <IconButton
+                      color="primary"
+                      onClick={() => onAdd(index)}
+                    >
+                      <AddCircleOutlineIcon />
+                    </IconButton> */}
+
+                      <IconButton
+                        color="error"
+                        sx={{
+                          backgroundColor: "#19ab27",
+                          borderRadius: "50%",
+                          color: "#fff",
+                          "&:hover": {
+                            backgroundColor: "#271e4f",
+                          },
+                        }}
+                        onClick={() => onDelete(index)}
+                      >
+                        <DeleteOutlineIcon />
+                      </IconButton>
+                    </Box>
                   </Grid>
                 </CardContent>
               </>
