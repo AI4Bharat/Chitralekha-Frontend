@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import {
   Button,
@@ -20,6 +20,8 @@ import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import SplitPopOver from "../../../common/SplitPopOver";
+import DT from "duration-time-conversion";
+import Sub from "../../../utils/Sub";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -33,6 +35,22 @@ const RightPanel = ({ currentIndex, player }) => {
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
+  const newSub = useCallback((item) => new Sub(item), []);
+
+  const formatSub = useCallback(
+    (sub) => {
+      if (Array.isArray(sub)) {
+        return sub.map((item) => newSub(item));
+      }
+      return newSub(sub);
+    },
+    [newSub]
+  );
+
+  const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
+
+  const copySubs = useCallback(() => formatSub(subtitles), [subtitles, formatSub]);
+
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -41,7 +59,17 @@ const RightPanel = ({ currentIndex, player }) => {
   });
 
   const [showPopOver, setShowPopOver] = useState(false);
+
+  const [selectionStart, setSelectionStart] = useState();
+  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] = useState();
+  const [anchorEle, setAnchorEle] = useState(null);
+  const [anchorPos, setAnchorPos] = useState({
+    positionX: 0,
+    positionY: 0
+  })
   const [enableTransliteration, setTransliteration] = useState(true);
+  const [showSplitButton, setShowSplitButton] = useState(false);
+
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -52,8 +80,9 @@ const RightPanel = ({ currentIndex, player }) => {
     const newItemObj = existingsourceData[index];
 
     newItemObj["end_time"] = existingsourceData[index + 1]["end_time"];
-    newItemObj["text"] =
-      newItemObj["text"] + existingsourceData[index + 1]["text"];
+
+    newItemObj["text"] = newItemObj["text"] + " " + existingsourceData[index + 1]["text"];
+
 
     existingsourceData[index] = newItemObj;
     existingsourceData.splice(index + 1, 1);
@@ -63,13 +92,75 @@ const RightPanel = ({ currentIndex, player }) => {
     saveTranscriptHandler(false, true, existingsourceData);
   };
 
-  const onMouseUp = (e) => {
-    // setShowPopOver(true)
-    // e.preventDefault();
-    // console.log("event ---- ", e);
-    // console.log("selection start --- ", e.target.selectionStart);
-    // console.log("text length --- ", e.target.value.length);
-  };
+  const onMouseUp = (e, blockIdx) => {
+
+    if (e.target.selectionStart < e.target.value.length) {
+      e.preventDefault();
+      setShowPopOver(true);
+      setAnchorEle(e.currentTarget);
+      setCurrentIndexToSplitTextBlock(blockIdx);
+      setSelectionStart(e.target.selectionStart);
+      setAnchorPos({
+        positionX: e.clientX,
+        positionY: e.clientY
+      })
+    }
+
+  }
+
+  const onSplitClick = () => {
+
+    setShowPopOver(false)
+    const copySub = copySubs();
+
+    const targetTextBlock = sourceText[currentIndexToSplitTextBlock];
+    const index = hasSub(subtitles[currentIndexToSplitTextBlock]);
+
+    const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
+    const text2 = targetTextBlock.text.slice(selectionStart).trim();
+
+    if (!text1 || !text2) return;
+
+    const splitDuration = (
+      targetTextBlock.duration *
+      (selectionStart / targetTextBlock.text.length)
+    ).toFixed(3);
+
+    if (
+      splitDuration < 0.2 ||
+      targetTextBlock.duration - splitDuration < 0.2
+    )
+      return;
+
+    copySub.splice(currentIndexToSplitTextBlock, 1);
+    const middleTime = DT.d2t(
+      targetTextBlock.startTime + parseFloat(splitDuration)
+    );
+
+    copySub.splice(
+      index,
+      0,
+      newSub({
+        start_time: subtitles[currentIndexToSplitTextBlock].start_time,
+        end_time: middleTime,
+        text: text1,
+      })
+    );
+
+    copySub.splice(
+      index + 1,
+      0,
+      newSub({
+        start_time: middleTime,
+        end_time: subtitles[currentIndexToSplitTextBlock].end_time,
+        text: text2,
+      })
+    );
+
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    setSourceText(copySub);
+    saveTranscriptHandler(false, true, copySub);
+  }
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
@@ -200,13 +291,20 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Complete
           </Button>
-          <Grid display={"flex"} alignItems={"center"} paddingX={2}>
-            <Typography>Transliteration</Typography>
+          <Box display={"flex"} alignItems={"center"} paddingX={2}>
+            <Typography variant="subtitle2">Transliteration</Typography>
             <Switch
               checked={enableTransliteration}
               onChange={() => setTransliteration(!enableTransliteration)}
             />
-          </Grid>
+          </Box>
+          {/* <Box display={"flex"} alignItems={"center"} paddingX={2}>
+            <Typography variant="subtitle2">Split</Typography>
+            <Switch
+              checked={showSplitButton}
+              onChange={() => setShowSplitButton(!showSplitButton)}
+            />
+          </Box> */}
         </Grid>
         <Box
           sx={{
@@ -291,7 +389,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index);
                       }}
-                      onMouseUp={onMouseUp}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{
                         width: "100%",
                       }}
@@ -310,7 +408,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       onChange={(event) => {
                         changeTranscriptHandler(event.target.value, index);
                       }}
-                      onMouseUp={onMouseUp}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
                       className={`${classes.customTextarea} ${
                         currentIndex === index ? classes.boxHighlight : ""
@@ -334,10 +432,10 @@ const RightPanel = ({ currentIndex, player }) => {
           })}
           <SplitPopOver
             open={showPopOver}
-            handleClosePopOver={() => {
-              setShowPopOver(false);
-            }}
-            // anchorEl={}
+            handleClosePopOver={() => { setShowPopOver(false) }}
+            anchorEl={anchorEle}
+            anchorPosition={anchorPos}
+            onSplitClick={onSplitClick}
           />
         </Box>
       </Box>
