@@ -13,7 +13,7 @@ import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 
-const RightPanel = ({ currentIndex }) => {
+const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const RightPanel = ({ currentIndex }) => {
     setSourceText(updatedSource);
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
-  }
+  };
 
   const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
@@ -78,7 +78,11 @@ const RightPanel = ({ currentIndex }) => {
     if (res.ok) {
       setSnackbarInfo({
         open: isAutosave,
-        message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "",
+        message: resp?.message
+          ? resp?.message
+          : isAutosave
+          ? "Saved as draft"
+          : "",
         variant: "success",
       });
       if (isFinal) {
@@ -109,6 +113,19 @@ const RightPanel = ({ currentIndex }) => {
         message={snackbar.message}
       />
     );
+  };
+
+  const handleTimeChange = (value, index, type) => {
+    const copySub = [...sourceText];
+
+    if (type === "startTime") {
+      copySub[index].start_time = value;
+    } else {
+      copySub[index].end_time = value;
+    }
+
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    setSourceText(copySub);
   };
 
   return (
@@ -157,20 +174,30 @@ const RightPanel = ({ currentIndex }) => {
             color: "white",
             marginTop: "5px",
             width: "100%",
-            textAlign: "center"
+            textAlign: "center",
           }}
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
             return (
               <>
-                <Box display="flex" padding="10px 0px 0" width={"100%"} justifyContent="center" >
+                <Box
+                  display="flex"
+                  padding="10px 0px 0"
+                  width={"100%"}
+                  justifyContent="space-around"
+                >
                   <TextField
                     variant="outlined"
+                    type="time"
                     value={item.start_time}
+                    onChange={(event) =>
+                      handleTimeChange(event.target.value, index, "startTime")
+                    }
+                    inputProps={{ step: 1 }}
                     sx={{
+                      width: "25%",
                       "& .MuiOutlinedInput-root": {
-                        width: "85%",
                         backgroundColor: "#616A6B  ",
                         color: "white",
                       },
@@ -179,15 +206,23 @@ const RightPanel = ({ currentIndex }) => {
                         padding: "7px 14px",
                         textAlign: "center",
                       },
+                      '& input[type="time"]::-webkit-calendar-picker-indicator':
+                        {
+                          color: "#fff",
+                        },
                     }}
                   />
 
                   <TextField
                     variant="outlined"
+                    type="time"
                     value={item.end_time}
+                    onChange={(event) =>
+                      handleTimeChange(event.target.value, index, "endTime")
+                    }
                     sx={{
+                      width: "25%",
                       "& .MuiOutlinedInput-root": {
-                        width: "85%",
                         marginLeft: "auto",
                         backgroundColor: "#616A6B",
                         color: "white",
@@ -202,19 +237,26 @@ const RightPanel = ({ currentIndex }) => {
                 </Box>
 
                 <CardContent
-                  sx={{ display: "flex", paddingX: 0, borderBottom: 2, alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    paddingX: 0,
+                    borderBottom: 2,
+                    alignItems: "center",
+                  }}
                 >
-                  {taskData?.src_language === "en" ?
+                  {taskData?.src_language === "en" ? (
                     <textarea
                       onChange={(event) => {
                         changeTranscriptHandler(event.target.value, index);
                       }}
                       value={item.text}
-                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                        }`}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
                       rows={4}
                     />
-                    : <IndicTransliterate
+                  ) : (
+                    <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
                       onChangeText={(text) => {
@@ -225,13 +267,15 @@ const RightPanel = ({ currentIndex }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                          className={`${classes.customTextarea} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                           rows={4}
                           {...props}
                         />
                       )}
-                    />}
+                    />
+                  )}
                 </CardContent>
               </>
             );
