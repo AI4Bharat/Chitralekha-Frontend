@@ -397,7 +397,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{
-                        width: "100%",
+                        width: "90%",
                       }}
                       renderComponent={(props) => (
                         <textarea
