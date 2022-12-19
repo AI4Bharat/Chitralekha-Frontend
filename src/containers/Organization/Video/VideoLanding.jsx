@@ -163,7 +163,7 @@ const VideoLanding = () => {
   const onSplit = useCallback(() => {
     const copySub = copySubs();
 
-    console.log("copySub ------ ", copySub[currentIndex]);
+    console.log("copySub ------- ", copySub[currentIndex]);
 
     const index = hasSub(subs[currentIndex]);
 
