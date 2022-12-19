@@ -215,7 +215,7 @@ const RightPanel = ({ currentIndex, player }) => {
             borderTop: "1px solid #eaeaea",
             overflowY: "scroll",
             overflowX: "hidden",
-            height: window.innerHeight * 0.665,
+            height: window.innerHeight * 0.63,
             backgroundColor: "black",
             color: "white",
             marginTop: "5px",
