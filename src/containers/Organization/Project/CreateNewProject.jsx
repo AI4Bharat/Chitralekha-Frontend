@@ -93,7 +93,7 @@ const CreatenewProject = () => {
         message:  resp?.message,
         variant: "success",
       })
-
+      navigate(`/my-organization/${orgId}/project/${newProjectDetails.id}`, { replace: true });
     } else {
       setSnackbarInfo({
         open: true,
@@ -102,12 +102,6 @@ const CreatenewProject = () => {
       })
     }
   };
-
-  useEffect(() => {
-    if (newProjectDetails.id) {
-        navigate(`/my-organization/${orgId}/project/${newProjectDetails.id}`, { replace: true });
-      }
-  }, [newProjectDetails]);
 
   const renderSnackBar = () => {
     return (
