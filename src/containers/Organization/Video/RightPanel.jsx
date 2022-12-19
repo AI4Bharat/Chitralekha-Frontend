@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, TextField, CardContent, Grid, Typography, Switch } from "@mui/material";
+import {
+  Button,
+  TextField,
+  CardContent,
+  Grid,
+  Typography,
+  Switch,
+} from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +21,7 @@ import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import SplitPopOver from "../../../common/SplitPopOver";
 
-const RightPanel = ({ currentIndex }) => {
+const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
   const classes = ProjectStyle();
   const navigate = useNavigate();
@@ -34,7 +41,7 @@ const RightPanel = ({ currentIndex }) => {
   });
 
   const [showPopOver, setShowPopOver] = useState(false);
-  const [enableTransliteration, setTransliteration] = useState(true)
+  const [enableTransliteration, setTransliteration] = useState(true);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -45,15 +52,16 @@ const RightPanel = ({ currentIndex }) => {
     const newItemObj = existingsourceData[index];
 
     newItemObj["end_time"] = existingsourceData[index + 1]["end_time"];
-    newItemObj["text"] = newItemObj["text"] + existingsourceData[index + 1]["text"];
+    newItemObj["text"] =
+      newItemObj["text"] + existingsourceData[index + 1]["text"];
 
     existingsourceData[index] = newItemObj;
     existingsourceData.splice(index + 1, 1);
 
     dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
-    setSourceText(existingsourceData)
+    setSourceText(existingsourceData);
     saveTranscriptHandler(false, true, existingsourceData);
-  }
+  };
 
   const onMouseUp = (e) => {
     // setShowPopOver(true)
@@ -61,13 +69,13 @@ const RightPanel = ({ currentIndex }) => {
     // console.log("event ---- ", e);
     // console.log("selection start --- ", e.target.selectionStart);
     // console.log("text length --- ", e.target.value.length);
-  }
+  };
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
-  }
+  };
 
   const changeTranscriptHandler = (text, index) => {
     const arr = [...sourceText];
@@ -82,7 +90,11 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal, isAutosave, payload = sourceText) => {
+  const saveTranscriptHandler = async (
+    isFinal,
+    isAutosave,
+    payload = sourceText
+  ) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -105,7 +117,11 @@ const RightPanel = ({ currentIndex }) => {
     if (res.ok) {
       setSnackbarInfo({
         open: isAutosave,
-        message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "",
+        message: resp?.message
+          ? resp?.message
+          : isAutosave
+          ? "Saved as draft"
+          : "",
         variant: "success",
       });
       if (isFinal) {
@@ -136,6 +152,19 @@ const RightPanel = ({ currentIndex }) => {
         message={snackbar.message}
       />
     );
+  };
+
+  const handleTimeChange = (value, index, type) => {
+    const copySub = [...sourceText];
+
+    if (type === "startTime") {
+      copySub[index].start_time = value;
+    } else {
+      copySub[index].end_time = value;
+    }
+
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    setSourceText(copySub);
   };
 
   return (
@@ -175,7 +204,7 @@ const RightPanel = ({ currentIndex }) => {
             <Typography>Transliteration</Typography>
             <Switch
               checked={enableTransliteration}
-              onChange={()=>setTransliteration(!enableTransliteration)}
+              onChange={() => setTransliteration(!enableTransliteration)}
             />
           </Grid>
         </Grid>
@@ -191,20 +220,30 @@ const RightPanel = ({ currentIndex }) => {
             color: "white",
             marginTop: "5px",
             width: "100%",
-            textAlign: "center"
+            textAlign: "center",
           }}
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
             return (
               <>
-                <Box display="flex" padding="10px 0px 0" width={"100%"} justifyContent="center" >
+                <Box
+                  display="flex"
+                  padding="10px 0px 0"
+                  width={"100%"}
+                  justifyContent="space-around"
+                >
                   <TextField
                     variant="outlined"
+                    type="time"
                     value={item.start_time}
+                    onChange={(event) =>
+                      handleTimeChange(event.target.value, index, "startTime")
+                    }
+                    inputProps={{ step: 1 }}
                     sx={{
+                      width: "25%",
                       "& .MuiOutlinedInput-root": {
-                        width: "85%",
                         backgroundColor: "#616A6B  ",
                         color: "white",
                       },
@@ -213,16 +252,23 @@ const RightPanel = ({ currentIndex }) => {
                         padding: "7px 14px",
                         textAlign: "center",
                       },
+                      '& input[type="time"]::-webkit-calendar-picker-indicator':
+                        {
+                          color: "#fff",
+                        },
                     }}
                   />
 
                   <TextField
                     variant="outlined"
+                    type="time"
                     value={item.end_time}
+                    onChange={(event) =>
+                      handleTimeChange(event.target.value, index, "endTime")
+                    }
                     sx={{
+                      width: "25%",
                       "& .MuiOutlinedInput-root": {
-                        width: "85%",
-                        marginLeft: "auto",
                         backgroundColor: "#616A6B",
                         color: "white",
                       },
@@ -238,7 +284,7 @@ const RightPanel = ({ currentIndex }) => {
                 <CardContent
                   sx={{ paddingX: 0, borderBottom: 2, alignItems: "center" }}
                 >
-                  {taskData?.src_language !== "en" && enableTransliteration ?
+                  {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
@@ -251,38 +297,47 @@ const RightPanel = ({ currentIndex }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                          className={`${classes.customTextarea} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                           rows={4}
                           {...props}
                         />
                       )}
                     />
-                    : <textarea
+                  ) : (
+                    <textarea
                       onChange={(event) => {
                         changeTranscriptHandler(event.target.value, index);
                       }}
                       onMouseUp={onMouseUp}
                       value={item.text}
-                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                        }`}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
                       rows={4}
-                    />}
-                  <Grid
-                    display={"flex"}
-                    justifyContent={"space-around"}
-                  >
-                    {index < sourceText.length - 1 && <Button variant="contained" onClick={() => onMergeClick(item, index)}>Merge Next</Button>}
+                    />
+                  )}
+                  <Grid display={"flex"} justifyContent={"space-around"}>
+                    {index < sourceText.length - 1 && (
+                      <Button
+                        variant="contained"
+                        onClick={() => onMergeClick(item, index)}
+                      >
+                        Merge Next
+                      </Button>
+                    )}
                   </Grid>
-
                 </CardContent>
               </>
             );
           })}
           <SplitPopOver
             open={showPopOver}
-            handleClosePopOver={() => { setShowPopOver(false) }}
-          // anchorEl={}
+            handleClosePopOver={() => {
+              setShowPopOver(false);
+            }}
+            // anchorEl={}
           />
         </Box>
       </Box>

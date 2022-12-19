@@ -432,7 +432,7 @@ const VideoLanding = () => {
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} />
+            <RightPanel currentIndex={currentIndex} player={player}/>
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
