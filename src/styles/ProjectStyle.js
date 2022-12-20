@@ -372,6 +372,7 @@ const ProjectStyle = makeStyles({
 
   menuItemNav: {
     borderRadius: "6px",
+    zIndex: "20"
   },
 
   operate: {

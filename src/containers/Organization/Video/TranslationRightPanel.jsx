@@ -137,6 +137,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         sourceData={sourceText}
                         subtitleDataKey={"target_text"}
                         onReplacementDone={onReplacementDone}
+                        enableTransliteration={enableTransliteration}
+                        transliterationLang={taskData?.target_language}
                     />
                     <Button
                         variant="contained"
@@ -169,7 +171,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         overflowX: "hidden",
                         height: window.innerHeight * 0.63,
                         backgroundColor: "black",
-                        color: "white",
+                        // color: "white",
                         marginTop: "5px",
                     }}
                     className={"subTitleContainer"}
@@ -179,7 +181,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                             <>
                                 <Box
                                     display="flex"
-                                    padding="16px"
+                                    paddingTop="16px"
                                     sx={{ paddingX: 0, justifyContent: "space-around" }}
                                 >
                                     <TextField
@@ -188,7 +190,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 width: "85%",
-                                                backgroundColor: "#616A6B  ",
+                                                backgroundColor: "#616A6B",
                                                 color: "white",
                                             },
                                             "& .MuiOutlinedInput-input": {
@@ -219,7 +221,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                 </Box>
 
                                 <CardContent
-                                    sx={{ display: "flex", paddingX: 0, borderBottom: 2 }}
+                                    sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }}
                                 >
                                     <textarea
                                         rows={4}
@@ -228,7 +230,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                         contentEditable={false}
                                         defaultValue={item.text}
                                     />
-                                    {taskData?.src_language !== "en" && enableTransliteration ?
+                                    {enableTransliteration ?
                                         <IndicTransliterate
                                             lang={taskData?.target_language}
                                             value={item.target_text}
