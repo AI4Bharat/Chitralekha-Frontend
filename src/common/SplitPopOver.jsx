@@ -2,7 +2,6 @@ import { Button, Grid, Popover, Typography } from '@mui/material';
 import React from 'react'
 
 const SplitPopOver = ({open, handleClosePopOver, anchorEl, anchorPosition, onSplitClick}) => {
-    console.log(anchorPosition,'anchorPos');
     return (
         <Popover
             id={"'simple-popover'"}

@@ -24,9 +24,8 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 // import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
- import FileDownloadIcon from '@mui/icons-material/FileDownload';
- import PreviewIcon from '@mui/icons-material/Preview';
-
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -93,7 +92,7 @@ const TaskList = () => {
 
   // const getTranscriptionSourceComparison = (id, source) => {
   const datvalue = useSelector((state) => state.getExportTranscription.data);
- 
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -142,7 +141,7 @@ const TaskList = () => {
     }
   };
 
-  const handleokTranslation =async() =>{
+  const handleokTranslation = async () => {
     const apiObj = new exportTranslationAPI(taskdata, exportTranslation);
     //dispatch(APITransport(apiObj));
     setOpen(false);
@@ -163,7 +162,6 @@ const TaskList = () => {
       link.parentNode.removeChild(link);
 
       window.URL.revokeObjectURL(blobUrl);
-    
     } else {
       setSnackbarInfo({
         open: true,
@@ -171,8 +169,7 @@ const TaskList = () => {
         variant: "error",
       });
     }
-
-  }
+  };
 
   const handleClickRadioButton = (e) => {
     setExportTranscription(e.target.value);
@@ -256,20 +253,18 @@ const TaskList = () => {
   };
 
   const renderViewButton = (tableData) => {
-
     return (
       tableData.rowData[5] === "NEW" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
-          <IconButton>
-            <PreviewIcon
-              color="primary"
-              onClick={() => {
-                setOpenViewTaskDialog(true);
-                setCurrentTaskDetails(tableData.rowData);
-              }}
-            />
+          <IconButton
+            onClick={() => {
+              setOpenViewTaskDialog(true);
+              setCurrentTaskDetails(tableData.rowData);
+            }}
+          >
+            <PreviewIcon color="primary" />
           </IconButton>
         </Tooltip>
 
@@ -288,12 +283,14 @@ const TaskList = () => {
     return (
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
-          <IconButton>
+          <IconButton
+            onClick={() =>
+              handleClickOpen(tableData.rowData[0], tableData.rowData[1])
+            }
+          >
             <FileDownloadIcon
               color="primary"
-              onClick={() =>
-                handleClickOpen(tableData.rowData[0], tableData.rowData[1])
-              }
+
               // onClick={() =>
               //   handleClickOpen(tableData.rowData[0], tableData.rowData[1])
               // }
@@ -303,7 +300,7 @@ const TaskList = () => {
 
         // <CustomButton
         //   className={classes.tableButton}
-        //   label="Export" 
+        //   label="Export"
         //   onClick={() => handleClickOpen(tableData.rowData[0])}
         // />
       )
@@ -313,31 +310,29 @@ const TaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      (((tableData.rowData[5] === "SELECTED_SOURCE" || tableData.rowData[5] === "INPROGRESS") &&
+      (((tableData.rowData[5] === "SELECTED_SOURCE" ||
+        tableData.rowData[5] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
         (tableData.rowData[5] !== "COMPLETE" &&
           (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
         <Tooltip title="Edit">
-          <IconButton>
-            <EditIcon
-              color="primary"
-              onClick={() => {
-                if (
-                  tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                  tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-                ) {
-                  navigate(`/task/${tableData.rowData[0]}/transcript`);
-                } else {
-                  navigate(`/task/${tableData.rowData[0]}/translate`);
-                }
-
-              }}
-            />
+          <IconButton
+            onClick={() => {
+              if (
+                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
+              ) {
+                navigate(`/task/${tableData.rowData[0]}/transcript`);
+              } else {
+                navigate(`/task/${tableData.rowData[0]}/translate`);
+              }
+            }}
+          >
+            <EditIcon color="primary" />
           </IconButton>
         </Tooltip>
-        
       )
     );
   };
@@ -345,11 +340,8 @@ const TaskList = () => {
   const renderDeleteButton = (tableData) => {
     return (
       <Tooltip title="Delete">
-        <IconButton>
-          <DeleteIcon
-            color="error"
-            onClick={() => handledeletetask(tableData.rowData[0])}
-          />
+        <IconButton onClick={() => handledeletetask(tableData.rowData[0])}>
+          <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
 
@@ -378,8 +370,7 @@ const TaskList = () => {
         el.video_name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }
-      else if (
+      } else if (
         el.src_language?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
@@ -396,20 +387,18 @@ const TaskList = () => {
   };
 
   const result =
-  taskList && taskList.length > 0
-    ? pageSearch().map((item, i) => {
-        return [
-          item.id,
-          item.task_type,
-          item.video_name,
-          item.src_language,
-          item.target_language,
-          item.status,
-          
-        ];
-      })
-    : [];
-
+    taskList && taskList.length > 0
+      ? pageSearch().map((item, i) => {
+          return [
+            item.id,
+            item.task_type,
+            item.video_name,
+            item.src_language,
+            item.target_language,
+            item.status,
+          ];
+        })
+      : [];
 
   const columns = [
     {
@@ -527,18 +516,23 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px",padding: "16px",textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
               {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.taskAction &&  renderViewButton(tableMeta)}
+                ?.taskAction && renderViewButton(tableMeta)}
               {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.taskAction && renderEditButton(tableMeta)}
+                ?.taskAction && renderEditButton(tableMeta)}
               {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.taskAction && renderExportButton(tableMeta)}
+                ?.taskAction && renderExportButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
             </Box>
 
@@ -666,7 +660,11 @@ const TaskList = () => {
             tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton onClick={handleok} label="Export" autoFocus />
             ) : (
-              <CustomButton onClick={handleokTranslation} label="Export" autoFocus />
+              <CustomButton
+                onClick={handleokTranslation}
+                label="Export"
+                autoFocus
+              />
             )}
           </DialogActions>
         </DialogContent>
@@ -676,7 +674,7 @@ const TaskList = () => {
 
   return (
     <>
-    <Search/>
+      <Search />
       <Grid>{renderSnackBar()}</Grid>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />

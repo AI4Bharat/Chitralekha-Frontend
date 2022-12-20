@@ -161,7 +161,7 @@ const ProjectStyle = makeStyles({
   },
 
   customTextarea: {
-    margin: "5px 15px 15px 23px",
+    margin: "5px 20px 15px 23px",
     padding: "16.5px 12px",
     fontSize: "1.25rem",
     fontWeight: "400",

@@ -121,25 +121,21 @@ const VideoList = ({ data, removeVideo }) => {
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
 
                 <Tooltip title="View">
-                  <IconButton>
-                    <PreviewIcon
-                      color="primary"
-                      onClick={() => handleVideoDialog(item)}
-                    />
+                  <IconButton onClick={() => handleVideoDialog(item)}>
+                    <PreviewIcon color="primary" />
                   </IconButton>
                 </Tooltip>
 
                 {roles.filter((role) => role.value === userData?.role)[0]
                   ?.permittedToCreateTask && (
                   <Tooltip title="Create Task">
-                    <IconButton>
-                      <NoteAddIcon
-                        color="primary"
-                        onClick={() => {
-                          setOpenCreateTaskDialog(true);
-                          setCurrentVideoDetails(item);
-                        }}
-                      />
+                    <IconButton
+                      onClick={() => {
+                        setOpenCreateTaskDialog(true);
+                        setCurrentVideoDetails(item);
+                      }}
+                    >
+                      <NoteAddIcon color="primary" />
                     </IconButton>
                   </Tooltip>
                 )}
@@ -147,11 +143,8 @@ const VideoList = ({ data, removeVideo }) => {
                 {roles.filter((role) => role.value === userData?.role)[0]
                   ?.permittedToDeleteVideoAudio && (
                   <Tooltip title="Delete">
-                    <IconButton>
-                      <DeleteIcon
-                        color="error"
-                        onClick={() => handleDeleteVideo(item.id)}
-                      />
+                    <IconButton onClick={() => handleDeleteVideo(item.id)}>
+                      <DeleteIcon color="error" />
                     </IconButton>
                   </Tooltip>
                 )}
