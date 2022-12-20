@@ -127,7 +127,7 @@ const CreatenewProject = () => {
 
         <Box>
           <Typography gutterBottom component="div" label="Required">
-            Title*:
+            Title*
           </Typography>
           <OutlinedTextField
             fullWidth
@@ -138,7 +138,7 @@ const CreatenewProject = () => {
 
         <Box sx={{ mt: 3 }}>
           <Typography gutterBottom component="div" label="Required" multiline>
-            Description:
+            Description
           </Typography>
           <OutlinedTextField
             fullWidth
@@ -148,7 +148,7 @@ const CreatenewProject = () => {
         </Box>
         <Box sx={{ mt: 3 }}>
         <Typography gutterBottom component="div" label="Required">
-            Managers *:
+            Managers*
           </Typography>
         <FormControl fullWidth>
             <Select

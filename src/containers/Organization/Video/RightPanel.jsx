@@ -8,6 +8,7 @@ import {
   Typography,
   Switch,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -25,6 +26,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
+import MergeIcon from "@mui/icons-material/Merge";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -52,7 +54,10 @@ const RightPanel = ({ currentIndex, player }) => {
 
   const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
 
-  const copySubs = useCallback(() => formatSub(subtitles), [subtitles, formatSub]);
+  const copySubs = useCallback(
+    () => formatSub(subtitles),
+    [subtitles, formatSub]
+  );
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -64,15 +69,15 @@ const RightPanel = ({ currentIndex, player }) => {
   const [showPopOver, setShowPopOver] = useState(false);
 
   const [selectionStart, setSelectionStart] = useState();
-  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] = useState();
+  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
+    useState();
   const [anchorEle, setAnchorEle] = useState(null);
   const [anchorPos, setAnchorPos] = useState({
     positionX: 0,
-    positionY: 0
-  })
+    positionY: 0,
+  });
   const [enableTransliteration, setTransliteration] = useState(true);
   const [showSplitButton, setShowSplitButton] = useState(false);
-
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -84,8 +89,8 @@ const RightPanel = ({ currentIndex, player }) => {
 
     newItemObj["end_time"] = existingsourceData[index + 1]["end_time"];
 
-    newItemObj["text"] = newItemObj["text"] + " " + existingsourceData[index + 1]["text"];
-
+    newItemObj["text"] =
+      newItemObj["text"] + " " + existingsourceData[index + 1]["text"];
 
     existingsourceData[index] = newItemObj;
     existingsourceData.splice(index + 1, 1);
@@ -96,24 +101,21 @@ const RightPanel = ({ currentIndex, player }) => {
   };
 
   const onMouseUp = (e, blockIdx) => {
-
     if (e.target.selectionStart < e.target.value.length) {
       e.preventDefault();
+      setAnchorPos({
+        positionX: e.clientX,
+        positionY: e.clientY,
+      });
       setShowPopOver(true);
       setAnchorEle(e.currentTarget);
       setCurrentIndexToSplitTextBlock(blockIdx);
       setSelectionStart(e.target.selectionStart);
-      setAnchorPos({
-        positionX: e.clientX,
-        positionY: e.clientY
-      })
     }
-
-  }
+  };
 
   const onSplitClick = () => {
-
-    setShowPopOver(false)
+    setShowPopOver(false);
     const copySub = copySubs();
 
     const targetTextBlock = sourceText[currentIndexToSplitTextBlock];
@@ -129,10 +131,7 @@ const RightPanel = ({ currentIndex, player }) => {
       (selectionStart / targetTextBlock.text.length)
     ).toFixed(3);
 
-    if (
-      splitDuration < 0.2 ||
-      targetTextBlock.duration - splitDuration < 0.2
-    )
+    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
       return;
 
     copySub.splice(currentIndexToSplitTextBlock, 1);
@@ -163,7 +162,7 @@ const RightPanel = ({ currentIndex, player }) => {
     dispatch(setSubtitles(copySub, C.SUBTITLES));
     setSourceText(copySub);
     saveTranscriptHandler(false, true, copySub);
-  }
+  };
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
@@ -333,9 +332,10 @@ const RightPanel = ({ currentIndex, player }) => {
               <>
                 <Box
                   display="flex"
-                  padding="10px 0px 0"
-                  width={"100%"}
-                  justifyContent="space-around"
+                  padding="10px 0 0 20px"
+                  width={"95%"}
+                  justifyContent="center"
+                  alignItems={"center"}
                 >
                   <TextField
                     variant="outlined"
@@ -347,6 +347,7 @@ const RightPanel = ({ currentIndex, player }) => {
                     inputProps={{ step: 1 }}
                     sx={{
                       width: "25%",
+                      marginRight: "auto",
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: "#616A6B  ",
                         color: "white",
@@ -363,6 +364,43 @@ const RightPanel = ({ currentIndex, player }) => {
                     }}
                   />
 
+                  {index < sourceText.length - 1 && (
+                    <Tooltip title="Merge Next" placement="bottom">
+                      <IconButton
+                        sx={{
+                          backgroundColor: "#0083e2",
+                          borderRadius: "50%",
+                          marginRight: "10px",
+                          color: "#fff",
+                          transform: "rotate(180deg)",
+                          "&:hover": {
+                            backgroundColor: "#271e4f",
+                          },
+                        }}
+                        onClick={() => onMergeClick(item, index)}
+                      >
+                        <MergeIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+
+                  <Tooltip title="Delete" placement="bottom">
+                    <IconButton
+                      color="error"
+                      sx={{
+                        backgroundColor: "red",
+                        borderRadius: "50%",
+                        color: "#fff",
+                        "&:hover": {
+                          backgroundColor: "#271e4f",
+                        },
+                      }}
+                      onClick={() => onDelete(index)}
+                    >
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                  </Tooltip>
+
                   <TextField
                     variant="outlined"
                     type="time"
@@ -371,6 +409,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       handleTimeChange(event.target.value, index, "endTime")
                     }
                     sx={{
+                      marginLeft: "auto",
                       width: "25%",
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: "#616A6B",
@@ -386,7 +425,11 @@ const RightPanel = ({ currentIndex, player }) => {
                 </Box>
 
                 <CardContent
-                  sx={{ paddingX: 0, borderBottom: 2, alignItems: "center" }}
+                  sx={{
+                    padding: "5px 0",
+                    borderBottom: 2,
+                    alignItems: "center",
+                  }}
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
@@ -422,51 +465,15 @@ const RightPanel = ({ currentIndex, player }) => {
                       rows={4}
                     />
                   )}
-                  <Grid display={"flex"} justifyContent={"space-around"}>
-                    {index < sourceText.length - 1 && (
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#0083e2",
-                          borderRadius: "7px",
-                        }}
-                        onClick={() => onMergeClick(item, index)}
-                      >
-                        Merge Next
-                      </Button>
-                    )}
-
-                    <Box>
-                      {/* <IconButton
-                      color="primary"
-                      onClick={() => onAdd(index)}
-                    >
-                      <AddCircleOutlineIcon />
-                    </IconButton> */}
-
-                      <IconButton
-                        color="error"
-                        sx={{
-                          backgroundColor: "#19ab27",
-                          borderRadius: "50%",
-                          color: "#fff",
-                          "&:hover": {
-                            backgroundColor: "#271e4f",
-                          },
-                        }}
-                        onClick={() => onDelete(index)}
-                      >
-                        <DeleteOutlineIcon />
-                      </IconButton>
-                    </Box>
-                  </Grid>
                 </CardContent>
               </>
             );
           })}
           <SplitPopOver
             open={showPopOver}
-            handleClosePopOver={() => { setShowPopOver(false) }}
+            handleClosePopOver={() => {
+              setShowPopOver(false);
+            }}
             anchorEl={anchorEle}
             anchorPosition={anchorPos}
             onSplitClick={onSplitClick}
