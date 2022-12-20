@@ -281,6 +281,8 @@ const RightPanel = ({ currentIndex, player }) => {
             sourceData={sourceText}
             subtitleDataKey={"text"}
             onReplacementDone={onReplacementDone}
+            enableTransliteration={enableTransliteration}
+            transliterationLang={taskData?.src_language}
           />
           <Button
             variant="contained"
