@@ -137,6 +137,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         sourceData={sourceText}
                         subtitleDataKey={"target_text"}
                         onReplacementDone={onReplacementDone}
+                        enableTransliteration={enableTransliteration}
+                        transliterationLang={taskData?.target_language}
                     />
                     <Button
                         variant="contained"
