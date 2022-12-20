@@ -213,8 +213,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-          ? "Saved as draft"
-          : "",
+            ? "Saved as draft"
+            : "",
         variant: "success",
       });
       if (isFinal) {
@@ -358,9 +358,9 @@ const RightPanel = ({ currentIndex, player }) => {
                         textAlign: "center",
                       },
                       '& input[type="time"]::-webkit-calendar-picker-indicator':
-                        {
-                          color: "#fff",
-                        },
+                      {
+                        color: "#fff",
+                      },
                     }}
                   />
 
@@ -444,9 +444,8 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                            }`}
                           rows={4}
                           {...props}
                         />
@@ -459,50 +458,11 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
-                      className={`${classes.customTextarea} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
+                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                        }`}
                       rows={4}
                     />
                   )}
-                  <Grid display={"flex"} justifyContent={"space-around"}>
-                    {index < sourceText.length - 1 && (
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#0083e2",
-                          borderRadius: "7px",
-                        }}
-                        onClick={() => onMergeClick(item, index)}
-                      >
-                        Merge Next
-                      </Button>
-                    )}
-
-                    <Box>
-                      {/* <IconButton
-                      color="primary"
-                      onClick={() => onAdd(index)}
-                    >
-                      <AddCircleOutlineIcon />
-                    </IconButton> */}
-
-                      <IconButton
-                        color="error"
-                        sx={{
-                          backgroundColor: "#d32f2f",
-                          borderRadius: "50%",
-                          color: "#fff",
-                          "&:hover": {
-                            backgroundColor: "#271e4f",
-                          },
-                        }}
-                        onClick={() => onDelete(index)}
-                      >
-                        <DeleteOutlineIcon />
-                      </IconButton>
-                    </Box>
-                  </Grid>
                 </CardContent>
               </>
             );
