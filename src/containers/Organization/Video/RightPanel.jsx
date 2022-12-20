@@ -213,8 +213,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-          ? "Saved as draft"
-          : "",
+            ? "Saved as draft"
+            : "",
         variant: "success",
       });
       if (isFinal) {
@@ -320,7 +320,7 @@ const RightPanel = ({ currentIndex, player }) => {
             overflowX: "hidden",
             height: window.innerHeight * 0.63,
             backgroundColor: "black",
-            color: "white",
+            // color: "white",
             marginTop: "5px",
             width: "100%",
             textAlign: "center",
@@ -358,9 +358,9 @@ const RightPanel = ({ currentIndex, player }) => {
                         textAlign: "center",
                       },
                       '& input[type="time"]::-webkit-calendar-picker-indicator':
-                        {
-                          color: "#fff",
-                        },
+                      {
+                        color: "#fff",
+                      },
                     }}
                   />
 
@@ -444,9 +444,8 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                            }`}
                           rows={4}
                           {...props}
                         />
@@ -459,9 +458,8 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
-                      className={`${classes.customTextarea} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
+                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                        }`}
                       rows={4}
                     />
                   )}
