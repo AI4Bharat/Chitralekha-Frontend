@@ -92,7 +92,7 @@ const headerStyle = makeStyles({
         color: 'black',
     },
     Logo: {
-        width: '35px',
+        width: '45px',
     },
     navBtn: {
         color: "black",
