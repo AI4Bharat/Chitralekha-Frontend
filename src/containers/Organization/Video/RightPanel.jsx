@@ -321,7 +321,7 @@ const RightPanel = ({ currentIndex, player }) => {
             overflowX: "hidden",
             height: window.innerHeight * 0.63,
             backgroundColor: "black",
-            color: "white",
+            // color: "white",
             marginTop: "5px",
             width: "100%",
             textAlign: "center",
@@ -447,7 +447,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       <IconButton
                         color="error"
                         sx={{
-                          backgroundColor: "#19ab27",
+                          backgroundColor: "#d32f2f",
                           borderRadius: "50%",
                           color: "#fff",
                           "&:hover": {

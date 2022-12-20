@@ -169,7 +169,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         overflowX: "hidden",
                         height: window.innerHeight * 0.63,
                         backgroundColor: "black",
-                        color: "white",
+                        // color: "white",
                         marginTop: "5px",
                     }}
                     className={"subTitleContainer"}
