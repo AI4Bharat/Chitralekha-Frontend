@@ -111,7 +111,8 @@ const FindAndReplace = (props) => {
         <>
             <Button
                 variant="contained"
-                className={classes.findreplBtn}
+                className={classes.findBtn}
+                // className={classes.findreplBtn}
                 onClick={handleOpenModel}
             >
                 Find / Replace
@@ -202,8 +203,9 @@ const FindAndReplace = (props) => {
                             <Typography variant="caption" display={"flex"} sx={{ justifyContent: "end", paddingTop: 1 }}>{foundIndices?.length > 0 && `${currentFound + 1} / ${foundIndices?.length}`}</Typography>
                             <Grid
                                 display={"flex"}
-                                justifyContent={"space-between"}
+                                justifyContent={foundIndices?.length > 0 ?  "space-between" : "center"}
                                 sx={{ textAlign: foundIndices?.length > 0 ? "center" : "end" }}
+                                paddingY={3}
                             >
                                 {foundIndices?.length > 0 && <Button
                                     variant="contained"
@@ -237,6 +239,7 @@ const FindAndReplace = (props) => {
                                     onChangeText={(text) => {
                                         setReplaceValue(text);
                                     }}
+                                    disabled={!(foundIndices?.length > 0)}
                                     style={{
                                         width: "-webkit-fill-available",
                                         height: 50,
@@ -271,6 +274,8 @@ const FindAndReplace = (props) => {
                                 display={"flex"}
                                 flexDirection={"row"}
                                 justifyContent={"space-between"}
+                                alignItems={"center"}
+                                paddingY={3}
                             >
                                 <Button
                                     variant="contained"

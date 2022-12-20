@@ -276,7 +276,14 @@ const RightPanel = ({ currentIndex, player }) => {
         }}
         flexDirection="column"
       >
-        <Grid display={"flex"} direction={"row"} flexWrap={"wrap"}>
+        <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
+          <Box display={"flex"} alignItems={"center"} paddingX={2}>
+            <Typography variant="subtitle2">Transliteration</Typography>
+            <Switch
+              checked={enableTransliteration}
+              onChange={() => setTransliteration(!enableTransliteration)}
+            />
+          </Box>
           <FindAndReplace
             sourceData={sourceText}
             subtitleDataKey={"text"}
@@ -298,13 +305,7 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Complete
           </Button>
-          <Box display={"flex"} alignItems={"center"} paddingX={2}>
-            <Typography variant="subtitle2">Transliteration</Typography>
-            <Switch
-              checked={enableTransliteration}
-              onChange={() => setTransliteration(!enableTransliteration)}
-            />
-          </Box>
+          
           {/* <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Split</Typography>
             <Switch
@@ -462,6 +463,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       value={item.text}
                       className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
                         }`}
+                        style={{width: "90%"}}
                       rows={4}
                     />
                   )}
