@@ -75,6 +75,7 @@ const Header = () => {
       name: "Help",
       onClick: () => {
         handleCloseUserMenu();
+        window.open("https://github.com/AI4Bharat/Chitralekha/wiki", "blank");
       },
     },
   ];
