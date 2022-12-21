@@ -214,8 +214,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-            ? "Saved as draft"
-            : "",
+          ? "Saved as draft"
+          : "",
         variant: "success",
       });
       if (isFinal) {
@@ -249,9 +249,7 @@ const RightPanel = ({ currentIndex, player }) => {
   };
 
   const handleTimeChange = (value, index, type) => {
-    console.log(value, DT.t2d(value) , "-=-=-=-=-=-=-");
-    if(DT.t2d(value) <= player.duration) {
-      const copySub = [...sourceText];
+    const copySub = [...sourceText];
 
     if (type === "startTime") {
       copySub[index].start_time = value;
@@ -261,7 +259,6 @@ const RightPanel = ({ currentIndex, player }) => {
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
     setSourceText(copySub);
-    }
   };
 
   const onDelete = (index) => {
@@ -280,7 +277,13 @@ const RightPanel = ({ currentIndex, player }) => {
         }}
         flexDirection="column"
       >
-        <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
+        <Grid
+          display={"flex"}
+          direction={"row"}
+          flexWrap={"wrap"}
+          margin={"23.5px 0"}
+          justifyContent={"space-evenly"}
+        >
           <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Transliteration</Typography>
             <Switch
@@ -309,7 +312,7 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Complete
           </Button>
-          
+
           {/* <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Split</Typography>
             <Switch
@@ -397,7 +400,7 @@ const RightPanel = ({ currentIndex, player }) => {
                       handleTimeChange(event.target.value, index, "endTime")
                     }
                     className={classes.timeBox}
-                    style={{margin: "0 0 0 auto"}}
+                    style={{ margin: "0 0 0 auto" }}
                   />
                 </Box>
 
@@ -421,8 +424,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                          className={`${classes.customTextarea} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                           rows={4}
                           {...props}
                         />
@@ -435,9 +439,10 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
-                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                        }`}
-                        style={{width: "90%"}}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      style={{ width: "90%" }}
                       rows={4}
                     />
                   )}

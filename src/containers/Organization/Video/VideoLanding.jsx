@@ -60,8 +60,9 @@ const VideoLanding = () => {
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
   );
+
   const subs = useSelector((state) => state.commonReducer.subtitles);
-  console.log(fullscreen, "fullscreen");
+
   const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
 
   const newSub = useCallback((item) => new Sub(item), []);
@@ -162,8 +163,6 @@ const VideoLanding = () => {
 
   const onSplit = useCallback(() => {
     const copySub = copySubs();
-
-    console.log("copySub ------ ", copySub[currentIndex]);
 
     const index = hasSub(subs[currentIndex]);
 
