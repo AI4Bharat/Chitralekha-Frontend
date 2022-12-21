@@ -278,15 +278,15 @@ useEffect(() => {
                   </Card>
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-            <Typography variant="h6"  className={classes.modelTitle}>
+            {/* <Typography variant="h6"  className={classes.modelTitle}>
               Description
-            </Typography>
+            </Typography> */}
             <Typography
 
               variant="body1"
               style={{ textAlign: "justify", marginTop: "15px"}}
             >
-              {projectDetails.description}
+              {/* {projectDetails.description} */}
             </Typography>
             </Grid>
         

@@ -115,7 +115,7 @@ const FindAndReplace = (props) => {
                 // className={classes.findreplBtn}
                 onClick={handleOpenModel}
             >
-                Find / Replace
+                Find/Replace
             </Button>
             <Dialog
                 open={showFindReplaceModel}
