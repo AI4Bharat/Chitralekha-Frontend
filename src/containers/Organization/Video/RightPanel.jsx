@@ -27,6 +27,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
 import MergeIcon from "@mui/icons-material/Merge";
+import { clamp } from "lodash";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -213,8 +214,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-            ? "Saved as draft"
-            : "",
+          ? "Saved as draft"
+          : "",
         variant: "success",
       });
       if (isFinal) {
@@ -276,7 +277,13 @@ const RightPanel = ({ currentIndex, player }) => {
         }}
         flexDirection="column"
       >
-        <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
+        <Grid
+          display={"flex"}
+          direction={"row"}
+          flexWrap={"wrap"}
+          margin={"23.5px 0"}
+          justifyContent={"space-evenly"}
+        >
           <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Transliteration</Typography>
             <Switch
@@ -305,7 +312,7 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Complete
           </Button>
-          
+
           {/* <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Split</Typography>
             <Switch
@@ -340,31 +347,13 @@ const RightPanel = ({ currentIndex, player }) => {
                   justifyContent="center"
                   alignItems={"center"}
                 >
-                  <TextField
-                    variant="outlined"
+                  <input
                     type="time"
                     value={item.start_time}
                     onChange={(event) =>
                       handleTimeChange(event.target.value, index, "startTime")
                     }
-                    inputProps={{ step: 1 }}
-                    sx={{
-                      width: "25%",
-                      marginRight: "auto",
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#616A6B  ",
-                        color: "white",
-                      },
-                      "& .MuiOutlinedInput-input": {
-                        fontSize: "12px",
-                        padding: "7px 14px",
-                        textAlign: "center",
-                      },
-                      '& input[type="time"]::-webkit-calendar-picker-indicator':
-                      {
-                        color: "#fff",
-                      },
-                    }}
+                    className={classes.timeBox}
                   />
 
                   {index < sourceText.length - 1 && (
@@ -404,26 +393,14 @@ const RightPanel = ({ currentIndex, player }) => {
                     </IconButton>
                   </Tooltip>
 
-                  <TextField
-                    variant="outlined"
+                  <input
                     type="time"
                     value={item.end_time}
                     onChange={(event) =>
                       handleTimeChange(event.target.value, index, "endTime")
                     }
-                    sx={{
-                      marginLeft: "auto",
-                      width: "25%",
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#616A6B",
-                        color: "white",
-                      },
-                      "& .MuiOutlinedInput-input": {
-                        fontSize: "12px",
-                        padding: "7px 14px",
-                        textAlign: "center",
-                      },
-                    }}
+                    className={classes.timeBox}
+                    style={{ margin: "0 0 0 auto" }}
                   />
                 </Box>
 
@@ -447,8 +424,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                          className={`${classes.customTextarea} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                           rows={4}
                           {...props}
                         />
@@ -461,9 +439,10 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
-                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                        }`}
-                        style={{width: "90%"}}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      style={{ width: "90%" }}
                       rows={4}
                     />
                   )}

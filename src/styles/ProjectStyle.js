@@ -371,7 +371,7 @@ const ProjectStyle = makeStyles({
 
   menuItemNav: {
     borderRadius: "6px",
-    zIndex: "20"
+    zIndex: "20",
   },
 
   operate: {
@@ -444,6 +444,22 @@ const ProjectStyle = makeStyles({
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
     display: "flex",
     alignItems: "center",
+  },
+
+  timeBox: {
+    marginRight: "auto",
+    borderRadius: "4px",
+    width: "20%",
+    backgroundColor: "#616A6B",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "600",
+    padding: "7px 14px",
+    textAlign: "center",
+    fontFamily: "Roboto, sans-serif",
+    '&::-webkit-calendar-picker-indicator': {
+      display: "none",
+    },
   },
 });
 
