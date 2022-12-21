@@ -77,10 +77,6 @@ const ComparisonTable = () => {
     { id: 0, value: "" },
   ]);
 
-  // useEffect(()=>{
-  //   console.log("selectValue -------- ", selectValue);
-  // }, [])
-
   useEffect(() => {
     setSelectValue(getComparisonData());
   }, [comparsionData]);
@@ -182,7 +178,6 @@ const ComparisonTable = () => {
         })
         dispatch(setComparisonTable(rsp_data));
       } else {
-        ///console.log("failed");
         setSnackbarInfo({
           open: true,
           message: rsp_data?.message,
@@ -356,7 +351,7 @@ const ComparisonTable = () => {
             onChange={(e) => setSelectTranscriptType(e.target.value)}
             value={selectedTranscriptType}
           >
-            <MenuItem key={0} value={"MANUALLY_CREATED"}>Manually Created</MenuItem>
+            {/* <MenuItem key={0} value={"MANUALLY_CREATED"}>Manually Created</MenuItem> */}
             {filteredDropDown.map((el, i) => {
               return (
                 <MenuItem key={i} value={el.value}>

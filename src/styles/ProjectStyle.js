@@ -12,12 +12,16 @@ const ProjectStyle = makeStyles({
   },
 
   findBtn: {
+    width: "20%",
+    borderRadius: "7px",
+    backgroundColor: "#0083e2",
+  },
+  findreplBtn: {
     width: "30%",
     borderRadius: "7px",
     margin: "24px auto",
-    backgroundColor: "#0083e2",
+    backgroundColor: "#19ab27",
   },
-
   waveform: {
     position: "absolute",
     top: "0",
@@ -156,7 +160,7 @@ const ProjectStyle = makeStyles({
   },
 
   customTextarea: {
-    margin: "5px 15px 15px 23px",
+    margin: "5px 20px 15px 23px",
     padding: "16.5px 12px",
     fontSize: "1.25rem",
     fontWeight: "400",
@@ -367,6 +371,7 @@ const ProjectStyle = makeStyles({
 
   menuItemNav: {
     borderRadius: "6px",
+    zIndex: "20"
   },
 
   operate: {
@@ -398,7 +403,7 @@ const ProjectStyle = makeStyles({
     transform: "translateY(-50%)",
     "-webkit-transform": "translateY(-50%)",
     "-ms-transform": "translateY(-50%)",
-    overflow: "hidden"
+    overflow: "hidden",
   },
 
   fullscreenVideoBtn: {
@@ -409,10 +414,37 @@ const ProjectStyle = makeStyles({
     borderRadius: "4px",
     minWidth: "45px",
     padding: 0,
-    backgroundColor: "rgb(0 0 0 / 0)",
+    backgroundColor: "rgb(0 0 0 / 50%)",
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
-  }
+  },
+
+  contextMenu: {
+    position: "absolute",
+    zIndex: "9",
+    top: "0",
+    right: "0",
+    bottom: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "all",
+  },
+
+  playbackRate: {
+    position: "absolute",
+    bottom: "18%",
+    right: "38%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+    display: "flex",
+    alignItems: "center",
+  },
 });
 
 export default ProjectStyle;

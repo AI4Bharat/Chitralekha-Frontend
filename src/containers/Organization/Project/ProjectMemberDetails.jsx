@@ -117,11 +117,8 @@ const ProjectMemberDetails = () => {
               </Tooltip>
 
               <Tooltip title="Delete">
-                <IconButton>
-                  <DeleteIcon
-                    color="error"
-                    onClick={() => removeProjectMember(item.id)}
-                  />
+                <IconButton onClick={() => removeProjectMember(item.id)}>
+                  <DeleteIcon color="error" />
                 </IconButton>
               </Tooltip>
             </Box>,
@@ -185,7 +182,7 @@ const ProjectMemberDetails = () => {
           },
         }),
         setCellProps: () => ({
-          style: { textAlign: "center"},
+          style: { textAlign: "center" },
         }),
       },
     },

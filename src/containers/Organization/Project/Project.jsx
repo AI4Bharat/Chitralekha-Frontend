@@ -94,11 +94,8 @@ const Project = () => {
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data)
 
-  // const managerNames = useSelector((state) => state.getUserList.data
-  // );
 
  const userList = useSelector((state) => state.getOrganizatioUsers.data);
-console.log(userList,"userList")
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
     dispatch(APITransport(userObj));
@@ -437,7 +434,6 @@ useEffect(() => {
        addBtnClickHandler={addNewMemberHandler}
        selectFieldValue={addmembers}
        handleSelectField={(item)=>setAddmembers(item)}
-      // handleSelectField={(items)=>console.log(items)}
       />
     </Grid>
   );

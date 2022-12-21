@@ -56,7 +56,7 @@ const CreateTaskDialog = ({
     message: "",
     variant: "success",
   });
-console.log(language,"languagelanguage",taskType === "TRANSCRIPTION")
+  
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));

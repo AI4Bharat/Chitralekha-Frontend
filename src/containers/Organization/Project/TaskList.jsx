@@ -24,9 +24,8 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 // import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
- import FileDownloadIcon from '@mui/icons-material/FileDownload';
- import PreviewIcon from '@mui/icons-material/Preview';
-
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -50,6 +49,7 @@ import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
+import { roles } from "../../../utils/utils";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -73,6 +73,7 @@ const TaskList = () => {
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
   const [deleteTaskid, setDeleteTaskid] = useState();
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const navigate = useNavigate();
 
   const FetchTaskList = () => {
@@ -91,7 +92,7 @@ const TaskList = () => {
 
   // const getTranscriptionSourceComparison = (id, source) => {
   const datvalue = useSelector((state) => state.getExportTranscription.data);
- 
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -104,7 +105,6 @@ const TaskList = () => {
     setTaskdata(id);
     setTasktype(tasttype);
   };
-  console.log(tasktype, "tasktype");
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -141,7 +141,7 @@ const TaskList = () => {
     }
   };
 
-  const handleokTranslation =async() =>{
+  const handleokTranslation = async () => {
     const apiObj = new exportTranslationAPI(taskdata, exportTranslation);
     //dispatch(APITransport(apiObj));
     setOpen(false);
@@ -162,7 +162,6 @@ const TaskList = () => {
       link.parentNode.removeChild(link);
 
       window.URL.revokeObjectURL(blobUrl);
-    
     } else {
       setSnackbarInfo({
         open: true,
@@ -170,8 +169,7 @@ const TaskList = () => {
         variant: "error",
       });
     }
-
-  }
+  };
 
   const handleClickRadioButton = (e) => {
     setExportTranscription(e.target.value);
@@ -205,7 +203,6 @@ const TaskList = () => {
       headers: apiObj.getHeaders().headers,
     }).then(async (res) => {
       const rsp_data = await res.json();
-      console.log("rsp_data --------- ", rsp_data);
       if (res.ok) {
         dispatch(setComparisonTable(rsp_data));
         if (isSubmitCall) {
@@ -256,21 +253,18 @@ const TaskList = () => {
   };
 
   const renderViewButton = (tableData) => {
-    console.log(tableData, "tableDatatableData");
-
     return (
       tableData.rowData[5] === "NEW" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
-          <IconButton>
-            <PreviewIcon
-              color="primary"
-              onClick={() => {
-                setOpenViewTaskDialog(true);
-                setCurrentTaskDetails(tableData.rowData);
-              }}
-            />
+          <IconButton
+            onClick={() => {
+              setOpenViewTaskDialog(true);
+              setCurrentTaskDetails(tableData.rowData);
+            }}
+          >
+            <PreviewIcon color="primary" />
           </IconButton>
         </Tooltip>
 
@@ -286,16 +280,17 @@ const TaskList = () => {
     );
   };
   const renderExportButton = (tableData) => {
-    console.log(tableData, "tableData");
     return (
       tableData.rowData[5] === "COMPLETE" && (
         <Tooltip title="Export">
-          <IconButton>
+          <IconButton
+            onClick={() =>
+              handleClickOpen(tableData.rowData[0], tableData.rowData[1])
+            }
+          >
             <FileDownloadIcon
               color="primary"
-              onClick={() =>
-                handleClickOpen(tableData.rowData[0], tableData.rowData[1])
-              }
+
               // onClick={() =>
               //   handleClickOpen(tableData.rowData[0], tableData.rowData[1])
               // }
@@ -305,7 +300,7 @@ const TaskList = () => {
 
         // <CustomButton
         //   className={classes.tableButton}
-        //   label="Export" 
+        //   label="Export"
         //   onClick={() => handleClickOpen(tableData.rowData[0])}
         // />
       )
@@ -314,45 +309,30 @@ const TaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
-    console.log("tableData ---- ", tableData);
     return (
-      (((tableData.rowData[5] === "SELECTED_SOURCE" || tableData.rowData[5] === "INPROGRESS") &&
+      (((tableData.rowData[5] === "SELECTED_SOURCE" ||
+        tableData.rowData[5] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
         (tableData.rowData[5] !== "COMPLETE" &&
           (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
         <Tooltip title="Edit">
-          <IconButton>
-            <EditIcon
-              color="primary"
-              onClick={() => {
-                if (
-                  tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                  tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-                ) {
-                  navigate(`/task/${tableData.rowData[0]}/transcript`);
-                } else {
-                  navigate(`/task/${tableData.rowData[0]}/translate`);
-                }
-
-                console.log("Edit Button ---- ", tableData.rowData);
-                // setOpenViewTaskDialog(true);
-                // setCurrentTaskDetails(tableData.rowData);
-              }}
-            />
+          <IconButton
+            onClick={() => {
+              if (
+                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
+                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
+              ) {
+                navigate(`/task/${tableData.rowData[0]}/transcript`);
+              } else {
+                navigate(`/task/${tableData.rowData[0]}/translate`);
+              }
+            }}
+          >
+            <EditIcon color="primary" />
           </IconButton>
         </Tooltip>
-        // <CustomButton
-        //   className={classes.tableButton}
-        //   label="Edit"
-        //   onClick={() => {
-        //     navigate(`/${tableData.rowData[0]}/transcript`);
-        //     console.log("Edit Button ------ ", tableData.rowData);
-        //     // setOpenViewTaskDialog(true);
-        //     // setCurrentTaskDetails(tableData.rowData);
-        //   }}
-        // />
       )
     );
   };
@@ -360,11 +340,8 @@ const TaskList = () => {
   const renderDeleteButton = (tableData) => {
     return (
       <Tooltip title="Delete">
-        <IconButton>
-          <DeleteIcon
-            color="error"
-            onClick={() => handledeletetask(tableData.rowData[0])}
-          />
+        <IconButton onClick={() => handledeletetask(tableData.rowData[0])}>
+          <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
 
@@ -393,8 +370,7 @@ const TaskList = () => {
         el.video_name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }
-      else if (
+      } else if (
         el.src_language?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
@@ -411,20 +387,18 @@ const TaskList = () => {
   };
 
   const result =
-  taskList && taskList.length > 0
-    ? pageSearch().map((item, i) => {
-        return [
-          item.id,
-          item.task_type,
-          item.video_name,
-          item.src_language,
-          item.target_language,
-          item.status,
-          
-        ];
-      })
-    : [];
-
+    taskList && taskList.length > 0
+      ? pageSearch().map((item, i) => {
+          return [
+            item.id,
+            item.task_type,
+            item.video_name,
+            item.src_language,
+            item.target_language,
+            item.status,
+          ];
+        })
+      : [];
 
   const columns = [
     {
@@ -542,16 +516,23 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", textAlign: "center" },
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log(value, "valuevalue", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
-              {renderViewButton(tableMeta)}
-              {renderEditButton(tableMeta)}
-              {renderExportButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                ?.taskAction && renderViewButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                ?.taskAction && renderEditButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                ?.taskAction && renderExportButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
             </Box>
 
@@ -679,7 +660,11 @@ const TaskList = () => {
             tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton onClick={handleok} label="Export" autoFocus />
             ) : (
-              <CustomButton onClick={handleokTranslation} label="Export" autoFocus />
+              <CustomButton
+                onClick={handleokTranslation}
+                label="Export"
+                autoFocus
+              />
             )}
           </DialogActions>
         </DialogContent>
@@ -689,7 +674,7 @@ const TaskList = () => {
 
   return (
     <>
-    <Search/>
+      <Search />
       <Grid>{renderSnackBar()}</Grid>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />

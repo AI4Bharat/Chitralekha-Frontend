@@ -75,6 +75,7 @@ const Header = () => {
       name: "Help",
       onClick: () => {
         handleCloseUserMenu();
+        window.open("https://github.com/AI4Bharat/Chitralekha/wiki", "blank");
       },
     },
   ];
@@ -133,7 +134,7 @@ const Header = () => {
             <Toolbar disableGutters className={classes.toolbar}>
               <Box display="flex" alignItems="center">
                 <img
-                  src={"https://i.imgur.com/pVT5Mjp.png"}
+                  src={"Chitralekha_Logo_Transparent.png"}
                   alt="ai4bharat"
                   className={classes.Logo}
                 />

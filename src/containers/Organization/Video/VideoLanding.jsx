@@ -19,9 +19,11 @@ import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import { Box } from "@mui/system";
-import { FullScreen } from "../../../redux/actions/Common";
+import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
+import FastForwardIcon from "@mui/icons-material/FastForward";
+import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -44,11 +46,11 @@ const VideoLanding = () => {
     message: "",
     variant: "success",
   });
-  const [subs, setSubs] = useState([]);
   const [currentSubs, setCurrentSubs] = useState();
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [focusing, setFocusing] = useState(false);
   const [inputItemCursor, setInputItemCursor] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -58,6 +60,23 @@ const VideoLanding = () => {
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
   );
+  const subs = useSelector((state) => state.commonReducer.subtitles);
+
+  const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
+
+  const newSub = useCallback((item) => new Sub(item), []);
+
+  const formatSub = useCallback(
+    (sub) => {
+      if (Array.isArray(sub)) {
+        return sub.map((item) => newSub(item));
+      }
+      return newSub(sub);
+    },
+    [newSub]
+  );
+
+  const copySubs = useCallback(() => formatSub(subs), [subs, formatSub]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -88,7 +107,7 @@ const VideoLanding = () => {
       (item) => new Sub(item)
     );
 
-    setSubs(sub);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   }, [transcriptPayload?.payload?.payload]);
 
   useMemo(() => {
@@ -116,10 +135,6 @@ const VideoLanding = () => {
     );
   };
 
-  const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
-
-  const newSub = useCallback((item) => new Sub(item), []);
-
   const onChange = useCallback((event) => {
     player.pause();
     if (event.target.selectionStart) {
@@ -146,29 +161,34 @@ const VideoLanding = () => {
   }, []);
 
   const onSplit = useCallback(() => {
+    const copySub = copySubs();
+
+    console.log("copySub ------ ", copySub[currentIndex]);
+
     const index = hasSub(subs[currentIndex]);
 
-    const text1 = subs[currentIndex].text.slice(0, inputItemCursor).trim();
-    const text2 = subs[currentIndex].text.slice(inputItemCursor).trim();
+    const text1 = copySub[currentIndex].text.slice(0, inputItemCursor).trim();
+    const text2 = copySub[currentIndex].text.slice(inputItemCursor).trim();
 
     if (!text1 || !text2) return;
 
     const splitDuration = (
-      subs[currentIndex].duration *
-      (inputItemCursor / subs[currentIndex].text.length)
+      copySub[currentIndex].duration *
+      (inputItemCursor / copySub[currentIndex].text.length)
     ).toFixed(3);
 
     if (
       splitDuration < 0.2 ||
-      subs[currentIndex].duration - splitDuration < 0.2
+      copySub[currentIndex].duration - splitDuration < 0.2
     )
       return;
 
-    subs.splice(index, 1);
+    copySub.splice(index, 1);
     const middleTime = DT.d2t(
       subs[currentIndex].startTime + parseFloat(splitDuration)
     );
-    subs.splice(
+
+    copySub.splice(
       index,
       0,
       newSub({
@@ -177,7 +197,8 @@ const VideoLanding = () => {
         text: text1,
       })
     );
-    subs.splice(
+
+    copySub.splice(
       index + 1,
       0,
       newSub({
@@ -186,13 +207,14 @@ const VideoLanding = () => {
         text: text2,
       })
     );
-    setSubs(subs);
-    setCurrentSubs(subs[currentIndex]);
+
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    setCurrentSubs(copySub[currentIndex]);
 
     const reqBody = {
       task_id: taskId,
       payload: {
-        payload: subs,
+        payload: copySub,
       },
     };
 
@@ -238,24 +260,6 @@ const VideoLanding = () => {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
-
-  const formatSub = useCallback(
-    (sub) => {
-      if (Array.isArray(sub)) {
-        return sub.map((item) => newSub(item));
-      }
-      return newSub(sub);
-    },
-    [newSub]
-  );
-
-  const addSub = useCallback(
-    (index, sub) => {
-      subs.splice(index, 0, formatSub(sub));
-      setSubs(subs);
-    },
-    [setSubs, formatSub]
-  );
 
   const handleFullscreen = () => {
     let doc = window.document;
@@ -315,6 +319,11 @@ const VideoLanding = () => {
     }
   };
 
+  const playbackRateHandler = (rate) => {
+    player.playbackRate = rate;
+    setPlaybackRate(rate);
+  };
+
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
@@ -365,6 +374,34 @@ const VideoLanding = () => {
             </div>
           ) : null}
 
+          <div
+            className={classes.playbackRate}
+            style={{
+              bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "",
+              right: fullscreenVideo ? "23%" : fullscreen ? "35%" : "",
+            }}
+          >
+            <Button
+              onClick={() =>
+                playbackRate >= 0.2 && playbackRateHandler(playbackRate - 0.1)
+              }
+              sx={{ color: " #fff" }}
+            >
+              <FastRewindIcon />
+            </Button>
+            <p style={{ margin: 0, color: " #fff" }}>
+              {Math.round(playbackRate * 10) / 10}x
+            </p>
+            <Button
+              onClick={() =>
+                playbackRate <= 15.9 && playbackRateHandler(playbackRate + 0.1)
+              }
+              sx={{ color: " #fff" }}
+            >
+              <FastForwardIcon />
+            </Button>
+          </div>
+
           {!fullscreen && (
             <Box>
               {fullscreenVideo ? (
@@ -372,7 +409,7 @@ const VideoLanding = () => {
                   className={classes.fullscreenVideoBtn}
                   aria-label="fullscreen"
                   onClick={() => handleFullscreenVideo()}
-                  variant="outlined"
+                  variant="contained"
                   style={{
                     bottom: fullscreenVideo ? "28%" : "",
                     right: fullscreenVideo ? "20%" : "",
@@ -385,7 +422,7 @@ const VideoLanding = () => {
                   className={classes.fullscreenVideoBtn}
                   aria-label="fullscreenExit"
                   onClick={() => handleFullscreenVideo()}
-                  variant="outlined"
+                  variant="contained"
                 >
                   <FullscreenIcon />
                 </Button>
@@ -397,14 +434,11 @@ const VideoLanding = () => {
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} subtitles={subs} />
+            <RightPanel currentIndex={currentIndex} player={player}/>
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
-            <TranslationRightPanel
-              currentIndex={currentIndex}
-              subtitles={subs}
-            />
+            <TranslationRightPanel currentIndex={currentIndex} />
           )}
         </Grid>
       </Grid>
@@ -422,10 +456,7 @@ const VideoLanding = () => {
           setRender={setRender}
           currentTime={currentTime}
           playing={playing}
-          subtitles={subs}
-          setSubtitles={setSubs}
           newSub={newSub}
-          addSub={addSub}
         />
       </Grid>
 

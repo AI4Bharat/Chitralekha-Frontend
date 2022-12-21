@@ -200,7 +200,7 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
         >
           <Box display="flex" alignItems="center">
             <img
-              src={"https://i.imgur.com/pVT5Mjp.png"}
+              src={"Chitralekha_Logo_Transparent.png"}
               alt="logo"
               className={classes.headerLogo}
             />

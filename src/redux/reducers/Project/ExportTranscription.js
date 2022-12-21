@@ -6,7 +6,6 @@ const initialState = {
 };
 
 function CsvDownload(content) {
-    console.log(content,"contentcontent")
 	const downloadLink = document.createElement("a");
 	const blob = new Blob(["\ufeff", content]);
 	const url = URL.createObjectURL(blob);
