@@ -27,6 +27,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
 import MergeIcon from "@mui/icons-material/Merge";
+import { clamp } from "lodash";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -248,7 +249,9 @@ const RightPanel = ({ currentIndex, player }) => {
   };
 
   const handleTimeChange = (value, index, type) => {
-    const copySub = [...sourceText];
+    console.log(value, DT.t2d(value) , "-=-=-=-=-=-=-");
+    if(DT.t2d(value) <= player.duration) {
+      const copySub = [...sourceText];
 
     if (type === "startTime") {
       copySub[index].start_time = value;
@@ -258,6 +261,7 @@ const RightPanel = ({ currentIndex, player }) => {
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
     setSourceText(copySub);
+    }
   };
 
   const onDelete = (index) => {
@@ -340,31 +344,13 @@ const RightPanel = ({ currentIndex, player }) => {
                   justifyContent="center"
                   alignItems={"center"}
                 >
-                  <TextField
-                    variant="outlined"
+                  <input
                     type="time"
                     value={item.start_time}
                     onChange={(event) =>
                       handleTimeChange(event.target.value, index, "startTime")
                     }
-                    inputProps={{ step: 1 }}
-                    sx={{
-                      width: "25%",
-                      marginRight: "auto",
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#616A6B  ",
-                        color: "white",
-                      },
-                      "& .MuiOutlinedInput-input": {
-                        fontSize: "12px",
-                        padding: "7px 14px",
-                        textAlign: "center",
-                      },
-                      '& input[type="time"]::-webkit-calendar-picker-indicator':
-                      {
-                        color: "#fff",
-                      },
-                    }}
+                    className={classes.timeBox}
                   />
 
                   {index < sourceText.length - 1 && (
@@ -404,26 +390,14 @@ const RightPanel = ({ currentIndex, player }) => {
                     </IconButton>
                   </Tooltip>
 
-                  <TextField
-                    variant="outlined"
+                  <input
                     type="time"
                     value={item.end_time}
                     onChange={(event) =>
                       handleTimeChange(event.target.value, index, "endTime")
                     }
-                    sx={{
-                      marginLeft: "auto",
-                      width: "25%",
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#616A6B",
-                        color: "white",
-                      },
-                      "& .MuiOutlinedInput-input": {
-                        fontSize: "12px",
-                        padding: "7px 14px",
-                        textAlign: "center",
-                      },
-                    }}
+                    className={classes.timeBox}
+                    style={{margin: "0 0 0 auto"}}
                   />
                 </Box>
 

@@ -61,7 +61,7 @@ const VideoLanding = () => {
     (state) => state.commonReducer.fullscreenVideo
   );
   const subs = useSelector((state) => state.commonReducer.subtitles);
-
+  console.log(fullscreen, "fullscreen");
   const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
 
   const newSub = useCallback((item) => new Sub(item), []);
@@ -235,26 +235,46 @@ const VideoLanding = () => {
     }
   }
 
-  const onKeyDown = useCallback(
-    (event) => {
-      const keyCode = getKeyCode(event);
-      switch (keyCode) {
-        case 32:
-          event.preventDefault();
-          if (player) {
-            if (playing) {
-              player.pause();
-            } else {
-              player.play();
-            }
+  const onKeyDown = (event) => {
+    const keyCode = getKeyCode(event);
+
+    switch (keyCode) {
+      case 32:
+        event.preventDefault();
+        if (player) {
+          if (playing) {
+            player.pause();
+          } else {
+            player.play();
           }
-          break;
-        default:
-          break;
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  const exitHandler = () => {
+    if (
+      !document.fullscreenElement &&
+      !document.webkitIsFullScreen &&
+      !document.mozFullScreen &&
+      !document.msFullscreenElement
+    ) {
+      if(fullscreen) {
+        dispatch(FullScreen(false, C.FULLSCREEN));
       }
-    },
-    [player, playing]
-  );
+
+      if(fullscreenVideo) {
+        dispatch(FullScreen(false, C.FULLSCREEN_VIDEO));
+      }
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", exitHandler);
+    return () => window.removeEventListener("fullscreenchange", exitHandler);
+  }, [exitHandler]);
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
@@ -434,7 +454,7 @@ const VideoLanding = () => {
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {(taskDetails?.task_type === "TRANSCRIPTION_EDIT" ||
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
-            <RightPanel currentIndex={currentIndex} player={player}/>
+            <RightPanel currentIndex={currentIndex} player={player} />
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
