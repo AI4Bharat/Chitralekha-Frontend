@@ -129,10 +129,17 @@ const TranslationRightPanel = ({ currentIndex }) => {
                 //   width="25%"
                 flexDirection="column"
             >
-                <Grid display={"flex"} direction={"row"} flexWrap={"wrap"}>
+                <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
                     {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
+                    <Grid display={"flex"} alignItems={"center"} paddingX={2}>
+                        <Typography>Transliteration</Typography>
+                        <Switch
+                            checked={enableTransliteration}
+                            onChange={() => setTransliteration(!enableTransliteration)}
+                        />
+                    </Grid>
                     <FindAndReplace
                         sourceData={sourceText}
                         subtitleDataKey={"target_text"}
@@ -154,13 +161,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     >
                         Complete
                     </Button>
-                    <Grid display={"flex"} alignItems={"center"} paddingX={2}>
-                        <Typography>Transliteration</Typography>
-                        <Switch
-                            checked={enableTransliteration}
-                            onChange={() => setTransliteration(!enableTransliteration)}
-                        />
-                    </Grid>
                 </Grid>
                 <Box
                     sx={{

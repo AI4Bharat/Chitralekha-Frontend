@@ -29,6 +29,7 @@ import AddProjectMembersAPI from "../../../redux/actions/api/Project/AddProjectM
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
 import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
 import { roles } from "../../../utils/utils";
+import ProjectDescription from "./ProjectDescription";
 
 const data = [
   {
@@ -125,6 +126,31 @@ const Project = () => {
     message: "",
     variant: "success",
   });
+  const [projectData, setProjectData] = useState([
+    { name: "Project ID", value: null },
+    { name: "CreatedAt", value: null },
+    { name: "UserName", value: null },
+  
+])
+
+useEffect(() => {
+ 
+  setProjectData([
+      {
+          name: "Project ID",
+          value: projectInfo.id
+      },
+      {
+        name: "Created At",
+        value: projectInfo.created_at
+    },
+    {
+      name: "Created By",
+      value: projectInfo?.created_by?.username
+  },
+        
+  ])
+}, [projectInfo.id]);
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
@@ -234,15 +260,55 @@ const Project = () => {
     <Grid container direction="row" justifyContent="center" alignItems="center">
       {renderSnackBar()}
       <Card className={classes.workspaceCard}>
-        <Typography variant="h2" gutterBottom component="div">
-          {/* Title:  */}
-          {projectDetails.title}
-        </Typography>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+      <Card
+                  style={{
+                    height: "100px",
+                    backgroundColor: "#0F2749",
+                    borderRadius: "8px",
+                    
+                  }}
+                >
+                  <Typography
+                    variant="h4"
+                    className={classes.mainTitle}
+                  >
+                   {projectDetails.title}
+                  </Typography>
+                  </Card>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            {/* <Typography variant="h6"  className={classes.modelTitle}>
+              Description
+            </Typography> */}
+            <Typography
+
+              variant="body1"
+              style={{ textAlign: "justify", marginTop: "15px"}}
+            >
+              {/* {projectDetails.description} */}
+            </Typography>
+            </Grid>
+        
 {/* 
         <Typography variant="body1" gutterBottom component="div">
           Created by:{" "}
           {`${projectDetails.created_by?.first_name} ${projectDetails.created_by?.last_name}`}
         </Typography> */}
+
+<Grid item xs={12} sm={12} md={12} lg={12} xl={12}  sx={{ mb: 2 }}>
+                        <Grid container spacing={2}>
+                            {projectData?.map((des, i) => (
+                                <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
+                                    <ProjectDescription
+                                        name={des.name}
+                                        value={des.value}
+                                        index={i}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Grid>
 
         <Box>
           <Tabs
