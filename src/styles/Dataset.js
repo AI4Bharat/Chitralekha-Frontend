@@ -256,6 +256,19 @@ const DatasetStyle = makeStyles({
     marginLeft: "10px",
     marginTop:"10px",
   },
+  descCardIcon: {
+    display: "flex",
+    borderRadius: "20%",
+    padding: "15px",
+    height: "fit-content",
+  },
+  mainTitle: { marginTop: "33px", marginLeft: "38px",color:"white" },
+  modelTitle: {
+    marginTop: "20px",
+    // padding: 0,
+
+  },
+ 
 });
 
 export default DatasetStyle;
