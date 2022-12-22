@@ -230,7 +230,7 @@ const themeDefault = createTheme({
     MuiTableCell: {
       styleOverrides: {
         head: {
-          padding: ".6rem .5rem .6rem 1.5rem",
+          padding: ".6rem .5rem .6rem 0.6rem",
           backgroundColor: "#F8F8FA !important",
           marginLeft: "25px",
           letterSpacing: "0.74",

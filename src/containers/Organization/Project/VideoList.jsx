@@ -12,6 +12,7 @@ import {
   Tooltip,
   IconButton,
   DialogContentText,
+  Button,
 } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -32,12 +33,13 @@ import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
+import { useCallback } from "react";
+import { useMemo } from "react";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
-  const [tableData, setTableData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState({});
@@ -48,6 +50,8 @@ const VideoList = ({ data, removeVideo }) => {
     variant: "success",
   });
   const [projectid, setprojectid] = useState([]);
+  let showCreateTaskBtn = false;
+
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
@@ -275,6 +279,14 @@ const VideoList = ({ data, removeVideo }) => {
     },
   ];
 
+  const handleRowClick = (_currentRow, allRow) => {
+    const temp = data.filter((_item, index) => {
+      return allRow.find((element) => element.index === index);
+    });
+
+    showCreateTaskBtn = !!temp.length;
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -295,9 +307,14 @@ const VideoList = ({ data, removeVideo }) => {
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
-    selectableRows: "none",
+    selectableRows: "multiple",
     search: false,
     jumpToPage: true,
+    selectToolbarPlacement: "none",
+    selectableRowsOnClick: true,
+    onRowSelectionChange: (currentRow, allRow) => {
+      handleRowClick(currentRow, allRow);
+    },
   };
   const renderSnackBar = () => {
     return (
@@ -341,7 +358,22 @@ const VideoList = ({ data, removeVideo }) => {
 
   return (
     <>
-      <Search />
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        sx={{ margin: "10px 0" }}
+      >
+        {roles.filter((role) => role.value === userData?.role)[0]
+          ?.permittedToCreateTask &&
+          showCreateTaskBtn && (
+            <Button variant="contained" className={classes.createTaskBtn}>
+              Create Task
+            </Button>
+          )}
+        <Search />
+      </Box>
+
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
