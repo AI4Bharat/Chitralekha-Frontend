@@ -52,6 +52,7 @@ const VideoList = ({ data, removeVideo }) => {
   const [projectid, setprojectid] = useState([]);
   const [isBulk, setIsBulk] = useState(false);
   const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
+  const [rows, setRows] = useState([]);
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
@@ -286,6 +287,12 @@ const VideoList = ({ data, removeVideo }) => {
       return allRow.find((element) => element.index === index);
     });
 
+    let temp2 = [];
+    allRow.forEach((element) => {
+      temp2.push(element.index);
+    });
+
+    setRows(temp2);
     setCurrentVideoDetails(temp);
     setShowCreateTaskBtn(!!temp.length);
   };
@@ -318,6 +325,7 @@ const VideoList = ({ data, removeVideo }) => {
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
+    rowsSelected: rows,
   };
   const renderSnackBar = () => {
     return (
