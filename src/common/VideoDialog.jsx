@@ -22,10 +22,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
   useEffect(() => {
     const apiObj = new FetchVideoDetailsAPI(
-      videoDetails.url,
-      videoDetails.language,
-      videoDetails.project_id,
-      videoDetails.audio_only
+      videoDetails[0].url,
+      videoDetails[0].language,
+      videoDetails[0].project_id,
+      videoDetails[0].audio_only
     );
     dispatch(APITransport(apiObj));
   }, []);
@@ -42,7 +42,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     >
       <DialogTitle id="responsive-dialog-title">
         <Typography variant="h4" style={{ marginRight: "auto" }}>
-          {videoDetails.name}
+          {videoDetails[0].name}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -57,14 +57,14 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
         <Typography variant="body1" style={{ marginRight: "auto" }}>
-          Duration: {videoDetails.duration}
+          Duration: {videoDetails[0].duration}
         </Typography>
         <Button autoFocus onClick={handleClose}>
           Close
         </Button>
       </DialogActions>
       <div style={{ padding: "0px 20px 20px 20px" }}>
-        <VideoTaskList videoDetails={videoDetails.id} />
+        <VideoTaskList videoDetails={videoDetails[0].id} />
       </div>
     </Dialog>
   );

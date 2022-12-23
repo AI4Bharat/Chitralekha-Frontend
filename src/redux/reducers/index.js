@@ -17,6 +17,7 @@ import setComparisonTable from "./Project/SetComparisonTableData";
 import getTranscriptTypes from "./Project/FetchTranscriptTypes";
 import getVideoDetails from "./Project/FetchVideoDetails";
 import getTaskTypes from "./Project/FetchTaskType";
+import getBulkTaskTypes from "./Project/FetchBulkTaskType";
 import getAllowedTasks from "./Project/FetchAllowedTask";
 import getPriorityTypes from "./Project/FetchPriorityTypes";
 import getSupportedLanguages from "./Project/FetchSupportedLanguage";
@@ -66,6 +67,7 @@ const rootReducer = {
     searchList,
     getTranslationTypes,
     commonReducer,
+    getBulkTaskTypes,
 };
 
 export default rootReducer;
