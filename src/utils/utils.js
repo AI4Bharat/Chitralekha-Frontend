@@ -71,6 +71,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Transcript Reviewer",
@@ -82,6 +83,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Translation editor",
@@ -93,6 +95,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Translation Reviewer",
@@ -104,6 +107,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Universal Editor",
@@ -126,6 +130,7 @@ export const roles = [
     permittedToDeleteProject: true,
     permittedToCreateVideoAudio: true,
     taskAction: false,
+    orgSettingVisible: false,
   },
   {
     label: "Organization Owner",
@@ -137,6 +142,7 @@ export const roles = [
     permittedToDeleteProject: true,
     permittedToCreateVideoAudio: true,
     taskAction: false,
+    orgSettingVisible: true,
   }
 ];
 
