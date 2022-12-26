@@ -18,6 +18,7 @@ export default {
   video: "/video/",
   transcript: "/transcript/",
   translation: "/translation/",
+  videoSubtitle:"/transcript/get_word_aligned_json/?video_id",
 
   //organization
   organization: "/organization/",
