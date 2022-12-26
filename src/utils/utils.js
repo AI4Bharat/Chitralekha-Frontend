@@ -71,6 +71,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Transcript Reviewer",
@@ -82,6 +83,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Translation editor",
@@ -93,6 +95,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Translation Reviewer",
@@ -104,6 +107,7 @@ export const roles = [
     permittedToDeleteProject: false,
     permittedToCreateVideoAudio: false,
     taskAction: true,
+    orgSettingVisible: false,
   },
   {
     label: "Universal Editor",
@@ -126,6 +130,7 @@ export const roles = [
     permittedToDeleteProject: true,
     permittedToCreateVideoAudio: true,
     taskAction: false,
+    orgSettingVisible: false,
   },
   {
     label: "Organization Owner",
@@ -137,6 +142,7 @@ export const roles = [
     permittedToDeleteProject: true,
     permittedToCreateVideoAudio: true,
     taskAction: false,
+    orgSettingVisible: true,
   }
 ];
 
@@ -410,4 +416,29 @@ export function getKeyCode(event) {
   ) {
     return Number(event.keyCode);
   }
-}
+};
+
+export const getTimeStamp = (currentTime) => {
+  if (currentTime) {
+    const date = new Date(currentTime * 1000);
+    const hours = date.getUTCHours().toString().padStart(2, "0");
+    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+    const seconds = date.getUTCSeconds().toString().padStart(2, "0");
+    const milliseconds = date.getMilliseconds()
+      .toString()
+      .substring(0, 2)
+      .padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+  }
+  return 0;
+};
+
+export const getMilliseconds = (timeInString) => {
+  if (timeInString) {
+    var a = timeInString.split(":");
+    var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+    return seconds;
+  }
+  return 0;
+};
+

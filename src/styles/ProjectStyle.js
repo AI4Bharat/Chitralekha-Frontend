@@ -223,10 +223,10 @@ const ProjectStyle = makeStyles({
   },
 
   video: {
-    position: "relative",
-    maxWidth: "100%",
-    maxHeight: "90%",
-    height: "100vh",
+    // position: "relative",
+    // maxWidth: "100%",
+    // maxHeight: "90%",
+    // height: "100vh",
   },
 
   parentSubtitleBox: {
@@ -461,6 +461,13 @@ const ProjectStyle = makeStyles({
       display: "none",
     },
   },
+  subtitle:{
+    zIndex:20,
+    background: "white",
+    fontSize:'20px',
+    width: "500px",
+    height:"50px"
+  }
 });
 
 export default ProjectStyle;

@@ -103,17 +103,17 @@ const ProfilePage = () => {
                 justifyContent="flex-start"
                 alignItems="center"
               >
-                <FormGroup>
+                {/* <FormGroup>
                   <FormControlLabel
                     control={<Switch defaultChecked />}
                     label="Daily Mails"
                     labelPlacement="start"
                     sx={{ mt: 2 }}
                   />
-                </FormGroup>
+                </FormGroup> */}
                 <CustomButton
                   label="Edit Profile"
-                  sx={{ mt: 2, ml: 6 }}
+                  sx={{ mt: 2 }}
                   onClick={() => navigate("/edit-profile")}
                 />
               </Box>
