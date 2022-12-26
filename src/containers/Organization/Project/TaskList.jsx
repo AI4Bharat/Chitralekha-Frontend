@@ -17,6 +17,7 @@ import {
   FormLabel,
   Tooltip,
   IconButton,
+  Button,
 } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -73,6 +74,8 @@ const TaskList = () => {
   const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
   const [deleteTaskid, setDeleteTaskid] = useState();
+  const [showEditTaskBtn, setShowEditTaskBtn] = useState(false);
+
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const navigate = useNavigate();
 
@@ -127,11 +130,6 @@ const TaskList = () => {
 
       // clean up Url
       window.URL.revokeObjectURL(blobUrl);
-      // setSnackbarInfo({
-      //   open: true,
-      //   message: resp?.message,
-      //   variant: "success",
-      // });
     } else {
       setSnackbarInfo({
         open: true,
@@ -215,14 +213,6 @@ const TaskList = () => {
     });
   };
 
-  // useEffect(() => {
-  //   let taskId;
-  //   taskList?.map((element, index) => {
-  //     taskId = element.id;
-  //   });
-  //   setTaskid(taskId);
-  // }, [taskList]);
-
   const handledeletetask = async (id) => {
     setOpenDialog(true);
     setDeleteTaskid(id);
@@ -267,15 +257,6 @@ const TaskList = () => {
             <PreviewIcon color="primary" />
           </IconButton>
         </Tooltip>
-
-        // <CustomButton
-        //   className={classes.tableButton}
-        //   label="View"
-        //   onClick={() => {
-        //     setOpenViewTaskDialog(true);
-        //     setCurrentTaskDetails(tableData.rowData);
-        //   }}
-        // />
       )
     );
   };
@@ -288,24 +269,11 @@ const TaskList = () => {
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
           >
-            <FileDownloadIcon
-              color="primary"
-
-              // onClick={() =>
-              //   handleClickOpen(tableData.rowData[0], tableData.rowData[1])
-              // }
-            />
+            <FileDownloadIcon color="primary" />
           </IconButton>
         </Tooltip>
-
-        // <CustomButton
-        //   className={classes.tableButton}
-        //   label="Export"
-        //   onClick={() => handleClickOpen(tableData.rowData[0])}
-        // />
       )
     );
-    // })
   };
 
   const renderEditButton = (tableData) => {
@@ -344,14 +312,6 @@ const TaskList = () => {
           <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
-
-      // <CustomButton
-      //   className={classes.tableButton}
-      //   //sx={{    marginInline:"auto"}}
-      //   color="error"
-      //   label="Delete"
-      //   onClick={handledeletetask}
-      // />
     );
   };
   const pageSearch = () => {
@@ -550,6 +510,8 @@ const TaskList = () => {
     },
   ];
 
+  const handleRowClick = (currentRow, allRow) => {};
+
   const options = {
     textLabels: {
       body: {
@@ -570,9 +532,14 @@ const TaskList = () => {
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
-    selectableRows: "none",
+    selectableRows: "multiple",
     search: false,
     jumpToPage: true,
+    selectToolbarPlacement: "none",
+    selectableRowsOnClick: true,
+    onRowSelectionChange: (currentRow, allRow) => {
+      handleRowClick(currentRow, allRow);
+    },
   };
 
   const renderSnackBar = () => {
@@ -674,7 +641,20 @@ const TaskList = () => {
 
   return (
     <>
-      <Search />
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        sx={{ margin: "10px 0" }}
+      >
+        {showEditTaskBtn && (
+          <Button variant="contained" className={classes.createTaskBtn}>
+            Create Task
+          </Button>
+        )}
+        <Search />
+      </Box>
+
       <Grid>{renderSnackBar()}</Grid>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />

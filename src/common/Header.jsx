@@ -225,7 +225,7 @@ const Header = () => {
                   ))}
                 </Menu>
 
-                <IconButton
+                {/* <IconButton
                   onClick={handleOpenSettingsMenu}
                   className={`${classes.icon} settings`}
                 >
@@ -260,7 +260,7 @@ const Header = () => {
                       </Typography>
                     </MenuItem>
                   ))}
-                </Menu>
+                </Menu> */}
 
                 <IconButton
                   onClick={handleOpenUserMenu}
