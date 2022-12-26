@@ -63,7 +63,7 @@ export const steps = [
 export const roles = [
   {
     label: "Transcript editor",
-    value: "TRANSCRIPT_EDITOR", 
+    value: "TRANSCRIPT_EDITOR",
     permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
@@ -143,7 +143,7 @@ export const roles = [
     permittedToCreateVideoAudio: true,
     taskAction: false,
     orgSettingVisible: true,
-  }
+  },
 ];
 
 export const tasks = [
@@ -416,7 +416,7 @@ export function getKeyCode(event) {
   ) {
     return Number(event.keyCode);
   }
-};
+}
 
 export const getTimeStamp = (currentTime) => {
   if (currentTime) {
@@ -424,7 +424,8 @@ export const getTimeStamp = (currentTime) => {
     const hours = date.getUTCHours().toString().padStart(2, "0");
     const minutes = date.getUTCMinutes().toString().padStart(2, "0");
     const seconds = date.getUTCSeconds().toString().padStart(2, "0");
-    const milliseconds = date.getMilliseconds()
+    const milliseconds = date
+      .getMilliseconds()
       .toString()
       .substring(0, 2)
       .padStart(2, "0");
@@ -442,3 +443,17 @@ export const getMilliseconds = (timeInString) => {
   return 0;
 };
 
+export const getUpdatedTime = (value, type, time) => {
+  const [hh, mm, sec] = time.split(":");
+  const [ss, SSS] = sec.split(".");
+
+  if (type === "hours") {
+    return `${value}:${mm}:${ss}.${SSS}`;
+  } else if (type === "minutes") {
+    return `${hh}:${value}:${ss}.${SSS}`;
+  } else if (type === "seconds") {
+    return `${hh}:${mm}:${value}.${SSS}`;
+  } else if (type === "miliseconds") {
+    return `${hh}:${mm}:${ss}.${value}`;
+  }
+};
