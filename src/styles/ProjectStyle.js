@@ -463,7 +463,6 @@ const ProjectStyle = makeStyles({
   },
   subtitle:{
     zIndex:20,
-    background: "white",
     fontSize:'20px',
     width: "500px",
     height:"50px"

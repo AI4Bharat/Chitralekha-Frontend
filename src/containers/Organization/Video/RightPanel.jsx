@@ -349,7 +349,7 @@ const RightPanel = ({ currentIndex, player }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <Box>
                 <Box
                   display="flex"
                   padding="10px 0 0 20px"
@@ -415,6 +415,14 @@ const RightPanel = ({ currentIndex, player }) => {
                     borderBottom: 2,
                     alignItems: "center",
                   }}
+                  onClick={() => {
+                    if (player) {
+                      player.pause();
+                      if (player.duration >= item.startTime) {
+                        player.currentTime = item.startTime + 0.001;
+                      }
+                    }
+                  }}
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
@@ -452,7 +460,7 @@ const RightPanel = ({ currentIndex, player }) => {
                     />
                   )}
                 </CardContent>
-              </>
+              </Box>
             );
           })}
           <SplitPopOver
