@@ -1,11 +1,11 @@
-import { Card, Divider, Grid, Typography, FormControl,
-  InputLabel,
+import {
+  Card,
+  Grid,
+  Typography,
+  FormControl,
   MenuItem,
   Select,
-  Checkbox,
-  ListItemText,
-  OutlinedInput,
-  TextField, } from "@mui/material";
+} from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import FetchOrganizatioProjectManagersUserAPI from "../../../redux/actions/api/Organization/FetchOrganizatioProjectManagersUser";
+import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
+import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -25,9 +27,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+      width: 250,
+    },
+  },
 };
 
 const CreatenewProject = () => {
@@ -39,8 +41,13 @@ const CreatenewProject = () => {
   const newProjectDetails = useSelector(
     (state) => state.getNewProjectDetails.data
   );
- 
-  const userList = useSelector((state) => state.getOrganizatioProjectManagersUser.data);
+  const userList = useSelector(
+    (state) => state.getOrganizatioProjectManagersUser.data
+  );
+  const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
+  const translationTypes = useSelector(
+    (state) => state.getTranslationTypes.data
+  );
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -50,37 +57,52 @@ const CreatenewProject = () => {
     message: "",
     variant: "success",
   });
-  
+  const [transcriptSourceType, setTranscriptSourceType] =
+    useState("MACHINE_GENERATED");
+  const [translationSourceType, setTranslationSourceType] =
+    useState("MACHINE_GENERATED");
+
   const getOrganizatioUsersList = () => {
-    const projectrole = "PROJECT_MANAGER"
-    const userObj = new FetchOrganizatioProjectManagersUserAPI(orgId,projectrole);
+    const projectrole = "PROJECT_MANAGER";
+    const userObj = new FetchOrganizatioProjectManagersUserAPI(
+      orgId,
+      projectrole
+    );
     dispatch(APITransport(userObj));
   };
 
+  const getSourceTypes = () => {
+    const transcriptObj = new FetchTranscriptTypesAPI();
+    dispatch(APITransport(transcriptObj));
+
+    const translationObj = new FetchTranslationTypesAPI();
+    dispatch(APITransport(translationObj));
+  };
+
   useEffect(() => {
-    getOrganizatioUsersList()
-  }, [])
+    getOrganizatioUsersList();
+    getSourceTypes();
+  }, []);
 
-  const handeleselectManager=(event,item) =>{
- 
-  const {
-    target: { value }
-  } = event;
-  setManagerUsername(
-    typeof value === "string" ? value.split(",") : value
-  );
-  }
+  const handeleselectManager = (event, item) => {
+    const {
+      target: { value },
+    } = event;
+    setManagerUsername(typeof value === "string" ? value.split(",") : value);
+  };
 
-  const handleCreateProject =async () => {
+  const handleCreateProject = async () => {
     const newPrjectReqBody = {
       title: title,
       description: description,
       organization_id: orgId,
-      managers_id: managerUsername 
+      managers_id: managerUsername,
+      default_transcript_type: transcriptSourceType,
+      default_translation_type: translationSourceType,
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
-   // dispatch(APITransport(apiObj));
+    // dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
@@ -90,16 +112,18 @@ const CreatenewProject = () => {
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
-      navigate(`/my-organization/${orgId}/project/${newProjectDetails.id}`, { replace: true });
+      });
+      navigate(`/my-organization/${orgId}/project/${newProjectDetails.id}`, {
+        replace: true,
+      });
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
   };
 
@@ -119,7 +143,7 @@ const CreatenewProject = () => {
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-       {renderSnackBar()}
+      {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
           Create a Project
@@ -146,40 +170,74 @@ const CreatenewProject = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Box>
+
         <Box sx={{ mt: 3 }}>
-        <Typography gutterBottom component="div" label="Required">
+          <Typography gutterBottom component="div" label="Required">
             Managers*
           </Typography>
-        <FormControl fullWidth>
+          <FormControl fullWidth>
             <Select
-         // labelId="demo-multiple-name-label"
-          id="demo-multiple-name"
-          multiple
-          value={managerUsername}
-          onChange={handeleselectManager}
-         // input={<OutlinedInput label="Name" />}
-          MenuProps={MenuProps}
-        >
-          {userList.map((name) => (
-            <MenuItem key={name.id} value={name.id}>
-              {name.email}
-            </MenuItem>
-          ))}
-        </Select>
-            </FormControl>
+              id="demo-multiple-name"
+              multiple
+              value={managerUsername}
+              onChange={handeleselectManager}
+              MenuProps={MenuProps}
+            >
+              {userList.map((name) => (
+                <MenuItem key={name.id} value={name.id}>
+                  {name.email}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required">
+            Select Transcription Source
+          </Typography>
+          <FormControl fullWidth>
+            <Select
+              id="transcript-source-type"
+              value={transcriptSourceType}
+              onChange={(event) => setTranscriptSourceType(event.target.value)}
+              MenuProps={MenuProps}
+            >
+              {transcriptTypes.map((item, index) => (
+                <MenuItem key={index} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required">
+            Select Translation Source
+          </Typography>
+          <FormControl fullWidth>
+            <Select
+              id="translation-source-type"
+              value={translationSourceType}
+              onChange={(event) => setTranslationSourceType(event.target.value)}
+              MenuProps={MenuProps}
+            >
+              {translationTypes.map((item, index) => (
+                <MenuItem key={index} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         <Box sx={{ mt: 3 }}>
           <Button
             style={{ margin: "0px 20px 0px 0px" }}
             label={"Create Project"}
             onClick={() => handleCreateProject()}
-            disabled={
-              title &&
-              managerUsername 
-             
-                ? false
-                : true
-            }
+            disabled={title && managerUsername ? false : true}
           />
           <Button
             label={"Cancel"}
