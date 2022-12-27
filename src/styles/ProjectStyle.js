@@ -81,7 +81,7 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#ff9800",
   },
 
-  subtitle: {
+  timelineSubtitle: {
     position: "absolute",
     left: "0",
     top: "0",
@@ -463,6 +463,7 @@ const ProjectStyle = makeStyles({
   },
   subtitle:{
     zIndex:20,
+    background: "white",
     fontSize:'20px',
     width: "500px",
     height:"50px"

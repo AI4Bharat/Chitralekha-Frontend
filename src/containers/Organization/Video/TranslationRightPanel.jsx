@@ -169,7 +169,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                         borderTop: "1px solid #eaeaea",
                         overflowY: "scroll",
                         overflowX: "hidden",
-                        height: window.innerHeight * 0.63,
+                        height: window.innerHeight * 0.667,
                         backgroundColor: "black",
                         // color: "white",
                         marginTop: "5px",

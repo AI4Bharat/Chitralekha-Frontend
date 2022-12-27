@@ -447,13 +447,49 @@ export const getUpdatedTime = (value, type, time) => {
   const [hh, mm, sec] = time.split(":");
   const [ss, SSS] = sec.split(".");
 
+  let newValue = "";
+
   if (type === "hours") {
-    return `${value}:${mm}:${ss}.${SSS}`;
+    if (value < 0) {
+      newValue = "00";
+    } else {
+      newValue = value;
+    }
+  }
+
+  if (type === "minutes" || type === "seconds") {
+    if (+value <= 9 && value.length < 2) {
+      newValue = value.padStart(2, "0");
+    } else {
+      newValue = `${value[value.length - 2]}${value[value.length - 1]}`;
+    }
+
+    if (+newValue >= 60) {
+      newValue = "59";
+    }
+  }
+
+  if (type === "miliseconds") {
+    if (+value < 0 || +value > 999) {
+      newValue = "000";
+    } else {
+      newValue = value;
+    }
+
+    if (value.length > 3) {
+      newValue = `${value[value.length - 3]}${value[value.length - 2]}${
+        value[value.length - 1]
+      }`;
+    }
+  }
+
+  if (type === "hours") {
+    return `${newValue}:${mm}:${ss}.${SSS}`;
   } else if (type === "minutes") {
-    return `${hh}:${value}:${ss}.${SSS}`;
+    return `${hh}:${newValue}:${ss}.${SSS}`;
   } else if (type === "seconds") {
-    return `${hh}:${mm}:${value}.${SSS}`;
+    return `${hh}:${mm}:${newValue}.${SSS}`;
   } else if (type === "miliseconds") {
-    return `${hh}:${mm}:${ss}.${value}`;
+    return `${hh}:${mm}:${ss}.${newValue}`;
   }
 };
