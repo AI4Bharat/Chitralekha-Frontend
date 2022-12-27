@@ -110,7 +110,7 @@ const Progress = ({ player, waveform, currentTime, subtitle = [] }) => {
       >
         <Box className={classes.handle} onMouseDown={onGrabDown}></Box>
       </Box>
-      <Box className={classes.subtitle}>
+      <Box className={classes.timelineSubtitle}>
         {subtitle.length <= 200
           ? subtitle.map((item, index) => {
               const { duration } = player;

@@ -81,7 +81,7 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#ff9800",
   },
 
-  subtitle: {
+  timelineSubtitle: {
     position: "absolute",
     left: "0",
     top: "0",
@@ -463,9 +463,28 @@ const ProjectStyle = makeStyles({
   },
   subtitle:{
     zIndex:20,
+    background: "white",
     fontSize:'20px',
     width: "500px",
     height:"50px"
+  },
+
+  timeInputBox: {
+    backgroundColor: "#616A6B",
+    width: "8%",
+    '& .MuiInputBase-input': {
+      textAlign: "center",
+      color: "#fff",
+    },
+    '& .MuiInput-root:after': {
+      border: "none",
+    },
+    '& .MuiInput-root:hover:before': {
+      border: "none",
+    },
+    '& .MuiInput-root:before': {
+      border: "none",
+    }
   }
 });
 
