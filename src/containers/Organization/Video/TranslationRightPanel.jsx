@@ -17,7 +17,7 @@ import { setSubtitles } from "../../../redux/actions/Common";
 import SplitPopOver from "../../../common/SplitPopOver";
 
 
-const TranslationRightPanel = ({ currentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, player }) => {
     const { taskId, orgId, projectId } = useParams();
     const classes = ProjectStyle();
     const dispatch = useDispatch();
@@ -221,7 +221,15 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                 </Box>
 
                                 <CardContent
-                                    sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }}
+                                    sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }} 
+                                    onClick={() => {
+                                        if (player) {
+                                          player.pause();
+                                          if (player.duration >= item.startTime) {
+                                            player.currentTime = item.startTime + 0.001;
+                                          }
+                                        }
+                                      }}
                                 >
                                     <textarea
                                         rows={4}
