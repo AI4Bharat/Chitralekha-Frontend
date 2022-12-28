@@ -63,7 +63,7 @@ export const steps = [
 export const roles = [
   {
     label: "Transcript editor",
-    value: "TRANSCRIPT_EDITOR", 
+    value: "TRANSCRIPT_EDITOR",
     permittedToDeleteProject: false,
     permittedToDeleteVideoAudio: false,
     permittedToCreateTask: false,
@@ -143,7 +143,7 @@ export const roles = [
     permittedToCreateVideoAudio: true,
     taskAction: false,
     orgSettingVisible: true,
-  }
+  },
 ];
 
 export const tasks = [
@@ -416,7 +416,7 @@ export function getKeyCode(event) {
   ) {
     return Number(event.keyCode);
   }
-};
+}
 
 export const getTimeStamp = (currentTime) => {
   if (currentTime) {
@@ -424,7 +424,8 @@ export const getTimeStamp = (currentTime) => {
     const hours = date.getUTCHours().toString().padStart(2, "0");
     const minutes = date.getUTCMinutes().toString().padStart(2, "0");
     const seconds = date.getUTCSeconds().toString().padStart(2, "0");
-    const milliseconds = date.getMilliseconds()
+    const milliseconds = date
+      .getMilliseconds()
       .toString()
       .substring(0, 2)
       .padStart(2, "0");
@@ -437,8 +438,59 @@ export const getMilliseconds = (timeInString) => {
   if (timeInString) {
     var a = timeInString.split(":");
     var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+    console.log(seconds);
     return seconds;
   }
   return 0;
 };
 
+export const getUpdatedTime = (value, type, time) => {
+  const [hh, mm, sec] = time.split(":");
+  const [ss, SSS] = sec.split(".");
+
+  let newValue = "";
+
+  if (type === "hours") {
+    if (value < 0) {
+      newValue = "00";
+    } else {
+      newValue = value;
+    }
+  }
+
+  if (type === "minutes" || type === "seconds") {
+    if (+value <= 9 && value.length < 2) {
+      newValue = value.padStart(2, "0");
+    } else {
+      newValue = `${value[value.length - 2]}${value[value.length - 1]}`;
+    }
+
+    if (+newValue >= 60) {
+      newValue = "59";
+    }
+  }
+
+  if (type === "miliseconds") {
+    if (+value < 0 || +value > 999) {
+      newValue = "000";
+    } else {
+      newValue = value;
+    }
+
+    if (value.length > 3) {
+      newValue = `${value[value.length - 3]}${value[value.length - 2]}${
+        value[value.length - 1]
+      }`;
+    }
+  }
+
+  if (type === "hours") {
+    return `${newValue}:${mm}:${ss}.${SSS}`;
+  } else if (type === "minutes") {
+    return `${hh}:${newValue}:${ss}.${SSS}`;
+  } else if (type === "seconds") {
+    return `${hh}:${mm}:${newValue}.${SSS}`;
+  } else if (type === "miliseconds") {
+    return `${hh}:${mm}:${ss}.${newValue}`;
+  }
+};

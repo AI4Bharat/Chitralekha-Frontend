@@ -42,7 +42,7 @@ const VideoList = ({ data, removeVideo }) => {
 
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentVideoDetails, setCurrentVideoDetails] = useState({});
+  const [currentVideoDetails, setCurrentVideoDetails] = useState([]);
   const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -50,14 +50,16 @@ const VideoList = ({ data, removeVideo }) => {
     variant: "success",
   });
   const [projectid, setprojectid] = useState([]);
-  let showCreateTaskBtn = false;
+  const [isBulk, setIsBulk] = useState(false);
+  const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
+  const [rows, setRows] = useState([]);
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
-    setCurrentVideoDetails(item);
+    setCurrentVideoDetails([item]);
   };
 
   const handleClose = () => {
@@ -137,6 +139,7 @@ const VideoList = ({ data, removeVideo }) => {
                       onClick={() => {
                         setOpenCreateTaskDialog(true);
                         setCurrentVideoDetails(item);
+                        setIsBulk(false);
                       }}
                     >
                       <NoteAddIcon color="primary" />
@@ -284,7 +287,14 @@ const VideoList = ({ data, removeVideo }) => {
       return allRow.find((element) => element.index === index);
     });
 
-    showCreateTaskBtn = !!temp.length;
+    let temp2 = [];
+    allRow.forEach((element) => {
+      temp2.push(element.index);
+    });
+
+    setRows(temp2);
+    setCurrentVideoDetails(temp);
+    setShowCreateTaskBtn(!!temp.length);
   };
 
   const options = {
@@ -311,10 +321,10 @@ const VideoList = ({ data, removeVideo }) => {
     search: false,
     jumpToPage: true,
     selectToolbarPlacement: "none",
-    selectableRowsOnClick: true,
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
+    rowsSelected: rows,
   };
   const renderSnackBar = () => {
     return (
@@ -367,7 +377,14 @@ const VideoList = ({ data, removeVideo }) => {
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
           showCreateTaskBtn && (
-            <Button variant="contained" className={classes.createTaskBtn}>
+            <Button
+              variant="contained"
+              className={classes.createTaskBtn}
+              onClick={() => {
+                setOpenCreateTaskDialog(true);
+                setIsBulk(true);
+              }}
+            >
               Create Task
             </Button>
           )}
@@ -392,6 +409,7 @@ const VideoList = ({ data, removeVideo }) => {
           handleUserDialogClose={() => setOpenCreateTaskDialog(false)}
           createTaskHandler={createTaskHandler}
           videoDetails={currentVideoDetails}
+          isBulk={isBulk}
         />
       )}
       {renderSnackBar()}

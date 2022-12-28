@@ -536,7 +536,6 @@ const TaskList = () => {
     search: false,
     jumpToPage: true,
     selectToolbarPlacement: "none",
-    selectableRowsOnClick: true,
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
