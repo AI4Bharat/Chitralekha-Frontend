@@ -449,7 +449,7 @@ export const getUpdatedTime = (value, type, time) => {
   const [ss, SSS] = sec.split(".");
 
   let newValue = "";
-
+  console.log(value, "iipipipip");
   if (type === "hours") {
     if (value < 0) {
       newValue = "00";
@@ -471,16 +471,20 @@ export const getUpdatedTime = (value, type, time) => {
   }
 
   if (type === "miliseconds") {
-    if (+value < 0 || +value > 999) {
-      newValue = "000";
-    } else {
-      newValue = value;
-    }
+    if (value) {
+      if (value < 0 || +value > 999) {
+        newValue = "000";
+      } else {
+        newValue = value;
+      }
 
-    if (value.length > 3) {
-      newValue = `${value[value.length - 3]}${value[value.length - 2]}${
-        value[value.length - 1]
-      }`;
+      if (value.length > 3) {
+        newValue = `${value[value.length - 3]}${value[value.length - 2]}${
+          value[value.length - 1]
+        }`;
+      }
+    } else {
+      newValue = "000";
     }
   }
 
