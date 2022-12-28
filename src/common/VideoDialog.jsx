@@ -30,7 +30,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const [fullScreenMode, setFullScreenMode] = useState(false);
   const [playpause, setplaypause] = useState(false);
   const ref = useRef(null);
-  const { subtitle } = useVideoSubtitle(videoDetails.id);
+  const { subtitle } = useVideoSubtitle(videoDetails[0].id);
 
   const classes = ProjectStyle();
 
@@ -64,7 +64,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         style={{
           color:
             currentTime >= start && currentTime <= end
-              ? "red"
+              ? "orange"
               : currentTime >= start
               ? "white"
               : "grey",
