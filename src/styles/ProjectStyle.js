@@ -420,6 +420,19 @@ const ProjectStyle = makeStyles({
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
+  
+  fullscreenVideoBtns: {
+    position: "absolute",
+    bottom: "5%",
+    right: "28%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  },
 
   contextMenu: {
     position: "absolute",
