@@ -5,6 +5,7 @@ import OutlinedTextField from './OutlinedTextField';
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
+import { IndicTransliterate } from '@ai4bharat/indic-transliterate';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -15,7 +16,9 @@ const FindAndReplace = (props) => {
     const {
         sourceData,
         subtitleDataKey,
-        onReplacementDone
+        onReplacementDone,
+        enableTransliteration,
+        transliterationLang
     } = { ...props }
 
     const [subtitlesData, setSubtitlesData] = useState();
@@ -64,13 +67,13 @@ const FindAndReplace = (props) => {
     const previousOccurenceClick = () => {
         setCurrentFound(currentFound - 1);
         const scrollableElement = document.getElementById("subtitle_scroll_view");
-        scrollableElement.querySelector(`#sub_${foundIndices[currentFound - 1]}`).scrollIntoView(true, {block: "start"});
+        scrollableElement.querySelector(`#sub_${foundIndices[currentFound - 1]}`).scrollIntoView(true, { block: "start" });
     }
 
     const nextOccurenceClick = () => {
         setCurrentFound(currentFound + 1);
         const scrollableElement = document.getElementById("subtitle_scroll_view");
-        scrollableElement.querySelector(`#sub_${foundIndices[currentFound + 1]}`).scrollIntoView(true, {block: "start"});
+        scrollableElement.querySelector(`#sub_${foundIndices[currentFound + 1]}`).scrollIntoView(true, { block: "start" });
     }
 
     const onReplaceClick = () => {
@@ -108,10 +111,11 @@ const FindAndReplace = (props) => {
         <>
             <Button
                 variant="contained"
-                className={classes.findreplBtn}
+                className={classes.findBtn}
+                // className={classes.findreplBtn}
                 onClick={handleOpenModel}
             >
-                Find / Replace
+                Find/Replace
             </Button>
             <Dialog
                 open={showFindReplaceModel}
@@ -156,22 +160,52 @@ const FindAndReplace = (props) => {
                             md={4}
                             sx={{ marginTop: 2 }}
                         >
-                            <OutlinedTextField
-                                autoFocus
-                                value={findValue}
-                                onChange={e => setFindValue(e.target.value)}
-                                margin="dense"
-                                id="name"
-                                label="Find"
-                                type="Find"
-                                fullWidth
-                                variant="standard"
-                            />
-                            <Typography variant="caption" display={"flex"} sx={{justifyContent: "end", paddingTop: 1}}>{ foundIndices?.length > 0 && `${currentFound+1} / ${foundIndices?.length}` }</Typography>
+                            {transliterationLang !== "en" ? (
+                                <IndicTransliterate
+                                    lang={transliterationLang}
+                                    value={findValue}
+                                    onChangeText={(text) => {
+                                        setFindValue(text);
+                                    }}
+                                    style={{
+                                        width: "-webkit-fill-available",
+                                        height: 50,
+                                        paddingInline: 10,
+                                        font: "inherit",
+                                        fontSize: "1.25rem"
+                                    }}
+                                    renderComponent={(props) => (
+                                        <>
+                                            <label style={{backgroundColor: "white", position: "absolute", left: 10, top: -10, paddingInline: 5}}>Find</label>
+                                            <div>
+                                        <input
+                                            {...props}
+                                        />
+                                             </div>
+                                         </>
+                                    )}
+                                />
+                            ) :
+                                (<OutlinedTextField
+                                    autoFocus
+                                    value={findValue}
+                                    onChange={e => setFindValue(e.target.value)}
+                                    margin="dense"
+                                    id="name"
+                                    label="Find"
+                                    type="Find"
+                                    fullWidth
+                                    variant="standard"
+                                />)
+                            }
+
+
+                            <Typography variant="caption" display={"flex"} sx={{ justifyContent: "end", paddingTop: 1 }}>{foundIndices?.length > 0 && `${currentFound + 1} / ${foundIndices?.length}`}</Typography>
                             <Grid
                                 display={"flex"}
-                                justifyContent={"space-between"}
+                                justifyContent={foundIndices?.length > 0 ?  "space-between" : "center"}
                                 sx={{ textAlign: foundIndices?.length > 0 ? "center" : "end" }}
+                                paddingY={3}
                             >
                                 {foundIndices?.length > 0 && <Button
                                     variant="contained"
@@ -198,7 +232,34 @@ const FindAndReplace = (props) => {
                                     <ChevronRight />
                                 </Button>}
                             </Grid>
-                            <OutlinedTextField
+                            {transliterationLang !== "en" ? (
+                                <IndicTransliterate
+                                    lang={transliterationLang}
+                                    value={replaceValue}
+                                    onChangeText={(text) => {
+                                        setReplaceValue(text);
+                                    }}
+                                    disabled={!(foundIndices?.length > 0)}
+                                    style={{
+                                        width: "-webkit-fill-available",
+                                        height: 50,
+                                        paddingInline: 10,
+                                        font: "inherit",
+                                        fontSize: "1.25rem"
+                                    }}
+                                    renderComponent={(props) => (
+                                        <>
+                                            <label style={{backgroundColor: "white", position: "absolute", left: 10, top: -10, paddingInline: 5}}>Replace</label>
+                                            <div>
+                                        <input
+                                            {...props}
+                                        />
+                                             </div>
+                                         </>
+                                    )}
+                                />
+                            ) :
+                            (<OutlinedTextField
                                 value={replaceValue}
                                 onChange={e => setReplaceValue(e.target.value)}
                                 margin="dense"
@@ -208,11 +269,13 @@ const FindAndReplace = (props) => {
                                 fullWidth
                                 variant="standard"
                                 disabled={!(foundIndices?.length > 0)}
-                            />
+                            />)}
                             <Grid
                                 display={"flex"}
                                 flexDirection={"row"}
                                 justifyContent={"space-between"}
+                                alignItems={"center"}
+                                paddingY={3}
                             >
                                 <Button
                                     variant="contained"
@@ -227,7 +290,7 @@ const FindAndReplace = (props) => {
                                     className={classes.findBtn}
                                     disabled={!replaceValue}
                                     onClick={onReplaceAllClick}
-                                    style={{width: "auto"}}
+                                    style={{ width: "auto" }}
                                 >
                                     Replace All
                                 </Button>

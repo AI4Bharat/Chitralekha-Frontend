@@ -17,7 +17,7 @@ import { setSubtitles } from "../../../redux/actions/Common";
 import SplitPopOver from "../../../common/SplitPopOver";
 
 
-const TranslationRightPanel = ({ currentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, player }) => {
     const { taskId, orgId, projectId } = useParams();
     const classes = ProjectStyle();
     const dispatch = useDispatch();
@@ -129,14 +129,23 @@ const TranslationRightPanel = ({ currentIndex }) => {
                 //   width="25%"
                 flexDirection="column"
             >
-                <Grid display={"flex"} direction={"row"} flexWrap={"wrap"}>
+                <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
                     {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
+                    <Grid display={"flex"} alignItems={"center"} paddingX={2}>
+                        <Typography>Transliteration</Typography>
+                        <Switch
+                            checked={enableTransliteration}
+                            onChange={() => setTransliteration(!enableTransliteration)}
+                        />
+                    </Grid>
                     <FindAndReplace
                         sourceData={sourceText}
                         subtitleDataKey={"target_text"}
                         onReplacementDone={onReplacementDone}
+                        enableTransliteration={enableTransliteration}
+                        transliterationLang={taskData?.target_language}
                     />
                     <Button
                         variant="contained"
@@ -152,13 +161,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     >
                         Complete
                     </Button>
-                    <Grid display={"flex"} alignItems={"center"} paddingX={2}>
-                        <Typography>Transliteration</Typography>
-                        <Switch
-                            checked={enableTransliteration}
-                            onChange={() => setTransliteration(!enableTransliteration)}
-                        />
-                    </Grid>
                 </Grid>
                 <Box
                     sx={{
@@ -167,9 +169,9 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         borderTop: "1px solid #eaeaea",
                         overflowY: "scroll",
                         overflowX: "hidden",
-                        height: window.innerHeight * 0.63,
+                        height: window.innerHeight * 0.667,
                         backgroundColor: "black",
-                        color: "white",
+                        // color: "white",
                         marginTop: "5px",
                     }}
                     className={"subTitleContainer"}
@@ -179,7 +181,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                             <>
                                 <Box
                                     display="flex"
-                                    padding="16px"
+                                    paddingTop="16px"
                                     sx={{ paddingX: 0, justifyContent: "space-around" }}
                                 >
                                     <TextField
@@ -188,7 +190,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 width: "85%",
-                                                backgroundColor: "#616A6B  ",
+                                                backgroundColor: "#616A6B",
                                                 color: "white",
                                             },
                                             "& .MuiOutlinedInput-input": {
@@ -219,7 +221,15 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                 </Box>
 
                                 <CardContent
-                                    sx={{ display: "flex", paddingX: 0, borderBottom: 2 }}
+                                    sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }} 
+                                    onClick={() => {
+                                        if (player) {
+                                          player.pause();
+                                          if (player.duration >= item.startTime) {
+                                            player.currentTime = item.startTime + 0.001;
+                                          }
+                                        }
+                                      }}
                                 >
                                     <textarea
                                         rows={4}
@@ -228,7 +238,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                         contentEditable={false}
                                         defaultValue={item.text}
                                     />
-                                    {taskData?.src_language !== "en" && enableTransliteration ?
+                                    {enableTransliteration ?
                                         <IndicTransliterate
                                             lang={taskData?.target_language}
                                             value={item.target_text}

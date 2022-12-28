@@ -17,6 +17,7 @@ import setComparisonTable from "./Project/SetComparisonTableData";
 import getTranscriptTypes from "./Project/FetchTranscriptTypes";
 import getVideoDetails from "./Project/FetchVideoDetails";
 import getTaskTypes from "./Project/FetchTaskType";
+import getBulkTaskTypes from "./Project/FetchBulkTaskType";
 import getAllowedTasks from "./Project/FetchAllowedTask";
 import getPriorityTypes from "./Project/FetchPriorityTypes";
 import getSupportedLanguages from "./Project/FetchSupportedLanguage";
@@ -31,6 +32,7 @@ import getUserRoles from "./User/FetchUsersRoles";
 import searchList from "./Project/Search";
 import getTranslationTypes from "./Project/FetchTranslationTypes";
 import commonReducer from "./Common";
+import getVideoSubtitle from "./Project/FetchVideoSubtitle";
 
 const rootReducer = {
     apiStatus,
@@ -66,6 +68,8 @@ const rootReducer = {
     searchList,
     getTranslationTypes,
     commonReducer,
+    getBulkTaskTypes,
+    getVideoSubtitle
 };
 
 export default rootReducer;

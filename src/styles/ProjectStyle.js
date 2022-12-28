@@ -12,9 +12,8 @@ const ProjectStyle = makeStyles({
   },
 
   findBtn: {
-    width: "30%",
+    width: "20%",
     borderRadius: "7px",
-    margin: "24px auto",
     backgroundColor: "#0083e2",
   },
   findreplBtn: {
@@ -82,7 +81,7 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#ff9800",
   },
 
-  subtitle: {
+  timelineSubtitle: {
     position: "absolute",
     left: "0",
     top: "0",
@@ -161,7 +160,7 @@ const ProjectStyle = makeStyles({
   },
 
   customTextarea: {
-    margin: "5px 15px 15px 23px",
+    margin: "5px 20px 15px 23px",
     padding: "16.5px 12px",
     fontSize: "1.25rem",
     fontWeight: "400",
@@ -224,10 +223,10 @@ const ProjectStyle = makeStyles({
   },
 
   video: {
-    position: "relative",
-    maxWidth: "100%",
-    maxHeight: "90%",
-    height: "100vh",
+    // position: "relative",
+    // maxWidth: "100%",
+    // maxHeight: "90%",
+    // height: "100vh",
   },
 
   parentSubtitleBox: {
@@ -372,6 +371,7 @@ const ProjectStyle = makeStyles({
 
   menuItemNav: {
     borderRadius: "6px",
+    zIndex: "20",
   },
 
   operate: {
@@ -445,6 +445,47 @@ const ProjectStyle = makeStyles({
     display: "flex",
     alignItems: "center",
   },
+
+  timeBox: {
+    marginRight: "auto",
+    borderRadius: "4px",
+    width: "20%",
+    backgroundColor: "#616A6B",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "600",
+    padding: "7px 14px",
+    textAlign: "center",
+    fontFamily: "Roboto, sans-serif",
+    '&::-webkit-calendar-picker-indicator': {
+      display: "none",
+    },
+  },
+  subtitle:{
+    zIndex:20,
+    background: "white",
+    fontSize:'20px',
+    width: "500px",
+    height:"50px"
+  },
+
+  timeInputBox: {
+    backgroundColor: "#616A6B",
+    width: "8%",
+    '& .MuiInputBase-input': {
+      textAlign: "center",
+      color: "#fff",
+    },
+    '& .MuiInput-root:after': {
+      border: "none",
+    },
+    '& .MuiInput-root:hover:before': {
+      border: "none",
+    },
+    '& .MuiInput-root:before': {
+      border: "none",
+    }
+  }
 });
 
 export default ProjectStyle;

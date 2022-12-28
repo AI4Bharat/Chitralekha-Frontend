@@ -12,6 +12,7 @@ import {
   Tooltip,
   IconButton,
   DialogContentText,
+  Button,
 } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -32,15 +33,16 @@ import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
+import { useCallback } from "react";
+import { useMemo } from "react";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
-  const [tableData, setTableData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentVideoDetails, setCurrentVideoDetails] = useState({});
+  const [currentVideoDetails, setCurrentVideoDetails] = useState([]);
   const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -48,12 +50,16 @@ const VideoList = ({ data, removeVideo }) => {
     variant: "success",
   });
   const [projectid, setprojectid] = useState([]);
+  const [isBulk, setIsBulk] = useState(false);
+  const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
+  const [rows, setRows] = useState([]);
+
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
-    setCurrentVideoDetails(item);
+    setCurrentVideoDetails([item]);
   };
 
   const handleClose = () => {
@@ -121,25 +127,22 @@ const VideoList = ({ data, removeVideo }) => {
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
 
                 <Tooltip title="View">
-                  <IconButton>
-                    <PreviewIcon
-                      color="primary"
-                      onClick={() => handleVideoDialog(item)}
-                    />
+                  <IconButton onClick={() => handleVideoDialog(item)}>
+                    <PreviewIcon color="primary" />
                   </IconButton>
                 </Tooltip>
 
                 {roles.filter((role) => role.value === userData?.role)[0]
                   ?.permittedToCreateTask && (
                   <Tooltip title="Create Task">
-                    <IconButton>
-                      <NoteAddIcon
-                        color="primary"
-                        onClick={() => {
-                          setOpenCreateTaskDialog(true);
-                          setCurrentVideoDetails(item);
-                        }}
-                      />
+                    <IconButton
+                      onClick={() => {
+                        setOpenCreateTaskDialog(true);
+                        setCurrentVideoDetails(item);
+                        setIsBulk(false);
+                      }}
+                    >
+                      <NoteAddIcon color="primary" />
                     </IconButton>
                   </Tooltip>
                 )}
@@ -147,11 +150,8 @@ const VideoList = ({ data, removeVideo }) => {
                 {roles.filter((role) => role.value === userData?.role)[0]
                   ?.permittedToDeleteVideoAudio && (
                   <Tooltip title="Delete">
-                    <IconButton>
-                      <DeleteIcon
-                        color="error"
-                        onClick={() => handleDeleteVideo(item.id)}
-                      />
+                    <IconButton onClick={() => handleDeleteVideo(item.id)}>
+                      <DeleteIcon color="error" />
                     </IconButton>
                   </Tooltip>
                 )}
@@ -282,6 +282,21 @@ const VideoList = ({ data, removeVideo }) => {
     },
   ];
 
+  const handleRowClick = (_currentRow, allRow) => {
+    const temp = data.filter((_item, index) => {
+      return allRow.find((element) => element.index === index);
+    });
+
+    let temp2 = [];
+    allRow.forEach((element) => {
+      temp2.push(element.index);
+    });
+
+    setRows(temp2);
+    setCurrentVideoDetails(temp);
+    setShowCreateTaskBtn(!!temp.length);
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -302,9 +317,15 @@ const VideoList = ({ data, removeVideo }) => {
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
-    selectableRows: "none",
+    selectableRows: "multiple",
     search: false,
     jumpToPage: true,
+    selectToolbarPlacement: "none",
+    selectableRowsOnClick: true,
+    onRowSelectionChange: (currentRow, allRow) => {
+      handleRowClick(currentRow, allRow);
+    },
+    rowsSelected: rows,
   };
   const renderSnackBar = () => {
     return (
@@ -348,7 +369,29 @@ const VideoList = ({ data, removeVideo }) => {
 
   return (
     <>
-      <Search />
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        sx={{ margin: "10px 0" }}
+      >
+        {roles.filter((role) => role.value === userData?.role)[0]
+          ?.permittedToCreateTask &&
+          showCreateTaskBtn && (
+            <Button
+              variant="contained"
+              className={classes.createTaskBtn}
+              onClick={() => {
+                setOpenCreateTaskDialog(true);
+                setIsBulk(true);
+              }}
+            >
+              Create Task
+            </Button>
+          )}
+        <Search />
+      </Box>
+
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
@@ -367,6 +410,7 @@ const VideoList = ({ data, removeVideo }) => {
           handleUserDialogClose={() => setOpenCreateTaskDialog(false)}
           createTaskHandler={createTaskHandler}
           videoDetails={currentVideoDetails}
+          isBulk={isBulk}
         />
       )}
       {renderSnackBar()}

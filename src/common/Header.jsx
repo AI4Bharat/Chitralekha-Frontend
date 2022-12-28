@@ -75,6 +75,7 @@ const Header = () => {
       name: "Help",
       onClick: () => {
         handleCloseUserMenu();
+        window.open("https://github.com/AI4Bharat/Chitralekha/wiki", "blank");
       },
     },
   ];
@@ -224,7 +225,7 @@ const Header = () => {
                   ))}
                 </Menu>
 
-                <IconButton
+                {/* <IconButton
                   onClick={handleOpenSettingsMenu}
                   className={`${classes.icon} settings`}
                 >
@@ -259,7 +260,7 @@ const Header = () => {
                       </Typography>
                     </MenuItem>
                   ))}
-                </Menu>
+                </Menu> */}
 
                 <IconButton
                   onClick={handleOpenUserMenu}

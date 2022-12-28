@@ -219,15 +219,15 @@ const DatasetStyle = makeStyles({
       backgroundColor: "#E9F7EF",
     },
   },
-  tableButton:{
-    borderRadius: "7px", 
+  tableButton: {
+    borderRadius: "7px",
     textAlign: "center",
-     inlineSize: "max-content", 
-     marginRight: 2, 
-     textDecoration: "none"
+    inlineSize: "max-content",
+    marginRight: 2,
+    textDecoration: "none",
   },
   formControl: {
-    width: 300
+    width: 300,
   },
   search: {
     //position: "relative",
@@ -237,16 +237,14 @@ const DatasetStyle = makeStyles({
     width: "300px",
     //textAlign: "left",
     //justifyContent:"center"
-   //float: "right",
-    marginBottom:"10px",
-  //   position: "absolute",
-  //  Right: "200px",
-  //  top:"155px",
-  
+    //float: "right",
+    //   position: "absolute",
+    //  Right: "200px",
+    //  top:"155px",
   },
   searchIcon: {
     // padding: theme.spacing(0, 2),
-   // height: "100%",
+    // height: "100%",
     position: "absolute",
     pointerEvents: "none",
     display: "flex",
@@ -254,7 +252,24 @@ const DatasetStyle = makeStyles({
     justifyContent: "center",
     color: "#00000029",
     marginLeft: "10px",
-    marginTop:"10px",
+    marginTop: "10px",
+  },
+  descCardIcon: {
+    display: "flex",
+    borderRadius: "20%",
+    padding: "15px",
+    height: "fit-content",
+  },
+  mainTitle: { marginTop: "33px", marginLeft: "38px", color: "white" },
+  modelTitle: {
+    marginTop: "20px",
+    // padding: 0,
+  },
+
+  createTaskBtn: {
+    borderRadius: "7px",
+    backgroundColor: "#2C2799",
+    marginRight: "10px",
   },
 });
 

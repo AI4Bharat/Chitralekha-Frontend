@@ -14,7 +14,14 @@ import { useParams } from "react-router-dom";
 import DatasetStyle from "../../../styles/Dataset";
 
 //Components
-import { Box, Card, Grid, Tab, Tabs, Typography,FormControl,Checkbox,ListItemText,ListItemIcon } from "@mui/material";
+import {
+  Box,
+  Card,
+  Grid,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import Button from "../../../common/Button";
 import UserList from "../UserList";
 import CreateVideoDialog from "../../../common/CreateVideoDialog";
@@ -29,6 +36,8 @@ import AddProjectMembersAPI from "../../../redux/actions/api/Project/AddProjectM
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
 import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
 import { roles } from "../../../utils/utils";
+import ProjectDescription from "./ProjectDescription";
+import moment from "moment/moment";
 
 const data = [
   {
@@ -80,7 +89,7 @@ const TabPanel = (props) => {
 };
 
 const Project = () => {
-  const { projectId,orgId } = useParams();
+  const { projectId, orgId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
 
@@ -91,10 +100,9 @@ const Project = () => {
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
-
- const userList = useSelector((state) => state.getOrganizatioUsers.data);
+  const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
     dispatch(APITransport(userObj));
@@ -103,15 +111,14 @@ const Project = () => {
   useEffect(() => {
     getProjectMembers();
   }, []);
-  const GetManagerName =()=>{
+  const GetManagerName = () => {
     const apiObj = new FetchManagerNameAPI();
-     dispatch(APITransport(apiObj));
-  }
+    dispatch(APITransport(apiObj));
+  };
 
   useEffect(() => {
-    GetManagerName()
-  }, [])
-
+    GetManagerName();
+  }, []);
 
   const [value, setValue] = useState(0);
   const [projectDetails, SetProjectDetails] = useState({});
@@ -125,6 +132,28 @@ const Project = () => {
     message: "",
     variant: "success",
   });
+  const [projectData, setProjectData] = useState([
+    { name: "Project ID", value: null },
+    { name: "CreatedAt", value: null },
+    { name: "UserName", value: null },
+  ]);
+
+  useEffect(() => {
+    setProjectData([
+      {
+        name: "Project ID",
+        value: projectInfo.id,
+      },
+      {
+        name: "Created At",
+        value: moment(projectInfo.created_at).format("DD/MM/YYYY HH:MM:SS"),
+      },
+      {
+        name: "Created By",
+        value: projectInfo?.created_by?.username,
+      },
+    ]);
+  }, [projectInfo.id]);
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
@@ -150,18 +179,19 @@ const Project = () => {
 
   useEffect(() => {
     getProjectnDetails();
-    getProjectVideoList(); 
+    getProjectVideoList();
     getOrganizatioUsersList();
   }, []);
 
-  const addNewMemberHandler = async() => {
-
-    const selectedMemberIdArr = addmembers.map((el,i)=>{
+  const addNewMemberHandler = async () => {
+    const selectedMemberIdArr = addmembers.map((el, i) => {
       return el.id;
-    })
-  
-    const apiObj = new AddProjectMembersAPI(projectId, {user_id:selectedMemberIdArr});
-   // dispatch(APITransport(apiObj));
+    });
+
+    const apiObj = new AddProjectMembersAPI(projectId, {
+      user_id: selectedMemberIdArr,
+    });
+    // dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
@@ -171,21 +201,20 @@ const Project = () => {
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
+      });
       getProjectMembers();
-
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.error,
         variant: "error",
-      })
+      });
     }
-  }
+  };
 
-  const addNewVideoHandler = async() => {
+  const addNewVideoHandler = async () => {
     const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
     dispatch(APITransport(apiObj));
     setCreateVideoDialog(false);
@@ -197,7 +226,7 @@ const Project = () => {
       headers: apiObj.getHeaders().headers,
     });
     const resp = await res.json();
-  
+
     if (res.ok) {
       // setSnackbarInfo({
       //   open: true,
@@ -205,16 +234,13 @@ const Project = () => {
       //   variant: "success",
       // })
       getProjectVideoList();
-
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
-   
-
   };
   const renderSnackBar = () => {
     return (
@@ -234,15 +260,52 @@ const Project = () => {
     <Grid container direction="row" justifyContent="center" alignItems="center">
       {renderSnackBar()}
       <Card className={classes.workspaceCard}>
-        <Typography variant="h2" gutterBottom component="div">
-          {/* Title:  */}
-          {projectDetails.title}
-        </Typography>
-{/* 
-        <Typography variant="body1" gutterBottom component="div">
-          Created by:{" "}
-          {`${projectDetails.created_by?.first_name} ${projectDetails.created_by?.last_name}`}
-        </Typography> */}
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <Card
+            style={{
+              height: "100px",
+              backgroundColor: "#0F2749",
+              borderRadius: "8px",
+              marginBottom: "15px"
+            }}
+          >
+            <Typography variant="h4" className={classes.mainTitle}>
+              {projectDetails.title}
+            </Typography>
+          </Card>
+        </Grid>
+
+        {projectDetails.description && (
+          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Typography variant="h6" className={classes.modelTitle}>
+              Description
+            </Typography>
+            <Typography
+              variant="body1"
+              style={{
+                textAlign: "justify",
+                margin: "5px 0 20px 0",
+                lineHeight: "1.2",
+              }}
+            >
+              {projectDetails.description}
+            </Typography>
+          </Grid>
+        )}
+
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 2 }}>
+          <Grid container spacing={2}>
+            {projectData?.map((des, i) => (
+              <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
+                <ProjectDescription
+                  name={des.name}
+                  value={des.value}
+                  index={i}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
 
         <Box>
           <Tabs
@@ -253,8 +316,6 @@ const Project = () => {
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            {/* <Tab label={"Managers"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
-            {/* <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
           </Tabs>
         </Box>
 
@@ -269,14 +330,18 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToCreateVideoAudio && <Button
-              className={classes.projectButton}
-              label={"Create a New Video/Audio"}
-              onClick={() => setCreateVideoDialog(true)}
-            />}
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.permittedToCreateVideoAudio && (
+              <Button
+                className={classes.projectButton}
+                label={"Create a New Video/Audio"}
+                onClick={() => setCreateVideoDialog(true)}
+              />
+            )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <VideoList data={videoList} 
-              removeVideo={() => getProjectVideoList()}
+              <VideoList
+                data={videoList}
+                removeVideo={() => getProjectVideoList()}
               />
             </div>
           </Box>
@@ -310,11 +375,14 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToAddMembersInProject && <Button
-              className={classes.projectButton}
-              label={"Add project members"}
-              onClick={() => setAddUserDialog(true)}
-            />}
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.permittedToAddMembersInProject && (
+              <Button
+                className={classes.projectButton}
+                label={"Add project members"}
+                onClick={() => setAddUserDialog(true)}
+              />
+            )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
             </div>
@@ -335,7 +403,7 @@ const Project = () => {
             <Button
               className={classes.projectButton}
               label={"Add project managers"}
-              onClick={() => { }}
+              onClick={() => {}}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <UserList data={data} />
@@ -361,13 +429,13 @@ const Project = () => {
           setLang={setLang}
         />
       )}
-      <AddProjectMembers 
-       managerNames={userList}
-       open={addUserDialog}
-       handleUserDialogClose={() => setAddUserDialog(false)}
-       addBtnClickHandler={addNewMemberHandler}
-       selectFieldValue={addmembers}
-       handleSelectField={(item)=>setAddmembers(item)}
+      <AddProjectMembers
+        managerNames={userList}
+        open={addUserDialog}
+        handleUserDialogClose={() => setAddUserDialog(false)}
+        addBtnClickHandler={addNewMemberHandler}
+        selectFieldValue={addmembers}
+        handleSelectField={(item) => setAddmembers(item)}
       />
     </Grid>
   );

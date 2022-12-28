@@ -41,7 +41,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
   });
 
   const SearchProject = useSelector((state) => state.searchList.data);
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const handleok = async (id) => {
     setOpen(false);
@@ -98,7 +98,8 @@ const ProjectList = ({ data, props, removeProjectList }) => {
       ) {
         return el;
       }
-})};
+    });
+  };
   // useEffect(() => {
   //   const result = data.map((item) => {
   //     return [
@@ -150,11 +151,8 @@ const ProjectList = ({ data, props, removeProjectList }) => {
               </Link>
 
               <Tooltip title="Delete">
-                <IconButton>
-                  <DeleteIcon
-                    color="error"
-                    onClick={() => handleDeleteProject(item.id)}
-                  />
+                <IconButton onClick={() => handleDeleteProject(item.id)}>
+                  <DeleteIcon color="error" />
                 </IconButton>
               </Tooltip>
             </div>,
