@@ -115,7 +115,7 @@ const CreatenewProject = () => {
         message: resp?.message,
         variant: "success",
       });
-      navigate(`/my-organization/${orgId}/project/${newProjectDetails.id}`, {
+      navigate(`/my-organization/${orgId}/project/${resp.project_id}`, {
         replace: true,
       });
     } else {
