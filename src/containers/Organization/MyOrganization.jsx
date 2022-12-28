@@ -10,8 +10,7 @@ import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/Edi
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchUserRolesAPI from "../../redux/actions/api/User/FetchUsersRoles";
 import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
-import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers"
-
+import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,6 +26,7 @@ import OutlinedTextField from "../../common/OutlinedTextField";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 import CustomizedSnackbars from "../../common/Snackbar";
+import { roles } from "../../utils/utils";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -45,7 +45,7 @@ const TabPanel = (props) => {
 };
 
 const MyOrganization = () => {
-  const {id} = useParams();
+  const { id } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ const MyOrganization = () => {
   const projectList = useSelector((state) => state.getProjectList.data);
   //const userList = useSelector((state) => state.getUserList.data);
 
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data)
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const usersList = useSelector((state) => state.getOrganizatioUsers.data);
 
   const getOrganizationDetails = () => {
@@ -76,7 +76,7 @@ const MyOrganization = () => {
     dispatch(APITransport(userObj));
   };
 
-   const getLoggedInUserData = () => {
+  const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
     dispatch(APITransport(loggedInUserObj));
   };
@@ -94,24 +94,23 @@ const MyOrganization = () => {
     const userObj = new FetchOrganizatioUsersAPI(id);
     dispatch(APITransport(userObj));
   };
- 
 
   useEffect(() => {
     getOrganizationDetails();
     getUserList();
     // getLoggedInUserData()
-    getOrganizatioUsersList()
+    getOrganizatioUsersList();
   }, []);
 
-  useEffect(()=>{
-      userData?.organization?.id && getProjectList(userData?.organization?.id);
-  }, [userData])
+  useEffect(() => {
+    userData?.organization?.id && getProjectList(userData?.organization?.id);
+  }, [userData]);
 
   useEffect(() => {
     setOrganizationName(organizationDetails?.title);
   }, [organizationDetails]);
 
-  const handleOrganizationUpdate = async() => {
+  const handleOrganizationUpdate = async () => {
     const userObj = new EditOrganizationDetailsAPI(
       id,
       organizationName,
@@ -127,48 +126,45 @@ const MyOrganization = () => {
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
-  
+      });
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
-  
   };
 
-  const addNewMemberHandler = async() => {
+  const addNewMemberHandler = async () => {
     const apiObj = new AddOrganizationMemberAPI(
       id,
       newMemberRole,
       newMemberName
     );
-   // dispatch(APITransport(apiObj));
-   const res = await fetch(apiObj.apiEndPoint(), {
-    method: "POST",
-    body: JSON.stringify(apiObj.getBody()),
-    headers: apiObj.getHeaders().headers,
-  });
-  const resp = await res.json();
-  if (res.ok) {
-    setSnackbarInfo({
-      open: true,
-      message:  resp?.message,
-      variant: "success",
-    })
-    getOrganizatioUsersList()
-  } else {
-    setSnackbarInfo({
-      open: true,
-      message: resp?.message,
-      variant: "error",
-    })
-  }
-
+    // dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      getOrganizatioUsersList();
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
   };
 
   const renderSnackBar = () => {
@@ -187,7 +183,7 @@ const MyOrganization = () => {
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-       {renderSnackBar()}
+      {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
           {organizationDetails?.title}
@@ -204,7 +200,14 @@ const MyOrganization = () => {
           >
             <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
+
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.orgSettingVisible && (
+              <Tab
+                label={"Settings"}
+                sx={{ fontSize: 16, fontWeight: "700" }}
+              />
+            )}
           </Tabs>
         </Box>
 
@@ -219,14 +222,22 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            { userData?.role === "ORG_OWNER" &&
-            <Button
-              className={classes.projectButton}
-              label={"Add New Project"}
-              onClick={() => navigate(`/my-organization/${id}/create-new-project`)}
-            />}
+            {userData?.role === "ORG_OWNER" && (
+              <Button
+                className={classes.projectButton}
+                label={"Add New Project"}
+                onClick={() =>
+                  navigate(`/my-organization/${id}/create-new-project`)
+                }
+              />
+            )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <ProjectList data={projectList}  removeProjectList={() => getProjectList(userData?.organization?.id)}/>
+              <ProjectList
+                data={projectList}
+                removeProjectList={() =>
+                  getProjectList(userData?.organization?.id)
+                }
+              />
             </div>
           </Box>
         </TabPanel>

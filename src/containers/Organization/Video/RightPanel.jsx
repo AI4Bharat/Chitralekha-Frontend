@@ -27,6 +27,9 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
 import MergeIcon from "@mui/icons-material/Merge";
+import { clamp } from "lodash";
+import { getUpdatedTime } from "../../../utils/utils";
+import TimeBoxes from "../../../common/TimeBoxes";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -213,8 +216,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-            ? "Saved as draft"
-            : "",
+          ? "Saved as draft"
+          : "",
         variant: "success",
       });
       if (isFinal) {
@@ -247,13 +250,21 @@ const RightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const handleTimeChange = (value, index, type) => {
+  const handleTimeChange = (value, index, type, time) => {
     const copySub = [...sourceText];
 
     if (type === "startTime") {
-      copySub[index].start_time = value;
+      copySub[index].start_time = getUpdatedTime(
+        value,
+        time,
+        copySub[index].start_time
+      );
     } else {
-      copySub[index].end_time = value;
+      copySub[index].end_time = getUpdatedTime(
+        value,
+        time,
+        copySub[index].start_time
+      );
     }
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
@@ -276,7 +287,13 @@ const RightPanel = ({ currentIndex, player }) => {
         }}
         flexDirection="column"
       >
-        <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
+        <Grid
+          display={"flex"}
+          direction={"row"}
+          flexWrap={"wrap"}
+          margin={"23.5px 0"}
+          justifyContent={"space-evenly"}
+        >
           <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Transliteration</Typography>
             <Switch
@@ -305,7 +322,7 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Complete
           </Button>
-          
+
           {/* <Box display={"flex"} alignItems={"center"} paddingX={2}>
             <Typography variant="subtitle2">Split</Typography>
             <Switch
@@ -321,7 +338,7 @@ const RightPanel = ({ currentIndex, player }) => {
             borderTop: "1px solid #eaeaea",
             overflowY: "scroll",
             overflowX: "hidden",
-            height: window.innerHeight * 0.63,
+            height: window.innerHeight * 0.667,
             backgroundColor: "black",
             // color: "white",
             marginTop: "5px",
@@ -332,7 +349,7 @@ const RightPanel = ({ currentIndex, player }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <Box>
                 <Box
                   display="flex"
                   padding="10px 0 0 20px"
@@ -340,31 +357,11 @@ const RightPanel = ({ currentIndex, player }) => {
                   justifyContent="center"
                   alignItems={"center"}
                 >
-                  <TextField
-                    variant="outlined"
-                    type="time"
-                    value={item.start_time}
-                    onChange={(event) =>
-                      handleTimeChange(event.target.value, index, "startTime")
-                    }
-                    inputProps={{ step: 1 }}
-                    sx={{
-                      width: "25%",
-                      marginRight: "auto",
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#616A6B  ",
-                        color: "white",
-                      },
-                      "& .MuiOutlinedInput-input": {
-                        fontSize: "12px",
-                        padding: "7px 14px",
-                        textAlign: "center",
-                      },
-                      '& input[type="time"]::-webkit-calendar-picker-indicator':
-                      {
-                        color: "#fff",
-                      },
-                    }}
+                  <TimeBoxes 
+                    handleTimeChange={handleTimeChange}
+                    time={item.start_time}
+                    index={index}
+                    type={"startTime"}
                   />
 
                   {index < sourceText.length - 1 && (
@@ -404,26 +401,11 @@ const RightPanel = ({ currentIndex, player }) => {
                     </IconButton>
                   </Tooltip>
 
-                  <TextField
-                    variant="outlined"
-                    type="time"
-                    value={item.end_time}
-                    onChange={(event) =>
-                      handleTimeChange(event.target.value, index, "endTime")
-                    }
-                    sx={{
-                      marginLeft: "auto",
-                      width: "25%",
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#616A6B",
-                        color: "white",
-                      },
-                      "& .MuiOutlinedInput-input": {
-                        fontSize: "12px",
-                        padding: "7px 14px",
-                        textAlign: "center",
-                      },
-                    }}
+                  <TimeBoxes 
+                    handleTimeChange={handleTimeChange}
+                    time={item.end_time}
+                    index={index}
+                    type={"endTime"}
                   />
                 </Box>
 
@@ -432,6 +414,14 @@ const RightPanel = ({ currentIndex, player }) => {
                     padding: "5px 0",
                     borderBottom: 2,
                     alignItems: "center",
+                  }}
+                  onClick={() => {
+                    if (player) {
+                      player.pause();
+                      if (player.duration >= item.startTime) {
+                        player.currentTime = item.startTime + 0.001;
+                      }
+                    }
                   }}
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
@@ -447,8 +437,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                          className={`${classes.customTextarea} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                           rows={4}
                           {...props}
                         />
@@ -461,14 +452,15 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
-                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                        }`}
-                        style={{width: "90%"}}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      style={{ width: "90%" }}
                       rows={4}
                     />
                   )}
                 </CardContent>
-              </>
+              </Box>
             );
           })}
           <SplitPopOver

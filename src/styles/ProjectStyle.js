@@ -81,9 +81,9 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#ff9800",
   },
 
-  subtitle: {
+  timelineSubtitle: {
     position: "absolute",
-    left: "0",
+    left: "10",
     top: "0",
     bottom: "0",
     right: "0",
@@ -223,10 +223,12 @@ const ProjectStyle = makeStyles({
   },
 
   video: {
-    position: "relative",
-    maxWidth: "100%",
-    maxHeight: "90%",
-    height: "100vh",
+    // position: "relative",
+    // maxWidth: "100%",
+    // maxHeight: "90%",
+    // height: "100vh",
+  
+    margin:"-1px"
   },
 
   parentSubtitleBox: {
@@ -371,7 +373,7 @@ const ProjectStyle = makeStyles({
 
   menuItemNav: {
     borderRadius: "6px",
-    zIndex: "20"
+    zIndex: "20",
   },
 
   operate: {
@@ -418,6 +420,19 @@ const ProjectStyle = makeStyles({
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
+  
+  fullscreenVideoBtns: {
+    position: "absolute",
+    bottom: "5%",
+    right: "28%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  },
 
   contextMenu: {
     position: "absolute",
@@ -445,6 +460,48 @@ const ProjectStyle = makeStyles({
     display: "flex",
     alignItems: "center",
   },
+
+  timeBox: {
+    marginRight: "auto",
+    borderRadius: "4px",
+    width: "20%",
+    backgroundColor: "#616A6B",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "600",
+    padding: "7px 14px",
+    textAlign: "center",
+    fontFamily: "Roboto, sans-serif",
+    '&::-webkit-calendar-picker-indicator': {
+      display: "none",
+    },
+  },
+  subtitle:{
+    //zIndex:20,
+    background: "black",
+    fontSize:'20px',
+    width: "500px",
+    height:"55px",
+    textAlign: "center",
+  },
+
+  timeInputBox: {
+    backgroundColor: "#616A6B",
+    width: "8%",
+    '& .MuiInputBase-input': {
+      textAlign: "center",
+      color: "#fff",
+    },
+    '& .MuiInput-root:after': {
+      border: "none",
+    },
+    '& .MuiInput-root:hover:before': {
+      border: "none",
+    },
+    '& .MuiInput-root:before': {
+      border: "none",
+    }
+  }
 });
 
 export default ProjectStyle;
