@@ -28,6 +28,8 @@ import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
 import MergeIcon from "@mui/icons-material/Merge";
 import { clamp } from "lodash";
+import { getUpdatedTime } from "../../../utils/utils";
+import TimeBoxes from "../../../common/TimeBoxes";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -248,13 +250,21 @@ const RightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const handleTimeChange = (value, index, type) => {
+  const handleTimeChange = (value, index, type, time) => {
     const copySub = [...sourceText];
 
     if (type === "startTime") {
-      copySub[index].start_time = value;
+      copySub[index].start_time = getUpdatedTime(
+        value,
+        time,
+        copySub[index].start_time
+      );
     } else {
-      copySub[index].end_time = value;
+      copySub[index].end_time = getUpdatedTime(
+        value,
+        time,
+        copySub[index].start_time
+      );
     }
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
@@ -328,7 +338,7 @@ const RightPanel = ({ currentIndex, player }) => {
             borderTop: "1px solid #eaeaea",
             overflowY: "scroll",
             overflowX: "hidden",
-            height: window.innerHeight * 0.63,
+            height: window.innerHeight * 0.667,
             backgroundColor: "black",
             // color: "white",
             marginTop: "5px",
@@ -339,7 +349,7 @@ const RightPanel = ({ currentIndex, player }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <Box>
                 <Box
                   display="flex"
                   padding="10px 0 0 20px"
@@ -347,13 +357,11 @@ const RightPanel = ({ currentIndex, player }) => {
                   justifyContent="center"
                   alignItems={"center"}
                 >
-                  <input
-                    type="time"
-                    value={item.start_time}
-                    onChange={(event) =>
-                      handleTimeChange(event.target.value, index, "startTime")
-                    }
-                    className={classes.timeBox}
+                  <TimeBoxes 
+                    handleTimeChange={handleTimeChange}
+                    time={item.start_time}
+                    index={index}
+                    type={"startTime"}
                   />
 
                   {index < sourceText.length - 1 && (
@@ -393,14 +401,11 @@ const RightPanel = ({ currentIndex, player }) => {
                     </IconButton>
                   </Tooltip>
 
-                  <input
-                    type="time"
-                    value={item.end_time}
-                    onChange={(event) =>
-                      handleTimeChange(event.target.value, index, "endTime")
-                    }
-                    className={classes.timeBox}
-                    style={{ margin: "0 0 0 auto" }}
+                  <TimeBoxes 
+                    handleTimeChange={handleTimeChange}
+                    time={item.end_time}
+                    index={index}
+                    type={"endTime"}
                   />
                 </Box>
 
@@ -409,6 +414,14 @@ const RightPanel = ({ currentIndex, player }) => {
                     padding: "5px 0",
                     borderBottom: 2,
                     alignItems: "center",
+                  }}
+                  onClick={() => {
+                    if (player) {
+                      player.pause();
+                      if (player.duration >= item.startTime) {
+                        player.currentTime = item.startTime + 0.001;
+                      }
+                    }
                   }}
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
@@ -447,7 +460,7 @@ const RightPanel = ({ currentIndex, player }) => {
                     />
                   )}
                 </CardContent>
-              </>
+              </Box>
             );
           })}
           <SplitPopOver

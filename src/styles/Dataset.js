@@ -268,7 +268,7 @@ const DatasetStyle = makeStyles({
 
   createTaskBtn: {
     borderRadius: "7px",
-    backgroundColor: "#0083e2",
+    backgroundColor: "#2C2799",
     marginRight: "10px",
   },
 });

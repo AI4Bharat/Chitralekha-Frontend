@@ -27,12 +27,14 @@ import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
 import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
 import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
 import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
+import FetchBulkTaskTypeAPI from "../redux/actions/api/Project/FetchBulkTaskTypes";
 
 const CreateTaskDialog = ({
   open,
   handleUserDialogClose,
   createTaskHandler,
   videoDetails,
+  isBulk,
 }) => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -42,7 +44,11 @@ const CreateTaskDialog = ({
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
-  const supportedLanguages = useSelector((state) => state.getSupportedLanguages.data);
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
+  const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
+
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
@@ -56,15 +62,19 @@ const CreateTaskDialog = ({
     message: "",
     variant: "success",
   });
-  
+
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
 
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
+
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    const bulkTaskObj = new FetchBulkTaskTypeAPI();
+    dispatch(APITransport(bulkTaskObj));
   }, []);
 
   const submitHandler = () => {
@@ -75,34 +85,43 @@ const CreateTaskDialog = ({
       eta: date,
       priority: priority,
       description: description,
-      video_id: videoDetails.id,
+      video_id: videoDetails.map((item) => item.id),
     };
     createTaskHandler(obj);
   };
 
-  const selectTaskTypeHandler = (event) => {  
+  const selectTaskTypeHandler = (event) => {
     setTaskType(event.target.value);
-    setShowAllowedTaskList(true);
 
-    if(event.target.value === "TRANSCRIPTION"){
-    const allowedTaskObj = new FetchAllowedTasksAPI(videoDetails.id, event.target.value);
+    if (!isBulk) {
+      setShowAllowedTaskList(true);
+
+      if (event.target.value === "TRANSCRIPTION") {
+        const allowedTaskObj = new FetchAllowedTasksAPI(
+          videoDetails.map((item) => item.id),
+          event.target.value
+        );
+        dispatch(APITransport(allowedTaskObj));
+      }
+    }
+  };
+
+  const selectTranslationLanguageHandler = (event) => {
+    setLanguage(event.target.value);
+    const allowedTaskObj = new FetchAllowedTasksAPI(
+      videoDetails.map((item) => item.id),
+      taskType,
+      event.target.value
+    );
     dispatch(APITransport(allowedTaskObj));
-  }
-  }
-
-  const selectTranslationLanguageHandler = (event) =>{
-    setLanguage(event.target.value)
-    const allowedTaskObj = new FetchAllowedTasksAPI(videoDetails.id, taskType,event.target.value);
-    dispatch(APITransport(allowedTaskObj));
-
-  }
+  };
 
   const selectAllowedTaskHandler = (value) => {
     setAllowedTaskType(value);
 
     const obj = new FetchProjectMembersAPI(projectId, value);
     dispatch(APITransport(obj));
-  }
+  };
 
   const renderSnackBar = () => {
     return (
@@ -146,64 +165,71 @@ const CreateTaskDialog = ({
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
               >
-                {tasklist.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
+                {isBulk
+                  ? bulkTaskTypes.map((item, index) => (
+                      <MenuItem key={index} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))
+                  : tasklist.map((item, index) => (
+                      <MenuItem key={index} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
               </Select>
             </FormControl>
           </Box>
 
-          {(taskType === "TRANSLATION") && (
-              <Box width={"100%"} sx={{ mt: 3 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="select-lang">Select Translation Language</InputLabel>
-                  <Select
-                    fullWidth
-                    labelId="select-lang"
-                    label="Select Translation Language"
-                    value={language}
-                   // onChange={(event) => setLanguage(event.target.value)}
-                    onChange={(event) => selectTranslationLanguageHandler(event)}
-                    style={{ zIndex: "0" }}
-                    inputProps={{ "aria-label": "Without label" }}
-                  >
-                    {supportedLanguages?.map((item, index) => (
-                      <MenuItem key={index} value={item.value}>
-                        {item.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            )}
+          {taskType.includes("TRANSLATION") && (
+            <Box width={"100%"} sx={{ mt: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel id="select-lang">
+                  Select Translation Language
+                </InputLabel>
+                <Select
+                  fullWidth
+                  labelId="select-lang"
+                  label="Select Translation Language"
+                  value={language}
+                  // onChange={(event) => setLanguage(event.target.value)}
+                  onChange={(event) => selectTranslationLanguageHandler(event)}
+                  style={{ zIndex: "0" }}
+                  inputProps={{ "aria-label": "Without label" }}
+                >
+                  {supportedLanguages?.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
 
-
-          {
-            showAllowedTaskList && (
-              <Box width={"100%"} sx={{ mt: 3 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="select-allowed-task">Select Action*</InputLabel>
-                  <Select
-                    labelId="select-allowed-task"
-                    label="Select Action"
-                    fullWidth
-                    value={allowedTaskType}
-                    onChange={(event) => selectAllowedTaskHandler(event.target.value)}
-                    style={{ zIndex: "0" }}
-                    inputProps={{ "aria-label": "Without label" }}
-                  >
-                    {allowedTasklist.map((item, index) => (
-                      <MenuItem key={index} value={item.value}>
-                        {item.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            )
-          }
+          {showAllowedTaskList && (
+            <Box width={"100%"} sx={{ mt: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel id="select-allowed-task">Select Action*</InputLabel>
+                <Select
+                  labelId="select-allowed-task"
+                  label="Select Action"
+                  fullWidth
+                  value={allowedTaskType}
+                  onChange={(event) =>
+                    selectAllowedTaskHandler(event.target.value)
+                  }
+                  style={{ zIndex: "0" }}
+                  inputProps={{ "aria-label": "Without label" }}
+                >
+                  {allowedTasklist.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
 
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
@@ -237,7 +263,6 @@ const CreateTaskDialog = ({
             />
           </Box>
 
-         
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
               <InputLabel id="select-priority">Select Priority</InputLabel>
@@ -250,7 +275,7 @@ const CreateTaskDialog = ({
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
               >
-                 {PriorityTypes.map((item, index) => (
+                {PriorityTypes.map((item, index) => (
                   <MenuItem key={index} value={item?.value}>
                     {item?.value}
                   </MenuItem>
@@ -279,7 +304,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={ !(taskType && allowedTaskType && user)}
+          disabled={!(taskType && user)}
           onClick={() => submitHandler()}
         >
           Create Task

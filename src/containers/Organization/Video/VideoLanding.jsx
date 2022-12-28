@@ -457,7 +457,7 @@ const VideoLanding = () => {
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
-            <TranslationRightPanel currentIndex={currentIndex} />
+            <TranslationRightPanel currentIndex={currentIndex} player={player} />
           )}
         </Grid>
       </Grid>
