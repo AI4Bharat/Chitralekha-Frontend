@@ -219,10 +219,10 @@ if (!isInFullScreen) {
                   onClick={() => handleFullscreenVideo()}
                   variant="contained"
                   style={{
-                    right: fullScreenMode ? "7%" : "",
+                    right: fullScreenMode ? "5%" : "",
                   }}
                 >
-                  <FullscreenExitIcon />
+                  <FullscreenExitIcon sx={{fontSize:"40px"}} />
                 </Button>
               ) : (
                 <Button
