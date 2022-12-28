@@ -79,13 +79,13 @@ const CreateTaskDialog = ({
 
   const submitHandler = () => {
     const obj = {
-      task_type: allowedTaskType,
+      task_type: isBulk ? taskType : allowedTaskType,
       user_id: user.id,
       target_language: language,
       eta: date,
       priority: priority,
       description: description,
-      video_id: videoDetails.map((item) => item.id),
+      video_ids: videoDetails.map((item) => item.id),
     };
     createTaskHandler(obj);
   };
