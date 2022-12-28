@@ -173,10 +173,14 @@ if (!isInFullScreen) {
   const onKeyDown = (e) => {
     var video = document.getElementById("myBtn");
   if (e.which == 32) {
-    if (video.paused)
+    if (video.paused){
+    e.preventDefault();
       video.play();
-    else
+    }
+    else{
+    e.preventDefault();
       video.pause();
+    }
   }
   };
 
