@@ -61,7 +61,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
             currentTime >= start && currentTime <= end
               ? "orange"
               : currentTime >= start
-              ? "blank"
+              ? "white"
               : "grey",
         }}
       >{`${word} `}</span>
@@ -135,7 +135,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Box className={classes.videoBox}>
+        <Grid className={classes.videoBox}>
           <video
             ref={ref}
             style={{ width: "500px", height: "300px" }}
@@ -146,7 +146,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
           />
           <div
             className={classes.subtitle}
-            style={fullScreenMode ? { zIndex: 100 } : {}}
+            style={fullScreenMode ? { zIndex:100 } : {}}
           >
             {highlightedSubtitle.length ? (
               highlightedSubtitle.map((s) => s)
@@ -154,7 +154,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
               <></>
             )}
           </div>
-        </Box>
+        </Grid>
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
         <Typography variant="body1" style={{ marginRight: "auto" }}>
