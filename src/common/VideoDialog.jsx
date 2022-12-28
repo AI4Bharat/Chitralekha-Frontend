@@ -175,12 +175,10 @@ if (!isInFullScreen) {
   if (e.which == 32) {
     if (video.paused){
     e.preventDefault();
-    e.stopImmediatePropagation();
       video.play();
     }
     else{
     e.preventDefault();
-    e.stopImmediatePropagation();
       video.pause();
     }
   }
