@@ -15,6 +15,10 @@ import ProjectStyle from "../styles/ProjectStyle";
 import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
 import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
 import { getTimeStamp, getMilliseconds } from "../utils/utils";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -24,6 +28,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const [subtitles, setSubtitles] = useState([]);
   const [highlightedSubtitle, setHighlightedSubtitle] = useState([]);
   const [fullScreenMode, setFullScreenMode] = useState(false);
+  const [playpause, setplaypause] = useState(false);
   const ref = useRef(null);
   const { subtitle } = useVideoSubtitle(videoDetails.id);
 
@@ -61,7 +66,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
             currentTime >= start && currentTime <= end
               ? "red"
               : currentTime >= start
-              ? "blank"
+              ? "white"
               : "grey",
         }}
       >{`${word} `}</span>
@@ -121,6 +126,56 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     setTime(time);
   };
 
+  const handleFullscreenVideo = () => {
+    let docElm = document.getElementById("myvideo");
+    var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+    (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+    (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+    (document.msFullscreenElement && document.msFullscreenElement !== null);
+
+// var docElm = document.documentElement;
+if (!isInFullScreen) {
+    if (docElm.requestFullscreen) {
+        docElm.requestFullscreen();
+    } else if (docElm.mozRequestFullScreen) {
+        docElm.mozRequestFullScreen();
+    } else if (docElm.webkitRequestFullScreen) {
+        docElm.webkitRequestFullScreen();
+    } else if (docElm.msRequestFullscreen) {
+        docElm.msRequestFullscreen();
+    }
+} else {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+}
+  };
+
+
+
+
+  const handleplayVideo = () =>{
+   
+    var btn = document.getElementById("myBtn");
+      if (btn.paused) {
+        setplaypause(true)
+        btn.play();
+       
+      }  else {
+        setplaypause(false)
+        btn.pause();
+        
+      }
+    
+  }
+
+  console.log(playpause,"playpausev")
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -135,18 +190,20 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Box className={classes.videoBox}>
+        <Grid className={classes.videoBox}  id="myvideo" >
           <video
+             id="myBtn"
             ref={ref}
-            style={{ width: "500px", height: "300px" }}
-            controls
+            style={fullScreenMode ? { } : { width: "500px" }}
+           // controls
             src={video.direct_video_url}
             className={classes.video}
             onTimeUpdate={handleProgress}
+            onClick={() => handleplayVideo()}
           />
           <div
             className={classes.subtitle}
-            style={fullScreenMode ? { zIndex: 100 } : {}}
+            style={fullScreenMode ? { zIndex:100,fontSize:'40px',} : {}}
           >
             {highlightedSubtitle.length ? (
               highlightedSubtitle.map((s) => s)
@@ -154,7 +211,32 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
               <></>
             )}
           </div>
-        </Box>
+            <Box>
+              {fullScreenMode ? (
+                <Button
+                  className={classes.fullscreenVideoBtns}
+                  aria-label="fullscreen"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                  style={{
+                    right: fullScreenMode ? "5%" : "",
+                  }}
+                >
+                  <FullscreenExitIcon sx={{fontSize:"40px"}} />
+                </Button>
+              ) : (
+                <Button
+                  className={classes.fullscreenVideoBtns}
+                  aria-label="fullscreenExit"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                >
+                  <FullscreenIcon />
+                </Button>
+              )}
+            </Box>
+          
+        </Grid>
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
         <Typography variant="body1" style={{ marginRight: "auto" }}>

@@ -388,9 +388,9 @@ const VideoList = ({ data, removeVideo }) => {
               Create Task
             </Button>
           )}
-        <Search />
+        
       </Box>
-
+      <Search />
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>

@@ -651,9 +651,8 @@ const TaskList = () => {
             Create Task
           </Button>
         )}
-        <Search />
       </Box>
-
+      <Search />
       <Grid>{renderSnackBar()}</Grid>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />

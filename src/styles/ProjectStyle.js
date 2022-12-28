@@ -83,7 +83,7 @@ const ProjectStyle = makeStyles({
 
   timelineSubtitle: {
     position: "absolute",
-    left: "0",
+    left: "10",
     top: "0",
     bottom: "0",
     right: "0",
@@ -227,6 +227,8 @@ const ProjectStyle = makeStyles({
     // maxWidth: "100%",
     // maxHeight: "90%",
     // height: "100vh",
+  
+    margin:"-1px"
   },
 
   parentSubtitleBox: {
@@ -418,6 +420,19 @@ const ProjectStyle = makeStyles({
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
+  
+  fullscreenVideoBtns: {
+    position: "absolute",
+    bottom: "5%",
+    right: "28%",
+    zIndex: "999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  },
 
   contextMenu: {
     position: "absolute",
@@ -462,11 +477,12 @@ const ProjectStyle = makeStyles({
     },
   },
   subtitle:{
-    zIndex:20,
-    background: "white",
+    //zIndex:20,
+    background: "black",
     fontSize:'20px',
     width: "500px",
-    height:"50px"
+    height:"55px",
+    textAlign: "center",
   },
 
   timeInputBox: {
