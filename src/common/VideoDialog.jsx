@@ -59,7 +59,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         style={{
           color:
             currentTime >= start && currentTime <= end
-              ? "orange"
+              ? "red"
               : currentTime >= start
               ? "blank"
               : "grey",

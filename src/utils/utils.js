@@ -437,6 +437,7 @@ export const getMilliseconds = (timeInString) => {
   if (timeInString) {
     var a = timeInString.split(":");
     var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+    console.log(seconds);
     return seconds;
   }
   return 0;
