@@ -2,14 +2,11 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class EditOrganizationDetailsAPI extends API {
-  constructor(id, title, email, organizationOwner, timeout = 2000) {
-    super("PUT", timeout, false);
-    this.type = C.EDIT_ORGANIZATION_DETAILS;
+export default class DeleteOrganizationAPI extends API {
+  constructor(id, timeout = 2000) {
+    super("DELETE", timeout, false);
+    this.type = C.DELETE_ORGANIZATION;
     this.id = id;
-    this.title = title;
-    this.email = email;
-    this.organizationOwner = organizationOwner;
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/`;
   }
 
@@ -24,19 +21,13 @@ export default class EditOrganizationDetailsAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return {
-        title : this.title,
-        email_domain_name: this.email,
-        organization_owner: this.organizationOwner,
-    } 
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };
     return this.headers;
