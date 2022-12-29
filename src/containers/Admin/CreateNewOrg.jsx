@@ -18,6 +18,9 @@ import CustomizedSnackbars from "../../common/Snackbar";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import Button from "../../common/Button";
 
+//APIs
+import CreateNewOrganizationAPI from "../../redux/actions/api/Organization/CreateNewOrganization";
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -43,7 +46,32 @@ const CreateNewOrg = () => {
     variant: "success",
   });
 
-  const handleCreateProject = async () => {};
+  const handleCreateProject = async () => {
+    const apiObj = new CreateNewOrganizationAPI(title, emailDomainName, 23);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      navigate(`/admin`, { replace: true });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
 
   const renderSnackBar = () => {
     return (

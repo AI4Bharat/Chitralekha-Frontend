@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment/moment";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
@@ -8,10 +10,22 @@ import tableTheme from "../../theme/tableTheme";
 import MUIDataTable from "mui-datatables";
 import Search from "../../common/Search";
 
-const OrganizationList = ({ data }) => {
+//APIs
+import APITransport from "../../redux/actions/apitransport/apitransport";
+import FetchOrganizationListAPI from "../../redux/actions/api/Organization/FetchOrganizationList";
+
+const OrganizationList = () => {
+  const dispatch = useDispatch();
+  const orgList = useSelector((state) => state.getOrganizationList.data);
+
+  useEffect(() => {
+    const apiObj = new FetchOrganizationListAPI();
+    dispatch(APITransport(apiObj));
+  }, []);
+
   const columns = [
     {
-      name: "organization",
+      name: "title",
       label: "Organization",
       options: {
         filter: false,
@@ -23,8 +37,8 @@ const OrganizationList = ({ data }) => {
       },
     },
     {
-      name: "org_owner",
-      label: "Org Owner",
+      name: "organization_owner",
+      label: "Organization Owner",
       options: {
         filter: false,
         sort: false,
@@ -37,6 +51,37 @@ const OrganizationList = ({ data }) => {
     {
       name: "created_by",
       label: "Created By",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "created_at",
+      label: "Created At",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+        customBodyRender: (value) => {
+          return (
+            <div style={{ textTransform: "none" }}>
+              {moment(value).format("DD/MM/YYYY hh:mm:ss")}
+            </div>
+          );
+        },
+      },
+    },
+    {
+      name: "email_domain_name",
+      label: "Email Domain Name",
       options: {
         filter: false,
         sort: false,
@@ -89,7 +134,7 @@ const OrganizationList = ({ data }) => {
     <>
       <Search />
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={data} columns={columns} options={options} />
+        <MUIDataTable data={orgList} columns={columns} options={options} />
       </ThemeProvider>
     </>
   );
