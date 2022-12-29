@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 //Styles
 import DatasetStyle from "../../styles/Dataset";
@@ -19,7 +20,8 @@ import OutlinedTextField from "../../common/OutlinedTextField";
 import Button from "../../common/Button";
 
 //APIs
-import CreateNewOrganizationAPI from "../../redux/actions/api/Organization/CreateNewOrganization";
+import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
+import APITransport from "../../redux/actions/apitransport/apitransport";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -32,45 +34,47 @@ const MenuProps = {
   },
 };
 
-const CreateNewOrg = () => {
+const EditOrganizationDetails = () => {
+  const { orgId } = useParams();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [title, setTitle] = useState("");
-  const [owner, setOwner] = useState("");
-  const [emailDomainName, setEmailDomainName] = useState("");
+  const orgInfo = useSelector((state) => state.getOrganizationDetails.data);
+
+  const [orgDetails, setOrgDetails] = useState({
+    title: orgInfo.title,
+    owner: orgInfo.organization_owner,
+    emailDomainName: orgInfo.email_domain_name,
+  });
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
 
-  const handleCreateProject = async () => {
-    const apiObj = new CreateNewOrganizationAPI(title, emailDomainName, 23);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
+  useEffect(() => {
+    setOrgDetails({
+      title: orgInfo.title,
+      owner: orgInfo.organization_owner,
+      emailDomainName: orgInfo.email_domain_name,
     });
+  }, [orgInfo]);
 
-    const resp = await res.json();
+  useEffect(() => {
+    const apiObj = new FetchOrganizationDetailsAPI(orgId);
+    dispatch(APITransport(apiObj));
+  }, []);
 
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      navigate(`/admin`, { replace: true });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+  const handleFieldChange = (event) => {
+    event.preventDefault();
+    setOrgDetails((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
   };
+
+  const handleOrgUpdate = () => {};
 
   const renderSnackBar = () => {
     return (
@@ -91,7 +95,7 @@ const CreateNewOrg = () => {
       {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
-          Create New Organization
+          Edit Organization
         </Typography>
 
         <Box>
@@ -100,8 +104,9 @@ const CreateNewOrg = () => {
           </Typography>
           <OutlinedTextField
             fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={orgDetails.title}
+            name={"title"}
+            onChange={(e) => handleFieldChange(e)}
           />
         </Box>
 
@@ -112,8 +117,9 @@ const CreateNewOrg = () => {
           <FormControl fullWidth>
             <Select
               id="demo-multiple-name"
-              value={owner}
-              onChange={(event) => setOwner(event.target.value)}
+              name={"owner"}
+              value={orgDetails.owner}
+              onChange={(event) => handleFieldChange(event)}
               MenuProps={MenuProps}
             >
               <MenuItem key={"1"} value={"Owner"}>
@@ -129,19 +135,20 @@ const CreateNewOrg = () => {
           </Typography>
           <OutlinedTextField
             fullWidth
-            value={emailDomainName}
-            onChange={(e) => setEmailDomainName(e.target.value)}
+            name={"emailDomainName"}
+            value={orgDetails.emailDomainName}
+            onChange={(e) => handleFieldChange(e)}
           />
         </Box>
 
         <Box sx={{ mt: 3 }}>
           <Button
             style={{ margin: "0px 20px 0px 0px" }}
-            label={"Create Organization"}
-            onClick={() => handleCreateProject()}
-            disabled={title && owner ? false : true}
+            label={"Update Organization"}
+            onClick={() => handleOrgUpdate()}
+            disabled={orgDetails.title && orgDetails.owner ? false : true}
           />
-          
+
           <Button
             buttonVariant="text"
             label={"Cancel"}
@@ -153,4 +160,4 @@ const CreateNewOrg = () => {
   );
 };
 
-export default CreateNewOrg;
+export default EditOrganizationDetails;
