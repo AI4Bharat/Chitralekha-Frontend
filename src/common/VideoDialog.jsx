@@ -208,7 +208,7 @@ if (!isInFullScreen) {
              id="myBtn"
             ref={ref}
             style={fullScreenMode ? { } : { width: "500px" }}
-           // controls
+           controls
             src={video.direct_video_url}
             className={classes.video}
             onTimeUpdate={handleProgress}
