@@ -65,6 +65,7 @@ const VideoList = ({ data, removeVideo }) => {
   };
 
   const handleok = async (id) => {
+    console.log(id,'-=-=-=-=-');
     setOpenDialog(false);
     const apiObj = new DeleteVideoAPI({ video_id: id });
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -324,6 +325,7 @@ const VideoList = ({ data, removeVideo }) => {
     },
     rowsSelected: rows,
   };
+
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
@@ -387,8 +389,8 @@ const VideoList = ({ data, removeVideo }) => {
       {openDialog && (
         <DeleteDialog
           openDialog={openDialog}
-          handleClose={handleClose}
-          submit={handleok}
+          handleClose={() => handleClose()}
+          submit={() => handleok(projectid)}
           message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
         />
       )}

@@ -22,6 +22,7 @@ import Button from "../../common/Button";
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -74,7 +75,36 @@ const EditOrganizationDetails = () => {
     }));
   };
 
-  const handleOrgUpdate = () => {};
+  const handleOrgUpdate = async () => {
+    const userObj = new EditOrganizationDetailsAPI(
+        orgId,
+        orgDetails.title,
+        orgDetails.emailDomainName,
+        orgDetails.owner,
+    );
+
+    const res = await fetch(userObj.apiEndPoint(), {
+      method: "PUT",
+      body: JSON.stringify(userObj.getBody()),
+      headers: userObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+    
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
 
   const renderSnackBar = () => {
     return (
