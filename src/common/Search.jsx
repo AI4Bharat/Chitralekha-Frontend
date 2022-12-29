@@ -28,7 +28,7 @@ const Search = (props) => {
   };
 
   return (
-    <Grid container justifyContent="end" sx={{ marginTop: "0px", width: "auto",marginBottom:"12px" }}>
+    <Grid container justifyContent="end" sx={{ marginTop: "0px", width: "auto", mb: "12px" }}>
       <Grid className={classes.search}>
         <Grid className={classes.searchIcon}>
           <SearchIcon fontSize="small" />

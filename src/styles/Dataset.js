@@ -270,6 +270,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "7px",
     backgroundColor: "#2C2799",
     marginRight: "10px",
+    marginBottom: "12px"
   },
 });
 
