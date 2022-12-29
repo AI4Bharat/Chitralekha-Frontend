@@ -33,7 +33,7 @@ import searchList from "./Project/Search";
 import getTranslationTypes from "./Project/FetchTranslationTypes";
 import commonReducer from "./Common";
 import getVideoSubtitle from "./Project/FetchVideoSubtitle";
-import getOrganizatioList from "./Organization/FetchOrganizationList";
+import getOrganizationList from "./Organization/FetchOrganizationList";
 
 const rootReducer = {
     apiStatus,
@@ -71,7 +71,7 @@ const rootReducer = {
     commonReducer,
     getBulkTaskTypes,
     getVideoSubtitle,
-    getOrganizatioList,
+    getOrganizationList,
 };
 
 export default rootReducer;
