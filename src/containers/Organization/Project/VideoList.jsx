@@ -30,11 +30,8 @@ import Search from "../../../common/Search";
 
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
-import { useCallback } from "react";
-import { useMemo } from "react";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
@@ -370,9 +367,8 @@ const VideoList = ({ data, removeVideo }) => {
     <>
       <Box
         display="flex"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         alignItems="center"
-        sx={{ margin: "10px 0" }}
       >
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
@@ -388,7 +384,10 @@ const VideoList = ({ data, removeVideo }) => {
               Create Task
             </Button>
           )}
-        <Search />
+
+          <Box sx={{ marginLeft: "auto" }}>
+            <Search />
+          </Box>
       </Box>
 
       <ThemeProvider theme={tableTheme}>
