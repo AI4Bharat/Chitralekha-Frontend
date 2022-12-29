@@ -228,7 +228,10 @@ const ProjectStyle = makeStyles({
     // maxHeight: "90%",
     // height: "100vh",
   
-    margin:"-1px"
+    margin:"-1px",
+    "&::-webkit-media-controls-fullscreen-button" : {
+      display: "none",
+    }
   },
 
   parentSubtitleBox: {
@@ -483,6 +486,7 @@ const ProjectStyle = makeStyles({
     width: "500px",
     height:"55px",
     textAlign: "center",
+    marginRight:"-1px"
   },
 
   timeInputBox: {
