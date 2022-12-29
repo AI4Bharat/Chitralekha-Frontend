@@ -27,12 +27,14 @@ const Login = () => {
   });
 
   // const [userAccessToken, setUserAccessToken ] = useState();
-  const accessToken = localStorage.getItem('token');
+  const accessToken = localStorage.getItem("token");
 
-  const userTokenData = useSelector((state) => state.getUserAccessToken.data?.access);
+  const userTokenData = useSelector(
+    (state) => state.getUserAccessToken.data?.access
+  );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const loginApiStatus = useSelector((state) => state.apiStatus);
-console.log(loginApiStatus,'loginApiStatus');
+  console.log(loginApiStatus, "loginApiStatus");
   const navigate = useNavigate();
 
   const [snackbar, setSnackbarInfo] = useState({
@@ -74,19 +76,23 @@ console.log(loginApiStatus,'loginApiStatus');
         message: "Username or Password incorrect.",
       });
     }
-  }, [loginApiStatus])
+  }, [loginApiStatus]);
 
   useEffect(() => {
     if (accessToken) {
       getLoggedInUserData();
     }
-  }, [userTokenData])
+  }, [userTokenData]);
 
   useEffect(() => {
     if (userData && accessToken) {
-      navigate(`/my-organization/${userData?.organization?.id}`)
+      if (userData.role === "ADMIN") {
+        navigate(`/admin`);
+      } else {
+        navigate(`/my-organization/${userData?.organization?.id}`);
+      }
     }
-  }, [userData])
+  }, [userData]);
 
   useEffect(() => {
     window.addEventListener("keydown", keyPress);
@@ -116,32 +122,6 @@ console.log(loginApiStatus,'loginApiStatus');
   const createToken = () => {
     const apiObj = new LoginAPI(credentials.email, credentials.password);
     dispatch(APITransport(apiObj));
-    // fetch(apiObj.apiEndPoint(), {
-    //   method: "POST",
-    //   body: JSON.stringify(apiObj.getBody()),
-    //   headers: apiObj.getHeaders().headers,
-    // })
-    //   .then(async (res) => {
-    //     const rsp_data = await res.json();
-    //     if (!res.ok) {
-    //       setSnackbarInfo({
-    //         open: true,
-    //         variant: "error",
-    //         message: "Username or Password incorrect.",
-    //       });
-    //     } else {
-    //       localStorage.setItem("token", rsp_data.access);
-    //       setUserAccessToken(rsp_data.access);
-    //       // navigate("/projects");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     setSnackbarInfo({
-    //       open: true,
-    //       variant: "error",
-    //       message: "Something went wrong. Please try again.",
-    //     });
-    //   });
   };
 
   const TextFields = () => {

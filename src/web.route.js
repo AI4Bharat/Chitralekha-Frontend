@@ -21,6 +21,8 @@ import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPass
 import ForgotPassword from "./containers/UserManagement/ForgotPassword";
 import ComparisonTable from "./containers/Organization/Project/ComparisonTable";
 import VideoLanding from "./containers/Organization/Video/VideoLanding";
+import CreateNewOrg from "./containers/Admin/CreateNewOrg";
+import DashBoard from "./containers/Admin/Dashboard";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -109,8 +111,21 @@ const RootRouter = () => {
             <Layout component={<VideoLanding />} isDrawer={true} />
           )}
         />
-      </Routes>
 
+        <Route
+          path="/admin"
+          element={ProtectedRouteWrapper(
+            <Layout component={<DashBoard />} />
+          )}
+        />
+
+        <Route
+          path="/admin/create-new-org"
+          element={ProtectedRouteWrapper(
+            <Layout component={<CreateNewOrg />} />
+          )}
+        />
+      </Routes>
     </HashRouter>
   );
 };
