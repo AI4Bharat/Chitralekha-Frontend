@@ -32,6 +32,7 @@ import Search from "../../../common/Search";
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
+import DeleteDialog from "../../../common/DeleteDialog";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
@@ -337,39 +338,9 @@ const VideoList = ({ data, removeVideo }) => {
     );
   };
 
-  const renderDialog = () => {
-    return (
-      <Dialog
-        open={openDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure, you want to delete this video? All the associated
-            tasks will be deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <CustomButton onClick={handleClose} label="Cancel" />
-          <CustomButton
-            onClick={() => handleok(projectid)}
-            label="Ok"
-            autoFocus
-          />
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
   return (
     <>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
           showCreateTaskBtn && (
@@ -385,9 +356,9 @@ const VideoList = ({ data, removeVideo }) => {
             </Button>
           )}
 
-          <Box sx={{ marginLeft: "auto" }}>
-            <Search />
-          </Box>
+        <Box sx={{ marginLeft: "auto" }}>
+          <Search />
+        </Box>
       </Box>
 
       <ThemeProvider theme={tableTheme}>
@@ -412,7 +383,15 @@ const VideoList = ({ data, removeVideo }) => {
         />
       )}
       {renderSnackBar()}
-      {renderDialog()}
+
+      {openDialog && (
+        <DeleteDialog
+          openDialog={openDialog}
+          handleClose={handleClose}
+          submit={handleok}
+          message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
+        />
+      )}
     </>
   );
 };

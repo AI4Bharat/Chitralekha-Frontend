@@ -23,6 +23,7 @@ import ComparisonTable from "./containers/Organization/Project/ComparisonTable";
 import VideoLanding from "./containers/Organization/Video/VideoLanding";
 import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
+import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -122,7 +123,14 @@ const RootRouter = () => {
         <Route
           path="/admin/create-new-org"
           element={ProtectedRouteWrapper(
-            <Layout component={<CreateNewOrg />} />
+            <Layout component={<CreateNewOrg />} Backbutton={true} />
+          )}
+        />
+
+        <Route
+          path="/admin/edit-organization/:orgId"
+          element={ProtectedRouteWrapper(
+            <Layout component={<EditOrganizationDetails />} Backbutton={true} />
           )}
         />
       </Routes>
