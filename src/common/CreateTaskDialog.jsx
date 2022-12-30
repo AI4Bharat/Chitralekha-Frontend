@@ -39,7 +39,7 @@ const CreateTaskDialog = ({
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = ProjectStyle();
-
+  console.log(videoDetails, "videoDetails");
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
@@ -85,7 +85,9 @@ const CreateTaskDialog = ({
       eta: date,
       priority: priority,
       description: description,
-      video_ids: videoDetails.map((item) => item.id),
+      video_ids: Array.isArray(videoDetails)
+        ? videoDetails.map((item) => item.id)
+        : [videoDetails.id],
     };
     createTaskHandler(obj);
   };
@@ -98,7 +100,9 @@ const CreateTaskDialog = ({
 
       if (event.target.value === "TRANSCRIPTION") {
         const allowedTaskObj = new FetchAllowedTasksAPI(
-          videoDetails.map((item) => item.id),
+          Array.isArray(videoDetails)
+            ? videoDetails.map((item) => item.id)
+            : videoDetails.id,
           event.target.value
         );
         dispatch(APITransport(allowedTaskObj));
@@ -109,7 +113,9 @@ const CreateTaskDialog = ({
   const selectTranslationLanguageHandler = (event) => {
     setLanguage(event.target.value);
     const allowedTaskObj = new FetchAllowedTasksAPI(
-      videoDetails.map((item) => item.id),
+      Array.isArray(videoDetails)
+        ? videoDetails.map((item) => item.id)
+        : videoDetails.id,
       taskType,
       event.target.value
     );
@@ -233,7 +239,7 @@ const CreateTaskDialog = ({
 
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
-              <InputLabel id="assign-user">Assign User*</InputLabel>
+              <InputLabel id="assign-user">Assign User</InputLabel>
               <Select
                 labelId="assign-user"
                 label="Assign User"
@@ -304,7 +310,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={!(taskType && user)}
+          disabled={!(taskType)}
           onClick={() => submitHandler()}
         >
           Create Task
