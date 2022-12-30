@@ -22,6 +22,7 @@ import Button from "../../common/Button";
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import FetchOrgOwnersAPI from "../../redux/actions/api/Admin/FetchOrgOwners";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -41,17 +42,23 @@ const EditOrganizationDetails = () => {
   const dispatch = useDispatch();
 
   const orgInfo = useSelector((state) => state.getOrganizationDetails.data);
+  const orgOwnerList = useSelector((state) => state.getOrgOwnerList.data);
 
   const [orgDetails, setOrgDetails] = useState({
-    title: orgInfo.title,
-    owner: orgInfo.organization_owner,
-    emailDomainName: orgInfo.email_domain_name,
+    title: "",
+    owner: "",
+    emailDomainName: "",
   });
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
+
+  useEffect(() => {
+    const apiObj = new FetchOrgOwnersAPI();
+    dispatch(APITransport(apiObj));
+  }, []);
 
   useEffect(() => {
     setOrgDetails({
@@ -122,9 +129,13 @@ const EditOrganizationDetails = () => {
               onChange={(event) => handleFieldChange(event)}
               MenuProps={MenuProps}
             >
-              <MenuItem key={"1"} value={"Owner"}>
-                Owner
-              </MenuItem>
+              {orgOwnerList.map((item) => {
+                return (
+                  <MenuItem key={"1"} value={item.id}>
+                    {item.username}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
         </Box>

@@ -64,6 +64,10 @@ const constants = {
     FULLSCREEN: "FULLSCREEN",
     FULLSCREEN_VIDEO: "FULLSCREEN_VIDEO",
     SUBTITLES: "SUBTITLES",
+
+    //Admin
+    GET_ORG_OWNER_LIST: "GET_ORG_OWNER_LIST",
+    GET_USER_LIST: "GET_USER_LIST",
 };
 
 export default constants;

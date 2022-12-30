@@ -139,11 +139,12 @@ const MyOrganization = () => {
   };
 
   const addNewMemberHandler = async () => {
-    const apiObj = new AddOrganizationMemberAPI(
-      id,
-      newMemberRole,
-      newMemberName
-    );
+    const data = {
+      role: newMemberRole,
+      emails: [newMemberName],
+      organization_id: id,
+    };
+    const apiObj = new AddOrganizationMemberAPI(data);
     // dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",

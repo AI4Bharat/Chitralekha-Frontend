@@ -12,6 +12,9 @@ import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
 
+//Apis
+import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
+
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -55,7 +58,36 @@ const DashBoard = () => {
     );
   };
 
-  const addNewMemberHandler = () => {}
+  const addNewMemberHandler = async () => {
+    const data = {
+      role: "ORG_OWNER",
+      emails: [newMemberEmail],
+    };
+
+    const apiObj = new AddOrganizationMemberAPI(data);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">

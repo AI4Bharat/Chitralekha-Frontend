@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 //Styles
 import DatasetStyle from "../../styles/Dataset";
@@ -20,6 +21,8 @@ import Button from "../../common/Button";
 
 //APIs
 import CreateNewOrganizationAPI from "../../redux/actions/api/Organization/CreateNewOrganization";
+import FetchOrgOwnersAPI from "../../redux/actions/api/Admin/FetchOrgOwners";
+import APITransport from "../../redux/actions/apitransport/apitransport";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -35,7 +38,10 @@ const MenuProps = {
 const CreateNewOrg = () => {
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const orgOwnerList = useSelector((state) => state.getOrgOwnerList.data);
+  console.log(orgOwnerList, "orgOwnerList");
   const [title, setTitle] = useState("");
   const [owner, setOwner] = useState("");
   const [emailDomainName, setEmailDomainName] = useState("");
@@ -45,8 +51,13 @@ const CreateNewOrg = () => {
     variant: "success",
   });
 
+  useEffect(() => {
+    const apiObj = new FetchOrgOwnersAPI();
+    dispatch(APITransport(apiObj));
+  }, []);
+
   const handleCreateProject = async () => {
-    const apiObj = new CreateNewOrganizationAPI(title, emailDomainName, 23);
+    const apiObj = new CreateNewOrganizationAPI(title, emailDomainName, owner);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
@@ -116,9 +127,13 @@ const CreateNewOrg = () => {
               onChange={(event) => setOwner(event.target.value)}
               MenuProps={MenuProps}
             >
-              <MenuItem key={"1"} value={"Owner"}>
-                Owner
-              </MenuItem>
+              {orgOwnerList.map((item) => {
+                return (
+                  <MenuItem key={"1"} value={item.id}>
+                    {item.username}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
         </Box>
@@ -141,7 +156,7 @@ const CreateNewOrg = () => {
             onClick={() => handleCreateProject()}
             disabled={title && owner ? false : true}
           />
-          
+
           <Button
             buttonVariant="text"
             label={"Cancel"}
