@@ -13,11 +13,14 @@ import UpdateEmailDialog from "../../common/UpdateEmailDialog";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
+import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
 import { roles } from "../../utils/utils";
 import UpdateEmailAPI from "../../redux/actions/api/User/UpdateEmail";
 import UpdateProfileAPI from "../../redux/actions/api/User/UpdateProfile";
+import { useParams } from "react-router-dom";
 
 const EditProfile = () => {
+  const { id } = useParams(); 
   const dispatch = useDispatch();
 
   const [snackbarState, setSnackbarState] = useState({
@@ -33,15 +36,20 @@ const EditProfile = () => {
   const [userDetails, setUserDetails] = useState(null);
 
   // const userData = JSON.parse(localStorage.getItem("userData"));
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const userData = useSelector((state) => state.getUserDetails.data);
 
   const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
     dispatch(APITransport(loggedInUserObj));
   };
 
-  useEffect(() => {
-    getLoggedInUserData();
+  const getUserData = () => {
+    const userObj = new FetchUserDetailsAPI(id);
+    dispatch(APITransport(userObj));
+  }
+
+  useEffect(() => { 
+    getUserData();
   }, []);
 
   useEffect(() => {

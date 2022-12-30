@@ -58,7 +58,7 @@ const RootRouter = () => {
           )}
         />
         <Route
-          path="/edit-profile"
+          path="/edit-profile/:id"
           element={ProtectedRouteWrapper(
             <Layout component={<EditProfile />} Backbutton={true} />
           )}
