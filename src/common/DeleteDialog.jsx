@@ -31,7 +31,10 @@ const DeleteDialog = ({ openDialog, handleClose, submit, message }) => {
         </Button>
         <Button
           variant="contained"
-          onClick={() => submit()}
+          onClick={() => {
+            submit();
+            handleClose();
+          }}
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "6px" }}
         >
