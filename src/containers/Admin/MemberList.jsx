@@ -13,22 +13,24 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteDialog from "../../common/DeleteDialog";
 
-const data2 = [
-  {
-    id: "1",
-    username: "Harsh Malviya",
-    org: "Tarento",
-    email: "harsh.malviya@tarento.com",
-    role: "Admin",
-  },
-];
+//APIs
+import FetchAllUsersAPI from "../../redux/actions/api/Admin/FetchAllUsers";
+import APITransport from "../../redux/actions/apitransport/apitransport";
 
 const MemberList = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const userList = useSelector((state) => state.getAllUserList.data);
+  console.log(userList, "userList");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusToggle, setStatusToggle] = useState(true);
   const [currentUserId, setCurrentUserId] = useState("");
+
+  useEffect(() => {
+    const apiObj = new FetchAllUsersAPI();
+    dispatch(APITransport(apiObj));
+  }, []);
 
   const columns = [
     {
@@ -51,7 +53,7 @@ const MemberList = () => {
       },
     },
     {
-      name: "org",
+      name: "organization",
       label: "Organization",
       options: {
         filter: false,
@@ -60,6 +62,13 @@ const MemberList = () => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box sx={{ display: "flex" }}>
+              {value?.title}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -75,7 +84,7 @@ const MemberList = () => {
       },
     },
     {
-      name: "role",
+      name: "role_label",
       label: "Role",
       options: {
         filter: false,
@@ -165,7 +174,7 @@ const MemberList = () => {
     <>
       <Search />
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={data2} columns={columns} options={options} />
+        <MUIDataTable data={userList} columns={columns} options={options} />
       </ThemeProvider>
 
       {deleteDialogOpen && (

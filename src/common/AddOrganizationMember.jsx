@@ -86,7 +86,7 @@ const AddOrganizationMember = ({
             addBtnClickHandler();
             handleUserDialogClose();
           }}
-          disabled={textFieldLabel && selectFieldValue ? false : true}
+          disabled={textFieldLabel || selectFieldValue ? false : true}
           sx={{ lineHeight: "0", height: "auto" }}
         >
           Add
