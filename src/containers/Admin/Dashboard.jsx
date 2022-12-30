@@ -7,9 +7,10 @@ import DatasetStyle from "../../styles/Dataset";
 //Components
 import { Box, Card, Grid, Tab, Tabs } from "@mui/material";
 import Button from "../../common/Button";
-import UserList from "../Organization/UserList";
 import CustomizedSnackbars from "../../common/Snackbar";
 import OrganizationList from "./OrganizationList";
+import MemberList from "./MemberList";
+import AddOrganizationMember from "../../common/AddOrganizationMember";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -32,6 +33,8 @@ const DashBoard = () => {
   const navigate = useNavigate();
 
   const [value, setValue] = useState(0);
+  const [addUserDialog, setAddUserDialog] = useState(false);
+  const [newMemberEmail, setNewMemberEmail] = useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -51,6 +54,8 @@ const DashBoard = () => {
       />
     );
   };
+
+  const addNewMemberHandler = () => {}
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
@@ -107,9 +112,10 @@ const DashBoard = () => {
             <Button
               className={classes.projectButton}
               label={"Add New Member"}
+              onClick={() => setAddUserDialog(true)}
             />
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList data={[]} />
+              <MemberList />
             </div>
           </Box>
         </TabPanel>
@@ -120,6 +126,19 @@ const DashBoard = () => {
           style={{ textAlign: "center", maxWidth: "100%" }}
         ></TabPanel>
       </Card>
+
+      {addUserDialog && (
+        <AddOrganizationMember
+          open={addUserDialog}
+          handleUserDialogClose={() => setAddUserDialog(false)}
+          title={"Add New Members"}
+          textFieldLabel={"Enter Email Id of Member"}
+          textFieldValue={newMemberEmail}
+          handleTextField={setNewMemberEmail}
+          addBtnClickHandler={addNewMemberHandler}
+          isAdmin={true}
+        />
+      )}
     </Grid>
   );
 };
