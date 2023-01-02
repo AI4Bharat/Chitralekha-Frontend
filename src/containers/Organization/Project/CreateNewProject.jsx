@@ -20,6 +20,8 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import FetchOrganizatioProjectManagersUserAPI from "../../../redux/actions/api/Organization/FetchOrganizatioProjectManagersUser";
 import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
+import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTaskTypes";
+import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -48,6 +50,10 @@ const CreatenewProject = () => {
   const translationTypes = useSelector(
     (state) => state.getTranslationTypes.data
   );
+  const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -61,6 +67,8 @@ const CreatenewProject = () => {
     useState("MACHINE_GENERATED");
   const [translationSourceType, setTranslationSourceType] =
     useState("MACHINE_GENERATED");
+  const [defaultTask, setDefaultTask] = useState([]);
+  const [translationLanguage, setTranslationLanguage] = useState([]);
 
   const getOrganizatioUsersList = () => {
     const projectrole = "PROJECT_MANAGER";
@@ -77,6 +85,12 @@ const CreatenewProject = () => {
 
     const translationObj = new FetchTranslationTypesAPI();
     dispatch(APITransport(translationObj));
+
+    const bulkTaskObj = new FetchBulkTaskTypeAPI();
+    dispatch(APITransport(bulkTaskObj));
+
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
   };
 
   useEffect(() => {
@@ -99,6 +113,8 @@ const CreatenewProject = () => {
       managers_id: managerUsername,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
+      default_task_types: defaultTask,
+      default_target_languages: translationLanguage,
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
@@ -231,6 +247,52 @@ const CreatenewProject = () => {
             </Select>
           </FormControl>
         </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required">
+            Default Task
+          </Typography>
+          <FormControl fullWidth>
+            <Select
+              multiple
+              id="translation-source-type"
+              value={defaultTask}
+              onChange={(event) => setDefaultTask(event.target.value)}
+              MenuProps={MenuProps}
+            >
+              {bulkTaskTypes.map((item, index) => (
+                <MenuItem key={index} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {defaultTask.filter((item) => item.includes("TRANSLATION")).length >
+          0 && (
+          <Box width={"100%"} sx={{ mt: 3 }}>
+            <Typography gutterBottom component="div" label="Required">
+              Select Translation Language
+            </Typography>
+            <FormControl fullWidth>
+              <Select
+                multiple
+                fullWidth
+                value={translationLanguage}
+                onChange={(event) => setTranslationLanguage(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+              >
+                {supportedLanguages?.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        )}
 
         <Box sx={{ mt: 3 }}>
           <Button

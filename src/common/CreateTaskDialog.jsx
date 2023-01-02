@@ -39,7 +39,7 @@ const CreateTaskDialog = ({
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = ProjectStyle();
-  console.log(videoDetails, "videoDetails");
+
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
