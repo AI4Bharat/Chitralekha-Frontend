@@ -3,12 +3,10 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class CreateNewOrganizationAPI extends API {
-  constructor(title, emailDomainName, owner, timeout = 2000) {
+  constructor(reqBody, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.CREATE_NEW_ORGANIZATION;
-    this.title = title;
-    this.emailDomainName = emailDomainName;
-    this.owner = owner;
+    this.reqBody = reqBody;
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}`;
   }
 
@@ -24,11 +22,7 @@ export default class CreateNewOrganizationAPI extends API {
   }
 
   getBody() {
-    return {
-      title: this.title,
-      email_domain_name: this.emailDomainName,
-      organization_owner: this.owner,
-    };
+    return this.reqBody;
   }
 
   getHeaders() {
