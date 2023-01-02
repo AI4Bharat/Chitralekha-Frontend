@@ -260,7 +260,7 @@ const DatasetStyle = makeStyles({
     padding: "15px",
     height: "fit-content",
   },
-  mainTitle: { marginTop: "33px", marginLeft: "38px", color: "white" },
+  mainTitle: { color: "white" },
   modelTitle: {
     marginTop: "20px",
     // padding: 0,
@@ -270,7 +270,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "7px",
     backgroundColor: "#2C2799",
     marginRight: "10px",
-    marginBottom: "12px"
+    marginBottom: "12px",
   },
 });
 

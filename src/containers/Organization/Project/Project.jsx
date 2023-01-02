@@ -8,7 +8,8 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import CreateNewVideoAPI from "../../../redux/actions/api/Project/CreateNewVideo";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import moment from "moment/moment";
 
 //Styles
 import DatasetStyle from "../../../styles/Dataset";
@@ -18,8 +19,10 @@ import {
   Box,
   Card,
   Grid,
+  IconButton,
   Tab,
   Tabs,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Button from "../../../common/Button";
@@ -37,7 +40,7 @@ import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProj
 import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
 import { roles } from "../../../utils/utils";
 import ProjectDescription from "./ProjectDescription";
-import moment from "moment/moment";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
 const data = [
   {
@@ -92,6 +95,7 @@ const Project = () => {
   const { projectId, orgId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
+  const navigate = useNavigate();
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -263,15 +267,38 @@ const Project = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Card
             style={{
-              height: "100px",
+              display: "flex",
+              justifyContent: "space-between",
               backgroundColor: "#0F2749",
               borderRadius: "8px",
-              marginBottom: "15px"
+              marginBottom: "15px",
+              padding: "35px",
             }}
           >
             <Typography variant="h4" className={classes.mainTitle}>
               {projectDetails.title}
             </Typography>
+
+            <IconButton
+              onClick={() =>
+                navigate(
+                  `/my-organization/${orgId}/project/${projectId}/edit-project`
+                )
+              }
+              style={{
+                padding: "0",
+              }}
+            >
+              <Tooltip title="Settings">
+                <SettingsOutlinedIcon
+                  color="primary"
+                  style={{
+                    color: "#f1f1f1",
+                    fontSize: "2.25rem",
+                  }}
+                />
+              </Tooltip>
+            </IconButton>
           </Card>
         </Grid>
 
