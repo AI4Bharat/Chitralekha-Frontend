@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography,Switch,FormControlLabel } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -17,7 +17,8 @@ import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
 import { getTimeStamp, getMilliseconds } from "../utils/utils";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
+
 
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
@@ -28,7 +29,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const [subtitles, setSubtitles] = useState([]);
   const [highlightedSubtitle, setHighlightedSubtitle] = useState([]);
   const [fullScreenMode, setFullScreenMode] = useState(false);
-  const [playpause, setplaypause] = useState(false);
+  const [darkAndLightMood, setDarkAndLightMood] = useState(false);
   const ref = useRef(null);
   const { subtitle } = useVideoSubtitle(videoDetails[0].id);
 
@@ -66,7 +67,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
             currentTime >= start && currentTime <= end
               ? "orange"
               : currentTime >= start
-              ? "white"
+              ? darkAndLightMood === false ? "white":"black"
               : "grey",
         }}
       >{`${word} `}</span>
@@ -157,16 +158,12 @@ if (!isInFullScreen) {
 }
   };
 
-  const handleplayVideo = () =>{
+  const handleplayVideo = (e) =>{
     var btn = document.getElementById("myBtn");
       if (btn.paused) {
-        setplaypause(true)
-        btn.play();
-       
+        btn.play(); 
       }  else {
-        setplaypause(false)
         btn.pause();
-        
       }
     
   }
@@ -174,11 +171,11 @@ if (!isInFullScreen) {
     var video = document.getElementById("myBtn");
   if (e.which == 32) {
     if (video.paused){
-    e.preventDefault();
+    //e.preventDefault();
       video.play();
     }
     else{
-    e.preventDefault();
+    //e.preventDefault();
       video.pause();
     }
   }
@@ -188,6 +185,7 @@ if (!isInFullScreen) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
+
 
   return (
     <Dialog
@@ -207,16 +205,19 @@ if (!isInFullScreen) {
           <video
              id="myBtn"
             ref={ref}
-            style={fullScreenMode ? { } : { width: "500px" }}
+            style={fullScreenMode ? {width:"100%" } : { width: "500px" }}
            controls
             src={video.direct_video_url}
-            className={classes.video}
+            className={classes.video  }
             onTimeUpdate={handleProgress}
             onClick={() => handleplayVideo()}
           />
           <div
-            className={classes.subtitle}
-            style={fullScreenMode ? { zIndex:100,fontSize:'40px',} : {}}
+          className={fullScreenMode ?darkAndLightMood === false ?classes.darkmodesubtitle:classes.lightmodesubtitle:classes.darkmodesubtitle}
+          style={fullScreenMode ? { zIndex:100,fontSize:'35px',
+          position: "absolute",
+          bottom: "100px",width:"100%"} : {}}
+           
           >
             {highlightedSubtitle.length ? (
               highlightedSubtitle.map((s) => s)
@@ -232,7 +233,8 @@ if (!isInFullScreen) {
                   onClick={() => handleFullscreenVideo()}
                   variant="contained"
                   style={{
-                    right: fullScreenMode ? "5%" : "",
+                    right: fullScreenMode ? "9%" : "",
+                    bottom: fullScreenMode ? "4%" : "",
                   }}
                 >
                   <FullscreenExitIcon sx={{fontSize:"40px"}} />
@@ -248,8 +250,17 @@ if (!isInFullScreen) {
                 </Button>
               )}
             </Box>
-          
+            {fullScreenMode && <CustomSwitchDarkBackground
+            sx={{position: "absolute",bottom:"3%",right:"13%"}}
+                 labelPlacement="start"
+                 checked={darkAndLightMood}
+                 onChange={() => darkAndLightMood === false ? setDarkAndLightMood(true) : setDarkAndLightMood(false)}
+            
+            /> 
+            
+}
         </Grid>
+       
       </DialogContent>
       <DialogActions style={{ padding: "24px" }}>
         <Typography variant="body1" style={{ marginRight: "auto" }}>
