@@ -157,11 +157,7 @@ if (!isInFullScreen) {
 }
   };
 
-
-
-
   const handleplayVideo = () =>{
-   
     var btn = document.getElementById("myBtn");
       if (btn.paused) {
         setplaypause(true)
@@ -174,8 +170,25 @@ if (!isInFullScreen) {
       }
     
   }
+  const onKeyDown = (e) => {
+    var video = document.getElementById("myBtn");
+  if (e.which == 32) {
+    if (video.paused){
+    e.preventDefault();
+      video.play();
+    }
+    else{
+    e.preventDefault();
+      video.pause();
+    }
+  }
+  };
 
-  console.log(playpause,"playpausev")
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onKeyDown]);
+
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -195,7 +208,7 @@ if (!isInFullScreen) {
              id="myBtn"
             ref={ref}
             style={fullScreenMode ? { } : { width: "500px" }}
-           // controls
+           controls
             src={video.direct_video_url}
             className={classes.video}
             onTimeUpdate={handleProgress}

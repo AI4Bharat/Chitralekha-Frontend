@@ -1,3 +1,11 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+//Styles
+import DatasetStyle from "../../styles/Dataset";
+
+//Components
 import {
   Card,
   Grid,
@@ -7,21 +15,18 @@ import {
   Select,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import OutlinedTextField from "../../../common/OutlinedTextField";
-import DatasetStyle from "../../../styles/Dataset";
-import Button from "../../../common/Button";
-import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import FetchOrganizatioProjectManagersUserAPI from "../../../redux/actions/api/Organization/FetchOrganizatioProjectManagersUser";
-import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
-import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
-import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTaskTypes";
-import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
+import CustomizedSnackbars from "../../common/Snackbar";
+import OutlinedTextField from "../../common/OutlinedTextField";
+import Button from "../../common/Button";
+
+//APIs
+import CreateNewOrganizationAPI from "../../redux/actions/api/Organization/CreateNewOrganization";
+import FetchOrgOwnersAPI from "../../redux/actions/api/Admin/FetchOrgOwners";
+import APITransport from "../../redux/actions/apitransport/apitransport";
+import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTranscriptTypes";
+import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
+import FetchBulkTaskTypeAPI from "../../redux/actions/api/Project/FetchBulkTaskTypes";
+import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,18 +39,12 @@ const MenuProps = {
   },
 };
 
-const CreatenewProject = () => {
-  const { orgId } = useParams();
+const CreateNewOrg = () => {
   const classes = DatasetStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const newProjectDetails = useSelector(
-    (state) => state.getNewProjectDetails.data
-  );
-  const userList = useSelector(
-    (state) => state.getOrganizatioProjectManagersUser.data
-  );
+  const orgOwnerList = useSelector((state) => state.getOrgOwnerList.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
   const translationTypes = useSelector(
     (state) => state.getTranslationTypes.data
@@ -56,8 +55,8 @@ const CreatenewProject = () => {
   );
 
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [managerUsername, setManagerUsername] = useState([]);
+  const [owner, setOwner] = useState("");
+  const [emailDomainName, setEmailDomainName] = useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -70,16 +69,10 @@ const CreatenewProject = () => {
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
 
-  const getOrganizatioUsersList = () => {
-    const projectrole = "PROJECT_MANAGER";
-    const userObj = new FetchOrganizatioProjectManagersUserAPI(
-      orgId,
-      projectrole
-    );
-    dispatch(APITransport(userObj));
-  };
+  useEffect(() => {
+    const apiObj = new FetchOrgOwnersAPI();
+    dispatch(APITransport(apiObj));
 
-  const getSourceTypes = () => {
     const transcriptObj = new FetchTranscriptTypesAPI();
     dispatch(APITransport(transcriptObj));
 
@@ -91,49 +84,36 @@ const CreatenewProject = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
-  };
-
-  useEffect(() => {
-    getOrganizatioUsersList();
-    getSourceTypes();
   }, []);
 
-  const handeleselectManager = (event, item) => {
-    const {
-      target: { value },
-    } = event;
-    setManagerUsername(typeof value === "string" ? value.split(",") : value);
-  };
-
   const handleCreateProject = async () => {
-    const newPrjectReqBody = {
-      title: title,
-      description: description,
-      organization_id: orgId,
-      managers_id: managerUsername,
+    const reqBody = {
+      title,
+      email_domain_name: emailDomainName,
+      organization_owner: owner,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
       default_task_types: defaultTask,
       default_target_languages: translationLanguage,
-    };
+    }
 
-    const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
-    // dispatch(APITransport(apiObj));
+    const apiObj = new CreateNewOrganizationAPI(reqBody);
+
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
     });
+
     const resp = await res.json();
+
     if (res.ok) {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "success",
       });
-      navigate(`/my-organization/${orgId}/project/${resp.project_id}`, {
-        replace: true,
-      });
+      navigate(`/admin`, { replace: true });
     } else {
       setSnackbarInfo({
         open: true,
@@ -162,7 +142,7 @@ const CreatenewProject = () => {
       {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
-          Create a Project
+          Create New Organization
         </Typography>
 
         <Box>
@@ -177,35 +157,36 @@ const CreatenewProject = () => {
         </Box>
 
         <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required" multiline>
-            Description
-          </Typography>
-          <OutlinedTextField
-            fullWidth
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
           <Typography gutterBottom component="div" label="Required">
-            Managers*
+            Owner
           </Typography>
           <FormControl fullWidth>
             <Select
               id="demo-multiple-name"
-              multiple
-              value={managerUsername}
-              onChange={handeleselectManager}
+              value={owner}
+              onChange={(event) => setOwner(event.target.value)}
               MenuProps={MenuProps}
             >
-              {userList.map((name) => (
-                <MenuItem key={name.id} value={name.id}>
-                  {name.email}
-                </MenuItem>
-              ))}
+              {orgOwnerList.map((item) => {
+                return (
+                  <MenuItem key={"1"} value={item.id}>
+                    {item.username}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required" multiline>
+            Email Domain Name
+          </Typography>
+          <OutlinedTextField
+            fullWidth
+            value={emailDomainName}
+            onChange={(e) => setEmailDomainName(e.target.value)}
+          />
         </Box>
 
         <Box sx={{ mt: 3 }}>
@@ -277,8 +258,8 @@ const CreatenewProject = () => {
             </Typography>
             <FormControl fullWidth>
               <Select
-                multiple
                 fullWidth
+                multiple
                 value={translationLanguage}
                 onChange={(event) => setTranslationLanguage(event.target.value)}
                 style={{ zIndex: "0" }}
@@ -297,13 +278,15 @@ const CreatenewProject = () => {
         <Box sx={{ mt: 3 }}>
           <Button
             style={{ margin: "0px 20px 0px 0px" }}
-            label={"Create Project"}
+            label={"Create Organization"}
             onClick={() => handleCreateProject()}
-            disabled={title && managerUsername ? false : true}
+            disabled={title && owner ? false : true}
           />
+
           <Button
+            buttonVariant="text"
             label={"Cancel"}
-            onClick={() => navigate(`/my-organization/${orgId}`)}
+            onClick={() => navigate(`/admin`)}
           />
         </Box>
       </Card>
@@ -311,4 +294,4 @@ const CreatenewProject = () => {
   );
 };
 
-export default CreatenewProject;
+export default CreateNewOrg;

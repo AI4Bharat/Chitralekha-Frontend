@@ -114,7 +114,7 @@ const ProfilePage = () => {
                 <CustomButton
                   label="Edit Profile"
                   sx={{ mt: 2 }}
-                  onClick={() => navigate("/edit-profile")}
+                  onClick={() => navigate(`/edit-profile/${id}`)}
                 />
               </Box>
             )}

@@ -30,11 +30,9 @@ import Search from "../../../common/Search";
 
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
-import { useCallback } from "react";
-import { useMemo } from "react";
+import DeleteDialog from "../../../common/DeleteDialog";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
@@ -67,6 +65,7 @@ const VideoList = ({ data, removeVideo }) => {
   };
 
   const handleok = async (id) => {
+    console.log(id,'-=-=-=-=-');
     setOpenDialog(false);
     const apiObj = new DeleteVideoAPI({ video_id: id });
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -326,6 +325,7 @@ const VideoList = ({ data, removeVideo }) => {
     },
     rowsSelected: rows,
   };
+
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
@@ -340,40 +340,9 @@ const VideoList = ({ data, removeVideo }) => {
     );
   };
 
-  const renderDialog = () => {
-    return (
-      <Dialog
-        open={openDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure, you want to delete this video? All the associated
-            tasks will be deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <CustomButton onClick={handleClose} label="Cancel" />
-          <CustomButton
-            onClick={() => handleok(projectid)}
-            label="Ok"
-            autoFocus
-          />
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
   return (
     <>
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        alignItems="center"
-        sx={{ margin: "10px 0" }}
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
           showCreateTaskBtn && (
@@ -388,9 +357,12 @@ const VideoList = ({ data, removeVideo }) => {
               Create Task
             </Button>
           )}
-        
+
+        <Box sx={{ marginLeft: "auto" }}>
+          <Search />
+        </Box>
       </Box>
-      <Search />
+
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
@@ -413,7 +385,15 @@ const VideoList = ({ data, removeVideo }) => {
         />
       )}
       {renderSnackBar()}
-      {renderDialog()}
+
+      {openDialog && (
+        <DeleteDialog
+          openDialog={openDialog}
+          handleClose={() => handleClose()}
+          submit={() => handleok(projectid)}
+          message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
+        />
+      )}
     </>
   );
 };

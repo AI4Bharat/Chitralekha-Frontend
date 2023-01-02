@@ -92,7 +92,6 @@ const TaskList = () => {
 
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
-
   // const getTranscriptionSourceComparison = (id, source) => {
   const datvalue = useSelector((state) => state.getExportTranscription.data);
 
@@ -244,7 +243,7 @@ const TaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[5] === "NEW" &&
+      tableData.rowData[8] === "NEW" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
@@ -253,23 +252,36 @@ const TaskList = () => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
+            disabled={
+              userData.role !== "PROJECT_MANAGER"
+                ? !tableData.rowData[10]
+                : false
+            }
+            color="primary" 
           >
-            <PreviewIcon color="primary" />
+            <PreviewIcon />
           </IconButton>
         </Tooltip>
       )
     );
   };
+
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[5] === "COMPLETE" && (
+      tableData.rowData[8] === "COMPLETE" && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
+            disabled={
+              userData.role !== "PROJECT_MANAGER"
+                ? !tableData.rowData[10]
+                : false
+            }
+            color="primary" 
           >
-            <FileDownloadIcon color="primary" />
+            <FileDownloadIcon />
           </IconButton>
         </Tooltip>
       )
@@ -277,16 +289,22 @@ const TaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
+    console.log(userData.role !== "PROJECT_MANAGER" && tableData.rowData[10]);
     return (
-      (((tableData.rowData[5] === "SELECTED_SOURCE" ||
-        tableData.rowData[5] === "INPROGRESS") &&
+      (((tableData.rowData[8] === "SELECTED_SOURCE" ||
+        tableData.rowData[8] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        (tableData.rowData[5] !== "COMPLETE" &&
+        (tableData.rowData[8] !== "COMPLETE" &&
           (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
         <Tooltip title="Edit">
           <IconButton
+            disabled={
+              userData.role !== "PROJECT_MANAGER"
+                ? !tableData.rowData[10]
+                : false
+            }
             onClick={() => {
               if (
                 tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -297,8 +315,9 @@ const TaskList = () => {
                 navigate(`/task/${tableData.rowData[0]}/translate`);
               }
             }}
+            color="primary"
           >
-            <EditIcon color="primary" />
+            <EditIcon />
           </IconButton>
         </Tooltip>
       )
@@ -308,12 +327,21 @@ const TaskList = () => {
   const renderDeleteButton = (tableData) => {
     return (
       <Tooltip title="Delete">
-        <IconButton onClick={() => handledeletetask(tableData.rowData[0])}>
-          <DeleteIcon color="error" />
+        <IconButton
+          onClick={() => handledeletetask(tableData.rowData[0])}
+          disabled={
+            userData.role !== "PROJECT_MANAGER"
+              ? !tableData.rowData[10]
+              : false
+          }
+          color="error"
+        > 
+          <DeleteIcon />
         </IconButton>
       </Tooltip>
     );
   };
+
   const pageSearch = () => {
     return taskList.filter((el) => {
       if (SearchProject == "") {
@@ -352,10 +380,15 @@ const TaskList = () => {
           return [
             item.id,
             item.task_type,
+            item.task_type_label,
             item.video_name,
             item.src_language,
+            item.src_language_label,
             item.target_language,
+            item.target_language_label,
             item.status,
+            item.user,
+            item.is_active,
           ];
         })
       : [];
@@ -368,6 +401,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        display: "exclude",
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -376,6 +410,13 @@ const TaskList = () => {
             textAlign: "center",
           },
         }),
+      },
+    },
+    {
+      name: "task_type_label",
+      label: "",
+      options: {
+        display: "excluded",
       },
     },
     {
@@ -415,6 +456,13 @@ const TaskList = () => {
       },
     },
     {
+      name: "src_language_label",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
       name: "src_language",
       label: "Source Language",
       options: {
@@ -430,6 +478,13 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+      },
+    },
+    {
+      name: "target_language_label",
+      label: "",
+      options: {
+        display: "excluded",
       },
     },
     {
@@ -469,6 +524,20 @@ const TaskList = () => {
       },
     },
     {
+      name: "user",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
+      name: "is_active",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -494,16 +563,12 @@ const TaskList = () => {
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderExportButton(tableMeta)}
               {renderDeleteButton(tableMeta)}
-            </Box>
 
-            // <CustomButton
-            //   sx={{ borderRadius: 2, marginRight: 2 }}
-            //   label="View"
-            //   onClick={() => {
-            //     setOpenViewTaskDialog(true);
-            //     setCurrentTaskDetails(tableMeta.rowData);
-            //   }}
-            // />
+              {/* If task is assigned to project manager himself then show him the edit btn */}
+              {userData.role === "PROJECT_MANAGER" &&
+                userData.id === tableMeta.rowData[9] &&
+                renderEditButton(tableMeta)}
+            </Box>
           );
         },
       },
@@ -554,6 +619,7 @@ const TaskList = () => {
       />
     );
   };
+
   const renderDialog = () => {
     return (
       <Dialog
