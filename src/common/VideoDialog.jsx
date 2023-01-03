@@ -29,7 +29,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const [subtitles, setSubtitles] = useState([]);
   const [highlightedSubtitle, setHighlightedSubtitle] = useState([]);
   const [fullScreenMode, setFullScreenMode] = useState(false);
-  const [darkAndLightMood, setDarkAndLightMood] = useState(false);
+  const [darkAndLightMood, setDarkAndLightMood] = useState(true);
   const ref = useRef(null);
   const { subtitle } = useVideoSubtitle(videoDetails[0].id);
 
@@ -171,11 +171,11 @@ if (!isInFullScreen) {
     var video = document.getElementById("myBtn");
   if (e.which == 32) {
     if (video.paused){
-    //e.preventDefault();
+    e.preventDefault();
       video.play();
     }
     else{
-    //e.preventDefault();
+    e.preventDefault();
       video.pause();
     }
   }
@@ -213,7 +213,7 @@ if (!isInFullScreen) {
             onClick={() => handleplayVideo()}
           />
           <div
-          className={fullScreenMode ?darkAndLightMood === false ?classes.darkmodesubtitle:classes.lightmodesubtitle:classes.darkmodesubtitle}
+          className={fullScreenMode ?darkAndLightMood === false ?classes.lightmodesubtitle:classes.darkmodesubtitle:classes.darkmodesubtitle}
           style={fullScreenMode ? { zIndex:100,fontSize:'35px',
           position: "absolute",
           bottom: "100px",width:"100%"} : {}}
@@ -234,7 +234,7 @@ if (!isInFullScreen) {
                   variant="contained"
                   style={{
                     right: fullScreenMode ? "9%" : "",
-                    bottom: fullScreenMode ? "4%" : "",
+                    bottom: fullScreenMode ? "5.5%" : "",
                   }}
                 >
                   <FullscreenExitIcon sx={{fontSize:"40px"}} />
@@ -251,7 +251,7 @@ if (!isInFullScreen) {
               )}
             </Box>
             {fullScreenMode && <CustomSwitchDarkBackground
-            sx={{position: "absolute",bottom:"3%",right:"13%"}}
+            sx={{position: "relative",bottom:"7%",left:"34%"}}
                  labelPlacement="start"
                  checked={darkAndLightMood}
                  onChange={() => darkAndLightMood === false ? setDarkAndLightMood(true) : setDarkAndLightMood(false)}
