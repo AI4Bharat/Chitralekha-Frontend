@@ -189,12 +189,10 @@ const MyOrganization = () => {
         <Typography variant="h2" gutterBottom component="div">
           {organizationDetails?.title}
         </Typography>
+      
         {/* <Typography variant="body1" gutterBottom component="div">
-          Created by : {organizationDetails?.created_by}
-        </Typography> */}
-        <Typography variant="body1" gutterBottom component="div">
           Created by : {`${organizationDetails?.created_by?.first_name}`}
-        </Typography>
+        </Typography> */}
 
         <Box>
           <Tabs
