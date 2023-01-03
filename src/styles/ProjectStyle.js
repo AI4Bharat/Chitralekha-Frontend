@@ -435,6 +435,9 @@ const ProjectStyle = makeStyles({
     backgroundColor: "rgb(0 0 0 / 50%)",
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+      "&:hover": {
+        backgroundColor: "black",
+      },
   },
 
   contextMenu: {
@@ -479,9 +482,18 @@ const ProjectStyle = makeStyles({
       display: "none",
     },
   },
-  subtitle:{
+  darkmodesubtitle:{
     //zIndex:20,
     background: "black",
+    fontSize:'20px',
+    width: "500px",
+    height:"55px",
+    textAlign: "center",
+    marginRight:"-1px"
+  },
+  lightmodesubtitle:{
+    //zIndex:20,
+    background: "white",
     fontSize:'20px',
     width: "500px",
     height:"55px",

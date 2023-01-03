@@ -51,6 +51,8 @@ import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTa
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
 import { roles } from "../../../utils/utils";
+import moment from "moment";
+import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -75,6 +77,9 @@ const TaskList = () => {
   const [taskdata, setTaskdata] = useState();
   const [deleteTaskid, setDeleteTaskid] = useState();
   const [showEditTaskBtn, setShowEditTaskBtn] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [openEditTaskDialog, setOpenEditTaskDialog] = useState(false);
+  const [currentSelectedTasks, setCurrentSelectedTask] = useState([]);
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const navigate = useNavigate();
@@ -257,7 +262,7 @@ const TaskList = () => {
                 ? !tableData.rowData[10]
                 : false
             }
-            color="primary" 
+            color="primary"
           >
             <PreviewIcon />
           </IconButton>
@@ -279,7 +284,7 @@ const TaskList = () => {
                 ? !tableData.rowData[10]
                 : false
             }
-            color="primary" 
+            color="primary"
           >
             <FileDownloadIcon />
           </IconButton>
@@ -330,12 +335,10 @@ const TaskList = () => {
         <IconButton
           onClick={() => handledeletetask(tableData.rowData[0])}
           disabled={
-            userData.role !== "PROJECT_MANAGER"
-              ? !tableData.rowData[10]
-              : false
+            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[10] : false
           }
           color="error"
-        > 
+        >
           <DeleteIcon />
         </IconButton>
       </Tooltip>
@@ -382,6 +385,7 @@ const TaskList = () => {
             item.task_type,
             item.task_type_label,
             item.video_name,
+            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
             item.src_language,
             item.src_language_label,
             item.target_language,
@@ -440,6 +444,24 @@ const TaskList = () => {
     {
       name: "video_name",
       label: "Video Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+      },
+    },
+    {
+      name: "created_at",
+      label: "Created At",
       options: {
         filter: false,
         sort: false,
@@ -575,7 +597,20 @@ const TaskList = () => {
     },
   ];
 
-  const handleRowClick = (currentRow, allRow) => {};
+  const handleRowClick = (_currentRow, allRow) => {
+    const temp = taskList.filter((_item, index) => {
+      return allRow.find((element) => element.index === index);
+    });
+
+    let temp2 = [];
+    allRow.forEach((element) => {
+      temp2.push(element.index);
+    });
+
+    setCurrentSelectedTask(temp);
+    setRows(temp2);
+    setShowEditTaskBtn(!!temp.length);
+  };
 
   const options = {
     textLabels: {
@@ -601,6 +636,7 @@ const TaskList = () => {
     search: false,
     jumpToPage: true,
     selectToolbarPlacement: "none",
+    rowsSelected: rows,
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
@@ -706,20 +742,29 @@ const TaskList = () => {
 
   return (
     <>
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        alignItems="center"
-        sx={{ margin: "10px 0" }}
-      >
-        {showEditTaskBtn && (
-          <Button variant="contained" className={classes.createTaskBtn}>
-            Create Task
-          </Button>
-        )}
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        {roles.filter((role) => role.value === userData?.role)[0]
+          ?.permittedToCreateTask &&
+          showEditTaskBtn && (
+            <Button
+              variant="contained"
+              className={classes.createTaskBtn}
+              onClick={() => {
+                setOpenEditTaskDialog(true);
+                // setIsBulk(true);
+              }}
+            >
+              Edit Tasks
+            </Button>
+          )}
+
+        <Box sx={{ marginLeft: "auto" }}>
+          <Search />
+        </Box>
       </Box>
-      <Search />
+
       <Grid>{renderSnackBar()}</Grid>
+
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
@@ -760,6 +805,14 @@ const TaskList = () => {
           <CustomButton onClick={() => handleokDialog()} label="Ok" autoFocus />
         </DialogActions>
       </Dialog>
+
+      {openEditTaskDialog && (
+        <UpdateBulkTaskDialog
+          open={openEditTaskDialog}
+          handleUserDialogClose={() => setOpenEditTaskDialog(false)}
+          currentSelectedTasks={currentSelectedTasks}
+        />
+      )}
     </>
   );
 };

@@ -13,6 +13,7 @@ import {
   FormControl,
   MenuItem,
   Select,
+  Chip,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -93,9 +94,9 @@ const CreateNewOrg = () => {
       organization_owner: owner,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
-      default_task_types: defaultTask,
-      default_target_languages: translationLanguage,
-    }
+      default_task_types: defaultTask.map((item) => item.value),
+      default_target_languages: translationLanguage.map((item) => item.value),
+    };
 
     const apiObj = new CreateNewOrganizationAPI(reqBody);
 
@@ -231,7 +232,7 @@ const CreateNewOrg = () => {
 
         <Box sx={{ mt: 3 }}>
           <Typography gutterBottom component="div" label="Required">
-            Default Task
+            Default Workflow
           </Typography>
           <FormControl fullWidth>
             <Select
@@ -240,9 +241,18 @@ const CreateNewOrg = () => {
               value={defaultTask}
               onChange={(event) => setDefaultTask(event.target.value)}
               MenuProps={MenuProps}
+              renderValue={(selected) => {
+                return (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((value) => {
+                      return <Chip key={value.value} label={value.label} />;
+                    })}
+                  </Box>
+                );
+              }}
             >
               {bulkTaskTypes.map((item, index) => (
-                <MenuItem key={index} value={item.value}>
+                <MenuItem key={index} value={item}>
                   {item.label}
                 </MenuItem>
               ))}
@@ -250,8 +260,8 @@ const CreateNewOrg = () => {
           </FormControl>
         </Box>
 
-        {defaultTask.filter((item) => item.includes("TRANSLATION")).length >
-          0 && (
+        {defaultTask.filter((item) => item.value.includes("TRANSLATION"))
+          .length > 0 && (
           <Box width={"100%"} sx={{ mt: 3 }}>
             <Typography gutterBottom component="div" label="Required">
               Select Translation Language
@@ -264,9 +274,18 @@ const CreateNewOrg = () => {
                 onChange={(event) => setTranslationLanguage(event.target.value)}
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
+                renderValue={(selected) => {
+                  return (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {selected.map((value) => {
+                        return <Chip key={value.value} label={value.label} />;
+                      })}
+                    </Box>
+                  );
+                }}
               >
                 {supportedLanguages?.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
+                  <MenuItem key={index} value={item}>
                     {item.label}
                   </MenuItem>
                 ))}

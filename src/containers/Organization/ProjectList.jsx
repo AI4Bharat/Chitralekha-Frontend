@@ -26,6 +26,7 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../common/Snackbar";
 import Search from "../../common/Search";
 import { roles } from "../../utils/utils";
+import moment from "moment/moment";
 
 const ProjectList = ({ data, props, removeProjectList }) => {
   const { id } = useParams();
@@ -100,36 +101,6 @@ const ProjectList = ({ data, props, removeProjectList }) => {
       }
     });
   };
-  // useEffect(() => {
-  //   const result = data.map((item) => {
-  //     return [
-  //       item.title,
-  //       item.managers[0]?.email,
-  //       item.created_by?.username,
-  //       <div style={{ textAlign: "center" }}>
-  //         <Link
-  //           to={`/my-organization/${id}/project/${item.id}`}
-  //           style={{ textDecoration: "none" }}
-  //         >
-  //           <Tooltip title="View">
-  //             <IconButton>
-  //               <LibraryBooksIcon color="primary" />
-  //             </IconButton>
-  //           </Tooltip>
-  //         </Link>
-
-  //         {roles.filter((role)=>role.value === userData?.role)[0]?.permittedToDeleteProject && <Tooltip title="Delete">
-  //           <IconButton>
-  //             <DeleteIcon
-  //               color="error"
-  //               onClick={() => handleDeleteProject(item.id)}
-  //             />
-  //           </IconButton>
-  //         </Tooltip>}
-  //       </div>,
-  //     ];
-  //   });
-  // });
 
   const result =
     data && data.length > 0
@@ -137,6 +108,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
           return [
             item.title,
             item.managers[0]?.email,
+            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
             item.created_by?.username,
             <div style={{ textAlign: "center" }}>
               <Link
@@ -178,6 +150,18 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     {
       name: "Manager",
       label: "Manager",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "createdAt",
+      label: "Created At",
       options: {
         filter: false,
         sort: false,

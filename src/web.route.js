@@ -24,6 +24,7 @@ import VideoLanding from "./containers/Organization/Video/VideoLanding";
 import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
 import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
+import EditProject from "./containers/Organization/Project/EditProject";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -115,9 +116,7 @@ const RootRouter = () => {
 
         <Route
           path="/admin"
-          element={ProtectedRouteWrapper(
-            <Layout component={<DashBoard />} />
-          )}
+          element={ProtectedRouteWrapper(<Layout component={<DashBoard />} />)}
         />
 
         <Route
@@ -131,6 +130,13 @@ const RootRouter = () => {
           path="/admin/edit-organization/:orgId"
           element={ProtectedRouteWrapper(
             <Layout component={<EditOrganizationDetails />} Backbutton={true} />
+          )}
+        />
+
+        <Route
+          path="/my-organization/:orgId/project/:projectId/edit-project"
+          element={ProtectedRouteWrapper(
+            <Layout component={<EditProject />} Backbutton={true} />
           )}
         />
       </Routes>

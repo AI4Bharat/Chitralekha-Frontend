@@ -33,6 +33,7 @@ import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
 import DeleteDialog from "../../../common/DeleteDialog";
+import VideoStatusTable from "../../../common/VideoStatusTable";
 
 const VideoList = ({ data, removeVideo }) => {
   const dispatch = useDispatch();
@@ -65,7 +66,6 @@ const VideoList = ({ data, removeVideo }) => {
   };
 
   const handleok = async (id) => {
-    console.log(id,'-=-=-=-=-');
     setOpenDialog(false);
     const apiObj = new DeleteVideoAPI({ video_id: id });
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -121,6 +121,7 @@ const VideoList = ({ data, removeVideo }) => {
             item.name,
             item.url,
             item.duration,
+            item.status,
             <>
               <Box sx={{ display: "flex" }}>
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
@@ -262,6 +263,13 @@ const VideoList = ({ data, removeVideo }) => {
       },
     },
     {
+      name: "status",
+      label: "Status",
+      options: {
+        display: "exclude",
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -296,6 +304,13 @@ const VideoList = ({ data, removeVideo }) => {
     setShowCreateTaskBtn(!!temp.length);
   };
 
+  const expandableTableHeader = [
+    "Language Pair",
+    "Created At",
+    "Current Owner",
+    "Status",
+  ];
+
   const options = {
     textLabels: {
       body: {
@@ -324,6 +339,12 @@ const VideoList = ({ data, removeVideo }) => {
       handleRowClick(currentRow, allRow);
     },
     rowsSelected: rows,
+    expandableRows: true,
+    renderExpandableRow: (rowData, rowMeta) => {
+      return (
+        <VideoStatusTable headers={expandableTableHeader} status={rowData[4]} />
+      );
+    },
   };
 
   const renderSnackBar = () => {

@@ -23,7 +23,9 @@ import CustomizedSnackbars from "../../common/Snackbar";
 const OrganizationList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const orgList = useSelector((state) => state.getOrganizationList.data);
+  const searchList = useSelector((state) => state.searchList.data);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState("");
@@ -41,6 +43,44 @@ const OrganizationList = () => {
   useEffect(() => {
     getOrgList();
   }, []);
+
+  const pageSearch = () => {
+    return orgList?.filter((el) => {
+      if (searchList == "") {
+        return el;
+      } else if (el.title?.toLowerCase().includes(searchList?.toLowerCase())) {
+        return el;
+      } else if (
+        el.created_by.first_name
+          ?.toLowerCase()
+          .includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.created_by.last_name
+          ?.toLowerCase()
+          .includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.organization_owner?.first_name
+          ?.toLowerCase()
+          .includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.organization_owner?.last_name
+          ?.toLowerCase()
+          .includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.email_domain_name?.toLowerCase().includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      }
+    });
+  };
 
   const columns = [
     {
@@ -72,6 +112,9 @@ const OrganizationList = () => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
+        customBodyRender: (value) => {
+          return <Box>{`${value?.first_name} ${value?.last_name}`}</Box>;
+        },
       },
     },
     {
@@ -84,6 +127,9 @@ const OrganizationList = () => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
+        customBodyRender: (value, tableMeta) => {
+          return <Box>{`${value?.first_name} ${value?.last_name}`}</Box>;
+        },
       },
     },
     {
@@ -184,6 +230,20 @@ const OrganizationList = () => {
     jumpToPage: true,
   };
 
+  const result =
+    orgList && orgList.length > 0
+      ? pageSearch().map((item, i) => {
+          return [
+            item.id,
+            item.title,
+            item.organization_owner,
+            item.created_by,
+            item.created_at,
+            item.email_domain_name,
+          ];
+        })
+      : [];
+
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
@@ -232,7 +292,7 @@ const OrganizationList = () => {
       <Search />
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={orgList} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
 
       {deleteDialogOpen && (
