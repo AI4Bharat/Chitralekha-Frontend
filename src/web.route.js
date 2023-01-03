@@ -21,6 +21,10 @@ import ConfirmForgotPassword from "./containers/UserManagement/ConfirmForgotPass
 import ForgotPassword from "./containers/UserManagement/ForgotPassword";
 import ComparisonTable from "./containers/Organization/Project/ComparisonTable";
 import VideoLanding from "./containers/Organization/Video/VideoLanding";
+import CreateNewOrg from "./containers/Admin/CreateNewOrg";
+import DashBoard from "./containers/Admin/Dashboard";
+import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
+import EditProject from "./containers/Organization/Project/EditProject";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -55,7 +59,7 @@ const RootRouter = () => {
           )}
         />
         <Route
-          path="/edit-profile"
+          path="/edit-profile/:id"
           element={ProtectedRouteWrapper(
             <Layout component={<EditProfile />} Backbutton={true} />
           )}
@@ -109,8 +113,33 @@ const RootRouter = () => {
             <Layout component={<VideoLanding />} isDrawer={true} />
           )}
         />
-      </Routes>
 
+        <Route
+          path="/admin"
+          element={ProtectedRouteWrapper(<Layout component={<DashBoard />} />)}
+        />
+
+        <Route
+          path="/admin/create-new-org"
+          element={ProtectedRouteWrapper(
+            <Layout component={<CreateNewOrg />} Backbutton={true} />
+          )}
+        />
+
+        <Route
+          path="/admin/edit-organization/:orgId"
+          element={ProtectedRouteWrapper(
+            <Layout component={<EditOrganizationDetails />} Backbutton={true} />
+          )}
+        />
+
+        <Route
+          path="/my-organization/:orgId/project/:projectId/edit-project"
+          element={ProtectedRouteWrapper(
+            <Layout component={<EditProject />} Backbutton={true} />
+          )}
+        />
+      </Routes>
     </HashRouter>
   );
 };

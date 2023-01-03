@@ -2,12 +2,12 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class AddOrganizationMemberAPI extends API {
-  constructor(data, timeout = 2000) {
+export default class CreateNewOrganizationAPI extends API {
+  constructor(reqBody, timeout = 2000) {
     super("POST", timeout, false);
-    this.type = C.ADD_ORGANIZATION_MEMBER;
-    this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.addOrganizationMember}`;
+    this.type = C.CREATE_NEW_ORGANIZATION;
+    this.reqBody = reqBody;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}`;
   }
 
   processResponse(res) {
@@ -22,14 +22,14 @@ export default class AddOrganizationMemberAPI extends API {
   }
 
   getBody() {
-    return this.data;
+    return this.reqBody;
   }
 
   getHeaders() {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };
     return this.headers;

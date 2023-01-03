@@ -11,13 +11,10 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { roles } from "../utils/utils";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  useParams } from "react-router-dom";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import FetchUserRolesAPI from "../redux/actions/api/User/FetchUsersRoles";
-
 
 const AddOrganizationMember = ({
   open,
@@ -29,9 +26,9 @@ const AddOrganizationMember = ({
   textFieldLabel,
   selectFieldValue,
   handleSelectField,
+  isAdmin,
 }) => {
   const dispatch = useDispatch();
-  const {id} = useParams();
 
   const userRoles = useSelector((state) => state.getUserRoles.data);
 
@@ -41,11 +38,11 @@ const AddOrganizationMember = ({
   };
 
   useEffect(() => {
-    getUserRolesList()
+    getUserRolesList();
   }, []);
 
   return (
-    <Dialog open={open} onClose={handleUserDialogClose} close >
+    <Dialog open={open} onClose={handleUserDialogClose} close>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
         <TextField
@@ -56,21 +53,27 @@ const AddOrganizationMember = ({
           sx={{ mb: 3 }}
           type="email"
         />
-        <FormControl fullWidth>
-          <InputLabel id="select-role">Select Role</InputLabel>
-          <Select
-            labelId="select-role"
-            id="select"
-            value={selectFieldValue}
-            label="Select Role"
-            onChange={(event) => handleSelectField(event.target.value)}
-          >
-            {userRoles.map((item) => {
-              return <MenuItem value={item.value}>{item.label}</MenuItem>;
-            })}
-          </Select>
-        </FormControl>
+
+        {!isAdmin ? (
+          <FormControl fullWidth>
+            <InputLabel id="select-role">Select Role</InputLabel>
+            <Select
+              labelId="select-role"
+              id="select"
+              value={selectFieldValue}
+              label="Select Role"
+              onChange={(event) => handleSelectField(event.target.value)}
+            >
+              {userRoles.map((item) => {
+                return <MenuItem value={item.value}>{item.label}</MenuItem>;
+              })}
+            </Select>
+          </FormControl>
+        ) : (
+          <></>
+        )}
       </DialogContent>
+
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
         <Button onClick={handleUserDialogClose} size="small">
           Cancel
@@ -83,8 +86,8 @@ const AddOrganizationMember = ({
             addBtnClickHandler();
             handleUserDialogClose();
           }}
-          disabled={(textFieldLabel && selectFieldValue) ? false : true}
-          sx={{lineHeight: "0", height: "auto"}}
+          disabled={textFieldLabel || selectFieldValue ? false : true}
+          sx={{ lineHeight: "0", height: "auto" }}
         >
           Add
         </Button>

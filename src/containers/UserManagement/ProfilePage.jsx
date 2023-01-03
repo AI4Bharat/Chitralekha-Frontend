@@ -3,12 +3,10 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Avatar,
+  Button,
   Card,
   CardContent,
-  FormControlLabel,
-  FormGroup,
   Grid,
-  Switch,
   Typography,
 } from "@mui/material";
 import CustomButton from "../../common/Button";
@@ -19,7 +17,8 @@ import { Box } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
-import { roles } from "../../utils/utils";
+import EditIcon from "@mui/icons-material/Edit";
+import { getProfile } from "../../utils/utils";
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -28,6 +27,7 @@ const ProfilePage = () => {
 
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState([]);
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserId = useSelector(
@@ -49,6 +49,13 @@ const ProfilePage = () => {
       setLoading(false);
     }
   }, [userData]);
+
+  useEffect(() => {
+    if (userDetails) {
+      const temp = getProfile(userDetails);
+      setProfile(temp);
+    }
+  }, [userDetails]);
 
   return (
     <Grid container spacing={2}>
@@ -96,51 +103,62 @@ const ProfilePage = () => {
                 {userDetails?.phone}
               </Typography>
             )}
-
-            {loggedInUserId == id && (
-              <Box
-                display="flex"
-                justifyContent="flex-start"
-                alignItems="center"
-              >
-                {/* <FormGroup>
-                  <FormControlLabel
-                    control={<Switch defaultChecked />}
-                    label="Daily Mails"
-                    labelPlacement="start"
-                    sx={{ mt: 2 }}
-                  />
-                </FormGroup> */}
-                <CustomButton
-                  label="Edit Profile"
-                  sx={{ mt: 2 }}
-                  onClick={() => navigate("/edit-profile")}
-                />
-              </Box>
-            )}
           </CardContent>
         </Card>
       </Grid>
       <Grid item xs={12} sm={12} md={8} lg={8} xl={8} sx={{ p: 2 }}>
         <Card sx={{ minWidth: 275, borderRadius: "5px", mb: 2 }}>
           <CardContent>
-            <Typography variant="h4" sx={{ mb: 1 }}>
-              {userDetails?.organization?.title}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                p: 1,
-                backgroundColor: "rgb(56, 158, 13,0.2)",
-                color: "rgb(56, 158, 13)",
-                borderRadius: 2,
-                fontWeight: 600,
-              }}
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ paddingBottom: "10px" }}
             >
-              {roles.map((value) =>
-                value.value === userDetails?.role ? value.label : ""
+              <Typography variant="h4">Profile</Typography>
+
+              {loggedInUserId == id && (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                  }}
+                  onClick={() => navigate(`/edit-profile/${id}`)}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
               )}
-            </Typography>
+            </Box>
+
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              flexWrap="wrap"
+              paddingTop="10px"
+            >
+              {profile.map((item) => {
+                return (
+                  <Box width="30%" padding="10px 10px 20px 10px">
+                    <Typography
+                      variant="body1"
+                      color="rgba(0, 0, 0, 0.54)"
+                      fontWeight="500"
+                      fontSize="18px"
+                    >
+                      {item.label}
+                    </Typography>
+                    <Typography variant="body1" fontWeight="bold" fontSize="18px">
+                      {item.value}
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Box>
           </CardContent>
         </Card>
       </Grid>

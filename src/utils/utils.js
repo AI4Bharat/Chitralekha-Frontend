@@ -498,3 +498,51 @@ export const getUpdatedTime = (value, type, time) => {
     return `${hh}:${mm}:${ss}.${newValue}`;
   }
 };
+
+export const getProfile = (userDetails) => {
+  const temp = [
+    {
+      label: "First Name",
+      value: userDetails.first_name ?? "-",
+    },
+    {
+      label: "Last Name",
+      value: userDetails.last_name ?? "-",
+    },
+    {
+      label: "Gender",
+      value: "-",
+    },
+    {
+      label: "Role",
+      value: userDetails.role_label ?? "-",
+    },
+    {
+      label: "Phone",
+      value: userDetails.phone ?? "-",
+    },
+    
+    {
+      label: "Email",
+      value:userDetails. email ?? "-",
+    },
+    {
+      label: "Username",
+      value: userDetails.username ?? "-",
+    },
+    {
+      label: "Organization",
+      value: userDetails?.organization?.title ?? "-",
+    },
+    {
+      label: "Language Proficiency",
+      value: "-",
+    },
+    {
+      label: "Availability Status",
+      value: userDetails.availability_status ? "Active" : "Inactive",
+    },
+  ];
+
+  return temp;
+}
