@@ -121,6 +121,7 @@ const VideoList = ({ data, removeVideo }) => {
             item.name,
             item.url,
             item.duration,
+            item.status,
             <>
               <Box sx={{ display: "flex" }}>
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
@@ -262,6 +263,13 @@ const VideoList = ({ data, removeVideo }) => {
       },
     },
     {
+      name: "status",
+      label: "Status",
+      options: {
+        display: "exclude",
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -333,7 +341,9 @@ const VideoList = ({ data, removeVideo }) => {
     rowsSelected: rows,
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
-      return <VideoStatusTable headers={expandableTableHeader} />;
+      return (
+        <VideoStatusTable headers={expandableTableHeader} status={rowData[4]} />
+      );
     },
   };
 
