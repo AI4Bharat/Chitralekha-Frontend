@@ -51,6 +51,7 @@ import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTa
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
 import { roles } from "../../../utils/utils";
+import moment from "moment";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -382,6 +383,7 @@ const TaskList = () => {
             item.task_type,
             item.task_type_label,
             item.video_name,
+            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
             item.src_language,
             item.src_language_label,
             item.target_language,
@@ -440,6 +442,24 @@ const TaskList = () => {
     {
       name: "video_name",
       label: "Video Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+      },
+    },
+    {
+      name: "created_at",
+      label: "Created At",
       options: {
         filter: false,
         sort: false,
