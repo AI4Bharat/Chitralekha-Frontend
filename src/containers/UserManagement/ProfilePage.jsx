@@ -30,8 +30,8 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState([]);
 
   const userData = useSelector((state) => state.getUserDetails.data);
-  const loggedInUserId = useSelector(
-    (state) => state.getLoggedInUserDetails.data.id
+  const loggedInUser = useSelector(
+    (state) => state.getLoggedInUserDetails.data
   );
 
   const getUserData = () => {
@@ -118,7 +118,7 @@ const ProfilePage = () => {
             >
               <Typography variant="h4">Profile</Typography>
 
-              {loggedInUserId == id && (
+              {loggedInUser.id === id || loggedInUser.role === "ADMIN" && (
                 <Button
                   variant="outlined"
                   sx={{

@@ -22,7 +22,8 @@ const MemberList = () => {
   const dispatch = useDispatch();
 
   const userList = useSelector((state) => state.getAllUserList.data);
-  console.log(userList, "userList");
+  const searchList = useSelector((state) => state.searchList.data);
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusToggle, setStatusToggle] = useState(true);
   const [currentUserId, setCurrentUserId] = useState("");
@@ -31,6 +32,39 @@ const MemberList = () => {
     const apiObj = new FetchAllUsersAPI();
     dispatch(APITransport(apiObj));
   }, []);
+
+  const pageSearch = () => {
+    return userList?.filter((el) => {
+      if (searchList == "") {
+        return el;
+      } else if (
+        el.username?.toLowerCase().includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.organization.title?.toLowerCase().includes(searchList?.toLowerCase())
+      ) {
+        return el;
+      } else if (el.email?.toLowerCase().includes(searchList?.toLowerCase())) {
+        return el;
+      } else if (el.role_label?.toLowerCase().includes(searchList?.toLowerCase())) {
+        return el;
+      }
+    });
+  };
+  
+  const result =
+    userList && userList.length > 0
+      ? pageSearch().map((item, i) => {
+          return [
+            item.id,
+            item.username,
+            item.organization,
+            item.email,
+            item.role_label,
+          ];
+        })
+      : [];
 
   const columns = [
     {
@@ -63,11 +97,7 @@ const MemberList = () => {
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
         customBodyRender: (value, tableMeta) => {
-          return (
-            <Box sx={{ display: "flex" }}>
-              {value?.title}
-            </Box>
-          );
+          return <Box sx={{ display: "flex" }}>{value?.title}</Box>;
         },
       },
     },
@@ -119,7 +149,7 @@ const MemberList = () => {
               <Tooltip title="Edit">
                 <IconButton
                   onClick={() =>
-                    navigate(`/edit-profile/${tableMeta.rowData[0]}`)
+                    navigate(`/profile/${tableMeta.rowData[0]}`)
                   }
                 >
                   <EditIcon color="primary" />
@@ -174,7 +204,7 @@ const MemberList = () => {
     <>
       <Search />
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={userList} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
 
       {deleteDialogOpen && (

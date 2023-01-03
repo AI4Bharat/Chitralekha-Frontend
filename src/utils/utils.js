@@ -503,11 +503,11 @@ export const getProfile = (userDetails) => {
   const temp = [
     {
       label: "First Name",
-      value: userDetails.first_name ?? "-",
+      value: userDetails.first_name?.length > 0 ? userDetails.first_name : "-",
     },
     {
       label: "Last Name",
-      value: userDetails.last_name ?? "-",
+      value: userDetails.last_name?.length > 0 ? userDetails.last_name : "-",
     },
     {
       label: "Gender",
@@ -515,24 +515,23 @@ export const getProfile = (userDetails) => {
     },
     {
       label: "Role",
-      value: userDetails.role_label ?? "-",
+      value: userDetails.role_label?.length > 0 ? userDetails.role_label : "-",
     },
     {
       label: "Phone",
-      value: userDetails.phone ?? "-",
+      value: userDetails.phone?.length > 0 ? userDetails.phone : "-",
     },
-    
     {
       label: "Email",
-      value:userDetails. email ?? "-",
+      value: userDetails.email?.length ? userDetails.email : "-",
     },
     {
       label: "Username",
-      value: userDetails.username ?? "-",
+      value: userDetails.username?.length ? userDetails.username : "-",
     },
     {
       label: "Organization",
-      value: userDetails?.organization?.title ?? "-",
+      value: userDetails?.organization?.title?.length ? userDetails?.organization?.title : "-",
     },
     {
       label: "Language Proficiency",
@@ -545,4 +544,4 @@ export const getProfile = (userDetails) => {
   ];
 
   return temp;
-}
+};

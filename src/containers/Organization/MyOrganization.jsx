@@ -97,7 +97,7 @@ const MyOrganization = () => {
 
   useEffect(() => {
     getOrganizationDetails();
-    getUserList();
+    // getUserList();
     // getLoggedInUserData()
     getOrganizatioUsersList();
   }, []);

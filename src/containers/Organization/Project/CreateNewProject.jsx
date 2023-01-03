@@ -251,7 +251,7 @@ const CreatenewProject = () => {
 
         <Box sx={{ mt: 3 }}>
           <Typography gutterBottom component="div" label="Required">
-            Default Task
+            Default Workflow
           </Typography>
           <FormControl fullWidth>
             <Select
