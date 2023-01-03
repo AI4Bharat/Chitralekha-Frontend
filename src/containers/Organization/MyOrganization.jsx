@@ -190,7 +190,7 @@ const MyOrganization = () => {
           {organizationDetails?.title}
         </Typography>
         <Typography variant="body1" gutterBottom component="div">
-          Created by : {organizationDetails?.created_by}
+          Created by : {`${organizationDetails?.created_by?.first_name}`}
         </Typography>
 
         <Box>
@@ -242,20 +242,6 @@ const MyOrganization = () => {
             </div>
           </Box>
         </TabPanel>
-
-        {/* <TabPanel
-          value={value}
-          index={1}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-        <Typography>No records to be fetched</Typography></TabPanel>
-
-        <TabPanel
-          value={value}
-          index={2}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-        <Typography>No records to be updated</Typography></TabPanel> */}
 
         <TabPanel
           value={value}

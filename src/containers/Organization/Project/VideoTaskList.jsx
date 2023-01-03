@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoTaskListAPI from "../../../redux/actions/api/Project/FetchVideoTaskList";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import { Box } from "@mui/system";
+import moment from "moment";
 
 const VideoTaskList = (props) => {
   const dispatch = useDispatch();
@@ -24,7 +26,6 @@ const VideoTaskList = (props) => {
   const videotaskList = useSelector((state) => state.getVideoTaskList.data);
 
   const columns = [
-   
     {
       name: "task_type",
       label: "Task Type",
@@ -47,6 +48,21 @@ const VideoTaskList = (props) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
+      },
+    },
+    {
+      name: "created_at",
+      label: "Created At",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+        customBodyRender: (value) => {
+          return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+        },
       },
     },
     {
@@ -75,17 +91,17 @@ const VideoTaskList = (props) => {
       },
     },
     {
-        name: "description",
-        label: "Description",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            style: { height: "30px", fontSize: "16px", padding: "16px" },
-          }),
-        },
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
       },
+    },
   ];
 
   const options = {
@@ -115,7 +131,12 @@ const VideoTaskList = (props) => {
 
   return (
     <ThemeProvider theme={tableTheme}>
-      <MUIDataTable title="Task List" data={videotaskList} columns={columns} options={options} />
+      <MUIDataTable
+        title="Task List"
+        data={videotaskList}
+        columns={columns}
+        options={options}
+      />
     </ThemeProvider>
   );
 };
