@@ -14,6 +14,7 @@ import {
   MenuItem,
   Select,
   Chip,
+  Checkbox,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -242,6 +243,7 @@ const CreateNewOrg = () => {
               onChange={(event) => setDefaultTask(event.target.value)}
               MenuProps={MenuProps}
               renderValue={(selected) => {
+                selected.sort((a, b) => a.id - b.id);
                 return (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {selected.map((value) => {
@@ -253,6 +255,7 @@ const CreateNewOrg = () => {
             >
               {bulkTaskTypes.map((item, index) => (
                 <MenuItem key={index} value={item}>
+                  <Checkbox checked={defaultTask.indexOf(item) > -1} />
                   {item.label}
                 </MenuItem>
               ))}
@@ -286,6 +289,9 @@ const CreateNewOrg = () => {
               >
                 {supportedLanguages?.map((item, index) => (
                   <MenuItem key={index} value={item}>
+                    <Checkbox
+                      checked={translationLanguage.indexOf(item) > -1}
+                    />
                     {item.label}
                   </MenuItem>
                 ))}

@@ -10,6 +10,7 @@ import {
   MenuItem,
   Box,
   Chip,
+  Checkbox,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -165,9 +166,10 @@ const EditProject = () => {
                 >
                   {projectDetails?.managers?.map((item) => {
                     return (
-                      <MenuItem
-                        value={item}
-                      >{`${item.first_name} ${item.last_name}`}</MenuItem>
+                      <MenuItem value={item}>
+                        <Checkbox checked={managers.indexOf(item) > -1} />
+                        {`${item.first_name} ${item.last_name}`}
+                      </MenuItem>
                     );
                   })}
                 </Select>
@@ -231,6 +233,7 @@ const EditProject = () => {
                   label="Default Workflow"
                   onChange={(event) => setDefaultTask(event.target.value)}
                   renderValue={(selected) => {
+                    selected.sort((a, b) => a.id - b.id);
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected.map((value) => {
@@ -242,6 +245,7 @@ const EditProject = () => {
                 >
                   {bulkTaskTypes.map((item, index) => (
                     <MenuItem key={index} value={item}>
+                      <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
                     </MenuItem>
                   ))}
@@ -272,6 +276,9 @@ const EditProject = () => {
                 >
                   {supportedLanguages?.map((item, index) => (
                     <MenuItem key={index} value={item}>
+                      <Checkbox
+                        checked={translationLanguage.indexOf(item) > -1}
+                      />
                       {item.label}
                     </MenuItem>
                   ))}
