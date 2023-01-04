@@ -248,7 +248,7 @@ const TaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[8] === "NEW" &&
+      tableData.rowData[9] === "NEW" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">
@@ -273,7 +273,7 @@ const TaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[8] === "COMPLETE" && (
+      tableData.rowData[9] === "COMPLETE" && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
@@ -294,13 +294,12 @@ const TaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
-    console.log(userData.role !== "PROJECT_MANAGER" && tableData.rowData[10]);
     return (
-      (((tableData.rowData[8] === "SELECTED_SOURCE" ||
-        tableData.rowData[8] === "INPROGRESS") &&
+      (((tableData.rowData[9] === "SELECTED_SOURCE" ||
+        tableData.rowData[9] === "INPROGRESS") &&
         (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
           tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        (tableData.rowData[8] !== "COMPLETE" &&
+        (tableData.rowData[9] !== "COMPLETE" &&
           (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
         <Tooltip title="Edit">
@@ -588,7 +587,7 @@ const TaskList = () => {
 
               {/* If task is assigned to project manager himself then show him the edit btn */}
               {userData.role === "PROJECT_MANAGER" &&
-                userData.id === tableMeta.rowData[9] &&
+                userData.id === tableMeta.rowData[10].id &&
                 renderEditButton(tableMeta)}
             </Box>
           );

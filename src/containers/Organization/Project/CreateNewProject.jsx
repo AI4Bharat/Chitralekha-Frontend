@@ -6,6 +6,7 @@ import {
   MenuItem,
   Select,
   Chip,
+  Checkbox,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
@@ -197,11 +198,21 @@ const CreatenewProject = () => {
               id="demo-multiple-name"
               multiple
               value={managerUsername}
-              onChange={handeleselectManager}
+              onChange={(event) => setManagerUsername(event.target.value)}
               MenuProps={MenuProps}
+              renderValue={(selected) => {
+                return (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((value, index) => {
+                      return <Chip key={index} label={value.email} />;
+                    })}
+                  </Box>
+                );
+              }}
             >
-              {userList.map((name) => (
-                <MenuItem key={name.id} value={name.id}>
+              {userList.map((name, index) => (
+                <MenuItem key={index} value={name}>
+                  <Checkbox checked={managerUsername.indexOf(name) > -1} />
                   {name.email}
                 </MenuItem>
               ))}
@@ -261,6 +272,7 @@ const CreatenewProject = () => {
               onChange={(event) => setDefaultTask(event.target.value)}
               MenuProps={MenuProps}
               renderValue={(selected) => {
+                selected.sort((a, b) => a.id - b.id);
                 return (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {selected.map((value) => {
@@ -272,6 +284,7 @@ const CreatenewProject = () => {
             >
               {bulkTaskTypes.map((item, index) => (
                 <MenuItem key={index} value={item}>
+                  <Checkbox checked={defaultTask.indexOf(item) > -1} />
                   {item.label}
                 </MenuItem>
               ))}
@@ -279,8 +292,8 @@ const CreatenewProject = () => {
           </FormControl>
         </Box>
 
-        {defaultTask.filter((item) => item.value.includes("TRANSLATION")).length >
-          0 && (
+        {defaultTask.filter((item) => item.value.includes("TRANSLATION"))
+          .length > 0 && (
           <Box width={"100%"} sx={{ mt: 3 }}>
             <Typography gutterBottom component="div" label="Required">
               Select Translation Language
@@ -305,6 +318,9 @@ const CreatenewProject = () => {
               >
                 {supportedLanguages?.map((item, index) => (
                   <MenuItem key={index} value={item}>
+                    <Checkbox
+                      checked={translationLanguage.indexOf(item) > -1}
+                    />
                     {item.label}
                   </MenuItem>
                 ))}

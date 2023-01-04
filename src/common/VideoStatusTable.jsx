@@ -41,14 +41,20 @@ const VideoStatusTable = ({ headers, status }) => {
                           backgroundColor: "rgba(254, 191, 44, 0.1)",
                         }}
                       >
-                        <TableCell>{item.language_pair}</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ width: "20%" }}>
+                          {item.language_pair}
+                        </TableCell>
+                        <TableCell sx={{ width: "20%" }}>
                           {moment(item.created_at).format(
                             "DD/MM/YYYY hh:mm:ss"
                           )}
                         </TableCell>
-                        <TableCell>{item.user.username}</TableCell>
-                        <TableCell>{item.task_status}</TableCell>
+                        <TableCell sx={{ width: "20%" }}>
+                          {item.user.username}
+                        </TableCell>
+                        <TableCell sx={{ width: "40%" }}>
+                          {item.task_status}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
