@@ -69,11 +69,25 @@ const EditProject = () => {
   }, []);
 
   useEffect(() => {
+    if (projectInfo.default_task_types) {
+      const items = bulkTaskTypes.filter((item) =>
+        projectInfo.default_task_types.includes(item.value)
+      );
+      setDefaultTask(items);
+    }
+    
+    if (projectInfo.default_target_languages) {
+      const items = bulkTaskTypes.filter((item) =>
+        projectInfo.default_target_languages.includes(item.value)
+      );
+      setTranslationLanguage(items);
+    }
+  }, [projectInfo]);
+
+  useEffect(() => {
     if (projectInfo && projectInfo.managers) {
       setProjectDetails(projectInfo);
       setManagers(projectInfo?.managers);
-      // setTranslationLanguage()
-      // setDefaultTask()
       // setTranscriptSourceType()
       // setTranslationSourceType()
     }

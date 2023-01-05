@@ -205,7 +205,7 @@ if (!isInFullScreen) {
           <video
              id="myBtn"
             ref={ref}
-            style={fullScreenMode ? {width:"100%" } : { width: "500px" }}
+            style={fullScreenMode ? {width:"100%" } : { width: "600px" }}
            controls
             src={video.direct_video_url}
             className={classes.video  }

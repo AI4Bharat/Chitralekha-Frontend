@@ -89,7 +89,7 @@ const FindAndReplace = (props) => {
         })
         setSubtitlesData(updatedSubtitleData);
         onReplacementDone(updatedSubtitleData);
-        handleCloseModel();
+        // handleCloseModel();
     }
 
     const onReplaceAllClick = () => {
@@ -104,7 +104,7 @@ const FindAndReplace = (props) => {
         })
         setSubtitlesData(updatedSubtitleData);
         onReplacementDone(updatedSubtitleData);
-        handleCloseModel();
+        // handleCloseModel();
     }
 
     return (
