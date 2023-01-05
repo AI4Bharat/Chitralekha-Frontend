@@ -17,6 +17,7 @@ const VideoStatusTable = ({ headers, status }) => {
           style={{
             borderLeft: `2px solid #E9F7EF`,
             borderRight: `2px solid #E9F7EF`,
+            backgroundColor: '#fff',
           }}
         >
           <TableCell colSpan={9}>

@@ -503,7 +503,7 @@ const ProjectStyle = makeStyles({
 
   timeInputBox: {
     backgroundColor: "#616A6B",
-    width: "8%",
+    width: "10%",
     '& .MuiInputBase-input': {
       textAlign: "center",
       color: "#fff",

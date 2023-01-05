@@ -248,7 +248,7 @@ const TaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "NEW" &&
+      tableData.rowData[9] === "SELECTED_SOURCE" &&
       tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
       tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
         <Tooltip title="View">

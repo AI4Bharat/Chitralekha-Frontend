@@ -67,7 +67,7 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
       <TextField
         variant="standard"
         value={time.split(":")[2].split(".")[1]}
-        style={{ width: "12%", paddingRight: "10px" }}
+        style={{ width: "14%", paddingRight: "10px" }}
         onFocus={(event) => event.target.select()}
         InputProps={{ inputProps: { min: 0, max: 999 } }}
         className={classes.timeInputBox}
