@@ -79,6 +79,30 @@ const VideoTaskList = (props) => {
       },
     },
     {
+      name: "src_language_label",
+      label: "Source Language",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "target_language_label",
+      label: "Target Language",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
       name: "priority",
       label: "Priority",
       options: {
@@ -90,18 +114,18 @@ const VideoTaskList = (props) => {
         }),
       },
     },
-    {
-      name: "description",
-      label: "Description",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
+    // {
+    //   name: "description",
+    //   label: "Description",
+    //   options: {
+    //     filter: false,
+    //     sort: false,
+    //     align: "center",
+    //     setCellHeaderProps: () => ({
+    //       style: { height: "30px", fontSize: "16px", padding: "16px" },
+    //     }),
+    //   },
+    // },
   ];
 
   const options = {

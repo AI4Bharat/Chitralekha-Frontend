@@ -77,7 +77,7 @@ const EditProject = () => {
     }
     
     if (projectInfo.default_target_languages) {
-      const items = bulkTaskTypes.filter((item) =>
+      const items = supportedLanguages.filter((item) =>
         projectInfo.default_target_languages.includes(item.value)
       );
       setTranslationLanguage(items);
