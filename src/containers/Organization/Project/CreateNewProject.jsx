@@ -24,6 +24,8 @@ import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTra
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTaskTypes";
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
+import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
+import FetchOrganizationDetailsAPI from "../../../redux/actions/api/Organization/FetchOrganizationDetails";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -56,7 +58,10 @@ const CreatenewProject = () => {
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.data
   );
-
+  const organizationDetails = useSelector(
+    (state) => state.getOrganizationDetails.data
+  );
+  console.log(organizationDetails, "organizationDetails");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [managerUsername, setManagerUsername] = useState([]);
@@ -93,12 +98,34 @@ const CreatenewProject = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    const orgObj = new FetchOrganizatioUsersAPI(orgId);
+    dispatch(APITransport(orgObj));
+
+    const apiObj = new FetchOrganizationDetailsAPI(orgId);
+    dispatch(APITransport(apiObj));
   };
 
   useEffect(() => {
     getOrganizatioUsersList();
     getSourceTypes();
   }, []);
+
+  useEffect(() => {
+    if (organizationDetails.default_task_types) {
+      const items = bulkTaskTypes.filter((item) =>
+        organizationDetails.default_task_types.includes(item.value)
+      );
+      setDefaultTask(items);
+    }
+    
+    if (organizationDetails.default_target_languages) {
+      const items = bulkTaskTypes.filter((item) =>
+        organizationDetails.default_target_languages.includes(item.value)
+      );
+      setTranslationLanguage(items);
+    }
+  }, [organizationDetails]);
 
   const handeleselectManager = (event, item) => {
     const {
@@ -112,7 +139,7 @@ const CreatenewProject = () => {
       title: title,
       description: description,
       organization_id: orgId,
-      managers_id: managerUsername,
+      managers_id: managerUsername.map((item) => item.id),
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
       default_task_types: defaultTask.map((item) => item.value),

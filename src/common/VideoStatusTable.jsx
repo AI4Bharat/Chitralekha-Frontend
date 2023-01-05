@@ -17,14 +17,18 @@ const VideoStatusTable = ({ headers, status }) => {
           style={{
             borderLeft: `2px solid #E9F7EF`,
             borderRight: `2px solid #E9F7EF`,
-            backgroundColor: '#fff',
+            backgroundColor: "#fff",
           }}
         >
           <TableCell colSpan={9}>
             <Box style={{ margin: "0 80px" }}>
               <Table size="small" aria-label="purchases">
                 <TableHead>
-                  <TableRow>
+                  <TableRow
+                    style={{
+                      height: "60px",
+                    }}
+                  >
                     {headers.map((item) => {
                       return (
                         <TableCell sx={{ padding: "6px 16px" }}>
@@ -40,6 +44,7 @@ const VideoStatusTable = ({ headers, status }) => {
                       <TableRow
                         style={{
                           backgroundColor: "rgba(254, 191, 44, 0.1)",
+                          height: "60px",
                         }}
                       >
                         <TableCell sx={{ width: "20%" }}>

@@ -427,7 +427,7 @@ const ProjectStyle = makeStyles({
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
-    right: "28%",
+    right: "15%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
@@ -486,7 +486,7 @@ const ProjectStyle = makeStyles({
     //zIndex:20,
     background: "black",
     fontSize:'20px',
-    width: "500px",
+    width: "600px",
     height:"55px",
     textAlign: "center",
     marginRight:"-1px"
@@ -495,7 +495,7 @@ const ProjectStyle = makeStyles({
     //zIndex:20,
     background: "white",
     fontSize:'20px',
-    width: "500px",
+    width: "600px",
     height:"55px",
     textAlign: "center",
     marginRight:"-1px"
