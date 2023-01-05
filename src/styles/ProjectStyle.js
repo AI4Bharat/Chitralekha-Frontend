@@ -427,7 +427,7 @@ const ProjectStyle = makeStyles({
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
-    right: "15%",
+    right: "20%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
