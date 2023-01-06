@@ -38,6 +38,7 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import Loader from "../../../common/Spinner";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -45,6 +46,8 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
+import EditBulkTaskDetailAPI from "../../../redux/actions/api/Project/EditBulkTaskDetails";
+import EditTaskDetailAPI from "../../../redux/actions/api/Project/EditTaskDetails";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
@@ -79,6 +82,8 @@ const TaskList = () => {
   const [openEditTaskDialog, setOpenEditTaskDialog] = useState(false);
   const [currentSelectedTasks, setCurrentSelectedTask] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isBulk, setIsBulk] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState("");
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -96,8 +101,6 @@ const TaskList = () => {
 
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
-  // const getTranscriptionSourceComparison = (id, source) => {
-  const datvalue = useSelector((state) => state.getExportTranscription.data);
 
   const handleClose = () => {
     setOpen(false);
@@ -347,6 +350,22 @@ const TaskList = () => {
     );
   };
 
+  const renderEditTaskButton = (tableData) => {
+    return (
+      <Tooltip title="Edit Task Details">
+        <IconButton
+          onClick={() => {
+            setSelectedTaskId(tableData.rowData[0]);
+            setOpenEditTaskDialog(true);
+            setIsBulk(false);
+          }}
+        >
+          <AppRegistrationIcon />
+        </IconButton>
+      </Tooltip>
+    );
+  };
+
   const pageSearch = () => {
     return taskList.filter((el) => {
       if (SearchProject == "") {
@@ -580,6 +599,9 @@ const TaskList = () => {
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
+              {userData.role === "PROJECT_MANAGER" &&
+                renderEditTaskButton(tableMeta)}
+
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderViewButton(tableMeta)}
               {roles.filter((role) => role.value === userData?.role)[0]
@@ -742,6 +764,51 @@ const TaskList = () => {
     );
   };
 
+  const handleUpdateTask = async (data) => {
+    setLoading(true);
+
+    const body = {
+      task_ids: currentSelectedTasks.map((item) => item.id),
+      user: data.user.id,
+      description: data.description,
+      eta: data.date,
+      priority: data.priority,
+    };
+
+    let userObj;
+    if(isBulk) {
+      userObj = new EditBulkTaskDetailAPI(body);
+    } else {
+      userObj = new EditTaskDetailAPI(body, selectedTaskId);
+    }
+
+    const res = await fetch(userObj.apiEndPoint(), {
+      method: "PATCH",
+      body: JSON.stringify(userObj.getBody()),
+      headers: userObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      setLoading(false);
+      setOpenEditTaskDialog(false);
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+      setLoading(false);
+      setOpenEditTaskDialog(false);
+    }
+  };
+
   return (
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -753,7 +820,7 @@ const TaskList = () => {
               className={classes.createTaskBtn}
               onClick={() => {
                 setOpenEditTaskDialog(true);
-                // setIsBulk(true);
+                setIsBulk(true);
               }}
             >
               Edit Tasks
@@ -805,7 +872,11 @@ const TaskList = () => {
         <UpdateBulkTaskDialog
           open={openEditTaskDialog}
           handleUserDialogClose={() => setOpenEditTaskDialog(false)}
+          handleUpdateTask={(data) => handleUpdateTask(data)}
           currentSelectedTasks={currentSelectedTasks}
+          selectedTaskId={selectedTaskId}
+          loading={loading}
+          isBulk={isBulk}
         />
       )}
     </>

@@ -2,13 +2,12 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class EditOrganizationDetailsAPI extends API {
-  constructor(id, data, timeout = 2000) {
+export default class EditBulkTaskDetailAPI extends API {
+  constructor(updateData, id, timeout = 2000) {
     super("PATCH", timeout, false);
-    this.type = C.EDIT_ORGANIZATION_DETAILS;
+    this.updateData = updateData;
     this.id = id;
-    this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}update_multiple_tasks/`;
   }
 
   processResponse(res) {
@@ -23,7 +22,7 @@ export default class EditOrganizationDetailsAPI extends API {
   }
 
   getBody() {
-    return this.data;
+    return this.updateData;
   }
 
   getHeaders() {

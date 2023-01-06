@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -26,17 +27,23 @@ import ProjectStyle from "../styles/ProjectStyle";
 //APIs
 import APITransport from "../redux/actions/apitransport/apitransport";
 import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
+import Loader from "./Spinner";
+import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 
 const UpdateBulkTaskDialog = ({
   open,
   handleUserDialogClose,
-  currentSelectedTasks,
+  loading,
+  handleUpdateTask,
+  selectedTaskId,
+  isBulk,
 }) => {
   const dispatch = useDispatch();
   const classes = ProjectStyle();
 
   const projectMembers = useSelector((state) => state.getProjectMembers.data);
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
+  const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
@@ -51,9 +58,36 @@ const UpdateBulkTaskDialog = ({
   useEffect(() => {
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
+
+    if (!isBulk) {
+      const taskObj = new FetchTaskDetailsAPI(selectedTaskId);
+      dispatch(APITransport(taskObj));
+    }
   }, []);
 
-  const submitHandler = () => {};
+  useEffect(() => {
+    if (!isBulk) {
+      setDescription(taskDetails.description);
+      setPriority(taskDetails.priority);
+      setDate(taskDetails.eta);
+
+      const items = projectMembers.filter(
+        (item) => item.id === taskDetails.user.id
+      );
+      setUser(items[0]);
+    }
+  }, [taskDetails]);
+
+  const submitHandler = () => {
+    const data = {
+      user,
+      priority,
+      description,
+      date,
+    };
+
+    handleUpdateTask(data);
+  };
 
   const renderSnackBar = () => {
     return (
@@ -79,7 +113,7 @@ const UpdateBulkTaskDialog = ({
         close
         maxWidth={"md"}
       >
-        <DialogTitle variant="h4">Update Tasks</DialogTitle>
+        <DialogTitle variant="h4">{isBulk ? "Update Tasks" : "Update Task"}</DialogTitle>
         <DialogContent style={{ paddingTop: 4 }}>
           <Grid
             container
@@ -98,6 +132,10 @@ const UpdateBulkTaskDialog = ({
                   onChange={(event) => setUser(event.target.value)}
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
+                  renderValue={(selected) => {
+                    console.log(selected);
+                    return <Chip key={selected.id} label={selected.username} />;
+                  }}
                 >
                   {projectMembers.map((item, index) => (
                     <MenuItem key={index} value={item}>
@@ -163,7 +201,10 @@ const UpdateBulkTaskDialog = ({
             sx={{ borderRadius: 2 }}
             onClick={() => submitHandler()}
           >
-            Update Tasks
+            {isBulk ? "Update Tasks" : "Update Task"}
+            {loading && (
+              <Loader size={20} margin="0 0 0 5px" color="secondary" />
+            )}
           </Button>
         </DialogActions>
       </Dialog>
