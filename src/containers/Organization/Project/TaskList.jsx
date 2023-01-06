@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { roles } from "../../../utils/utils";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 //Themes
+import tableTheme from "../../../theme/tableTheme";
+import DatasetStyle from "../../../styles/Dataset";
+
+//Components
 import {
   ThemeProvider,
   Box,
@@ -14,52 +23,42 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
-  FormLabel,
   Tooltip,
   IconButton,
   Button,
 } from "@mui/material";
-import tableTheme from "../../../theme/tableTheme";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-// import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import PreviewIcon from "@mui/icons-material/Preview";
-
-//Components
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../../common/Button";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Search from "../../../common/Search";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import PreviewIcon from "@mui/icons-material/Preview";
+import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
+import ViewTaskDialog from "../../../common/ViewTaskDialog";
+import Loader from "../../../common/Spinner";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import ViewTaskDialog from "../../../common/ViewTaskDialog";
-import { useNavigate } from "react-router-dom";
-import DatasetStyle from "../../../styles/Dataset";
-import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
 import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
-import { roles } from "../../../utils/utils";
-import moment from "moment";
-import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
+import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
+import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
+import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
+import DeleteDialog from "../../../common/DeleteDialog";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
+
 const TaskList = () => {
-  const { orgId, projectId } = useParams();
+  const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
+  const navigate = useNavigate();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -68,7 +67,6 @@ const TaskList = () => {
     message: "",
     variant: "success",
   });
-  const [taskid, setTaskid] = useState();
   const [tasktype, setTasktype] = useState();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -80,9 +78,10 @@ const TaskList = () => {
   const [rows, setRows] = useState([]);
   const [openEditTaskDialog, setOpenEditTaskDialog] = useState(false);
   const [currentSelectedTasks, setCurrentSelectedTask] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-  const navigate = useNavigate();
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const FetchTaskList = () => {
     const apiObj = new FetchTaskListAPI(projectId);
@@ -221,8 +220,9 @@ const TaskList = () => {
     setOpenDialog(true);
     setDeleteTaskid(id);
   };
+
   const handleokDialog = async () => {
-    setOpenDialog(false);
+    setLoading(true);
     const apiObj = new DeleteTaskAPI(deleteTaskid);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
@@ -236,6 +236,8 @@ const TaskList = () => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
+      setOpenDialog(false);
       FetchTaskList();
     } else {
       setSnackbarInfo({
@@ -243,6 +245,7 @@ const TaskList = () => {
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
     }
   };
 
@@ -614,7 +617,7 @@ const TaskList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No tasks assigned to you",
+        noMatch: apiStatus.progress ? <Loader /> : "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",
@@ -787,23 +790,16 @@ const TaskList = () => {
       )}
       {renderDialog()}
 
-      <Dialog
-        open={openDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure, you want to delete this task? The associated
-            transcript/translation will be deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <CustomButton onClick={handleCloseDialog} label="Cancel" />
-          <CustomButton onClick={() => handleokDialog()} label="Ok" autoFocus />
-        </DialogActions>
-      </Dialog>
+      {openDialog && (
+        <DeleteDialog
+          openDialog={openDialog}
+          handleClose={() => handleCloseDialog()}
+          submit={() => handleokDialog()}
+          loading={loading}
+          message={`Are you sure, you want to delete this task? The associated
+          transcript/translation will be deleted.`}
+        />
+      )}
 
       {openEditTaskDialog && (
         <UpdateBulkTaskDialog

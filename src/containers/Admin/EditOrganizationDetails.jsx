@@ -15,11 +15,12 @@ import {
   Select,
   Chip,
   Checkbox,
+  Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../common/Snackbar";
 import OutlinedTextField from "../../common/OutlinedTextField";
-import Button from "../../common/Button";
+import CustomButton from "../../common/Button";
 
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
@@ -30,6 +31,7 @@ import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTransc
 import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
 import FetchBulkTaskTypeAPI from "../../redux/actions/api/Project/FetchBulkTaskTypes";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import Loader from "../../common/Spinner";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -63,7 +65,7 @@ const EditOrganizationDetails = () => {
     title: "",
     emailDomainName: "",
   });
-  const [owner, setOwner] = useState("")
+  const [owner, setOwner] = useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -75,6 +77,7 @@ const EditOrganizationDetails = () => {
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const apiObj = new FetchOrgOwnersAPI();
@@ -106,7 +109,7 @@ const EditOrganizationDetails = () => {
       );
       setDefaultTask(items);
     }
-    
+
     if (orgInfo.default_target_languages) {
       const items = bulkTaskTypes.filter((item) =>
         orgInfo.default_target_languages.includes(item.value)
@@ -129,6 +132,7 @@ const EditOrganizationDetails = () => {
   };
 
   const handleOrgUpdate = async () => {
+    setLoading(true);
     const userObj = new EditOrganizationDetailsAPI(
       orgId,
       orgDetails.title,
@@ -152,12 +156,14 @@ const EditOrganizationDetails = () => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
     }
   };
 
@@ -341,13 +347,19 @@ const EditOrganizationDetails = () => {
 
         <Box sx={{ mt: 3 }}>
           <Button
-            style={{ margin: "0px 20px 0px 0px" }}
-            label={"Update Organization"}
+            color="primary"
+            variant="contained"
+            style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
             onClick={() => handleOrgUpdate()}
             disabled={orgDetails.title && orgDetails.owner ? false : true}
-          />
+          >
+            Update Organization{" "}
+            {loading && (
+              <Loader size={20} margin="0 0 0 10px" color="secondary" />
+            )}
+          </Button>
 
-          <Button
+          <CustomButton
             buttonVariant="text"
             label={"Cancel"}
             onClick={() => navigate(`/admin`)}

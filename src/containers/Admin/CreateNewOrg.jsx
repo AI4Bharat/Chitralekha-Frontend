@@ -15,11 +15,13 @@ import {
   Select,
   Chip,
   Checkbox,
+  Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../common/Snackbar";
 import OutlinedTextField from "../../common/OutlinedTextField";
-import Button from "../../common/Button";
+import CustomButton from "../../common/Button";
+import Loader from "../../common/Spinner";
 
 //APIs
 import CreateNewOrganizationAPI from "../../redux/actions/api/Organization/CreateNewOrganization";
@@ -70,6 +72,7 @@ const CreateNewOrg = () => {
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const apiObj = new FetchOrgOwnersAPI();
@@ -89,6 +92,7 @@ const CreateNewOrg = () => {
   }, []);
 
   const handleCreateProject = async () => {
+    setLoading(true);
     const reqBody = {
       title,
       email_domain_name: emailDomainName,
@@ -115,6 +119,7 @@ const CreateNewOrg = () => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
       navigate(`/admin`, { replace: true });
     } else {
       setSnackbarInfo({
@@ -122,6 +127,7 @@ const CreateNewOrg = () => {
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
     }
   };
 
@@ -302,13 +308,19 @@ const CreateNewOrg = () => {
 
         <Box sx={{ mt: 3 }}>
           <Button
-            style={{ margin: "0px 20px 0px 0px" }}
-            label={"Create Organization"}
+            color="primary"
+            variant="contained"
+            style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
             onClick={() => handleCreateProject()}
             disabled={title && owner ? false : true}
-          />
+          >
+            Create Organization{" "}
+            {loading && (
+              <Loader size={20} margin="0 0 0 10px" color="secondary" />
+            )}
+          </Button>
 
-          <Button
+          <CustomButton
             buttonVariant="text"
             label={"Cancel"}
             onClick={() => navigate(`/admin`)}

@@ -19,6 +19,7 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchOrganizationListAPI from "../../redux/actions/api/Organization/FetchOrganizationList";
 import DeleteOrganizationAPI from "../../redux/actions/api/Organization/DeleteOrganization";
 import CustomizedSnackbars from "../../common/Snackbar";
+import Loader from "../../common/Spinner";
 
 const OrganizationList = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const OrganizationList = () => {
 
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const searchList = useSelector((state) => state.searchList.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState("");
@@ -34,6 +36,7 @@ const OrganizationList = () => {
     message: "",
     variant: "success",
   });
+  const [loading, setLoading] = useState(false);
 
   const getOrgList = () => {
     const apiObj = new FetchOrganizationListAPI();
@@ -208,7 +211,7 @@ const OrganizationList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",
@@ -260,6 +263,7 @@ const OrganizationList = () => {
 
   const handleDelete = async (currentOrgId) => {
     const apiObj = new DeleteOrganizationAPI(currentOrgId);
+    setLoading(true);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
@@ -275,6 +279,8 @@ const OrganizationList = () => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
+      setDeleteDialogOpen(false);
       getOrgList();
     } else {
       setSnackbarInfo({
@@ -282,6 +288,8 @@ const OrganizationList = () => {
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -301,6 +309,7 @@ const OrganizationList = () => {
           handleClose={() => setDeleteDialogOpen(false)}
           submit={() => handleDelete(currentOrgId)}
           message={`Are you sure, you want to delete this Organization? All the associated videos, tasks, will be deleted.`}
+          loading={loading}
         />
       )}
     </>

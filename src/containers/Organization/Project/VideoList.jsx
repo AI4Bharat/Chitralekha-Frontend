@@ -1,32 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 //Themes
-import {
-  Box,
-  Grid,
-  ThemeProvider,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Tooltip,
-  IconButton,
-  DialogContentText,
-  Button,
-} from "@mui/material";
+import { Box, ThemeProvider, Tooltip, IconButton, Button } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
-import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
 import DatasetStyle from "../../../styles/Dataset";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Search from "../../../common/Search";
+import Loader from "../../../common/Spinner";
 
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
@@ -36,7 +25,6 @@ import DeleteDialog from "../../../common/DeleteDialog";
 import VideoStatusTable from "../../../common/VideoStatusTable";
 
 const VideoList = ({ data, removeVideo }) => {
-  const dispatch = useDispatch();
   const classes = DatasetStyle();
 
   const [open, setOpen] = useState(false);
@@ -52,9 +40,11 @@ const VideoList = ({ data, removeVideo }) => {
   const [isBulk, setIsBulk] = useState(false);
   const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -66,7 +56,7 @@ const VideoList = ({ data, removeVideo }) => {
   };
 
   const handleok = async (id) => {
-    setOpenDialog(false);
+    setLoading(true);
     const apiObj = new DeleteVideoAPI({ video_id: id });
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
@@ -80,6 +70,8 @@ const VideoList = ({ data, removeVideo }) => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
+      setOpenDialog(false);
       removeVideo();
     } else {
       setSnackbarInfo({
@@ -87,6 +79,7 @@ const VideoList = ({ data, removeVideo }) => {
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
     }
   };
 
@@ -161,12 +154,10 @@ const VideoList = ({ data, removeVideo }) => {
         })
       : [];
 
-  //setTableData(result);
-
   const createTaskHandler = async (data) => {
     const apiObj = new CreateNewTaskAPI(data);
     // dispatch(APITransport(apiObj));
-    setOpenCreateTaskDialog(false);
+    setLoading(true);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
@@ -180,12 +171,15 @@ const VideoList = ({ data, removeVideo }) => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
+      setOpenCreateTaskDialog(false);
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
     }
   };
 
@@ -314,7 +308,7 @@ const VideoList = ({ data, removeVideo }) => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",
@@ -340,7 +334,7 @@ const VideoList = ({ data, removeVideo }) => {
     },
     rowsSelected: rows,
     expandableRows: true,
-    renderExpandableRow: (rowData, rowMeta) => {
+    renderExpandableRow: (rowData) => {
       return (
         <VideoStatusTable headers={expandableTableHeader} status={rowData[4]} />
       );
@@ -403,6 +397,7 @@ const VideoList = ({ data, removeVideo }) => {
           createTaskHandler={createTaskHandler}
           videoDetails={currentVideoDetails}
           isBulk={isBulk}
+          loading={loading}
         />
       )}
       {renderSnackBar()}
@@ -412,6 +407,7 @@ const VideoList = ({ data, removeVideo }) => {
           openDialog={openDialog}
           handleClose={() => handleClose()}
           submit={() => handleok(projectid)}
+          loading={loading}
           message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
         />
       )}

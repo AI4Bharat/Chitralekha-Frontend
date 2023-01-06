@@ -17,6 +17,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
 import APITransport from "../redux/actions/apitransport/apitransport";
+import Loader from "./Spinner";
 
 const CreateVideoDialog = ({
   open,
@@ -30,13 +31,16 @@ const CreateVideoDialog = ({
   setLang,
 }) => {
   const dispatch = useDispatch();
-
+  const apiStatus = useSelector((state) => state.apiStatus);
+  console.log(apiStatus, "apiStatus");
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
   }, []);
 
-  const supportedLanguages = useSelector((state) => state.getSupportedLanguages.data);
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
 
   return (
     <Dialog
@@ -84,7 +88,6 @@ const CreateVideoDialog = ({
                 {item.label}
               </MenuItem>
             ))}
-
           </Select>
         </FormControl>
 
@@ -109,7 +112,7 @@ const CreateVideoDialog = ({
           onClick={() => addBtnClickHandler()}
           disabled={!videoLink}
         >
-          Create
+          Create {apiStatus.progress && <Loader size={20} margin="0 0 0 5px" />}
         </Button>
       </DialogActions>
     </Dialog>

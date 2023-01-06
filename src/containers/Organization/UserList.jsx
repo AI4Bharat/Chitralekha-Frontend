@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 //Themes
 import { ThemeProvider, Tooltip,IconButton, } from "@mui/material";
@@ -8,14 +9,13 @@ import PreviewIcon from '@mui/icons-material/Preview';
 
 //Components
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../common/Button";
-import { Link } from "react-router-dom";
 import Search from "../../common/Search";
+import Loader from "../../common/Spinner";
 
 
 const UserList = ({ data }) => {
-  const [tableData, setTableData] = useState([]);
   const SearchProject = useSelector((state) => state.searchList.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const pageSearch = () => {
     return data.filter((el) => {
@@ -54,9 +54,6 @@ const UserList = ({ data }) => {
         </Link>,
       ];
     }):[];
-
-    //setTableData(result);
- 
 
   const columns = [
     {
@@ -112,7 +109,7 @@ const UserList = ({ data }) => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",

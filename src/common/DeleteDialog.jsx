@@ -7,8 +7,9 @@ import {
 } from "@mui/material";
 import React from "react";
 import CustomButton from "./Button";
+import Loader from "./Spinner";
 
-const DeleteDialog = ({ openDialog, handleClose, submit, message }) => {
+const DeleteDialog = ({ openDialog, handleClose, submit, message, loading }) => {
   return (
     <Dialog
       open={openDialog}
@@ -31,14 +32,12 @@ const DeleteDialog = ({ openDialog, handleClose, submit, message }) => {
         </Button>
         <Button
           variant="contained"
-          onClick={() => {
-            submit();
-            handleClose();
-          }}
+          onClick={() => submit()}
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "6px" }}
         >
           Delete
+          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary"/>}
         </Button>
       </DialogActions>
     </Dialog>
