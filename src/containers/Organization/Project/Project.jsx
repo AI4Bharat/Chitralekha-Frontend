@@ -26,9 +26,7 @@ import {
   Typography,
 } from "@mui/material";
 import Button from "../../../common/Button";
-import UserList from "../UserList";
 import CreateVideoDialog from "../../../common/CreateVideoDialog";
-import ProjectSettings from "./ProjectSettings";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
 import TaskList from "./TaskList";
