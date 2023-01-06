@@ -28,6 +28,7 @@ import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks
 import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
 import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
 import FetchBulkTaskTypeAPI from "../redux/actions/api/Project/FetchBulkTaskTypes";
+import Loader from "./Spinner";
 
 const CreateTaskDialog = ({
   open,
@@ -35,6 +36,7 @@ const CreateTaskDialog = ({
   createTaskHandler,
   videoDetails,
   isBulk,
+  loading,
 }) => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -48,6 +50,7 @@ const CreateTaskDialog = ({
     (state) => state.getSupportedLanguages.data
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
@@ -142,7 +145,7 @@ const CreateTaskDialog = ({
       />
     );
   };
-
+console.log(apiStatus.progress,'apiStatus.progress');
   return (
     <Dialog
       fullWidth={true}
@@ -310,10 +313,11 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={!(taskType)}
+          disabled={!taskType}
           onClick={() => submitHandler()}
         >
-          Create Task
+          Create Task{" "}
+          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary"/>}
         </Button>
       </DialogActions>
     </Dialog>

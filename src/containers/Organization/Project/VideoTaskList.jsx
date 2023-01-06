@@ -9,10 +9,13 @@ import FetchVideoTaskListAPI from "../../../redux/actions/api/Project/FetchVideo
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
 import moment from "moment";
+import Loader from "../../../common/Spinner";
 
 const VideoTaskList = (props) => {
   const dispatch = useDispatch();
   const { videoDetails } = props;
+
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const FetchVideoTaskList = () => {
     const apiObj = new FetchVideoTaskListAPI(videoDetails);
@@ -131,7 +134,7 @@ const VideoTaskList = (props) => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",

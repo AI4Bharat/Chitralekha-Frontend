@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
+import Loader from "../../../common/Spinner";
 import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTaskTypes";
 import FetchProjectDetailsAPI from "../../../redux/actions/api/Project/FetchProjectDetails";
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
@@ -50,6 +51,7 @@ const EditProject = () => {
   const [translationSourceType, setTranslationSourceType] =
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -321,11 +323,14 @@ const EditProject = () => {
               style={{ marginTop: 20 }}
             >
               <Button
-                variant="contained"
                 color="primary"
-                onClick={handleSubmit}
+                variant="contained"
+                onClick={() => handleSubmit()}
               >
-                Update Project
+                Update Project{" "}
+                {loading && (
+                  <Loader size={20} margin="0 0 0 10px" color="secondary" />
+                )}
               </Button>
             </Grid>
           </Grid>
