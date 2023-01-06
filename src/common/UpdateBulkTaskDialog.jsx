@@ -29,6 +29,8 @@ import APITransport from "../redux/actions/apitransport/apitransport";
 import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
 import Loader from "./Spinner";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
+import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
+import { useParams } from "react-router";
 
 const UpdateBulkTaskDialog = ({
   open,
@@ -38,6 +40,7 @@ const UpdateBulkTaskDialog = ({
   selectedTaskId,
   isBulk,
 }) => {
+  const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = ProjectStyle();
 
@@ -58,6 +61,9 @@ const UpdateBulkTaskDialog = ({
   useEffect(() => {
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
+
+    const userObj = new FetchProjectMembersAPI(projectId);
+    dispatch(APITransport(userObj));
 
     if (!isBulk) {
       const taskObj = new FetchTaskDetailsAPI(selectedTaskId);
@@ -113,7 +119,9 @@ const UpdateBulkTaskDialog = ({
         close
         maxWidth={"md"}
       >
-        <DialogTitle variant="h4">{isBulk ? "Update Tasks" : "Update Task"}</DialogTitle>
+        <DialogTitle variant="h4">
+          {isBulk ? "Update Tasks" : "Update Task"}
+        </DialogTitle>
         <DialogContent style={{ paddingTop: 4 }}>
           <Grid
             container
@@ -133,7 +141,6 @@ const UpdateBulkTaskDialog = ({
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
                   renderValue={(selected) => {
-                    console.log(selected);
                     return <Chip key={selected.id} label={selected.username} />;
                   }}
                 >
