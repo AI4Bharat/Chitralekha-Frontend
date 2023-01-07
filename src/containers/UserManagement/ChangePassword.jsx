@@ -6,10 +6,10 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Button,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Button from "../../common/Button";
 import { useDispatch, useSelector } from "react-redux";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import DatasetStyle from "../../styles/Dataset";
@@ -193,17 +193,23 @@ const ChangePassword = () => {
               sx={{ mt: 2 }}
             >
               <Button
-                label={"Submit"}
-                onClick={handleChangePassword}
+                autoFocus
+                variant="contained"
+                sx={{ borderRadius: "8px" }}
+                onClick={() => handleChangePassword()}
                 disabled={
                   newPassword.value && currentPassword.value ? false : true
                 }
-              />
+              >
+                Submit
+              </Button>
+
               <Button
-                sx={{ ml: 2 }}
-                label={"Cancel"}
                 onClick={() => navigate(`/projects`)}
-              />
+                sx={{ borderRadius: "8px", ml: 2 }}
+              >
+                Close
+              </Button>
             </Grid>
           </Grid>
         </Card>

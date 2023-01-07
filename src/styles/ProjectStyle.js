@@ -13,8 +13,7 @@ const ProjectStyle = makeStyles({
 
   findBtn: {
     width: "20%",
-    borderRadius: "7px",
-    backgroundColor: "#0083e2",
+    borderRadius: "8px",
   },
   findreplBtn: {
     width: "30%",

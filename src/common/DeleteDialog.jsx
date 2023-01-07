@@ -34,7 +34,7 @@ const DeleteDialog = ({ openDialog, handleClose, submit, message, loading }) => 
           variant="contained"
           onClick={() => submit()}
           autoFocus
-          sx={{ lineHeight: "1", borderRadius: "6px" }}
+          sx={{ lineHeight: "1", borderRadius: "8px" }}
         >
           Delete
           {loading && <Loader size={20} margin="0 0 0 5px" color="secondary"/>}

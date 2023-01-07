@@ -418,6 +418,7 @@ const Project = () => {
         addBtnClickHandler={addNewMemberHandler}
         selectFieldValue={addmembers}
         handleSelectField={(item) => setAddmembers(item)}
+        title="Add Project Members"
       />
     </Grid>
   );

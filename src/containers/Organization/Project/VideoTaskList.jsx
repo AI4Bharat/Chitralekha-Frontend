@@ -42,7 +42,7 @@ const VideoTaskList = (props) => {
       },
     },
     {
-      name: "user_email",
+      name: "user",
       label: "Assigned User",
       options: {
         filter: false,
@@ -51,6 +51,9 @@ const VideoTaskList = (props) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
+        customBodyRender: (value) => {
+          return <Box>{`${value.first_name} ${value.last_name}`}</Box>;
+        },
       },
     },
     {
@@ -117,18 +120,6 @@ const VideoTaskList = (props) => {
         }),
       },
     },
-    // {
-    //   name: "description",
-    //   label: "Description",
-    //   options: {
-    //     filter: false,
-    //     sort: false,
-    //     align: "center",
-    //     setCellHeaderProps: () => ({
-    //       style: { height: "30px", fontSize: "16px", padding: "16px" },
-    //     }),
-    //   },
-    // },
   ];
 
   const options = {

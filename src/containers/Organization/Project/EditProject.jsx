@@ -28,6 +28,7 @@ import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTra
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import ProjectStyle from "../../../styles/ProjectStyle";
+import { MenuProps } from "../../../utils/utils";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -50,17 +51,19 @@ const EditProject = () => {
     message: "",
     variant: "success",
   });
-  const [projectDetails, setProjectDetails] = useState({});
+  const [projectDetails, setProjectDetails] = useState({
+    title: "",
+    description: "",
+  });
   const [managers, setManagers] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
-  const [transcriptSourceType, setTranscriptSourceType] =
-    useState("MACHINE_GENERATED");
-  const [translationSourceType, setTranslationSourceType] =
-    useState("MACHINE_GENERATED");
+  const [transcriptSourceType, setTranscriptSourceType] = useState("");
+  const [translationSourceType, setTranslationSourceType] = useState("");
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
   const [priority, setPriority] = useState("");
+  const [showEditBtn, setShowEditBtn] = useState(false);
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -96,16 +99,22 @@ const EditProject = () => {
       );
       setTranslationLanguage(items);
     }
-  }, [projectInfo, supportedLanguages, bulkTaskTypes]);
+
+    if (projectInfo.default_priority) {
+      const items = PriorityTypes.filter(
+        (item) => item.value === projectInfo.default_priority
+      );
+      setPriority(items[0]);
+    }
+  }, [projectInfo, supportedLanguages, bulkTaskTypes, PriorityTypes]);
 
   useEffect(() => {
     if (projectInfo && projectInfo.managers) {
       setProjectDetails(projectInfo);
       setManagers(projectInfo?.managers);
-      // setTranscriptSourceType()
-      // setTranslationSourceType()
-      // setDate()
-      // setPriority();
+      setTranscriptSourceType(projectInfo?.default_transcript_type);
+      setTranslationSourceType(projectInfo?.default_translation_type);
+      setDate(projectInfo?.default_eta);
     }
   }, [projectInfo]);
 
@@ -129,7 +138,7 @@ const EditProject = () => {
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
       default_task_eta: date,
-      default_task_priority: priority,
+      default_task_priority: priority.value,
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
@@ -193,7 +202,7 @@ const EditProject = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
               <Typography variant="h3" align="center">
-                Edit Project
+                Project Settings
               </Typography>
             </Grid>
 
@@ -219,6 +228,7 @@ const EditProject = () => {
                   value={managers}
                   label="Manager"
                   onChange={(e) => setManagers(e.target.value)}
+                  MenuProps={MenuProps}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -256,6 +266,7 @@ const EditProject = () => {
                   id="transcription-source-type_select"
                   value={transcriptSourceType}
                   label="Transcription Source"
+                  MenuProps={MenuProps}
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
                   }
@@ -279,6 +290,7 @@ const EditProject = () => {
                   id="translation-source-type_select"
                   value={translationSourceType}
                   label="Translation Source"
+                  MenuProps={MenuProps}
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
                   }
@@ -302,6 +314,7 @@ const EditProject = () => {
                   value={defaultTask}
                   label="Default Workflow"
                   onChange={(event) => setDefaultTask(event.target.value)}
+                  MenuProps={MenuProps}
                   renderValue={(selected) => {
                     selected.sort((a, b) => a.id - b.id);
                     return (
@@ -334,6 +347,7 @@ const EditProject = () => {
                   name="targetlanguages"
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
+                  MenuProps={MenuProps}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -378,9 +392,16 @@ const EditProject = () => {
                   onChange={(event) => setPriority(event.target.value)}
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
+                  renderValue={(selected) => {
+                    return (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        <Chip key={selected.value} label={selected.label} />
+                      </Box>
+                    );
+                  }}
                 >
                   {PriorityTypes.map((item, index) => (
-                    <MenuItem key={index} value={item?.value}>
+                    <MenuItem key={index} value={item}>
                       {item?.value}
                     </MenuItem>
                   ))}
