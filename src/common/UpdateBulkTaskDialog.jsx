@@ -72,17 +72,17 @@ const UpdateBulkTaskDialog = ({
   }, []);
 
   useEffect(() => {
-    if (!isBulk) {
+    if (!isBulk && taskDetails) {
       setDescription(taskDetails.description);
       setPriority(taskDetails.priority);
       setDate(taskDetails.eta);
-
+      
       const items = projectMembers.filter(
-        (item) => item.id === taskDetails.user.id
+        (item) => item.id === taskDetails?.user?.id
       );
       setUser(items[0]);
     }
-  }, [taskDetails]);
+  }, [taskDetails, isBulk]);
 
   const submitHandler = () => {
     const data = {
