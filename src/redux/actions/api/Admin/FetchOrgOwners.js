@@ -3,12 +3,13 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchOrgOwnersAPI extends API {
-  constructor(timeout = 2000) {
+  constructor(id, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_ORG_OWNER_LIST;
+    this.id = id;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.getUserDetails
-    }get_all_users/?role=ORG_OWNER`;
+    }get_all_users/?role=ORG_OWNER&org_id=${id}`;
   }
 
   processResponse(res) {

@@ -65,7 +65,7 @@ const EditOrganizationDetails = () => {
     title: "",
     emailDomainName: "",
   });
-  const [owner, setOwner] = useState("");
+  const [owner, setOwner] = useState({});
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -80,7 +80,7 @@ const EditOrganizationDetails = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const apiObj = new FetchOrgOwnersAPI();
+    const apiObj = new FetchOrgOwnersAPI(orgId);
     dispatch(APITransport(apiObj));
 
     const transcriptObj = new FetchTranscriptTypesAPI();
@@ -97,11 +97,19 @@ const EditOrganizationDetails = () => {
   }, []);
 
   useEffect(() => {
+    console.log(orgInfo.organization_owner, "orgInfo.organization_owner");
     setOrgDetails({
       title: orgInfo.title,
       emailDomainName: orgInfo.email_domain_name,
     });
-    setOwner(orgInfo.organization_owner);
+
+    if (orgInfo.organization_owner) {
+      const items = orgOwnerList.filter(
+        (item) => item.id === orgInfo.organization_owner.id
+      );
+
+      setOwner(items[0]);
+    }
 
     if (orgInfo.default_task_types) {
       const items = bulkTaskTypes.filter((item) =>
@@ -116,7 +124,7 @@ const EditOrganizationDetails = () => {
       );
       setTranslationLanguage(items);
     }
-  }, [orgInfo]);
+  }, [orgInfo, orgOwnerList]);
 
   useEffect(() => {
     const apiObj = new FetchOrganizationDetailsAPI(orgId);
@@ -133,17 +141,21 @@ const EditOrganizationDetails = () => {
 
   const handleOrgUpdate = async () => {
     setLoading(true);
-    const userObj = new EditOrganizationDetailsAPI(
-      orgId,
-      orgDetails.title,
-      orgDetails.emailDomainName,
-      owner?.id,
-      defaultTask.map((item) => item.value),
-      translationLanguage.map((item) => item.value)
-    );
+
+    const body = {
+      title: orgDetails.title,
+      email_domain_name: orgDetails.emailDomainName,
+      organization_owner: owner?.id,
+      default_task_types: defaultTask.map((item) => item.value),
+      default_target_languages: translationLanguage.map((item) => item.value),
+      default_transcript_type: transcriptSourceType,
+      default_translation_type: translationSourceType,
+    };
+
+    const userObj = new EditOrganizationDetailsAPI(orgId, body);
 
     const res = await fetch(userObj.apiEndPoint(), {
-      method: "PUT",
+      method: "PATCH",
       body: JSON.stringify(userObj.getBody()),
       headers: userObj.getHeaders().headers,
     });
@@ -210,8 +222,11 @@ const EditOrganizationDetails = () => {
               id="demo-multiple-name"
               name={"owner"}
               value={owner}
-              onChange={(event) => handleFieldChange(event)}
+              onChange={(event) => setOwner(event.target.value)}
               MenuProps={MenuProps}
+              renderValue={(selected) => {
+                return <Chip key={selected.id} label={selected.username} />;
+              }}
             >
               {orgOwnerList.map((item, index) => {
                 return (
@@ -351,7 +366,7 @@ const EditOrganizationDetails = () => {
             variant="contained"
             style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
             onClick={() => handleOrgUpdate()}
-            disabled={orgDetails.title && orgDetails.owner ? false : true}
+            disabled={orgDetails.title && owner ? false : true}
           >
             Update Organization{" "}
             {loading && (
