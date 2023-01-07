@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import FetchUserRolesAPI from "../redux/actions/api/User/FetchUsersRoles";
+import { MenuProps } from "../utils/utils";
 
 const AddOrganizationMember = ({
   open,
@@ -42,8 +43,14 @@ const AddOrganizationMember = ({
   }, []);
 
   return (
-    <Dialog open={open} onClose={handleUserDialogClose} close>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleUserDialogClose}
+      close
+      maxWidth={"md"}
+      fullWidth
+    >
+      <DialogTitle variant="h4">{title}</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
         <TextField
           label={textFieldLabel}
@@ -63,6 +70,7 @@ const AddOrganizationMember = ({
               value={selectFieldValue}
               label="Select Role"
               onChange={(event) => handleSelectField(event.target.value)}
+              MenuProps={MenuProps}
             >
               {userRoles.map((item) => {
                 return <MenuItem value={item.value}>{item.label}</MenuItem>;
@@ -75,21 +83,22 @@ const AddOrganizationMember = ({
       </DialogContent>
 
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
-        <Button onClick={handleUserDialogClose} size="small">
-          Cancel
+        <Button onClick={handleUserDialogClose} sx={{ borderRadius: "8px" }}>
+          Close
         </Button>
 
         <Button
-          variant="contained"
+          autoFocus
           endIcon={<Add />}
+          variant="contained"
+          sx={{ marginLeft: "10px", borderRadius: "8px" }}
           onClick={() => {
             addBtnClickHandler();
             handleUserDialogClose();
           }}
           disabled={textFieldLabel || selectFieldValue ? false : true}
-          sx={{ lineHeight: "0", height: "auto" }}
         >
-          Add
+          Add Member
         </Button>
       </DialogActions>
     </Dialog>

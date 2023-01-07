@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import Loader from "./Spinner";
+import { MenuProps } from "../utils/utils";
 
 const CreateVideoDialog = ({
   open,
@@ -82,6 +83,7 @@ const CreateVideoDialog = ({
             onChange={(event) => setLang(event.target.value)}
             style={{ zIndex: "0" }}
             inputProps={{ "aria-label": "Without label" }}
+            MenuProps={MenuProps}
           >
             {supportedLanguages?.map((item, index) => (
               <MenuItem key={index} value={item.value}>
