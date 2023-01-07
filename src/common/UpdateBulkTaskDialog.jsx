@@ -53,7 +53,33 @@ const UpdateBulkTaskDialog = ({
     dispatch(APITransport(priorityTypesObj));
   }, []);
 
+<<<<<<< Updated upstream
   const submitHandler = () => {};
+=======
+  useEffect(() => {
+    if (!isBulk && taskDetails) {
+      setDescription(taskDetails.description);
+      setPriority(taskDetails.priority);
+      setDate(taskDetails.eta);
+      
+      const items = projectMembers.filter(
+        (item) => item.id === taskDetails?.user?.id
+      );
+      setUser(items[0]);
+    }
+  }, [taskDetails, isBulk]);
+
+  const submitHandler = () => {
+    const data = {
+      user,
+      priority,
+      description,
+      date,
+    };
+
+    handleUpdateTask(data);
+  };
+>>>>>>> Stashed changes
 
   const renderSnackBar = () => {
     return (

@@ -1,4 +1,10 @@
-import { Button, Grid, IconButton } from "@mui/material";
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,6 +66,7 @@ const VideoLanding = () => {
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
   );
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const subs = useSelector((state) => state.commonReducer.subtitles);
 
@@ -260,15 +267,15 @@ const VideoLanding = () => {
       !document.mozFullScreen &&
       !document.msFullscreenElement
     ) {
-      if(fullscreen) {
+      if (fullscreen) {
         dispatch(FullScreen(false, C.FULLSCREEN));
       }
 
-      if(fullscreenVideo) {
+      if (fullscreenVideo) {
         dispatch(FullScreen(false, C.FULLSCREEN_VIDEO));
       }
     }
-  }
+  };
 
   useEffect(() => {
     document.addEventListener("fullscreenchange", exitHandler);
@@ -343,9 +350,31 @@ const VideoLanding = () => {
     setPlaybackRate(rate);
   };
 
+  const renderLoader = () => {
+    if (videoDetails.length <= 0) {
+      return (
+        <Backdrop
+          sx={{
+            color: "#fff",
+            zIndex: 999999,
+            "&.MuiBackdrop-root": {
+              backgroundColor: "#1d1d1d",
+            },
+          }}
+          open={true}
+        >
+          <CircularProgress color="inherit" size="50px" />
+        </Backdrop>
+      );
+    }
+  };
+
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
+
+      {renderLoader()}
+
       <Grid
         container
         direction={"row"}
@@ -457,7 +486,10 @@ const VideoLanding = () => {
           )}
           {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
-            <TranslationRightPanel currentIndex={currentIndex} player={player} />
+            <TranslationRightPanel
+              currentIndex={currentIndex}
+              player={player}
+            />
           )}
         </Grid>
       </Grid>
