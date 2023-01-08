@@ -182,6 +182,38 @@ const EditProject = () => {
     );
   };
 
+  const showBtn = () => {
+    const oldObj = {
+      title: projectInfo.title,
+      managers: projectInfo.managers,
+      default_transcript_type: projectInfo.default_transcript_type,
+      default_translation_type: projectInfo.default_translation_type,
+      description: projectInfo.description,
+      default_task_types: projectInfo.default_task_types,
+      default_target_languages: projectInfo.default_target_languages,
+      default_priority: projectInfo.default_priority,
+      default_eta: projectInfo.default_eta,
+    };
+
+    const newObj = {
+      title: projectDetails.title,
+      managers: managers,
+      default_transcript_type: transcriptSourceType,
+      default_translation_type: translationSourceType,
+      description: projectDetails.description,
+      default_task_types: defaultTask.map((item) => item.value),
+      default_target_languages: translationLanguage.map((item) => item.value),
+      default_priority: priority.value,
+      default_eta: date,
+    };
+
+    if (JSON.stringify(oldObj) === JSON.stringify(newObj)) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <>
       <Grid
@@ -423,24 +455,26 @@ const EditProject = () => {
               />
             </Grid>
 
-            <Grid
-              container
-              direction="row"
-              justifyContent="flex-end"
-              style={{ marginTop: 20 }}
-            >
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={() => handleSubmit()}
-                style={{ borderRadius: 6 }}
+            {showBtn() && (
+              <Grid
+                container
+                direction="row"
+                justifyContent="flex-end"
+                style={{ marginTop: 20 }}
               >
-                Update Project{" "}
-                {loading && (
-                  <Loader size={20} margin="0 0 0 10px" color="secondary" />
-                )}
-              </Button>
-            </Grid>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => handleSubmit()}
+                  style={{ borderRadius: 6 }}
+                >
+                  Update Project{" "}
+                  {loading && (
+                    <Loader size={20} margin="0 0 0 10px" color="secondary" />
+                  )}
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Card>
       </Grid>
