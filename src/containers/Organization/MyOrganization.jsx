@@ -8,25 +8,33 @@ import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
 import ProjectList from "./ProjectList";
 import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchUserRolesAPI from "../../redux/actions/api/User/FetchUsersRoles";
 import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
 import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { roles } from "../../utils/utils";
 
 //Styles
 import DatasetStyle from "../../styles/Dataset";
 
 //Components
-import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Grid,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import Button from "../../common/Button";
 import UserList from "./UserList";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 import CustomizedSnackbars from "../../common/Snackbar";
-import { roles } from "../../utils/utils";
+import Loader from "../../common/Spinner";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -64,10 +72,7 @@ const MyOrganization = () => {
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
   );
-
   const projectList = useSelector((state) => state.getProjectList.data);
-  //const userList = useSelector((state) => state.getUserList.data);
-
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const usersList = useSelector((state) => state.getOrganizatioUsers.data);
 
@@ -182,10 +187,13 @@ const MyOrganization = () => {
     );
   };
 
-  return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
-      <Card className={classes.workspaceCard}>
+  const renderOrgDetails = () => {
+    if (!organizationDetails || organizationDetails.length <= 0) {
+      return <Loader />;
+    }
+
+    return (
+      <>
         <Typography variant="h2" gutterBottom component="div">
           {organizationDetails?.title}
         </Typography>
@@ -193,6 +201,16 @@ const MyOrganization = () => {
         {/* <Typography variant="body1" gutterBottom component="div">
           Created by : {`${organizationDetails?.created_by?.first_name}`}
         </Typography> */}
+       
+      </>
+    );
+  };
+
+  return (
+    <Grid container direction="row" justifyContent="center" alignItems="center">
+      {renderSnackBar()}
+      <Card className={classes.workspaceCard}>
+        {renderOrgDetails()}
 
         <Box>
           <Tabs

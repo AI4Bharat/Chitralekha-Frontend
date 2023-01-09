@@ -26,9 +26,7 @@ import {
   Typography,
 } from "@mui/material";
 import Button from "../../../common/Button";
-import UserList from "../UserList";
 import CreateVideoDialog from "../../../common/CreateVideoDialog";
-import ProjectSettings from "./ProjectSettings";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
 import TaskList from "./TaskList";
@@ -41,39 +39,7 @@ import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/Fe
 import { roles } from "../../../utils/utils";
 import ProjectDescription from "./ProjectDescription";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-
-const data = [
-  {
-    id: "1",
-    title: "test1",
-    type: "video",
-    mode: "test1",
-  },
-  {
-    id: "2",
-    title: "test1",
-    type: "video",
-    mode: "test1",
-  },
-  {
-    id: "3",
-    title: "test1",
-    type: "video",
-    mode: "test1",
-  },
-  {
-    id: "4",
-    title: "test1",
-    type: "video",
-    mode: "test1",
-  },
-  {
-    id: "5",
-    title: "test1",
-    type: "video",
-    mode: "test1",
-  },
-];
+import Loader from "../../../common/Spinner";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -105,8 +71,8 @@ const Project = () => {
     (state) => state.getProjectVideoList.data
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
+
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
     dispatch(APITransport(userObj));
@@ -115,6 +81,7 @@ const Project = () => {
   useEffect(() => {
     getProjectMembers();
   }, []);
+
   const GetManagerName = () => {
     const apiObj = new FetchManagerNameAPI();
     dispatch(APITransport(apiObj));
@@ -176,6 +143,7 @@ const Project = () => {
     const apiObj = new FetchVideoListAPI(projectId);
     dispatch(APITransport(apiObj));
   };
+
   const getOrganizatioUsersList = () => {
     const userObj = new FetchOrganizatioUsersAPI(orgId);
     dispatch(APITransport(userObj));
@@ -221,7 +189,6 @@ const Project = () => {
   const addNewVideoHandler = async () => {
     const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
     dispatch(APITransport(apiObj));
-    setCreateVideoDialog(false);
     setVideoLink("");
     setIsAudio(false);
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -232,11 +199,12 @@ const Project = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      // setSnackbarInfo({
-      //   open: true,
-      //   message: resp?.message,
-      //   variant: "success",
-      // })
+      setSnackbarInfo({
+        open: true,
+        message: "Video added successfully",
+        variant: "success",
+      })
+      setCreateVideoDialog(false);
       getProjectVideoList();
     } else {
       setSnackbarInfo({
@@ -246,6 +214,7 @@ const Project = () => {
       });
     }
   };
+
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
@@ -260,10 +229,13 @@ const Project = () => {
     );
   };
 
-  return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
-      <Card className={classes.workspaceCard}>
+  const renderProjectDetails = () => {
+    if(!projectInfo || projectInfo.length <= 0) {
+      return <Loader />
+    }
+
+    return (
+      <>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Card
             style={{
@@ -333,7 +305,16 @@ const Project = () => {
             ))}
           </Grid>
         </Grid>
+      </>
+    );
+  };
 
+  return (
+    <Grid container direction="row" justifyContent="center" alignItems="center">
+      {renderSnackBar()}
+      {renderProjectDetails()}
+      
+      <Card className={classes.workspaceCard}>
         <Box>
           <Tabs
             value={value}
@@ -406,7 +387,7 @@ const Project = () => {
               ?.permittedToAddMembersInProject && (
               <Button
                 className={classes.projectButton}
-                label={"Add project members"}
+                label={"Add Project Members"}
                 onClick={() => setAddUserDialog(true)}
               />
             )}
@@ -414,32 +395,6 @@ const Project = () => {
               <ProjectMemberDetails />
             </div>
           </Box>
-        </TabPanel>
-
-        <TabPanel
-          value={value}
-          index={3}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <Box
-            display={"flex"}
-            flexDirection="Column"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Button
-              className={classes.projectButton}
-              label={"Add project managers"}
-              onClick={() => {}}
-            />
-            <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <UserList data={data} />
-            </div>
-          </Box>
-        </TabPanel>
-
-        <TabPanel value={value} index={4} style={{ maxWidth: "100%" }}>
-          <ProjectSettings projectInfo={projectInfo} />
         </TabPanel>
       </Card>
 
@@ -463,6 +418,7 @@ const Project = () => {
         addBtnClickHandler={addNewMemberHandler}
         selectFieldValue={addmembers}
         handleSelectField={(item) => setAddmembers(item)}
+        title="Add Project Members"
       />
     </Grid>
   );

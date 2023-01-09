@@ -9,10 +9,13 @@ import FetchVideoTaskListAPI from "../../../redux/actions/api/Project/FetchVideo
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
 import moment from "moment";
+import Loader from "../../../common/Spinner";
 
 const VideoTaskList = (props) => {
   const dispatch = useDispatch();
   const { videoDetails } = props;
+
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const FetchVideoTaskList = () => {
     const apiObj = new FetchVideoTaskListAPI(videoDetails);
@@ -39,7 +42,7 @@ const VideoTaskList = (props) => {
       },
     },
     {
-      name: "user_email",
+      name: "user",
       label: "Assigned User",
       options: {
         filter: false,
@@ -48,6 +51,9 @@ const VideoTaskList = (props) => {
         setCellHeaderProps: () => ({
           style: { height: "30px", fontSize: "16px", padding: "16px" },
         }),
+        customBodyRender: (value) => {
+          return <Box>{`${value.first_name} ${value.last_name}`}</Box>;
+        },
       },
     },
     {
@@ -114,24 +120,12 @@ const VideoTaskList = (props) => {
         }),
       },
     },
-    // {
-    //   name: "description",
-    //   label: "Description",
-    //   options: {
-    //     filter: false,
-    //     sort: false,
-    //     align: "center",
-    //     setCellHeaderProps: () => ({
-    //       style: { height: "30px", fontSize: "16px", padding: "16px" },
-    //     }),
-    //   },
-    // },
   ];
 
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",

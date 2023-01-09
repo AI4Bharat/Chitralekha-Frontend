@@ -1,9 +1,8 @@
-import { Box, Grid, Link, ThemeProvider } from "@mui/material";
+import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "../../config/localisation";
 import LoginStyle from "../../styles/loginStyle";
-import Button from "../../common/Button";
 import CustomCard from "../../common/Card";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import themeDefault from "../../theme/theme";
@@ -17,6 +16,7 @@ import LoginAPI from "../../redux/actions/api/User/Login";
 import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import Loader from "../../common/Spinner";
 
 const Login = () => {
   const classes = LoginStyle();
@@ -34,7 +34,7 @@ const Login = () => {
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const loginApiStatus = useSelector((state) => state.apiStatus);
-  console.log(loginApiStatus, "loginApiStatus");
+
   const navigate = useNavigate();
 
   const [snackbar, setSnackbarInfo] = useState({
@@ -173,7 +173,18 @@ const Login = () => {
           </Link>
         </Box>
         <Box>
-          <Button fullWidth onClick={createToken} label={"Login"} />
+          {/* <Button fullWidth onClick={createToken} label={"Login"} /> */}
+          <Button
+            fullWidth
+            color="primary"
+            onClick={() => createToken()}
+            variant="contained"
+          >
+            Login{" "}
+            {loginApiStatus.progress && (
+              <Loader size={20} margin="0 0 0 10px" color="secondary" />
+            )}
+          </Button>
         </Box>
       </Box>
     </CustomCard>

@@ -7,6 +7,7 @@ import {
   Select,
   Chip,
   Checkbox,
+  Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
@@ -14,7 +15,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import OutlinedTextField from "../../../common/OutlinedTextField";
 import DatasetStyle from "../../../styles/Dataset";
-import Button from "../../../common/Button";
+import CustomButton from "../../../common/Button";
 import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
@@ -26,6 +27,7 @@ import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTa
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
 import FetchOrganizationDetailsAPI from "../../../redux/actions/api/Organization/FetchOrganizationDetails";
+import Loader from "../../../common/Spinner";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -76,6 +78,7 @@ const CreatenewProject = () => {
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getOrganizatioUsersList = () => {
     const projectrole = "PROJECT_MANAGER";
@@ -120,7 +123,7 @@ const CreatenewProject = () => {
     }
     
     if (organizationDetails.default_target_languages) {
-      const items = bulkTaskTypes.filter((item) =>
+      const items = supportedLanguages.filter((item) =>
         organizationDetails.default_target_languages.includes(item.value)
       );
       setTranslationLanguage(items);
@@ -135,6 +138,7 @@ const CreatenewProject = () => {
   };
 
   const handleCreateProject = async () => {
+    setLoading(true);
     const newPrjectReqBody = {
       title: title,
       description: description,
@@ -147,7 +151,6 @@ const CreatenewProject = () => {
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
-    // dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
@@ -160,6 +163,7 @@ const CreatenewProject = () => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
       navigate(`/my-organization/${orgId}/project/${resp.project_id}`, {
         replace: true,
       });
@@ -169,6 +173,7 @@ const CreatenewProject = () => {
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
     }
   };
 
@@ -358,14 +363,22 @@ const CreatenewProject = () => {
 
         <Box sx={{ mt: 3 }}>
           <Button
-            style={{ margin: "0px 20px 0px 0px" }}
-            label={"Create Project"}
+            color="primary"
+            variant="contained"
+            style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
             onClick={() => handleCreateProject()}
             disabled={title && managerUsername ? false : true}
-          />
-          <Button
+          >
+            Create Project{" "}
+            {loading && (
+              <Loader size={20} margin="0 0 0 10px" color="secondary" />
+            )}
+          </Button>
+
+          <CustomButton
             label={"Cancel"}
             onClick={() => navigate(`/my-organization/${orgId}`)}
+            buttonVariant="text"
           />
         </Box>
       </Card>

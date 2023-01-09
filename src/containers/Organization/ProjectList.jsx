@@ -1,6 +1,12 @@
 import React from "react";
 
 //Themes
+import tableTheme from "../../theme/tableTheme";
+import { useSelector } from "react-redux";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PreviewIcon from "@mui/icons-material/Preview";
+
+//Components
 import {
   ThemeProvider,
   Dialog,
@@ -10,31 +16,23 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
-import { useDispatch, useSelector } from "react-redux";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PreviewIcon from "@mui/icons-material/Preview";
-
-//Components
 import CustomButton from "../../common/Button";
 import MUIDataTable from "mui-datatables";
 import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react";
 import { useState } from "react";
 import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
-import APITransport from "../../redux/actions/apitransport/apitransport";
 import CustomizedSnackbars from "../../common/Snackbar";
 import Search from "../../common/Search";
-import { roles } from "../../utils/utils";
 import moment from "moment/moment";
+import Loader from "../../common/Spinner";
+import DeleteDialog from "../../common/DeleteDialog";
 
-const ProjectList = ({ data, props, removeProjectList }) => {
+const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
-  const dispatch = useDispatch();
-  const [tableData, setTableData] = useState([]);
+
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -42,10 +40,10 @@ const ProjectList = ({ data, props, removeProjectList }) => {
   });
 
   const SearchProject = useSelector((state) => state.searchList.data);
-  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const handleok = async (id) => {
-    setOpen(false);
+    setLoading(true);
     const apiObj = new DeleteProjectAPI(id);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
@@ -59,6 +57,8 @@ const ProjectList = ({ data, props, removeProjectList }) => {
         message: resp?.message,
         variant: "success",
       });
+      setLoading(false);
+      setOpen(false);
       removeProjectList();
     } else {
       setSnackbarInfo({
@@ -66,6 +66,8 @@ const ProjectList = ({ data, props, removeProjectList }) => {
         message: resp?.message,
         variant: "error",
       });
+      setLoading(false);
+      setOpen(false);
     }
   };
 
@@ -131,8 +133,6 @@ const ProjectList = ({ data, props, removeProjectList }) => {
           ];
         })
       : [];
-
-  // setTableData(result);
 
   const columns = [
     {
@@ -200,7 +200,7 @@ const ProjectList = ({ data, props, removeProjectList }) => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",
@@ -236,32 +236,6 @@ const ProjectList = ({ data, props, removeProjectList }) => {
     );
   };
 
-  const renderDialog = () => {
-    return (
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure, you want to delete this project? All the associated
-            video and tasks will be deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <CustomButton onClick={handleClose} label="Cancel" />
-          <CustomButton
-            onClick={() => handleok(projectid)}
-            label="Ok"
-            autoFocus
-          />
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
   return (
     <>
       <Search />
@@ -269,7 +243,17 @@ const ProjectList = ({ data, props, removeProjectList }) => {
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
       {renderSnackBar()}
-      {renderDialog()}
+
+      {open && (
+        <DeleteDialog
+          openDialog={open}
+          handleClose={() => handleClose()}
+          submit={() => handleok(projectid)}
+          loading={loading}
+          message={`Are you sure, you want to delete this project? All the associated
+          video and tasks will be deleted.`}
+        />
+      )}
     </>
   );
 };

@@ -8,7 +8,6 @@ import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
 
 //Components
-import CustomButton from "../../../common/Button";
 import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -20,25 +19,32 @@ import Search from "../../../common/Search";
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
+import Loader from "../../../common/Spinner";
+import DeleteDialog from "../../../common/DeleteDialog";
 
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
 
-  const [tableData, setTableData] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [memberId, setMemberId] = useState("");
 
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
   );
 
   const SearchProject = useSelector((state) => state.searchList.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const removeProjectMember = async (id) => {
+    setLoading(true);
+
     const apiObj = new RemoveProjectMemberAPI(projectId, id);
     //dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -53,6 +59,8 @@ const ProjectMemberDetails = () => {
         message: resp?.message,
         variant: "success",
       });
+      setOpenDeleteDialog(false);
+      setLoading(false);
       getProjectMembers();
     } else {
       setSnackbarInfo({
@@ -60,6 +68,8 @@ const ProjectMemberDetails = () => {
         message: resp?.message,
         variant: "error",
       });
+      setOpenDeleteDialog(false);
+      setLoading(false);
     }
   };
 
@@ -71,9 +81,6 @@ const ProjectMemberDetails = () => {
   useEffect(() => {
     getProjectMembers();
   }, []);
-
-  // useEffect(() => {
-  //   const result = projectMembersList.map((item) => {
 
   const pageSearch = () => {
     return projectMembersList.filter((el) => {
@@ -117,7 +124,12 @@ const ProjectMemberDetails = () => {
               </Tooltip>
 
               <Tooltip title="Delete">
-                <IconButton onClick={() => removeProjectMember(item.id)}>
+                <IconButton
+                  onClick={() => {
+                    setMemberId(item.id);
+                    setOpenDeleteDialog(true);
+                  }}
+                >
                   <DeleteIcon color="error" />
                 </IconButton>
               </Tooltip>
@@ -228,7 +240,11 @@ const ProjectMemberDetails = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? (
+          <Loader />
+        ) : (
+          "No members associated to this project"
+        ),
       },
       toolbar: {
         search: "Search",
@@ -271,6 +287,17 @@ const ProjectMemberDetails = () => {
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
       {renderSnackBar()}
+
+      {openDeleteDialog && (
+        <DeleteDialog
+          openDialog={openDeleteDialog}
+          handleClose={() => setOpenDeleteDialog(false)}
+          submit={() => removeProjectMember(memberId)}
+          loading={loading}
+          message={`Are you sure, you want to delete this project? All the associated
+          video and tasks will be deleted.`}
+        />
+      )}
     </>
   );
 };

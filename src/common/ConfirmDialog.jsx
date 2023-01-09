@@ -6,21 +6,19 @@ import {
   DialogContentText,
 } from "@mui/material";
 import React from "react";
-import CustomButton from "./Button";
 import Loader from "./Spinner";
 
-const DeleteDialog = ({ openDialog, handleClose, submit, message, loading }) => {
+const ConfirmDialog = ({
+  openDialog,
+  handleClose,
+  submit,
+  message,
+  loading,
+}) => {
   return (
-    <Dialog
-      open={openDialog}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
+    <Dialog open={openDialog} onClose={handleClose}>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {message}
-        </DialogContentText>
+        <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ p: "20px" }}>
         <Button
@@ -36,12 +34,12 @@ const DeleteDialog = ({ openDialog, handleClose, submit, message, loading }) => 
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "8px" }}
         >
-          Delete
-          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary"/>}
+          Complete
+          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default DeleteDialog;
+export default ConfirmDialog;

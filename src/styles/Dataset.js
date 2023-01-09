@@ -226,9 +226,7 @@ const DatasetStyle = makeStyles({
     marginRight: 2,
     textDecoration: "none",
   },
-  formControl: {
-    width: 300,
-  },
+  
   search: {
     //position: "relative",
     borderRadius: "24px",
@@ -267,7 +265,7 @@ const DatasetStyle = makeStyles({
   },
 
   createTaskBtn: {
-    borderRadius: "7px",
+    borderRadius: "8px",
     backgroundColor: "#2C2799",
     marginRight: "10px",
     marginBottom: "12px",

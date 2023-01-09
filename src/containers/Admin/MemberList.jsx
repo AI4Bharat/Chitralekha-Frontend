@@ -16,6 +16,7 @@ import DeleteDialog from "../../common/DeleteDialog";
 //APIs
 import FetchAllUsersAPI from "../../redux/actions/api/Admin/FetchAllUsers";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import Loader from "../../common/Spinner";
 
 const MemberList = () => {
   const navigate = useNavigate();
@@ -23,10 +24,12 @@ const MemberList = () => {
 
   const userList = useSelector((state) => state.getAllUserList.data);
   const searchList = useSelector((state) => state.searchList.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusToggle, setStatusToggle] = useState(true);
   const [currentUserId, setCurrentUserId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const apiObj = new FetchAllUsersAPI();
@@ -176,7 +179,7 @@ const MemberList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: "No records",
+        noMatch: apiStatus.progress ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",
@@ -213,6 +216,7 @@ const MemberList = () => {
           handleClose={() => setDeleteDialogOpen(false)}
           submit={() => handleUserDelete(currentUserId)}
           message={`Are you sure, you want to delete this User? All the associated videos, tasks, will be deleted.`}
+          loading={loading}
         />
       )}
     </>

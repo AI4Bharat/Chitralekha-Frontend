@@ -13,8 +13,7 @@ const ProjectStyle = makeStyles({
 
   findBtn: {
     width: "20%",
-    borderRadius: "7px",
-    backgroundColor: "#0083e2",
+    borderRadius: "8px",
   },
   findreplBtn: {
     width: "30%",
@@ -411,6 +410,19 @@ const ProjectStyle = makeStyles({
     overflow: "hidden",
   },
 
+  settingBtn: {
+    position: "absolute",
+    bottom: "18%",
+    right: "38%",
+    zIndex: "9999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  },
+
   fullscreenVideoBtn: {
     position: "absolute",
     bottom: "18%",
@@ -455,7 +467,7 @@ const ProjectStyle = makeStyles({
   playbackRate: {
     position: "absolute",
     bottom: "18%",
-    right: "38%",
+    right: "41%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
@@ -503,7 +515,7 @@ const ProjectStyle = makeStyles({
 
   timeInputBox: {
     backgroundColor: "#616A6B",
-    width: "10%",
+    width: "15%",
     '& .MuiInputBase-input': {
       textAlign: "center",
       color: "#fff",
