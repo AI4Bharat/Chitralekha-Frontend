@@ -62,8 +62,7 @@ const EditProject = () => {
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
-  const [priority, setPriority] = useState("");
-  const [showEditBtn, setShowEditBtn] = useState(false);
+  const [priority, setPriority] = useState({});
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -203,7 +202,7 @@ const EditProject = () => {
       description: projectDetails.description,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
-      default_priority: priority.value,
+      default_priority: priority?.value,
       default_eta: date,
     };
 
