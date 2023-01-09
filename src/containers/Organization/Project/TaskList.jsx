@@ -125,11 +125,12 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
+      const createdAt = taskList.filter(task=>task.id === taskdata)[0].created_at;
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${taskdata}.${exportTranscription}`);
+      link.setAttribute("download", `Chitralekha_Video_${createdAt}_${taskdata}.${exportTranscription}`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
