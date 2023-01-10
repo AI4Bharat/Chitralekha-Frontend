@@ -35,6 +35,7 @@ import AddOrganizationMember from "../../common/AddOrganizationMember";
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 import CustomizedSnackbars from "../../common/Snackbar";
 import Loader from "../../common/Spinner";
+import OrganizationSettings from "./OrganizationSettings";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -287,18 +288,7 @@ const MyOrganization = () => {
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
-          <Typography variant="h4">Edit Organization</Typography>
-          <OutlinedTextField
-            value={organizationName}
-            onChange={(e) => setOrganizationName(e.target.value)}
-            sx={{ width: "100%", mt: 5 }}
-            placeholder="Organization Name..."
-          />
-          <Button
-            label={"Change"}
-            onClick={() => handleOrganizationUpdate()}
-            sx={{ mt: 5, width: "100%" }}
-          />
+          <OrganizationSettings />
         </TabPanel>
       </Card>
 

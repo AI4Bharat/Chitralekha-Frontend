@@ -265,7 +265,7 @@ const TaskList = () => {
             }}
             disabled={
               userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[10]
+                ? !tableData.rowData[11]
                 : false
             }
             color="primary"
@@ -287,7 +287,7 @@ const TaskList = () => {
             }
             disabled={
               userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[10]
+                ? !tableData.rowData[11]
                 : false
             }
             color="primary"
@@ -312,7 +312,7 @@ const TaskList = () => {
           <IconButton
             disabled={
               userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[10]
+                ? !tableData.rowData[11]
                 : false
             }
             onClick={() => {
@@ -340,7 +340,7 @@ const TaskList = () => {
         <IconButton
           onClick={() => handledeletetask(tableData.rowData[0])}
           disabled={
-            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[10] : false
+            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[11] : false
           }
           color="error"
         >
@@ -460,6 +460,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -478,6 +494,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -496,6 +528,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -521,6 +569,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -546,6 +610,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -564,6 +644,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -613,7 +709,7 @@ const TaskList = () => {
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderEditButton(tableMeta)}
               {renderExportButton(tableMeta)}
-              
+
               {userData.role === "PROJECT_MANAGER" &&
                 renderDeleteButton(tableMeta)}
             </Box>
