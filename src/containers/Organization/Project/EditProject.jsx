@@ -454,6 +454,38 @@ const EditProject = () => {
               />
             </Grid>
 
+            {defaultTask.length > 0 && (
+              <>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                  <Typography variant="h3" align="center">
+                    Default Workflow
+                  </Typography>
+                </Grid>
+
+                <Grid
+                  container
+                  direction="row"
+                  padding="40px"
+                  margin="32px 0 0 32px"
+                  alignItems="center"
+                  justifyContent="space-around"
+                  border="1px solid #eaeaea"
+                >
+                  {defaultTask.map((item, index) => {
+                    return (
+                      <>
+                        <Box className={classes.taskBox}>{item.label}</Box>
+                        {defaultTask.length > 1 &&
+                          index + 1 < defaultTask.length && (
+                            <div className={classes.arrow}></div>
+                          )}
+                      </>
+                    );
+                  })}
+                </Grid>
+              </>
+            )}
+
             {showBtn() && (
               <Grid
                 container
