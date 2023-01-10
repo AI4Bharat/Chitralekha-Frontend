@@ -516,6 +516,20 @@ const ProjectStyle = makeStyles({
     '& .MuiInput-root:before': {
       border: "none",
     }
+  },
+
+  taskBox: {
+    padding: "20px",
+    border: "1px solid #eaeaea",
+    backgroundColor: "#E0E0E0",
+  },
+
+  arrow: {
+    width:"100px",
+    height:"30px",
+    display: "flex",
+    clipPath: "polygon(0 10px,calc(100% - 15px) 10px,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,calc(100% - 15px) calc(100% - 10px),0 calc(100% - 10px))",
+    backgroundColor: "#E0E0E0"
   }
 });
 
