@@ -36,6 +36,8 @@ import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckIcon from "@mui/icons-material/Check";
+import AddIcon from "@mui/icons-material/Add";
+import FormatSizeIcon from '@mui/icons-material/FormatSize';
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -288,10 +290,6 @@ const RightPanel = ({ currentIndex, player }) => {
     dispatch(setSubtitles(copySub, C.SUBTITLES));
   };
 
-  const handleOpenFontMenu = (event) => {
-    setAnchorElFont(event.currentTarget);
-  };
-
   const fontMenu = [
     {
       label: "small",
@@ -311,6 +309,26 @@ const RightPanel = ({ currentIndex, player }) => {
     },
   ];
 
+  const addNewSubtitleBox = (index) => {
+    const copySub = copySubs();
+
+    copySub.splice(
+      index + 1,
+      0,
+      newSub({
+        start_time: copySub[index].end_time,
+        end_time:
+          index < sourceText.length - 1
+            ? copySub[index + 1].start_time
+            : copySub[index].end_time,
+        text: "SUB_TEXT",
+      })
+    );
+
+    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    setSourceText(copySub);
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -328,13 +346,30 @@ const RightPanel = ({ currentIndex, player }) => {
           margin={"23.5px 0"}
           justifyContent={"space-evenly"}
         >
-          <Box display={"flex"} alignItems={"center"} paddingX={2}>
+          <Box display={"flex"} alignItems={"center"} paddingLeft={2}>
             <Typography variant="subtitle2">Transliteration</Typography>
             <Switch
               checked={enableTransliteration}
               onChange={() => setTransliteration(!enableTransliteration)}
             />
           </Box>
+
+          <Tooltip title="Font Size" placement="bottom">
+            <IconButton
+              sx={{
+                backgroundColor: "#2C2799",
+                borderRadius: "50%",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#271e4f",
+                },
+              }}
+              onClick={(event) => setAnchorElFont(event.currentTarget)}
+            >
+              <FormatSizeIcon />
+            </IconButton>
+          </Tooltip>
+
           <FindAndReplace
             sourceData={sourceText}
             subtitleDataKey={"text"}
@@ -342,6 +377,7 @@ const RightPanel = ({ currentIndex, player }) => {
             enableTransliteration={enableTransliteration}
             transliterationLang={taskData?.src_language}
           />
+
           <Button
             variant="contained"
             className={classes.findBtn}
@@ -349,6 +385,7 @@ const RightPanel = ({ currentIndex, player }) => {
           >
             Save
           </Button>
+
           <Button
             variant="contained"
             className={classes.findBtn}
@@ -450,19 +487,20 @@ const RightPanel = ({ currentIndex, player }) => {
                     </IconButton>
                   </Tooltip>
 
-                  <Tooltip title="Font Size" placement="bottom">
+                  <Tooltip title="Add Subtitle Box" placement="bottom">
                     <IconButton
                       sx={{
                         backgroundColor: "#0083e2",
                         borderRadius: "50%",
                         color: "#fff",
+                        marginRight: "10px",
                         "&:hover": {
                           backgroundColor: "#271e4f",
                         },
                       }}
-                      onClick={(event) => setAnchorElFont(event.currentTarget)}
+                      onClick={() => addNewSubtitleBox(index)}
                     >
-                      <SettingsIcon />
+                      <AddIcon />
                     </IconButton>
                   </Tooltip>
 
