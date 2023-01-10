@@ -21,7 +21,7 @@ const getSubtitleAsPerId = (prevState, data) => {
 //     }
 //     return false;
 //   });
-//   console.log(subtitle)
+// /  console.log(subtitle)
   let subtitleObj = { ...prevState, [id]: payload };
   return subtitleObj;
 };
