@@ -97,7 +97,6 @@ const EditOrganizationDetails = () => {
   }, []);
 
   useEffect(() => {
-    console.log(orgInfo.organization_owner, "orgInfo.organization_owner");
     setOrgDetails({
       title: orgInfo.title,
       emailDomainName: orgInfo.email_domain_name,
@@ -119,7 +118,7 @@ const EditOrganizationDetails = () => {
     }
 
     if (orgInfo.default_target_languages) {
-      const items = bulkTaskTypes.filter((item) =>
+      const items = supportedLanguages.filter((item) =>
         orgInfo.default_target_languages.includes(item.value)
       );
       setTranslationLanguage(items);
