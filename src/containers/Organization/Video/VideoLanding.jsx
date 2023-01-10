@@ -4,6 +4,9 @@ import {
   CircularProgress,
   Grid,
   IconButton,
+  Menu,
+  MenuItem,
+  Typography,
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -30,6 +33,8 @@ import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
+import Settings from "@mui/icons-material/Settings";
+import CheckIcon from "@mui/icons-material/Check";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -57,6 +62,8 @@ const VideoLanding = () => {
   const [focusing, setFocusing] = useState(false);
   const [inputItemCursor, setInputItemCursor] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [anchorElFont, setAnchorElFont] = useState(null);
+  const [fontSize, setFontSize] = useState("large");
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -369,6 +376,25 @@ const VideoLanding = () => {
     }
   };
 
+  const fontMenu = [
+    {
+      label: "small",
+      size: "x-small",
+    },
+    {
+      label: "Normal",
+      size: "small",
+    },
+    {
+      label: "Large",
+      size: "large",
+    },
+    {
+      size: "xx-large",
+      label: "Huge",
+    },
+  ];
+
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderSnackBar()}
@@ -412,6 +438,7 @@ const VideoLanding = () => {
                     ? currentSubs.target_text
                     : currentSubs.text
                 }
+                style={{ fontSize: fontSize }}
                 spellCheck={false}
                 onChange={onChange}
                 onClick={onClick}
@@ -426,7 +453,7 @@ const VideoLanding = () => {
             className={classes.playbackRate}
             style={{
               bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "",
-              right: fullscreenVideo ? "23%" : fullscreen ? "35%" : "",
+              right: fullscreenVideo ? "26%" : fullscreen ? "38%" : "",
             }}
           >
             <Button
@@ -449,6 +476,53 @@ const VideoLanding = () => {
               <FastForwardIcon />
             </Button>
           </div>
+
+          <Box>
+            <Button
+              className={classes.settingBtn}
+              onClick={(event) => setAnchorElFont(event.currentTarget)}
+              variant="contained"
+              style={{
+                bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "",
+                right: fullscreenVideo ? "23%" : fullscreen ? "35%" : "",
+              }}
+            >
+              <Settings />
+            </Button>
+          </Box>
+
+          <Menu
+            sx={{ mt: "45px" }}
+            anchorEl={anchorElFont}
+            keepMounted
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            open={Boolean(anchorElFont)}
+            onClose={() => setAnchorElFont(null)}
+          >
+            {fontMenu.map((item, index) => (
+              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
+                <CheckIcon
+                  style={{
+                    visibility: fontSize === item.size ? "" : "hidden",
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  textAlign="center"
+                  sx={{ fontSize: item.size, marginLeft: "10px" }}
+                >
+                  {item.label}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Menu>
 
           {!fullscreen && (
             <Box>
