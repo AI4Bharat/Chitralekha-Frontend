@@ -28,7 +28,7 @@ const Login = () => {
 
   // const [userAccessToken, setUserAccessToken ] = useState();
   const accessToken = localStorage.getItem("token");
-
+  const userInfo = JSON.parse(localStorage.getItem("userData"));
   const userTokenData = useSelector(
     (state) => state.getUserAccessToken.data?.access
   );
@@ -89,7 +89,7 @@ const Login = () => {
       if (userData.role === "ADMIN") {
         navigate(`/admin`);
       } else {
-        navigate(`/my-organization/${userData?.organization?.id}`);
+        navigate(`/my-organization/${userInfo?.organization?.id}`);
       }
     }
   }, [userData]);
@@ -161,7 +161,7 @@ const Login = () => {
       </Grid>
     );
   };
-  
+
   const renderCardContent = () => (
     <CustomCard title={"Sign in to Chitralekha"} cardContent={TextFields()}>
       <Box display="flex" flexDirection="column" width="100%">
