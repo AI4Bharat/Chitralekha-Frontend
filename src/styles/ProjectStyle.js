@@ -208,7 +208,8 @@ const ProjectStyle = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
-    width: "100%",
+    width: "600px",
+    margin: "auto",
     position: "relative",
     flexDirection: "column",
   },
@@ -439,7 +440,7 @@ const ProjectStyle = makeStyles({
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
-    right: "20%",
+    right: "3%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
@@ -529,6 +530,20 @@ const ProjectStyle = makeStyles({
     '& .MuiInput-root:before': {
       border: "none",
     }
+  },
+
+  taskBox: {
+    padding: "20px",
+    border: "1px solid #eaeaea",
+    backgroundColor: "#E0E0E0",
+  },
+
+  arrow: {
+    width:"100px",
+    height:"30px",
+    display: "flex",
+    clipPath: "polygon(0 10px,calc(100% - 15px) 10px,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,calc(100% - 15px) calc(100% - 10px),0 calc(100% - 10px))",
+    backgroundColor: "#E0E0E0"
   }
 });
 

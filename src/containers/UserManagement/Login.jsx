@@ -1,4 +1,11 @@
-import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Link,
+  ThemeProvider,
+  Button,
+  Typography,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "../../config/localisation";
@@ -28,7 +35,7 @@ const Login = () => {
 
   // const [userAccessToken, setUserAccessToken ] = useState();
   const accessToken = localStorage.getItem("token");
-
+  const userInfo = JSON.parse(localStorage.getItem("userData"));
   const userTokenData = useSelector(
     (state) => state.getUserAccessToken.data?.access
   );
@@ -89,7 +96,7 @@ const Login = () => {
       if (userData.role === "ADMIN") {
         navigate(`/admin`);
       } else {
-        navigate(`/my-organization/${userData?.organization?.id}`);
+        navigate(`/my-organization/${userInfo?.organization?.id}`);
       }
     }
   }, [userData]);
@@ -161,7 +168,7 @@ const Login = () => {
       </Grid>
     );
   };
-  
+
   const renderCardContent = () => (
     <CustomCard title={"Sign in to Chitralekha"} cardContent={TextFields()}>
       <Box display="flex" flexDirection="column" width="100%">
@@ -174,7 +181,6 @@ const Login = () => {
           </Link>
         </Box>
         <Box>
-          {/* <Button fullWidth onClick={createToken} label={"Login"} /> */}
           <Button
             fullWidth
             color="primary"

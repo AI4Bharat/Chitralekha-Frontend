@@ -4,7 +4,7 @@ import C from "../../../constants";
 
 export default class FetchAllowedTasksAPI extends API {
   constructor(videoId, taskType,language, timeout = 2000) {
-    console.log(taskType,"taskTypetaskType")
+    console.log(taskType,"taskType")
     super("GET", timeout, false);
     this.type = C.GET_ALLOWED_TASK;
     this.videoId = videoId;

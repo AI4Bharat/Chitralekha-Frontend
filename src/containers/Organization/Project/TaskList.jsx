@@ -125,11 +125,23 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
+      const task = taskList.filter((task) => task.id === taskdata)[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${taskdata}.${exportTranscription}`);
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.src_language}.${exportTranscription}`
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);

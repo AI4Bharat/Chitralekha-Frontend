@@ -178,6 +178,8 @@ const VideoLanding = () => {
   const onSplit = useCallback(() => {
     const copySub = copySubs();
 
+    console.log("copySub ------- ", copySub[currentIndex]);
+
     const index = hasSub(subs[currentIndex]);
 
     const text1 = copySub[currentIndex].text.slice(0, inputItemCursor).trim();

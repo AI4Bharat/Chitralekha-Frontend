@@ -29,6 +29,9 @@ import MergeIcon from "@mui/icons-material/Merge";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Sub from "../../../utils/Sub";
 import DT from "duration-time-conversion";
+import SplitPopOver from "../../../common/SplitPopOver";
+import SaveIcon from "@mui/icons-material/Save";
+import ConfirmDialog from "../../../common/ConfirmDialog";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -58,6 +61,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     positionX: 0,
     positionY: 0,
   });
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const newSub = useCallback((item) => new Sub(item), []);
 
@@ -162,7 +167,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     }
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    //dispatch(APITransport(obj));
     const res = await fetch(obj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(obj.getBody()),
@@ -170,13 +174,15 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     });
     const resp = await res.json();
     if (res.ok) {
+      setLoading(false);
+
       setSnackbarInfo({
         open: isAutosave,
         message: resp?.message
           ? resp?.message
           : isAutosave
           ? "Saved as draft"
-          : "",
+          : "Translation Submitted Successfully",
         variant: "success",
       });
       if (isFinal) {
@@ -186,11 +192,12 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
           );
         }, 2000);
       }
-      //navigate(`/my-organization/:${orgId}/project/:${projectId}`)
     } else {
+      setLoading(false);
+
       setSnackbarInfo({
         open: isAutosave,
-        message: "Failed",
+        message: resp?.message,
         variant: "error",
       });
     }
@@ -317,18 +324,16 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
           direction={"row"}
           flexWrap={"wrap"}
           margin={"23.5px 0"}
-          justifyContent={"space-evenly"}
+          justifyContent="center"
         >
-          {/* <Button variant="contained" className={classes.findBtn}>
-          Find/Search
-        </Button> */}
-          <Grid display={"flex"} alignItems={"center"} paddingX={2}>
+          <Grid display={"flex"} alignItems={"center"}>
             <Typography>Transliteration</Typography>
             <Switch
               checked={enableTransliteration}
               onChange={() => setTransliteration(!enableTransliteration)}
             />
           </Grid>
+
           <FindAndReplace
             sourceData={sourceText}
             subtitleDataKey={"target_text"}
@@ -336,15 +341,27 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             enableTransliteration={enableTransliteration}
             transliterationLang={taskData?.target_language}
           />
+
+          <Tooltip title="Save" placement="bottom">
+            <IconButton
+              sx={{
+                backgroundColor: "#2C2799",
+                borderRadius: "50%",
+                marginX: "5px",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#271e4f",
+                },
+              }}
+              onClick={() => saveTranscriptHandler(false, true)}
+            >
+              <SaveIcon />
+            </IconButton>
+          </Tooltip>
+
           <Button
             variant="contained"
-            className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(false, true)}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
+            sx={{ marginX: "5px" }}
             className={classes.findBtn}
             onClick={() => saveTranscriptHandler(true, true)}
           >
@@ -549,6 +566,16 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             );
           })}
         </Box>
+
+        {openConfirmDialog && (
+          <ConfirmDialog
+            openDialog={openConfirmDialog}
+            handleClose={() => setOpenConfirmDialog(false)}
+            submit={() => saveTranscriptHandler(true, false)}
+            message={"Do you want to submit the translation?"}
+            loading={loading}
+          />
+        )}
       </Box>
     </>
   );

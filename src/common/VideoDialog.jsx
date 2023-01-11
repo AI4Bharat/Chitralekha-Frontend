@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { Grid, Typography,Switch,FormControlLabel } from "@mui/material";
+import { Grid, Typography, Switch, FormControlLabel } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -18,8 +18,6 @@ import { getTimeStamp, getMilliseconds } from "../utils/utils";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
-
-
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -67,7 +65,9 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
             currentTime >= start && currentTime <= end
               ? "orange"
               : currentTime >= start
-              ? darkAndLightMood === false ? "black":"white"
+              ? darkAndLightMood === false
+                ? "black"
+                : "white"
               : "grey",
         }}
       >{`${word} `}</span>
@@ -129,63 +129,63 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
   const handleFullscreenVideo = () => {
     let docElm = document.getElementById("myvideo");
-    var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
-    (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
-    (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
-    (document.msFullscreenElement && document.msFullscreenElement !== null);
+    var isInFullScreen =
+      (document.fullscreenElement && document.fullscreenElement !== null) ||
+      (document.webkitFullscreenElement &&
+        document.webkitFullscreenElement !== null) ||
+      (document.mozFullScreenElement &&
+        document.mozFullScreenElement !== null) ||
+      (document.msFullscreenElement && document.msFullscreenElement !== null);
 
-// var docElm = document.documentElement;
-if (!isInFullScreen) {
-    if (docElm.requestFullscreen) {
+    // var docElm = document.documentElement;
+    if (!isInFullScreen) {
+      if (docElm.requestFullscreen) {
         docElm.requestFullscreen();
-    } else if (docElm.mozRequestFullScreen) {
+      } else if (docElm.mozRequestFullScreen) {
         docElm.mozRequestFullScreen();
-    } else if (docElm.webkitRequestFullScreen) {
+      } else if (docElm.webkitRequestFullScreen) {
         docElm.webkitRequestFullScreen();
-    } else if (docElm.msRequestFullscreen) {
+      } else if (docElm.msRequestFullscreen) {
         docElm.msRequestFullscreen();
-    }
-} else {
-    if (document.exitFullscreen) {
+      }
+    } else {
+      if (document.exitFullscreen) {
         document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
+      } else if (document.webkitExitFullscreen) {
         document.webkitExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
+      } else if (document.mozCancelFullScreen) {
         document.mozCancelFullScreen();
-    } else if (document.msExitFullscreen) {
+      } else if (document.msExitFullscreen) {
         document.msExitFullscreen();
+      }
     }
-}
   };
 
-  const handleplayVideo = (e) =>{
+  const handleplayVideo = (e) => {
     var btn = document.getElementById("myBtn");
-      if (btn.paused) {
-        btn.play(); 
-      }  else {
-        btn.pause();
-      }
-    
-  }
+    if (btn.paused) {
+      btn.play();
+    } else {
+      btn.pause();
+    }
+  };
   const onKeyDown = (e) => {
     var video = document.getElementById("myBtn");
-  if (e.which == 32) {
-    if (video.paused){
-    e.preventDefault();
-      video.play();
+    if (e.which == 32) {
+      if (video.paused) {
+        e.preventDefault();
+        video.play();
+      } else {
+        e.preventDefault();
+        video.pause();
+      }
     }
-    else{
-    e.preventDefault();
-      video.pause();
-    }
-  }
   };
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
-
 
   return (
     <Dialog
@@ -194,30 +194,51 @@ if (!isInFullScreen) {
       open={open}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
+      scroll="paper"
+      PaperProps={{
+        style: {
+          overflowY: "hidden",
+        },
+      }}
     >
       <DialogTitle id="responsive-dialog-title">
         <Typography variant="h4" style={{ marginRight: "auto" }}>
           {videoDetails[0].name}
         </Typography>
       </DialogTitle>
+
       <DialogContent>
-        <Grid className={classes.videoBox}  id="myvideo" >
+        <Grid className={classes.videoBox} id="myvideo">
           <video
-             id="myBtn"
+            id="myBtn"
             ref={ref}
-            style={fullScreenMode ? {width:"100%" } : { width: "600px" }}
-           controls
+            style={fullScreenMode ? { width: "100%" } : { width: "600px" }}
+            controls
             src={video.direct_video_url}
-            className={classes.video  }
+            className={classes.video}
             onTimeUpdate={handleProgress}
             onClick={() => handleplayVideo()}
           />
+
           <div
-          className={fullScreenMode ?darkAndLightMood === false ?classes.lightmodesubtitle:classes.darkmodesubtitle:classes.darkmodesubtitle}
-          style={fullScreenMode ? { zIndex:100,fontSize:'35px',
-          position: "absolute",
-          bottom: "100px",width:"100%"} : {}}
-           
+            className={
+              fullScreenMode
+                ? darkAndLightMood === false
+                  ? classes.lightmodesubtitle
+                  : classes.darkmodesubtitle
+                : classes.darkmodesubtitle
+            }
+            style={
+              fullScreenMode
+                ? {
+                    zIndex: 100,
+                    fontSize: "35px",
+                    position: "absolute",
+                    bottom: "100px",
+                    width: "100%",
+                  }
+                : {}
+            }
           >
             {highlightedSubtitle.length ? (
               highlightedSubtitle.map((s) => s)
@@ -225,54 +246,64 @@ if (!isInFullScreen) {
               <></>
             )}
           </div>
-            <Box>
-              {fullScreenMode ? (
-                <Button
-                  className={classes.fullscreenVideoBtns}
-                  aria-label="fullscreen"
-                  onClick={() => handleFullscreenVideo()}
-                  variant="contained"
-                  style={{
-                    right: fullScreenMode ? "9%" : "",
-                    bottom: fullScreenMode ? "5.5%" : "",
-                  }}
-                >
-                  <FullscreenExitIcon sx={{fontSize:"40px"}} />
-                </Button>
-              ) : (
-                <Button
-                  className={classes.fullscreenVideoBtns}
-                  aria-label="fullscreenExit"
-                  onClick={() => handleFullscreenVideo()}
-                  variant="contained"
-                >
-                  <FullscreenIcon />
-                </Button>
-              )}
-            </Box>
-            {fullScreenMode && <CustomSwitchDarkBackground
-            sx={{position: "relative",bottom:"7%",left:"34%"}}
-                 labelPlacement="start"
-                 checked={darkAndLightMood}
-                 onChange={() => darkAndLightMood === false ? setDarkAndLightMood(true) : setDarkAndLightMood(false)}
-            
-            /> 
-            
-}
+
+          <Box>
+            {fullScreenMode ? (
+              <Button
+                className={classes.fullscreenVideoBtns}
+                aria-label="fullscreen"
+                onClick={() => handleFullscreenVideo()}
+                variant="contained"
+                style={{
+                  right: fullScreenMode ? "9%" : "",
+                  bottom: fullScreenMode ? "5.5%" : "",
+                }}
+              >
+                <FullscreenExitIcon sx={{ fontSize: "40px" }} />
+              </Button>
+            ) : (
+              <Button
+                className={classes.fullscreenVideoBtns}
+                aria-label="fullscreenExit"
+                onClick={() => handleFullscreenVideo()}
+                variant="contained"
+              >
+                <FullscreenIcon />
+              </Button>
+            )}
+          </Box>
+
+          {fullScreenMode && (
+            <CustomSwitchDarkBackground
+              sx={{ position: "relative", bottom: "7%", left: "34%" }}
+              labelPlacement="start"
+              checked={darkAndLightMood}
+              onChange={() =>
+                darkAndLightMood === false
+                  ? setDarkAndLightMood(true)
+                  : setDarkAndLightMood(false)
+              }
+            />
+          )}
         </Grid>
-       
-      </DialogContent>
-      <DialogActions style={{ padding: "24px" }}>
-        <Typography variant="body1" style={{ marginRight: "auto" }}>
+
+        <Typography variant="body1" style={{ padding: "24px" }}>
           Duration: {videoDetails[0].duration}
         </Typography>
+
+        <div style={{ padding: "0px 20px " }}>
+          <VideoTaskList videoDetails={videoDetails[0].id} />
+        </div>
+      </DialogContent>
+
+      <DialogActions style={{ padding: "24px" }}>
+        
         <Button autoFocus onClick={handleClose}>
           Close
         </Button>
       </DialogActions>
-      <div style={{ padding: "0px 20px 20px 20px" }}>
-        <VideoTaskList videoDetails={videoDetails[0].id} />
-      </div>
+
+      
     </Dialog>
   );
 };

@@ -37,7 +37,8 @@ import ConfirmDialog from "../../../common/ConfirmDialog";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
-import FormatSizeIcon from '@mui/icons-material/FormatSize';
+import FormatSizeIcon from "@mui/icons-material/FormatSize";
+import SaveIcon from "@mui/icons-material/Save";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -344,7 +345,7 @@ const RightPanel = ({ currentIndex, player }) => {
           direction={"row"}
           flexWrap={"wrap"}
           margin={"23.5px 0"}
-          justifyContent={"space-evenly"}
+          justifyContent={"center"}
         >
           <Box display={"flex"} alignItems={"center"} paddingLeft={2}>
             <Typography variant="subtitle2">Transliteration</Typography>
@@ -360,6 +361,7 @@ const RightPanel = ({ currentIndex, player }) => {
                 backgroundColor: "#2C2799",
                 borderRadius: "50%",
                 color: "#fff",
+                marginX: "5px",
                 "&:hover": {
                   backgroundColor: "#271e4f",
                 },
@@ -378,16 +380,26 @@ const RightPanel = ({ currentIndex, player }) => {
             transliterationLang={taskData?.src_language}
           />
 
-          <Button
-            variant="contained"
-            className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(false, true)}
-          >
-            Save
-          </Button>
+          <Tooltip title="Save" placement="bottom">
+            <IconButton
+              sx={{
+                backgroundColor: "#2C2799",
+                borderRadius: "50%",
+                color: "#fff",
+                marginX: "5px",
+                "&:hover": {
+                  backgroundColor: "#271e4f",
+                },
+              }}
+              onClick={() => saveTranscriptHandler(false, true)}
+            >
+              <SaveIcon />
+            </IconButton>
+          </Tooltip>
 
           <Button
             variant="contained"
+            sx={{ marginX: "5px", }}
             className={classes.findBtn}
             onClick={() => setOpenConfirmDialog(true)}
           >
