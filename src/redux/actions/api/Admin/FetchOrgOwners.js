@@ -7,9 +7,11 @@ export default class FetchOrgOwnersAPI extends API {
     super("GET", timeout, false);
     this.type = C.GET_ORG_OWNER_LIST;
     this.id = id;
+    this.queryStr = id ? `&org_id=${id}`: ""
+
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.getUserDetails
-    }get_all_users/?role=ORG_OWNER&org_id=${id}`;
+    }get_all_users/?role=ORG_OWNER${this.queryStr}`;
   }
 
   processResponse(res) {

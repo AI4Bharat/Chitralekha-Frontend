@@ -208,7 +208,8 @@ const ProjectStyle = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
-    width: "100%",
+    width: "600px",
+    margin: "auto",
     position: "relative",
     flexDirection: "column",
   },
@@ -410,6 +411,19 @@ const ProjectStyle = makeStyles({
     overflow: "hidden",
   },
 
+  settingBtn: {
+    position: "absolute",
+    bottom: "18%",
+    right: "38%",
+    zIndex: "9999",
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "rgb(0 0 0 / 50%)",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
+  },
+
   fullscreenVideoBtn: {
     position: "absolute",
     bottom: "18%",
@@ -426,7 +440,7 @@ const ProjectStyle = makeStyles({
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
-    right: "20%",
+    right: "3%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
@@ -454,7 +468,7 @@ const ProjectStyle = makeStyles({
   playbackRate: {
     position: "absolute",
     bottom: "18%",
-    right: "38%",
+    right: "41%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
@@ -502,7 +516,7 @@ const ProjectStyle = makeStyles({
 
   timeInputBox: {
     backgroundColor: "#616A6B",
-    width: "10%",
+    width: "15%",
     '& .MuiInputBase-input': {
       textAlign: "center",
       color: "#fff",
@@ -516,6 +530,20 @@ const ProjectStyle = makeStyles({
     '& .MuiInput-root:before': {
       border: "none",
     }
+  },
+
+  taskBox: {
+    padding: "20px",
+    border: "1px solid #eaeaea",
+    backgroundColor: "#E0E0E0",
+  },
+
+  arrow: {
+    width:"100px",
+    height:"30px",
+    display: "flex",
+    clipPath: "polygon(0 10px,calc(100% - 15px) 10px,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,calc(100% - 15px) calc(100% - 10px),0 calc(100% - 10px))",
+    backgroundColor: "#E0E0E0"
   }
 });
 

@@ -134,11 +134,23 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
+      const task = taskList.filter((task) => task.id === taskdata)[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${taskdata}.${exportTranscription}`);
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.src_language}.${exportTranscription}`
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -297,7 +309,7 @@ const TaskList = () => {
             }}
             disabled={
               userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[10]
+                ? !tableData.rowData[11]
                 : false
             }
             color="primary"
@@ -319,7 +331,7 @@ const TaskList = () => {
             }
             disabled={
               userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[10]
+                ? !tableData.rowData[11]
                 : false
             }
             color="primary"
@@ -344,7 +356,7 @@ const TaskList = () => {
           <IconButton
             disabled={
               userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[10]
+                ? !tableData.rowData[11]
                 : false
             }
             onClick={() => {
@@ -372,7 +384,7 @@ const TaskList = () => {
         <IconButton
           onClick={() => handledeletetask(tableData.rowData[0])}
           disabled={
-            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[10] : false
+            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[11] : false
           }
           color="error"
         >
@@ -503,6 +515,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -521,6 +549,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -539,6 +583,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -564,6 +624,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -589,6 +665,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -607,6 +699,22 @@ const TaskList = () => {
           },
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  userData.role === "PROJECT_MANAGER"
+                    ? ""
+                    : tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
@@ -642,21 +750,24 @@ const TaskList = () => {
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
+              {renderPreviewButton(tableMeta)}
               {userData.role === "PROJECT_MANAGER" &&
                 renderEditTaskButton(tableMeta)}
 
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderViewButton(tableMeta)}
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderEditButton(tableMeta)}
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderExportButton(tableMeta)}
-              {renderDeleteButton(tableMeta)}
-              {renderPreviewButton(tableMeta)}
               {/* If task is assigned to project manager himself then show him the edit btn */}
               {userData.role === "PROJECT_MANAGER" &&
                 userData.id === tableMeta.rowData[10].id &&
                 renderEditButton(tableMeta)}
+
+              {roles.filter((role) => role.value === userData?.role)[0]
+                ?.taskAction && renderEditButton(tableMeta)}
+              {renderExportButton(tableMeta)}
+
+              {userData.role === "PROJECT_MANAGER" &&
+                renderDeleteButton(tableMeta)}
+              
             </Box>
           );
         },

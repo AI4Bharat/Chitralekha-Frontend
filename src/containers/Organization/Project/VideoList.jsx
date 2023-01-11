@@ -176,7 +176,7 @@ const VideoList = ({ data, removeVideo }) => {
     } else {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: resp?.error,
         variant: "error",
       });
       setLoading(false);
