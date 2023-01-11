@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, TextField, CardContent, Divider, Grid, Typography, Switch } from "@mui/material";
+import { Button, TextField, CardContent, Divider, Grid, Typography, Switch, Tooltip, IconButton } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +15,8 @@ import FindAndReplace from "../../../common/FindAndReplace";
 import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
 import SplitPopOver from "../../../common/SplitPopOver";
-
+import SaveIcon from "@mui/icons-material/Save";
+import ConfirmDialog from "../../../common/ConfirmDialog";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
     const { taskId, orgId, projectId } = useParams();
@@ -35,7 +36,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
         message: "",
         variant: "success",
     });
-
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [enableTransliteration, setTransliteration] = useState(true)
     
     useEffect(() => {
@@ -62,6 +64,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     };
 
     const saveTranscriptHandler = async (isFinal, isAutosave) => {
+        setLoading(true);
         const reqBody = {
             task_id: taskId,
             payload: {
@@ -82,9 +85,11 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
         });
         const resp = await res.json();
         if (res.ok) {
+            setLoading(false);
+
             setSnackbarInfo({
                 open: isAutosave,
-                message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "",
+                message: resp?.message ? resp?.message : isAutosave ? "Saved as draft" : "Translation Submitted Successfully",
                 variant: "success",
             });
             if (isFinal) {
@@ -96,9 +101,11 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             }
             //navigate(`/my-organization/:${orgId}/project/:${projectId}`)
         } else {
+            setLoading(false);
+
             setSnackbarInfo({
                 open: isAutosave,
-                message: "Failed",
+                message: resp?.error,
                 variant: "error",
             });
         }
@@ -129,11 +136,11 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                 //   width="25%"
                 flexDirection="column"
             >
-                <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent={"space-evenly"}>
+                <Grid display={"flex"} direction={"row"} flexWrap={"wrap"} margin={"23.5px 0"} justifyContent="center">
                     {/* <Button variant="contained" className={classes.findBtn}>
           Find/Search
         </Button> */}
-                    <Grid display={"flex"} alignItems={"center"} paddingX={2}>
+                    <Grid display={"flex"} alignItems={"center"}>
                         <Typography>Transliteration</Typography>
                         <Switch
                             checked={enableTransliteration}
@@ -147,17 +154,31 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                         enableTransliteration={enableTransliteration}
                         transliterationLang={taskData?.target_language}
                     />
-                    <Button
-                        variant="contained"
-                        className={classes.findBtn}
+                    
+                    <Tooltip title="Save" placement="bottom">
+                        <IconButton
+                        sx={{
+                            backgroundColor: "#2C2799",
+                            borderRadius: "50%",
+                            marginX: "5px",
+                            color: "#fff",
+                            "&:hover": {
+                            backgroundColor: "#271e4f",
+                            },
+                        }}
                         onClick={() => saveTranscriptHandler(false, true)}
-                    >
-                        Save
-                    </Button>
+                        >
+                        <SaveIcon />
+                        </IconButton>
+                    </Tooltip>
+
                     <Button
                         variant="contained"
                         className={classes.findBtn}
-                        onClick={() => saveTranscriptHandler(true, true)}
+                        sx={{
+                            marginX: "5px",
+                        }}
+                        onClick={() => setOpenConfirmDialog(true)}
                     >
                         Complete
                     </Button>
@@ -272,6 +293,16 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                         );
                     })}
                 </Box>
+
+                {openConfirmDialog && (
+                    <ConfirmDialog
+                        openDialog={openConfirmDialog}
+                        handleClose={() => setOpenConfirmDialog(false)}
+                        submit={() => saveTranscriptHandler(true, false)}
+                        message={"Do you want to submit the translation?"}
+                        loading={loading}
+                    />
+                    )}
             </Box>
         </>
     );

@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Slide, Box, Typography, Alert } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Slide, Box, Typography, Alert, Tooltip, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ProjectStyle from '../styles/ProjectStyle';
 import OutlinedTextField from './OutlinedTextField';
@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import { IndicTransliterate } from '@ai4bharat/indic-transliterate';
+import FindReplaceIcon from '@mui/icons-material/FindReplace';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -109,14 +110,23 @@ const FindAndReplace = (props) => {
 
     return (
         <>
-            <Button
-                variant="contained"
-                className={classes.findBtn}
-                // className={classes.findreplBtn}
-                onClick={handleOpenModel}
-            >
-                Find/Replace
-            </Button>
+            <Tooltip title="Find?Replace" placement="bottom">
+                <IconButton
+                    sx={{
+                        backgroundColor: "#2C2799",
+                        marginX: "5px",
+                        borderRadius: "50%",
+                        color: "#fff",
+                        "&:hover": {
+                            backgroundColor: "#271e4f",
+                        },
+                    }}
+                    onClick={handleOpenModel}
+                >
+                    <FindReplaceIcon />
+                </IconButton>
+            </Tooltip>
+
             <Dialog
                 open={showFindReplaceModel}
                 TransitionComponent={Transition}
