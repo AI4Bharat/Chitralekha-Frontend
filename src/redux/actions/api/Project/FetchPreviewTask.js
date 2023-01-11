@@ -3,12 +3,12 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchpreviewTaskAPI extends API {
-  constructor( videoId,Task_type,timeout = 2000) {
-    console.log(Task_type,"Task_typeTask_type",videoId)
+  constructor( videoId,Task_type,targetLanguage,timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_PREVIEW_TASK;
     this.payloadEndpoint = (Task_type === "TRANSCRIPTION_EDIT" || Task_type === "TRANSCRIPTION_REVIEW") ? ENDPOINTS.transcript : ENDPOINTS.translation
-    this.endpoint = `${super.apiEndPointAuto()}${this.payloadEndpoint}?video_id=${videoId}`
+    this.queryString = (Task_type === "TRANSCRIPTION_EDIT" || Task_type === "TRANSCRIPTION_REVIEW") ? " ":`&target_language=${targetLanguage}`;
+    this.endpoint = `${super.apiEndPointAuto()}${this.payloadEndpoint}?video_id=${videoId}${this.queryString}`
   }
 
   processResponse(res) {

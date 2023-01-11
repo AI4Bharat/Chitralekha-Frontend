@@ -12,10 +12,8 @@ import React, { useEffect, useState } from "react";
 import OutlinedTextField from "../common/OutlinedTextField";
 
 const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
-  console.log(data, "datavalue");
-
   const [Previewdata, setPreviewdata] = useState();
-  console.log(Previewdata?.data?.payload, "PreviewdataPreviewdata");
+
   useEffect(() => {
     setPreviewdata(data);
   }, [data]);
@@ -28,7 +26,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
     >
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {Previewdata?.data?.payload.map((el, i) => {
+          { Previewdata?.data?.payload &&  Previewdata?.data?.payload.length > 0 ? Previewdata?.data?.payload.map((el, i) => {
             return (
               <Box
                 id={`sub_${i}`}
@@ -44,7 +42,13 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
                 {el.text}
               </Box>
             );
-          })}
+          }) : <Box sx={{
+            marginY: 2,
+            padding: 3,
+            border: "1px solid #000000",
+            borderRadius: 2,
+            width: "80%",
+          }}></Box>}
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ p: "20px" }}>

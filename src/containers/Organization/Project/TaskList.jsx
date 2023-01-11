@@ -233,10 +233,9 @@ const TaskList = () => {
     setDeleteTaskid(id);
   };
 
-  const handlePreviewTask = async (id,Task_type) => {
-    console.log(Task_type,"Task_typeTask_type")
+  const handlePreviewTask = async (id,Task_type,Targetlanguage) => {
     setOpenPreviewDialog(true);
-    const taskObj = new FetchpreviewTaskAPI(id,Task_type);
+    const taskObj = new FetchpreviewTaskAPI(id,Task_type,Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
       method: "GET",
@@ -246,7 +245,6 @@ const TaskList = () => {
     const resp = await res.json();
     setLoading(false);
     if (res.ok) {
-      const PreviewTaskData = resp.data?.payload.map((el) => el.text)
       setPreviewdata(resp);
     } else {
       setOpenPreviewDialog(false);
@@ -403,7 +401,7 @@ const TaskList = () => {
   const renderPreviewButton = (tableData) => {
     return (
       <Tooltip title="Preview">
-        <IconButton onClick={() => handlePreviewTask(tableData.rowData[11],tableData.rowData[1])}>
+        <IconButton onClick={() => handlePreviewTask(tableData.rowData[11],tableData.rowData[1],tableData.rowData[7])}>
           <VisibilityIcon />
         </IconButton>
       </Tooltip>
