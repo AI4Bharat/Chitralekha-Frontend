@@ -19,13 +19,14 @@ const CustomCard = ({ title, children, cardContent }) => {
           </Grid>
 
           <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-            <Typography textAlign={"Left"} variant="body1">
-              To access the old Chitralekha tool, please visit{" "}
+            <Typography textAlign={"Left"} variant="body1" fontSize="1rem" marginTop="10px">
+              To access the old Chitralekha tool, please {" "}
               <a
                 href="https://lite.chitralekha.ai4bharat.org/"
                 target={"blank"}
+                style={{ fontWeight: "600" }}
               >
-                this
+                click here
               </a>
             </Typography>
           </Grid>
