@@ -1,4 +1,11 @@
-import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Link,
+  ThemeProvider,
+  Button,
+  Typography,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "../../config/localisation";
@@ -174,7 +181,6 @@ const Login = () => {
           </Link>
         </Box>
         <Box>
-          {/* <Button fullWidth onClick={createToken} label={"Login"} /> */}
           <Button
             fullWidth
             color="primary"
