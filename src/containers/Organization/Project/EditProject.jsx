@@ -213,6 +213,8 @@ const EditProject = () => {
     return true;
   };
 
+  defaultTask.sort((a, b) => a.id - b.id);
+
   return (
     <>
       <Grid

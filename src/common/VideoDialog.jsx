@@ -195,6 +195,11 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
       scroll="paper"
+      PaperProps={{
+        style: {
+          overflowY: "hidden",
+        },
+      }}
     >
       <DialogTitle id="responsive-dialog-title">
         <Typography variant="h4" style={{ marginRight: "auto" }}>
