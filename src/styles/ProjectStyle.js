@@ -208,7 +208,8 @@ const ProjectStyle = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
-    width: "100%",
+    width: "600px",
+    margin: "auto",
     position: "relative",
     flexDirection: "column",
   },
@@ -439,7 +440,7 @@ const ProjectStyle = makeStyles({
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
-    right: "20%",
+    right: "3%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
