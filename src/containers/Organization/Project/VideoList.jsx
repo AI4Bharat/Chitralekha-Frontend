@@ -325,7 +325,10 @@ const VideoList = ({ data, removeVideo }) => {
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
-    selectableRows: "multiple",
+    selectableRows: roles.filter((role) => role.value === userData?.role)[0]
+      ?.showSelectCheckbox
+      ? "multiple"
+      : "none",
     search: false,
     jumpToPage: true,
     selectToolbarPlacement: "none",
