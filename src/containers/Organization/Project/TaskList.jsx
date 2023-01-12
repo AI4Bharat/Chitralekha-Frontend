@@ -39,6 +39,8 @@ import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import Loader from "../../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import PreviewDialog from "../../../common/PreviewDialog";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -52,6 +54,7 @@ import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTrans
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
+import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
 import DeleteDialog from "../../../common/DeleteDialog";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
@@ -84,6 +87,8 @@ const TaskList = () => {
   const [loading, setLoading] = useState(false);
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
+   const [Previewdata, setPreviewdata] = useState("");
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -101,12 +106,16 @@ const TaskList = () => {
 
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
+  // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
+
+
 
   const handleClose = () => {
     setOpen(false);
   };
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    setOpenPreviewDialog(false);
   };
 
   const handleClickOpen = (id, tasttype) => {
@@ -234,6 +243,29 @@ const TaskList = () => {
   const handledeletetask = async (id) => {
     setOpenDialog(true);
     setDeleteTaskid(id);
+  };
+
+  const handlePreviewTask = async (id,Task_type,Targetlanguage) => {
+    setOpenPreviewDialog(true);
+    const taskObj = new FetchpreviewTaskAPI(id,Task_type,Targetlanguage);
+    //dispatch(APITransport(taskObj));
+    const res = await fetch(taskObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(taskObj.getBody()),
+      headers: taskObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    setLoading(false);
+    if (res.ok) {
+      setPreviewdata(resp);
+    } else {
+      setOpenPreviewDialog(false);
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
   };
 
   const handleokDialog = async () => {
@@ -378,6 +410,17 @@ const TaskList = () => {
     );
   };
 
+  const renderPreviewButton = (tableData) => {
+    return (
+      tableData.rowData[9] === "COMPLETE" && (
+      <Tooltip title="Preview">
+        <IconButton onClick={() => handlePreviewTask(tableData.rowData[11],tableData.rowData[1],tableData.rowData[7])}>
+          <VisibilityIcon />
+        </IconButton>
+      </Tooltip>)
+    );
+  };
+
   const pageSearch = () => {
     return taskList.filter((el) => {
       if (SearchProject == "") {
@@ -425,6 +468,7 @@ const TaskList = () => {
             item.target_language_label,
             item.status,
             item.user,
+            item.video,
             item.is_active,
           ];
         })
@@ -712,7 +756,6 @@ const TaskList = () => {
 
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderViewButton(tableMeta)}
-
               {/* If task is assigned to project manager himself then show him the edit btn */}
               {userData.role === "PROJECT_MANAGER" &&
                 userData.id === tableMeta.rowData[10].id &&
@@ -721,9 +764,10 @@ const TaskList = () => {
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderEditButton(tableMeta)}
               {renderExportButton(tableMeta)}
-
+              {renderPreviewButton(tableMeta)}
               {userData.role === "PROJECT_MANAGER" &&
                 renderDeleteButton(tableMeta)}
+              
             </Box>
           );
         },
@@ -987,6 +1031,15 @@ const TaskList = () => {
           selectedTaskId={selectedTaskId}
           loading={loading}
           isBulk={isBulk}
+        />
+      )}
+
+      {openPreviewDialog && (
+        <PreviewDialog
+          openPreviewDialog={openPreviewDialog}
+          handleClose={() => handleCloseDialog()}
+          data={Previewdata}
+         
         />
       )}
     </>
