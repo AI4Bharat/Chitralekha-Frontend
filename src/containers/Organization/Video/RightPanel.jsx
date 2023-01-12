@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import {
   Button,
@@ -98,6 +98,11 @@ const RightPanel = ({ currentIndex, player }) => {
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
+
+  useEffect(()=>{
+    const subtitleScrollEle = document.getElementById("subtitleContainerTranscription");
+    subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex])
 
   const onMergeClick = (item, index) => {
     const existingsourceData = [...sourceText];
@@ -421,11 +426,12 @@ const RightPanel = ({ currentIndex, player }) => {
             width: "100%",
             textAlign: "center",
           }}
+          id={"subtitleContainerTranscription"}
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
             return (
-              <Box>
+              <Box id={`sub_${index}`}>
                 <Box
                   display="flex"
                   padding="10px 0 0 20px"
