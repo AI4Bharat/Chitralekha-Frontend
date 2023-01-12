@@ -412,11 +412,12 @@ const TaskList = () => {
 
   const renderPreviewButton = (tableData) => {
     return (
+      tableData.rowData[9] === "COMPLETE" && (
       <Tooltip title="Preview">
         <IconButton onClick={() => handlePreviewTask(tableData.rowData[11],tableData.rowData[1],tableData.rowData[7])}>
           <VisibilityIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip>)
     );
   };
 
@@ -750,7 +751,6 @@ const TaskList = () => {
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {renderPreviewButton(tableMeta)}
               {userData.role === "PROJECT_MANAGER" &&
                 renderEditTaskButton(tableMeta)}
 
@@ -764,7 +764,7 @@ const TaskList = () => {
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderEditButton(tableMeta)}
               {renderExportButton(tableMeta)}
-
+              {renderPreviewButton(tableMeta)}
               {userData.role === "PROJECT_MANAGER" &&
                 renderDeleteButton(tableMeta)}
               
