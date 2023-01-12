@@ -308,9 +308,7 @@ const TaskList = () => {
               setCurrentTaskDetails(tableData.rowData);
             }}
             disabled={
-              userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[11]
-                : false
+              !tableData.rowData[11]
             }
             color="primary"
           >
@@ -330,9 +328,7 @@ const TaskList = () => {
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
             disabled={
-              userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[11]
-                : false
+              !tableData.rowData[11]
             }
             color="primary"
           >
@@ -355,9 +351,7 @@ const TaskList = () => {
         <Tooltip title="Edit">
           <IconButton
             disabled={
-              userData.role !== "PROJECT_MANAGER"
-                ? !tableData.rowData[11]
-                : false
+              !tableData.rowData[11]
             }
             onClick={() => {
               if (
@@ -473,7 +467,7 @@ const TaskList = () => {
           ];
         })
       : [];
-
+console.log(userData.role,'userData.role');
   const columns = [
     {
       name: "id",
@@ -521,9 +515,7 @@ const TaskList = () => {
             <Box
               style={{
                 color:
-                  userData.role === "PROJECT_MANAGER"
-                    ? ""
-                    : tableMeta.rowData[11]
+                  tableMeta.rowData[11]
                     ? ""
                     : "grey",
               }}
@@ -555,9 +547,7 @@ const TaskList = () => {
             <Box
               style={{
                 color:
-                  userData.role === "PROJECT_MANAGER"
-                    ? ""
-                    : tableMeta.rowData[11]
+                  tableMeta.rowData[11]
                     ? ""
                     : "grey",
               }}
@@ -589,9 +579,7 @@ const TaskList = () => {
             <Box
               style={{
                 color:
-                  userData.role === "PROJECT_MANAGER"
-                    ? ""
-                    : tableMeta.rowData[11]
+                  tableMeta.rowData[11]
                     ? ""
                     : "grey",
               }}
@@ -630,9 +618,7 @@ const TaskList = () => {
             <Box
               style={{
                 color:
-                  userData.role === "PROJECT_MANAGER"
-                    ? ""
-                    : tableMeta.rowData[11]
+                  tableMeta.rowData[11]
                     ? ""
                     : "grey",
               }}
@@ -671,9 +657,7 @@ const TaskList = () => {
             <Box
               style={{
                 color:
-                  userData.role === "PROJECT_MANAGER"
-                    ? ""
-                    : tableMeta.rowData[11]
+                  tableMeta.rowData[11]
                     ? ""
                     : "grey",
               }}
@@ -705,9 +689,7 @@ const TaskList = () => {
             <Box
               style={{
                 color:
-                  userData.role === "PROJECT_MANAGER"
-                    ? ""
-                    : tableMeta.rowData[11]
+                  tableMeta.rowData[11]
                     ? ""
                     : "grey",
               }}
@@ -763,6 +745,7 @@ const TaskList = () => {
 
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderEditButton(tableMeta)}
+
               {renderExportButton(tableMeta)}
               {renderPreviewButton(tableMeta)}
               {userData.role === "PROJECT_MANAGER" &&
@@ -810,7 +793,10 @@ const TaskList = () => {
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
-    selectableRows: "multiple",
+    selectableRows: roles.filter((role) => role.value === userData?.role)[0]
+      ?.showSelectCheckbox
+      ? "multiple"
+      : "none",
     search: false,
     jumpToPage: true,
     selectToolbarPlacement: "none",

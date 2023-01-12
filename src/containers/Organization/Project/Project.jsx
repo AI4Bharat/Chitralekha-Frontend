@@ -203,7 +203,7 @@ const Project = () => {
         open: true,
         message: "Video added successfully",
         variant: "success",
-      })
+      });
       setCreateVideoDialog(false);
       getProjectVideoList();
     } else {
@@ -230,8 +230,8 @@ const Project = () => {
   };
 
   const renderProjectDetails = () => {
-    if(!projectInfo || projectInfo.length <= 0) {
-      return <Loader />
+    if (!projectInfo || projectInfo.length <= 0) {
+      return <Loader />;
     }
 
     return (
@@ -251,26 +251,29 @@ const Project = () => {
               {projectDetails.title}
             </Typography>
 
-            <IconButton
-              onClick={() =>
-                navigate(
-                  `/my-organization/${orgId}/project/${projectId}/edit-project`
-                )
-              }
-              style={{
-                padding: "0",
-              }}
-            >
-              <Tooltip title="Settings">
-                <SettingsOutlinedIcon
-                  color="primary"
-                  style={{
-                    color: "#f1f1f1",
-                    fontSize: "2.25rem",
-                  }}
-                />
-              </Tooltip>
-            </IconButton>
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.projectSettingVisible && (
+              <IconButton
+                onClick={() =>
+                  navigate(
+                    `/my-organization/${orgId}/project/${projectId}/edit-project`
+                  )
+                }
+                style={{
+                  padding: "0",
+                }}
+              >
+                <Tooltip title="Settings">
+                  <SettingsOutlinedIcon
+                    color="primary"
+                    style={{
+                      color: "#f1f1f1",
+                      fontSize: "2.25rem",
+                    }}
+                  />
+                </Tooltip>
+              </IconButton>
+            )}
           </Card>
         </Grid>
 
@@ -313,7 +316,7 @@ const Project = () => {
     <Grid container direction="row" justifyContent="center" alignItems="center">
       {renderSnackBar()}
       {renderProjectDetails()}
-      
+
       <Card className={classes.workspaceCard}>
         <Box>
           <Tabs
