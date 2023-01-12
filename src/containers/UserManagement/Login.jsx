@@ -33,14 +33,9 @@ const Login = () => {
     password: "",
   });
 
-  // const [userAccessToken, setUserAccessToken ] = useState();
   const accessToken = localStorage.getItem("token");
   const userInfo = JSON.parse(localStorage.getItem("userData"));
-  const userTokenData = useSelector(
-    (state) => state.getUserAccessToken.data?.access
-  );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-  const loginApiStatus = useSelector((state) => state.apiStatus);
 
   const navigate = useNavigate();
 
@@ -54,7 +49,7 @@ const Login = () => {
     password: "",
     showPassword: false,
   });
-
+  const [loading, setLoading] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
   const keyPress = (e) => {
@@ -74,22 +69,6 @@ const Login = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
     dispatch(APITransport(loggedInUserObj));
   };
-
-  useEffect(() => {
-    if (loginApiStatus?.error) {
-      setSnackbarInfo({
-        open: true,
-        variant: "error",
-        message: "Username or Password incorrect.",
-      });
-    }
-  }, [loginApiStatus]);
-
-  useEffect(() => {
-    if (accessToken) {
-      getLoggedInUserData();
-    }
-  }, [userTokenData]);
 
   useEffect(() => {
     if (userData && accessToken) {
@@ -126,9 +105,29 @@ const Login = () => {
     event.preventDefault();
   };
 
-  const createToken = () => {
+  const createToken = async () => {
+    setLoading(true);
+
     const apiObj = new LoginAPI(credentials.email, credentials.password);
-    dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+    if (res.ok) {
+      localStorage.setItem("token", resp.access);
+      getLoggedInUserData();
+      setLoading(false);
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.detail,
+        variant: "error",
+      });
+      setLoading(false);
+    }
   };
 
   const TextFields = () => {
@@ -188,7 +187,7 @@ const Login = () => {
             variant="contained"
           >
             Login{" "}
-            {loginApiStatus.progress && (
+            {loading && (
               <Loader size={20} margin="0 0 0 10px" color="secondary" />
             )}
           </Button>
