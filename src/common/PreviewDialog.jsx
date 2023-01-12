@@ -23,8 +23,9 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+     
     >
-      <DialogContent>
+      <DialogContent sx={{height:"410px"}}>
         <DialogContentText id="alert-dialog-description">
           { Previewdata?.data?.payload &&  Previewdata?.data?.payload.length > 0 ? Previewdata?.data?.payload.map((el, i) => {
             return (
