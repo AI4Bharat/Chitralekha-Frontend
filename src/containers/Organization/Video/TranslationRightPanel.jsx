@@ -10,6 +10,8 @@ import {
   Switch,
   Tooltip,
   IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -29,9 +31,11 @@ import MergeIcon from "@mui/icons-material/Merge";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Sub from "../../../utils/Sub";
 import DT from "duration-time-conversion";
-import SplitPopOver from "../../../common/SplitPopOver";
+import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import CheckIcon from "@mui/icons-material/Check";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -63,6 +67,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   });
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [anchorElFont, setAnchorElFont] = useState(null);
+  const [fontSize, setFontSize] = useState("large");
 
   const newSub = useCallback((item) => new Sub(item), []);
 
@@ -308,6 +314,25 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     setSourceText(copySub);
   };
 
+  const fontMenu = [
+    {
+      label: "small",
+      size: "small",
+    },
+    {
+      label: "Normal",
+      size: "large",
+    },
+    {
+      label: "Large",
+      size: "x-large",
+    },
+    {
+      size: "xx-large",
+      label: "Huge",
+    },
+  ];
+
   return (
     <>
       {renderSnackBar()}
@@ -334,6 +359,55 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             />
           </Grid>
 
+          <Tooltip title="Font Size" placement="bottom">
+            <IconButton
+              sx={{
+                backgroundColor: "#2C2799",
+                borderRadius: "50%",
+                color: "#fff",
+                marginX: "5px",
+                "&:hover": {
+                  backgroundColor: "#271e4f",
+                },
+              }}
+              onClick={(event) => setAnchorElFont(event.currentTarget)}
+            >
+              <FormatSizeIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Menu
+            sx={{ mt: "45px" }}
+            anchorEl={anchorElFont}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            open={Boolean(anchorElFont)}
+            onClose={() => setAnchorElFont(null)}
+          >
+            {fontMenu.map((item, index) => (
+              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
+                <CheckIcon
+                  style={{
+                    visibility: fontSize === item.size ? "" : "hidden",
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  textAlign="center"
+                  sx={{ fontSize: item.size, marginLeft: "10px" }}
+                >
+                  {item.label}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+
           <FindAndReplace
             sourceData={sourceText}
             subtitleDataKey={"target_text"}
@@ -359,14 +433,22 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             </IconButton>
           </Tooltip>
 
-          <Button
-            variant="contained"
-            sx={{ marginX: "5px" }}
-            className={classes.findBtn}
-            onClick={() => saveTranscriptHandler(true, true)}
-          >
-            Complete
-          </Button>
+          <Tooltip title="Complete" placement="bottom">
+            <IconButton
+              sx={{
+                backgroundColor: "#2C2799",
+                borderRadius: "50%",
+                color: "#fff",
+                marginX: "5px",
+                "&:hover": {
+                  backgroundColor: "#271e4f",
+                },
+              }}
+              onClick={() => setOpenConfirmDialog(true)}
+            >
+              <VerifiedIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
         <Box
           sx={{
@@ -397,7 +479,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     type={"startTime"}
                   />
 
-                  <Tooltip title="Split Subtitle" placement="bottom">
+                  {/* <Tooltip title="Split Subtitle" placement="bottom">
                     <IconButton
                       sx={{
                         backgroundColor: "#0083e2",
@@ -416,7 +498,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     >
                       <SplitscreenIcon />
                     </IconButton>
-                  </Tooltip>
+                  </Tooltip> */}
 
                   {index < sourceText.length - 1 && (
                     <Tooltip title="Merge Next" placement="bottom">
@@ -497,6 +579,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     className={`${classes.textAreaTransliteration} ${
                       currentIndex === index ? classes.boxHighlight : ""
                     }`}
+                    style={{ fontSize: fontSize, height: "100px" }}
                     value={item.text}
                     onMouseUp={(e) => onMouseUp(e, index)}
                     onBlur={() =>
@@ -524,6 +607,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       containerStyles={{
                         width: "100%",
                       }}
+                      style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <textarea
                           className={`${classes.textAreaTransliteration} ${
@@ -545,6 +629,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       className={`${classes.textAreaTransliteration} ${
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
+                      style={{ fontSize: fontSize, height: "100px" }}
                       onChange={(event) => {
                         changeTranscriptHandler(
                           event.target.value,
