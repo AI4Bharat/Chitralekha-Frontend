@@ -16,29 +16,25 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
-import SplitPopOver from "../../../common/SplitPopOver";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DT from "duration-time-conversion";
 import Sub from "../../../utils/Sub";
 import MergeIcon from "@mui/icons-material/Merge";
-import { clamp } from "lodash";
 import { getUpdatedTime } from "../../../utils/utils";
 import TimeBoxes from "../../../common/TimeBoxes";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import ConfirmDialog from "../../../common/ConfirmDialog";
-import SettingsIcon from "@mui/icons-material/Settings";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -294,15 +290,15 @@ const RightPanel = ({ currentIndex, player }) => {
   const fontMenu = [
     {
       label: "small",
-      size: "x-small",
-    },
-    {
-      label: "Normal",
       size: "small",
     },
     {
-      label: "Large",
+      label: "Normal",
       size: "large",
+    },
+    {
+      label: "Large",
+      size: "x-large",
     },
     {
       size: "xx-large",
@@ -397,14 +393,22 @@ const RightPanel = ({ currentIndex, player }) => {
             </IconButton>
           </Tooltip>
 
-          <Button
-            variant="contained"
-            sx={{ marginX: "5px", }}
-            className={classes.findBtn}
-            onClick={() => setOpenConfirmDialog(true)}
-          >
-            Complete
-          </Button>
+          <Tooltip title="Complete" placement="bottom">
+            <IconButton
+              sx={{
+                backgroundColor: "#2C2799",
+                borderRadius: "50%",
+                color: "#fff",
+                marginX: "5px",
+                "&:hover": {
+                  backgroundColor: "#271e4f",
+                },
+              }}
+              onClick={() => setOpenConfirmDialog(true)}
+            >
+              <VerifiedIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
 
         <Box
