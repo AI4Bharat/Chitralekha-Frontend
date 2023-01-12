@@ -35,6 +35,7 @@ import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import Settings from "@mui/icons-material/Settings";
 import CheckIcon from "@mui/icons-material/Check";
+import CustomSwitchDarkBackground from "../../../common/CustomSwitchDarkBackground";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -64,6 +65,7 @@ const VideoLanding = () => {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
+  const [darkAndLightMode, setDarkAndLightMode] = useState(true);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -99,7 +101,7 @@ const VideoLanding = () => {
   }, []);
 
   useEffect(() => {
-    if (taskDetails) {
+    if (taskDetails.video_url) {
       const apiObj = new FetchVideoDetailsAPI(
         taskDetails.video_url,
         taskDetails.src_language,
@@ -177,8 +179,6 @@ const VideoLanding = () => {
 
   const onSplit = useCallback(() => {
     const copySub = copySubs();
-
-    console.log("copySub ------- ", copySub[currentIndex]);
 
     const index = hasSub(subs[currentIndex]);
 
@@ -381,19 +381,19 @@ const VideoLanding = () => {
   const fontMenu = [
     {
       label: "small",
-      size: "x-small",
-    },
-    {
-      label: "Normal",
       size: "small",
     },
     {
-      label: "Large",
+      label: "Normal",
       size: "large",
     },
     {
-      size: "xx-large",
+      label: "Large",
+      size: "x-large",
+    },
+    {
       label: "Huge",
+      size: "xx-large",
     },
   ];
 
@@ -421,7 +421,7 @@ const VideoLanding = () => {
             <div
               className={classes.subtitlePanel}
               style={{
-                bottom: fullscreen ? "5%" : fullscreenVideo ? "15%" : "",
+                bottom: fullscreen ? "10%" : fullscreenVideo ? "15%" : "",
                 margin: fullscreenVideo ? "auto" : "",
               }}
             >
@@ -433,14 +433,16 @@ const VideoLanding = () => {
 
               <ReactTextareaAutosize
                 className={`${classes.playerTextarea} ${
-                  !playing ? classes.pause : ""
+                  darkAndLightMode ? classes.darkMode : classes.lightMode
                 }`}
                 value={
                   currentSubs.target_text
                     ? currentSubs.target_text
                     : currentSubs.text
                 }
-                style={{ fontSize: fontSize }}
+                style={{
+                  fontSize: fontSize,
+                }}
                 spellCheck={false}
                 onChange={onChange}
                 onClick={onClick}
@@ -450,6 +452,17 @@ const VideoLanding = () => {
               />
             </div>
           ) : null}
+
+          <CustomSwitchDarkBackground
+            style={{
+              position: "absolute",
+              bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "18%",
+              right: fullscreenVideo ? "34%" : fullscreen ? "46%" : "49%",
+            }}
+            labelPlacement="start"
+            checked={darkAndLightMode}
+            onChange={() => setDarkAndLightMode(!darkAndLightMode)}
+          />
 
           <div
             className={classes.playbackRate}
@@ -498,12 +511,12 @@ const VideoLanding = () => {
             anchorEl={anchorElFont}
             keepMounted
             anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             }}
             open={Boolean(anchorElFont)}
             onClose={() => setAnchorElFont(null)}

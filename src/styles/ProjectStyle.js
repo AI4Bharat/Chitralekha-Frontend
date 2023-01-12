@@ -227,11 +227,11 @@ const ProjectStyle = makeStyles({
     // maxWidth: "100%",
     // maxHeight: "90%",
     // height: "100vh",
-  
-    margin:"-1px",
-    "&::-webkit-media-controls-fullscreen-button" : {
+
+    margin: "-1px",
+    "&::-webkit-media-controls-fullscreen-button": {
       display: "none",
-    }
+    },
   },
 
   parentSubtitleBox: {
@@ -349,13 +349,19 @@ const ProjectStyle = makeStyles({
     fontSize: "20px",
     padding: "5px 10px",
     pointerEvents: "all",
-    backgroundColor: "rgb(0 0 0 / 0)",
-    textShadow:
-      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
 
-  pause: {
+  darkMode: {
+    backgroundColor: "rgb(256 256 256 / 50%)",
+    color: "#000",
+    fontWeight: "bolder"
+  },
+
+  lightMode: {
     backgroundColor: "rgb(0 0 0 / 50%)",
+    color: "#fff",
+    textShadow:
+      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
 
   boxHighlight: {
@@ -436,7 +442,7 @@ const ProjectStyle = makeStyles({
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
-  
+
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
@@ -448,9 +454,9 @@ const ProjectStyle = makeStyles({
     backgroundColor: "rgb(0 0 0 / 50%)",
     textShadow:
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
-      "&:hover": {
-        backgroundColor: "black",
-      },
+    "&:hover": {
+      backgroundColor: "black",
+    },
   },
 
   contextMenu: {
@@ -491,45 +497,45 @@ const ProjectStyle = makeStyles({
     padding: "7px 14px",
     textAlign: "center",
     fontFamily: "Roboto, sans-serif",
-    '&::-webkit-calendar-picker-indicator': {
+    "&::-webkit-calendar-picker-indicator": {
       display: "none",
     },
   },
-  darkmodesubtitle:{
+  darkmodesubtitle: {
     //zIndex:20,
     background: "black",
-    fontSize:'20px',
+    fontSize: "20px",
     width: "600px",
-    height:"55px",
+    height: "55px",
     textAlign: "center",
-    marginRight:"-1px"
+    marginRight: "-1px",
   },
-  lightmodesubtitle:{
+  lightmodesubtitle: {
     //zIndex:20,
     background: "white",
-    fontSize:'20px',
+    fontSize: "20px",
     width: "600px",
-    height:"55px",
+    height: "55px",
     textAlign: "center",
-    marginRight:"-1px"
+    marginRight: "-1px",
   },
 
   timeInputBox: {
     backgroundColor: "#616A6B",
     width: "15%",
-    '& .MuiInputBase-input': {
+    "& .MuiInputBase-input": {
       textAlign: "center",
       color: "#fff",
     },
-    '& .MuiInput-root:after': {
+    "& .MuiInput-root:after": {
       border: "none",
     },
-    '& .MuiInput-root:hover:before': {
+    "& .MuiInput-root:hover:before": {
       border: "none",
     },
-    '& .MuiInput-root:before': {
+    "& .MuiInput-root:before": {
       border: "none",
-    }
+    },
   },
 
   taskBox: {
@@ -539,12 +545,13 @@ const ProjectStyle = makeStyles({
   },
 
   arrow: {
-    width:"100px",
-    height:"30px",
+    width: "100px",
+    height: "30px",
     display: "flex",
-    clipPath: "polygon(0 10px,calc(100% - 15px) 10px,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,calc(100% - 15px) calc(100% - 10px),0 calc(100% - 10px))",
-    backgroundColor: "#E0E0E0"
-  }
+    clipPath:
+      "polygon(0 10px,calc(100% - 15px) 10px,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,calc(100% - 15px) calc(100% - 10px),0 calc(100% - 10px))",
+    backgroundColor: "#E0E0E0",
+  },
 });
 
 export default ProjectStyle;

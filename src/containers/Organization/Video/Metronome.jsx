@@ -54,11 +54,7 @@ export default React.memo(
 
     const onMouseMove = useCallback(
       (event) => {
-        if (
-          isDroging &&
-          taskData.task_type !== "TRANSLATION_EDIT" &&
-          taskData.task_type !== "TRANSLATION_REVIEW"
-        ) {
+        if (isDroging) {
           if (playing) player.pause();
           setDrogEndTime(getEventTime(event));
         }
@@ -67,11 +63,7 @@ export default React.memo(
     );
 
     const onDocumentMouseUp = useCallback(() => {
-      if (
-        isDroging &&
-        taskData.task_type !== "TRANSLATION_EDIT" &&
-        taskData.task_type !== "TRANSLATION_REVIEW"
-      ) {
+      if (isDroging) {
         if (
           drogStartTime > 0 &&
           drogEndTime > 0 &&
@@ -86,7 +78,12 @@ export default React.memo(
           copySub.splice(
             index,
             0,
-            newSub({ start_time, end_time, text: "SUB_TEXT" })
+            newSub({
+              start_time,
+              end_time,
+              text: "SUB_TEXT",
+              target_text: "SUB_TEXT",
+            })
           );
 
           dispatch(setSubtitles(copySub, C.SUBTITLES));
