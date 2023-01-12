@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import RightPanel from "./RightPanel";
+import VoiceOverRightPanel from './VoiceOverRightPanel';
 import Timeline from "./Timeline";
 import VideoPanel from "./VideoPanel";
 import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
@@ -573,13 +574,21 @@ const VideoLanding = () => {
             taskDetails?.task_type === "TRANSCRIPTION_REVIEW") && (
             <RightPanel currentIndex={currentIndex} player={player} />
           )}
-          {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
+          {/* {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
             taskDetails?.task_type === "TRANSLATION_REVIEW") && (
             <TranslationRightPanel
               currentIndex={currentIndex}
               player={player}
             />
+          )} */}
+          {(taskDetails?.task_type === "TRANSLATION_EDIT" ||
+            taskDetails?.task_type === "TRANSLATION_REVIEW") && (
+            <VoiceOverRightPanel
+              currentIndex={currentIndex}
+              player={player}
+            />
           )}
+          
         </Grid>
       </Grid>
       <Grid
