@@ -474,12 +474,12 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                   paddingTop="16px"
                   sx={{ paddingX: "20px", justifyContent: "space-around" }}
                 >
-                  <TimeBoxes
+                  {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  />
+                  /> */}
 
                   {/* <Tooltip title="Split Subtitle" placement="bottom">
                     <IconButton
@@ -502,7 +502,7 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                     </IconButton>
                   </Tooltip> */}
 
-                  {index < sourceText.length - 1 && (
+                  {/* {index < sourceText.length - 1 && (
                     <Tooltip title="Merge Next" placement="bottom">
                       <IconButton
                         sx={{
@@ -520,9 +520,9 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                         <MergeIcon />
                       </IconButton>
                     </Tooltip>
-                  )}
+                  )} */}
 
-                  <Tooltip title="Delete" placement="bottom">
+                  {/* <Tooltip title="Delete" placement="bottom">
                     <IconButton
                       color="error"
                       sx={{
@@ -538,9 +538,9 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
-                  </Tooltip>
+                  </Tooltip> */}
 
-                  <Tooltip title="Add Subtitle Box" placement="bottom">
+                  {/* <Tooltip title="Add Subtitle Box" placement="bottom">
                     <IconButton
                       sx={{
                         backgroundColor: "#0083e2",
@@ -555,14 +555,14 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                     >
                       <AddIcon />
                     </IconButton>
-                  </Tooltip>
+                  </Tooltip> */}
 
-                  <TimeBoxes
+                  {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  />
+                  /> */}
                 </Box>
 
                 <CardContent
