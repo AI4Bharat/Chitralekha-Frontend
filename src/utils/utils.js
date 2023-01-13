@@ -73,6 +73,8 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
   },
   {
     label: "Transcript Reviewer",
@@ -86,6 +88,8 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
   },
   {
     label: "Translation editor",
@@ -99,6 +103,7 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
   },
   {
     label: "Translation Reviewer",
@@ -112,6 +117,8 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
   },
   {
     label: "Universal Editor",
@@ -124,6 +131,8 @@ export const roles = [
     taskAction: true,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
   },
   {
     label: "Project Manager",
@@ -137,6 +146,8 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: true,
     showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
   },
   {
     label: "Organization Owner",
@@ -150,6 +161,8 @@ export const roles = [
     orgSettingVisible: true,
     projectSettingVisible: true,
     showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
   },
 ];
 
