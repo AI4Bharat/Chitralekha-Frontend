@@ -11,6 +11,8 @@ import {
   Tooltip,
   Menu,
   MenuItem,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -35,6 +37,7 @@ import AddIcon from "@mui/icons-material/Add";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -85,17 +88,24 @@ const RightPanel = ({ currentIndex, player }) => {
     positionY: 0,
   });
   const [enableTransliteration, setTransliteration] = useState(true);
+  const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [showSplitButton, setShowSplitButton] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
+  const [anchorElSettings, setAnchorElSettings] = useState(null)
 
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-  useEffect(()=>{
+
+  const handleCloseSettingsMenu = () => {
+    setAnchorElSettings(null)
+  }
+
+  useEffect(() => {
     const subtitleScrollEle = document.getElementById("subTitleContainer");
     subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
   }, [currentIndex])
@@ -229,8 +239,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-          ? "Saved as draft"
-          : "",
+            ? "Saved as draft"
+            : "",
         variant: "success",
       });
       setLoading(false);
@@ -348,13 +358,60 @@ const RightPanel = ({ currentIndex, player }) => {
           margin={"23.5px 0"}
           justifyContent={"center"}
         >
-          <Box display={"flex"} alignItems={"center"} paddingLeft={2}>
-            <Typography variant="subtitle2">Transliteration</Typography>
-            <Switch
-              checked={enableTransliteration}
-              onChange={() => setTransliteration(!enableTransliteration)}
-            />
-          </Box>
+          <>
+            <Tooltip title="Settings" placement="bottom">
+              <IconButton
+                sx={{
+                  backgroundColor: "#2C2799",
+                  borderRadius: "50%",
+                  color: "#fff",
+                  marginX: "5px",
+                  "&:hover": {
+                    backgroundColor: "#271e4f",
+                  },
+                }}
+                onClick={(event) => setAnchorElSettings(event.currentTarget)}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElSettings}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              open={Boolean(anchorElSettings)}
+              onClose={handleCloseSettingsMenu}
+            >
+              <MenuItem>
+                <FormControlLabel
+                  label="Transliteration"
+                  control={<Checkbox checked={enableTransliteration} onChange={() => {
+                    handleCloseSettingsMenu()
+                    setTransliteration(!enableTransliteration)
+                  }} />}
+                />
+              </MenuItem>
+              <MenuItem>
+                <FormControlLabel
+                  label="RTL Typing"
+                  control={<Checkbox checked={enableRTL_Typing} onChange={() => {
+                    handleCloseSettingsMenu()
+                    setRTL_Typing(!enableRTL_Typing)
+                  }} />}
+                />
+              </MenuItem>
+            </Menu>
+          </>
+
 
           <Tooltip title="Font Size" placement="bottom">
             <IconButton
@@ -597,9 +654,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                          dir={enableRTL_Typing ? "rtl" : "ltr"}
                           rows={4}
                           onBlur={() =>
                             setTimeout(() => {
@@ -618,9 +675,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
-                      className={`${classes.customTextarea} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
+                      dir={enableRTL_Typing ? "rtl" : "ltr"}
+                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                        }`}
                       style={{
                         width: "90%",
                         fontSize: fontSize,

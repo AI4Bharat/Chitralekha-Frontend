@@ -12,6 +12,8 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -36,6 +38,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import CheckIcon from "@mui/icons-material/Check";
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -60,6 +63,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
+  const [anchorElSettings, setAnchorElSettings] = useState(null)
+  const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [anchorEle, setAnchorEle] = useState(null);
   const [anchorPos, setAnchorPos] = useState({
     positionX: 0,
@@ -94,6 +99,10 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     copySub.splice(index, 1);
     dispatch(setSubtitles(copySub, C.SUBTITLES));
   };
+
+  const handleCloseSettingsMenu = () => {
+    setAnchorElSettings(null)
+  }
 
   const onMergeClick = (item, index) => {
     const existingsourceData = copySubs();
@@ -356,13 +365,66 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
           margin={"23.5px 0"}
           justifyContent="center"
         >
-          <Grid display={"flex"} alignItems={"center"}>
+          {/* <Grid display={"flex"} alignItems={"center"}>
             <Typography>Transliteration</Typography>
             <Switch
               checked={enableTransliteration}
               onChange={() => setTransliteration(!enableTransliteration)}
             />
-          </Grid>
+          </Grid> */}
+          <>
+            <Tooltip title="Settings" placement="bottom">
+              <IconButton
+                sx={{
+                  backgroundColor: "#2C2799",
+                  borderRadius: "50%",
+                  color: "#fff",
+                  marginX: "5px",
+                  "&:hover": {
+                    backgroundColor: "#271e4f",
+                  },
+                }}
+                onClick={(event) => setAnchorElSettings(event.currentTarget)}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElSettings}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              open={Boolean(anchorElSettings)}
+              onClose={handleCloseSettingsMenu}
+            >
+              <MenuItem>
+                <FormControlLabel
+                  label="Transliteration"
+                  control={<Checkbox checked={enableTransliteration} onChange={() => {
+                    handleCloseSettingsMenu()
+                    setTransliteration(!enableTransliteration)
+                  }} />}
+                />
+              </MenuItem>
+              <MenuItem>
+                <FormControlLabel
+                  label="RTL Typing"
+                  control={<Checkbox checked={enableRTL_Typing} onChange={() => {
+                    handleCloseSettingsMenu()
+                    setRTL_Typing(!enableRTL_Typing)
+                  }} />}
+                />
+              </MenuItem>
+            </Menu>
+          </>
 
           <Tooltip title="Font Size" placement="bottom">
             <IconButton
@@ -585,6 +647,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     className={`${classes.textAreaTransliteration} ${
                       currentIndex === index ? classes.boxHighlight : ""
                     }`}
+                    dir={enableRTL_Typing ? "rtl" : "ltr"}
                     style={{ fontSize: fontSize, height: "100px" }}
                     value={item.text}
                     onMouseUp={(e) => onMouseUp(e, index)}
@@ -619,6 +682,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                           className={`${classes.textAreaTransliteration} ${
                             currentIndex === index ? classes.boxHighlight : ""
                           }`}
+                          dir={enableRTL_Typing ? "rtl" : "ltr"}
                           rows={4}
                           onBlur={() =>
                             setTimeout(() => {
@@ -635,6 +699,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       className={`${classes.textAreaTransliteration} ${
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
+                      dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       onChange={(event) => {
                         changeTranscriptHandler(
