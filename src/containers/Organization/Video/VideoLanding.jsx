@@ -101,7 +101,7 @@ const VideoLanding = () => {
   }, []);
 
   useEffect(() => {
-    if (taskDetails.video_url) {
+    if (taskDetails && taskDetails?.video_url && taskDetails?.src_language && taskDetails?.project && taskDetails?.id && taskDetails?.task_type) {
       const apiObj = new FetchVideoDetailsAPI(
         taskDetails.video_url,
         taskDetails.src_language,

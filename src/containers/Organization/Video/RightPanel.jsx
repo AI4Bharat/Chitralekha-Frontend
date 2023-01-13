@@ -95,6 +95,11 @@ const RightPanel = ({ currentIndex, player }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
+  useEffect(()=>{
+    const subtitleScrollEle = document.getElementById("subTitleContainer");
+    subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex])
+
   const onMergeClick = (item, index) => {
     const existingsourceData = [...sourceText];
     const newItemObj = existingsourceData[index];
@@ -425,11 +430,12 @@ const RightPanel = ({ currentIndex, player }) => {
             width: "100%",
             textAlign: "center",
           }}
+          id={"subTitleContainer"}
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
             return (
-              <Box>
+              <Box id={`sub_${index}`}>
                 <Box
                   display="flex"
                   padding="10px 0 0 20px"

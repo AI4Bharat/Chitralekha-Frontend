@@ -136,6 +136,11 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
+  useEffect(()=>{
+    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+    subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex])
+
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
@@ -462,11 +467,12 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             // color: "white",
             marginTop: "5px",
           }}
+          id={"subtitleContainerTranslation"}
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <Box id={`sub_${index}`}>
                 <Box
                   display="flex"
                   paddingTop="16px"
@@ -647,7 +653,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     />
                   )}
                 </CardContent>
-              </>
+              </Box>
             );
           })}
         </Box>
