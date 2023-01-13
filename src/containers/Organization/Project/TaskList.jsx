@@ -88,7 +88,9 @@ const TaskList = () => {
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
-   const [Previewdata, setPreviewdata] = useState("");
+  const [Previewdata, setPreviewdata] = useState("");
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const [deleteResponse, setDeleteResponse] = useState([]);
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -107,8 +109,6 @@ const TaskList = () => {
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
-
-
 
   const handleClose = () => {
     setOpen(false);
@@ -240,14 +240,37 @@ const TaskList = () => {
     });
   };
 
-  const handledeletetask = async (id) => {
-    setOpenDialog(true);
+  const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
+
+    setLoading(true);
+    const apiObj = new DeleteTaskAPI(id, flag);
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "DELETE",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      setOpenDialog(false);
+      setLoading(false);
+      FetchTaskList();
+    } else {
+      setOpenDialog(true);
+      setDeleteMsg(resp.message);
+      setDeleteResponse(resp.response);
+      setLoading(false);
+    }
   };
 
-  const handlePreviewTask = async (id,Task_type,Targetlanguage) => {
+  const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
     setOpenPreviewDialog(true);
-    const taskObj = new FetchpreviewTaskAPI(id,Task_type,Targetlanguage);
+    const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
       method: "GET",
@@ -268,34 +291,6 @@ const TaskList = () => {
     }
   };
 
-  const handleokDialog = async () => {
-    setLoading(true);
-    const apiObj = new DeleteTaskAPI(deleteTaskid);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-      setOpenDialog(false);
-      FetchTaskList();
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
-  };
-
   const renderViewButton = (tableData) => {
     return (
       tableData.rowData[9] === "SELECTED_SOURCE" &&
@@ -307,9 +302,7 @@ const TaskList = () => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <PreviewIcon />
@@ -327,9 +320,7 @@ const TaskList = () => {
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -350,9 +341,7 @@ const TaskList = () => {
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[12]}
             onClick={() => {
               if (
                 tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -376,10 +365,7 @@ const TaskList = () => {
     return (
       <Tooltip title="Delete">
         <IconButton
-          onClick={() => handledeletetask(tableData.rowData[0])}
-          disabled={
-            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[11] : false
-          }
+          onClick={() => handledeletetask(tableData.rowData[0], false)}
           color="error"
         >
           <DeleteIcon />
@@ -407,11 +393,20 @@ const TaskList = () => {
   const renderPreviewButton = (tableData) => {
     return (
       tableData.rowData[9] === "COMPLETE" && (
-      <Tooltip title="Preview">
-        <IconButton onClick={() => handlePreviewTask(tableData.rowData[11],tableData.rowData[1],tableData.rowData[7])}>
-          <VisibilityIcon />
-        </IconButton>
-      </Tooltip>)
+        <Tooltip title="Preview">
+          <IconButton
+            onClick={() =>
+              handlePreviewTask(
+                tableData.rowData[11],
+                tableData.rowData[1],
+                tableData.rowData[7]
+              )
+            }
+          >
+            <VisibilityIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
@@ -467,7 +462,7 @@ const TaskList = () => {
           ];
         })
       : [];
-console.log(userData.role,'userData.role');
+
   const columns = [
     {
       name: "id",
@@ -514,10 +509,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -546,10 +538,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -578,10 +567,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -617,10 +603,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -656,10 +639,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -688,10 +668,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -733,11 +710,12 @@ console.log(userData.role,'userData.role');
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {userData.role === "PROJECT_MANAGER" &&
-                renderEditTaskButton(tableMeta)}
+              {roles.filter((role) => role.value === userData?.role)[0]
+                ?.canEditTask && renderEditTaskButton(tableMeta)}
 
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.taskAction && renderViewButton(tableMeta)}
+
               {/* If task is assigned to project manager himself then show him the edit btn */}
               {userData.role === "PROJECT_MANAGER" &&
                 userData.id === tableMeta.rowData[10].id &&
@@ -747,10 +725,11 @@ console.log(userData.role,'userData.role');
                 ?.taskAction && renderEditButton(tableMeta)}
 
               {renderExportButton(tableMeta)}
+
               {renderPreviewButton(tableMeta)}
-              {userData.role === "PROJECT_MANAGER" &&
-                renderDeleteButton(tableMeta)}
-              
+
+              {roles.filter((role) => role.value === userData?.role)[0]
+                ?.canDeleteTask && renderDeleteButton(tableMeta)}
             </Box>
           );
         },
@@ -1001,10 +980,10 @@ console.log(userData.role,'userData.role');
         <DeleteDialog
           openDialog={openDialog}
           handleClose={() => handleCloseDialog()}
-          submit={() => handleokDialog()}
+          submit={() => handledeletetask(deleteTaskid, true)}
           loading={loading}
-          message={`Are you sure, you want to delete this task? The associated
-          transcript/translation will be deleted.`}
+          message={deleteMsg}
+          deleteResponse={deleteResponse}
         />
       )}
 
@@ -1025,7 +1004,6 @@ console.log(userData.role,'userData.role');
           openPreviewDialog={openPreviewDialog}
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
-         
         />
       )}
     </>
