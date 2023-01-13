@@ -23,6 +23,7 @@ import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
 import DeleteDialog from "../../../common/DeleteDialog";
 import VideoStatusTable from "../../../common/VideoStatusTable";
+import AlertComponent from "../../../common/Alert";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
@@ -41,6 +42,8 @@ const VideoList = ({ data, removeVideo }) => {
   const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertData, setAlertData] = useState({});
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
@@ -165,6 +168,7 @@ const VideoList = ({ data, removeVideo }) => {
       headers: apiObj.getHeaders().headers,
     });
     const resp = await res.json();
+    console.log(resp);
     if (res.ok) {
       setSnackbarInfo({
         open: true,
@@ -174,11 +178,13 @@ const VideoList = ({ data, removeVideo }) => {
       setLoading(false);
       setOpenCreateTaskDialog(false);
     } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.error,
-        variant: "error",
-      });
+      setShowAlert(true);
+      setAlertData(resp);
+      // setSnackbarInfo({
+      //   open: true,
+      //   message: resp?.error,
+      //   variant: "error",
+      // });
       setLoading(false);
     }
   };
@@ -414,6 +420,10 @@ const VideoList = ({ data, removeVideo }) => {
           message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
         />
       )}
+
+      {
+        showAlert && <AlertComponent open={showAlert} data={alertData}/>
+      }
     </>
   );
 };
