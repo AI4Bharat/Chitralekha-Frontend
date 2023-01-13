@@ -708,21 +708,17 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
+          console.log(tableMeta.rowData[10], "tableMeta.rowData[10]");
           return (
             <Box sx={{ display: "flex" }}>
               {roles.filter((role) => role.value === userData?.role)[0]
                 ?.canEditTask && renderEditTaskButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderViewButton(tableMeta)}
+              {userData.id === tableMeta.rowData[10].id &&
+                renderViewButton(tableMeta)}
 
-              {/* If task is assigned to project manager himself then show him the edit btn */}
-              {userData.role === "PROJECT_MANAGER" &&
-                userData.id === tableMeta.rowData[10].id &&
+              {userData.id === tableMeta.rowData[10].id &&
                 renderEditButton(tableMeta)}
-
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderEditButton(tableMeta)}
 
               {renderExportButton(tableMeta)}
 
@@ -915,6 +911,7 @@ const TaskList = () => {
         message: resp?.message,
         variant: "success",
       });
+      FetchTaskList();
       setLoading(false);
       setOpenEditTaskDialog(false);
     } else {
