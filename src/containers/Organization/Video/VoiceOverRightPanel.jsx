@@ -38,6 +38,8 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import CheckIcon from "@mui/icons-material/Check";
 import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
+import AudioReactRecorder, { RecordState } from "audio-react-recorder";
+import StopIcon from "@mui/icons-material/Stop";
 
 const VoiceOverRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -71,8 +73,18 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
   const [loading, setLoading] = useState(false);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
-
+  const [data, setData] = useState(new Array());
+  const [url, setUrl] = useState(new Array());
+  const [recordAudio, setRecordAudio] = useState(new Array());
   const newSub = useCallback((item) => new Sub(item), []);
+
+  useEffect(() => {
+    if (!!sourceText) {
+      const recorderArray = sourceText.map(() => "stop");
+      setRecordAudio(recorderArray);
+      setData(new Array(recorderArray.length));
+    }
+  }, [sourceText]);
 
   const formatSub = useCallback(
     (sub) => {
@@ -334,6 +346,31 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
       label: "Huge",
     },
   ];
+
+  const handleStartRecording = (index) => {
+    updateRecorderState(RecordState.START, index);
+  };
+
+  const updateRecorderState = (newState, index) => {
+    const updatedArray = Object.assign([], recordAudio);
+    updatedArray[index] = newState;
+    setRecordAudio(updatedArray);
+  };
+
+  const onStopRecording = (data, index) => {
+    if (data && data.hasOwnProperty("url")) {
+      const updatedArray = Object.assign([], data);
+      updatedArray[index] = data.url;
+      setData(updatedArray);
+      updateRecorderState(RecordState.STOP, index);
+    }
+  };
+
+  const handleStopRecording = (index) => {
+    updateRecorderState(RecordState.STOP, index);
+  };
+
+  console.log(data);
 
   return (
     <>
@@ -607,9 +644,34 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                         style={{ justifyContent: "center" }}
                       >
                         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                          <IconButton>
-                            <MicIcon color="secondary" fontSize="large" />
-                          </IconButton>
+                          {recordAudio[index] == "stop" ||
+                          recordAudio[index] == "" ? (
+                            <IconButton
+                              onClick={() => handleStartRecording(index)}
+                            >
+                              <MicIcon color="secondary" fontSize="large" />
+                            </IconButton>
+                          ) : (
+                            <IconButton
+                              onClick={() => handleStopRecording(index)}
+                            >
+                              <StopIcon color="secondary" fontSize="large" />
+                            </IconButton>
+                          )}
+                          <div style={{ display: "none" }}>
+                            <AudioReactRecorder
+                              state={recordAudio[index]}
+                              onStop={(data) => onStopRecording(data, index)}
+                              style={{ display: "none" }}
+                            />
+                          </div>
+                          {recordAudio[index] == "stop" ? (
+                            <div>
+                              <audio src={data[index]} controls />
+                            </div>
+                          ) : (
+                            <></>
+                          )}
                         </Grid>
                         <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                           <Typography color="secondary" variant="h3">
