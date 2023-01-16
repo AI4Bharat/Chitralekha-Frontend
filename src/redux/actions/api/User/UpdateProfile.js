@@ -3,11 +3,12 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class UpdateProfileAPI extends API {
-  constructor(data, timeout = 2000) {
+  constructor(data, id, timeout = 2000) {
     super("PATCH", timeout, false);
     this.data = data;
     this.type = C.UPDATE_PROFILE;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateProfile}`;
+    this.queryStr = id ? `/users/account/${id}/update/` : ENDPOINTS.updateProfile;
+    this.endpoint = `${super.apiEndPointAuto()}${this.queryStr}`;
   }
 
   processResponse(res) {
