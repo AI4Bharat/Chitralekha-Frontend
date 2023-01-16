@@ -37,7 +37,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
                   padding: 2,
                   border: "1px solid #000000",
                   borderRadius: 2,
-                  width: "80%",
+                  width: "90%",
                 }}
               >
                 {el.text}

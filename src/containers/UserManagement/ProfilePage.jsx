@@ -125,7 +125,7 @@ const ProfilePage = () => {
             >
               <Typography variant="h4">Profile</Typography>
 
-              {(loggedInUser.id === +id || loggedInUser.role === "ADMIN") && (
+              {(loggedInUser.id === +id || loggedInUser.role === "ADMIN" || loggedInUser.role === "ORG_OWNER") && (
                 <Button
                   variant="outlined"
                   sx={{
