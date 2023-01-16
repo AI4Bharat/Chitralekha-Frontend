@@ -80,6 +80,7 @@ const EditProfile = () => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
   }, []);
+  console.log(userData.languages, " userData.languages");
 
   useEffect(() => {
     if (userData?.email && userData?.role && userData?.organization) {
@@ -89,6 +90,11 @@ const EditProfile = () => {
       setRole(roles.filter((value) => value.value === userData?.role)[0]);
       setOrganization(userData.organization);
       setAvailabilityStatus(userData?.availability_status);
+      setLanguage(
+        supportedLanguages.filter((item) =>
+          userData.languages.includes(item.label)
+        )
+      );
     }
   }, [userData]);
 
@@ -159,7 +165,7 @@ const EditProfile = () => {
       variant: "success",
     });
   };
-
+  console.log(language);
   const handleSubmit = () => {
     let updateProfileReqBody = {
       username: userDetails.username,
@@ -169,10 +175,10 @@ const EditProfile = () => {
       availability_status: availabilityStatus,
       enable_mail: true,
       role: role.value,
-      languages: language.map((item) => item.value),
+      languages: language.map((item) => item.label),
     };
 
-    if(loggedInUserData.role === "ADMIN") {
+    if (loggedInUserData.role === "ADMIN") {
       updateProfileReqBody.organization = organization.id;
     }
 
@@ -387,6 +393,12 @@ const EditProfile = () => {
                 <InputLabel id="languages">Languages</InputLabel>
                 <Select
                   multiple
+                  disabled={
+                    loggedInUserData.role === "ADMIN" ||
+                    loggedInUserData.role === "ORG_OWNER"
+                      ? false
+                      : true
+                  }
                   labelId="languages"
                   id="languages_select"
                   value={language}
@@ -424,6 +436,7 @@ const EditProfile = () => {
                 variant="contained"
                 color="primary"
                 onClick={handleSubmit}
+                sx={{ borderRadius: "8px" }}
               >
                 Update Profile
               </Button>
