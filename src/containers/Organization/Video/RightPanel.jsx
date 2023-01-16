@@ -427,7 +427,7 @@ const RightPanel = ({ currentIndex, player }) => {
           <Divider
             orientation="vertical"
             style={{
-              border: "1px solid grey",
+              border: "1px solid lightgray",
               height: "auto",
               margin: "0 5px",
             }}
@@ -461,7 +461,7 @@ const RightPanel = ({ currentIndex, player }) => {
           <Divider
             orientation="vertical"
             style={{
-              border: "1px solid grey",
+              border: "1px solid lightgray",
               height: "auto",
               margin: "0 5px",
             }}

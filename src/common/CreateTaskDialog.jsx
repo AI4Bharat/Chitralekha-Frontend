@@ -145,7 +145,7 @@ const CreateTaskDialog = ({
       />
     );
   };
-console.log(apiStatus.progress,'apiStatus.progress');
+
   return (
     <Dialog
       fullWidth={true}
