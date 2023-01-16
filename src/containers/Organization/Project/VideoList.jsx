@@ -170,22 +170,15 @@ const VideoList = ({ data, removeVideo }) => {
     const resp = await res.json();
     console.log(resp);
     if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
+      setShowAlert(true);
+      setAlertData(resp);
       setLoading(false);
       setOpenCreateTaskDialog(false);
     } else {
       setShowAlert(true);
       setAlertData(resp);
-      // setSnackbarInfo({
-      //   open: true,
-      //   message: resp?.error,
-      //   variant: "error",
-      // });
       setLoading(false);
+      setOpenCreateTaskDialog(false);
     }
   };
 
@@ -421,9 +414,13 @@ const VideoList = ({ data, removeVideo }) => {
         />
       )}
 
-      {
-        showAlert && <AlertComponent open={showAlert} data={alertData}/>
-      }
+      {showAlert && (
+        <AlertComponent
+          open={showAlert}
+          data={alertData}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
     </>
   );
 };
