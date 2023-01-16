@@ -2,7 +2,7 @@ import { Alert, Box, Snackbar } from "@mui/material";
 import React from "react";
 import ProjectStyle from "../styles/ProjectStyle";
 
-const AlertComponent = ({ open, data, onClose }) => {
+const AlertComponent = ({ open, data, onClose, alertType }) => {
   const classes = ProjectStyle();
 
   return (
@@ -12,8 +12,23 @@ const AlertComponent = ({ open, data, onClose }) => {
       onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
-      <Alert elevation={3} variant="filled" severity="info" onClose={onClose}>
-        <Box className={classes.message}>{data.message}</Box>
+      <Alert
+        elevation={3}
+        variant="standard"
+        severity={alertType === "pass" ? "success" : "error"}
+        onClose={onClose}
+        sx={{
+          borderRadius: "10px",
+          backgroundColor: "#fff",
+          boxShadow: "0px 4px 14px 2px rgba(20,6,6,0.52)!important",
+        }}
+      >
+        <Box
+          className={classes.message}
+          style={{ color: alertType === "pass" ? "green" : "red" }}
+        >
+          {data.message}
+        </Box>
 
         <Box className={classes.headerParent}>
           <Box className={classes.content1}>Task Type</Box>
