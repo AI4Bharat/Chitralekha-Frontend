@@ -83,6 +83,7 @@ const ViewTaskDialog = ({
         open={open}
         onClose={handleClose}
         aria-labelledby="responsive-dialog-title"
+        PaperProps={{ style: { borderRadius: "10px" } }}
       >
         <DialogContent sx={{ p: 5 }}>
           <Box display="flex" sx={{ mb: 3 }}>

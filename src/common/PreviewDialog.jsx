@@ -23,7 +23,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
-     
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogContent sx={{height:"410px"}}>
         <DialogContentText id="alert-dialog-description">
@@ -33,7 +33,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
                 id={`sub_${i}`}
                 textAlign={"start"}
                 sx={{
-                  marginY: 2,
+                  margin: 2,
                   padding: 2,
                   border: "1px solid #000000",
                   borderRadius: 2,

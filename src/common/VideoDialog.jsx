@@ -198,6 +198,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       PaperProps={{
         style: {
           overflowY: "hidden",
+          borderRadius: "10px",
         },
       }}
     >

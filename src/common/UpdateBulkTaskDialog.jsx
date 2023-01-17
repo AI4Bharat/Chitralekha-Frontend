@@ -129,6 +129,7 @@ const UpdateBulkTaskDialog = ({
         onClose={handleUserDialogClose}
         close
         maxWidth={"md"}
+        PaperProps={{ style: { borderRadius: "10px" } }}
       >
         <DialogTitle variant="h4">
           {isBulk ? "Update Tasks" : "Update Task"}

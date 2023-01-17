@@ -50,6 +50,7 @@ const CreateVideoDialog = ({
       onClose={handleUserDialogClose}
       close
       maxWidth={"md"}
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4">Create New Video/Audio</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
