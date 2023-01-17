@@ -44,6 +44,7 @@ const VideoList = ({ data, removeVideo }) => {
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
+  const [alertType, setAlertType] = useState("");
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
@@ -174,11 +175,13 @@ const VideoList = ({ data, removeVideo }) => {
       setAlertData(resp);
       setLoading(false);
       setOpenCreateTaskDialog(false);
+      setAlertType("pass");
     } else {
       setShowAlert(true);
       setAlertData(resp);
       setLoading(false);
       setOpenCreateTaskDialog(false);
+      setAlertType("fail");
     }
   };
 
@@ -419,6 +422,7 @@ const VideoList = ({ data, removeVideo }) => {
           open={showAlert}
           data={alertData}
           onClose={() => setShowAlert(false)}
+          alertType={alertType}
         />
       )}
     </>
