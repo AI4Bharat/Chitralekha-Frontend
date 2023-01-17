@@ -9,7 +9,7 @@ const AlertComponent = ({ open, data, onClose, alertType }) => {
     <Snackbar
       open={open}
       autoHideDuration={3000}
-      onClose={onClose}
+      // onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert
@@ -30,22 +30,34 @@ const AlertComponent = ({ open, data, onClose, alertType }) => {
           {data.message}
         </Box>
 
-        <Box className={classes.headerParent}>
-          <Box className={classes.content1}>Task Type</Box>
-          <Box className={classes.content2}>Message</Box>
-          <Box className={classes.content1}>Status</Box>
-        </Box>
+        <Box>
+          <Box className={classes.headerParent}>
+            <Box className={classes.content1}>Task Type</Box>
+            <Box className={classes.content2}>Message</Box>
+            <Box className={classes.content1}>Status</Box>
+          </Box>
 
-        <Box display="flex" flexDirection="column" backgroundColor="#fff">
-          {data?.response?.detailed_report?.map((item) => {
-            return (
-              <Box className={classes.contentParent}>
-                <Box className={classes.content1}>{item.task_type}</Box>
-                <Box className={classes.content2}>{item.message}</Box>
-                <Box className={classes.content1}>{item.status}</Box>
+          {data?.response?.detailed_report?.length > 0 && (
+            <Box
+              style={{
+                maxHeight: "200px",
+                overflowY:
+                  data?.response?.detailed_report?.length > 3 ? "scroll" : "",
+              }}
+            >
+              <Box display="flex" flexDirection="column" backgroundColor="#fff">
+                {data?.response?.detailed_report?.map((item) => {
+                  return (
+                    <Box className={classes.contentParent}>
+                      <Box className={classes.content1}>{item.task_type}</Box>
+                      <Box className={classes.content2}>{item.message}</Box>
+                      <Box className={classes.content1}>{item.status}</Box>
+                    </Box>
+                  );
+                })}
               </Box>
-            );
-          })}
+            </Box>
+          )}
         </Box>
       </Alert>
     </Snackbar>
