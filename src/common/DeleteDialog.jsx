@@ -32,6 +32,7 @@ const DeleteDialog = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       maxWidth={"md"}
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
