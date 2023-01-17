@@ -1,5 +1,6 @@
 export default {
   //User
+  signup: "/users/invite/",
   users: "/users/auth/jwt/create/",
   userList: "/users/auth/users/",
   loggedInUserDetails: "/users/account/me/fetch/",
