@@ -161,7 +161,7 @@ const ProjectReport = ({}) => {
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
           <FormControl fullWidth size="small">
             <InputLabel id="demo-simple-select-label" sx={{ fontSize: "18px" }}>
-              Select Reports Type
+              Select Report Type
             </InputLabel>
 
             <Select
