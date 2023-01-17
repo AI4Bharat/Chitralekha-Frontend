@@ -712,8 +712,9 @@ const TaskList = () => {
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.canEditTask && renderUpdateTaskButton(tableMeta)}
+              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") &&
+                renderUpdateTaskButton(tableMeta)}
 
               {userData.id === tableMeta.rowData[10].id &&
                 renderViewButton(tableMeta)}
@@ -725,15 +726,16 @@ const TaskList = () => {
 
               {renderPreviewButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.canDeleteTask && renderDeleteButton(tableMeta)}
+              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") &&
+                renderDeleteButton(tableMeta)}
             </Box>
           );
         },
       },
     },
   ];
- 
+
   const handleRowClick = (_currentRow, allRow) => {
     const temp = taskList.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
@@ -857,14 +859,18 @@ const TaskList = () => {
             </DialogActions>
           )}
           <DialogActions>
-            <CustomButton buttonVariant="standard" onClick={handleClose} label="Cancel" />
+            <CustomButton
+              buttonVariant="standard"
+              onClick={handleClose}
+              label="Cancel"
+            />
             {tasktype === "TRANSCRIPTION_EDIT" ||
             tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton
                 buttonVariant="contained"
                 onClick={handleok}
                 label="Export"
-               style={{ borderRadius: "8px"}}
+                style={{ borderRadius: "8px" }}
                 autoFocus
               />
             ) : (
@@ -872,7 +878,7 @@ const TaskList = () => {
                 onClick={handleokTranslation}
                 label="Export"
                 buttonVariant="contained"
-               style={{ borderRadius: "8px"}}
+                style={{ borderRadius: "8px" }}
                 autoFocus
               />
             )}
