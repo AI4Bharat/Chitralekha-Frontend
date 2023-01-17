@@ -165,6 +165,7 @@ const OrganizationReport = ({}) => {
               label="Select Reports Level"
               value={reportsLevel}
               onChange={handleChangeReportsLevel}
+              sx={{textAlign:"start"}}
             >
               {reportLevels.map((item) => (
                 <MenuItem value={item.reportLevel}>{item.reportLevel}</MenuItem>
@@ -189,6 +190,7 @@ const OrganizationReport = ({}) => {
                 label=" Select Project Stats"
                 value={languageLevelsStats}
                 onChange={handleChangelanguageLevelStats}
+                sx={{textAlign:"start"}}
               >
                 {languagelevelStats.map((item) => (
                   <MenuItem value={item.value}>{item.lable}</MenuItem>
