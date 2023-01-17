@@ -9,7 +9,7 @@ const AlertComponent = ({ open, data, onClose, alertType }) => {
     <Snackbar
       open={open}
       autoHideDuration={3000}
-      // onClose={onClose}
+      onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert
