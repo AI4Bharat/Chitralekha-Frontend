@@ -13,7 +13,8 @@ import {
   Menu,
   MenuItem,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Divider,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -38,7 +39,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import CheckIcon from "@mui/icons-material/Check";
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -63,7 +64,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
-  const [anchorElSettings, setAnchorElSettings] = useState(null)
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [anchorEle, setAnchorEle] = useState(null);
   const [anchorPos, setAnchorPos] = useState({
@@ -101,8 +102,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   };
 
   const handleCloseSettingsMenu = () => {
-    setAnchorElSettings(null)
-  }
+    setAnchorElSettings(null);
+  };
 
   const onMergeClick = (item, index) => {
     const existingsourceData = copySubs();
@@ -145,10 +146,14 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-  useEffect(()=>{
-    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
-    subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex])
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById(
+      "subtitleContainerTranslation"
+    );
+    subtitleScrollEle
+      .querySelector(`#sub_${currentIndex}`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex]);
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
@@ -408,23 +413,42 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
               <MenuItem>
                 <FormControlLabel
                   label="Transliteration"
-                  control={<Checkbox checked={enableTransliteration} onChange={() => {
-                    handleCloseSettingsMenu()
-                    setTransliteration(!enableTransliteration)
-                  }} />}
+                  control={
+                    <Checkbox
+                      checked={enableTransliteration}
+                      onChange={() => {
+                        handleCloseSettingsMenu();
+                        setTransliteration(!enableTransliteration);
+                      }}
+                    />
+                  }
                 />
               </MenuItem>
               <MenuItem>
                 <FormControlLabel
                   label="RTL Typing"
-                  control={<Checkbox checked={enableRTL_Typing} onChange={() => {
-                    handleCloseSettingsMenu()
-                    setRTL_Typing(!enableRTL_Typing)
-                  }} />}
+                  control={
+                    <Checkbox
+                      checked={enableRTL_Typing}
+                      onChange={() => {
+                        handleCloseSettingsMenu();
+                        setRTL_Typing(!enableRTL_Typing);
+                      }}
+                    />
+                  }
                 />
               </MenuItem>
             </Menu>
           </>
+
+          <Divider
+            orientation="vertical"
+            style={{
+              border: "1px solid lightgray",
+              height: "auto",
+              margin: "0 5px",
+            }}
+          />
 
           <Tooltip title="Font Size" placement="bottom">
             <IconButton
@@ -481,6 +505,15 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             onReplacementDone={onReplacementDone}
             enableTransliteration={enableTransliteration}
             transliterationLang={taskData?.target_language}
+          />
+
+          <Divider
+            orientation="vertical"
+            style={{
+              border: "1px solid lightgray",
+              height: "auto",
+              margin: "0 5px",
+            }}
           />
 
           <Tooltip title="Save" placement="bottom">

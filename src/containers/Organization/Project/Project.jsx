@@ -252,8 +252,8 @@ const Project = () => {
               {projectDetails.title}
             </Typography>
 
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.projectSettingVisible && (
+            {(projectInfo.managers.some((item) => item.id === userData.id) ||
+              userData.role === "ORG_OWNER") && (
               <IconButton
                 onClick={() =>
                   navigate(
@@ -389,8 +389,8 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.permittedToAddMembersInProject && (
+            {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
+              userData.role === "ORG_OWNER") && (
               <Button
                 className={classes.projectButton}
                 label={"Add Project Members"}

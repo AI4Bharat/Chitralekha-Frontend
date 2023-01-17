@@ -12,7 +12,8 @@ import {
   Menu,
   MenuItem,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Divider,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -37,7 +38,7 @@ import AddIcon from "@mui/icons-material/Add";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -94,21 +95,22 @@ const RightPanel = ({ currentIndex, player }) => {
   const [loading, setLoading] = useState(false);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
-  const [anchorElSettings, setAnchorElSettings] = useState(null)
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-
   const handleCloseSettingsMenu = () => {
-    setAnchorElSettings(null)
-  }
+    setAnchorElSettings(null);
+  };
 
   useEffect(() => {
     const subtitleScrollEle = document.getElementById("subTitleContainer");
-    subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex])
+    subtitleScrollEle
+      .querySelector(`#sub_${currentIndex}`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex]);
 
   const onMergeClick = (item, index) => {
     const existingsourceData = [...sourceText];
@@ -239,8 +241,8 @@ const RightPanel = ({ currentIndex, player }) => {
         message: resp?.message
           ? resp?.message
           : isAutosave
-            ? "Saved as draft"
-            : "",
+          ? "Saved as draft"
+          : "",
         variant: "success",
       });
       setLoading(false);
@@ -394,24 +396,42 @@ const RightPanel = ({ currentIndex, player }) => {
               <MenuItem>
                 <FormControlLabel
                   label="Transliteration"
-                  control={<Checkbox checked={enableTransliteration} onChange={() => {
-                    handleCloseSettingsMenu()
-                    setTransliteration(!enableTransliteration)
-                  }} />}
+                  control={
+                    <Checkbox
+                      checked={enableTransliteration}
+                      onChange={() => {
+                        handleCloseSettingsMenu();
+                        setTransliteration(!enableTransliteration);
+                      }}
+                    />
+                  }
                 />
               </MenuItem>
               <MenuItem>
                 <FormControlLabel
                   label="RTL Typing"
-                  control={<Checkbox checked={enableRTL_Typing} onChange={() => {
-                    handleCloseSettingsMenu()
-                    setRTL_Typing(!enableRTL_Typing)
-                  }} />}
+                  control={
+                    <Checkbox
+                      checked={enableRTL_Typing}
+                      onChange={() => {
+                        handleCloseSettingsMenu();
+                        setRTL_Typing(!enableRTL_Typing);
+                      }}
+                    />
+                  }
                 />
               </MenuItem>
             </Menu>
           </>
 
+          <Divider
+            orientation="vertical"
+            style={{
+              border: "1px solid lightgray",
+              height: "auto",
+              margin: "0 5px",
+            }}
+          />
 
           <Tooltip title="Font Size" placement="bottom">
             <IconButton
@@ -436,6 +456,15 @@ const RightPanel = ({ currentIndex, player }) => {
             onReplacementDone={onReplacementDone}
             enableTransliteration={enableTransliteration}
             transliterationLang={taskData?.src_language}
+          />
+
+          <Divider
+            orientation="vertical"
+            style={{
+              border: "1px solid lightgray",
+              height: "auto",
+              margin: "0 5px",
+            }}
           />
 
           <Tooltip title="Save" placement="bottom">
@@ -654,8 +683,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       }}
                       renderComponent={(props) => (
                         <textarea
-                          className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                          className={`${classes.customTextarea} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                           dir={enableRTL_Typing ? "rtl" : "ltr"}
                           rows={4}
                           onBlur={() =>
@@ -676,8 +706,9 @@ const RightPanel = ({ currentIndex, player }) => {
                       onMouseUp={(e) => onMouseUp(e, index)}
                       value={item.text}
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                        }`}
+                      className={`${classes.customTextarea} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
                       style={{
                         width: "90%",
                         fontSize: fontSize,

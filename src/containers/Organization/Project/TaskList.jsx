@@ -26,6 +26,7 @@ import {
   Tooltip,
   IconButton,
   Button,
+  DialogTitle,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../../common/Button";
@@ -109,6 +110,7 @@ const TaskList = () => {
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
 
   const handleClose = () => {
     setOpen(false);
@@ -374,7 +376,7 @@ const TaskList = () => {
     );
   };
 
-  const renderEditTaskButton = (tableData) => {
+  const renderUpdateTaskButton = (tableData) => {
     return (
       <Tooltip title="Edit Task Details">
         <IconButton
@@ -708,11 +710,11 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log(tableMeta.rowData[10], "tableMeta.rowData[10]");
           return (
             <Box sx={{ display: "flex" }}>
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.canEditTask && renderEditTaskButton(tableMeta)}
+              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") &&
+                renderUpdateTaskButton(tableMeta)}
 
               {userData.id === tableMeta.rowData[10].id &&
                 renderViewButton(tableMeta)}
@@ -724,8 +726,9 @@ const TaskList = () => {
 
               {renderPreviewButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.canDeleteTask && renderDeleteButton(tableMeta)}
+              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") &&
+                renderDeleteButton(tableMeta)}
             </Box>
           );
         },
@@ -802,17 +805,11 @@ const TaskList = () => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        PaperProps={{ style: { borderRadius: "10px" } }}
       >
-        <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-            align="center"
-            sx={{ mb: 2, color: "black", fontSize: "25px" }}
-          >
-            Export Subtitle
-          </DialogContentText>
-          <Divider />
+        <DialogTitle variant="h4">Export Subtitle</DialogTitle>
 
+        <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
             {tasktype === "TRANSCRIPTION_EDIT" ||
             tasktype === "TRANSCRIPTION_REVIEW"
@@ -862,14 +859,26 @@ const TaskList = () => {
             </DialogActions>
           )}
           <DialogActions>
-            <CustomButton onClick={handleClose} label="Cancel" />
+            <CustomButton
+              buttonVariant="standard"
+              onClick={handleClose}
+              label="Cancel"
+            />
             {tasktype === "TRANSCRIPTION_EDIT" ||
             tasktype === "TRANSCRIPTION_REVIEW" ? (
-              <CustomButton onClick={handleok} label="Export" autoFocus />
+              <CustomButton
+                buttonVariant="contained"
+                onClick={handleok}
+                label="Export"
+                style={{ borderRadius: "8px" }}
+                autoFocus
+              />
             ) : (
               <CustomButton
                 onClick={handleokTranslation}
                 label="Export"
+                buttonVariant="contained"
+                style={{ borderRadius: "8px" }}
                 autoFocus
               />
             )}

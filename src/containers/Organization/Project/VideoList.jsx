@@ -23,6 +23,7 @@ import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
 import { roles } from "../../../utils/utils";
 import DeleteDialog from "../../../common/DeleteDialog";
 import VideoStatusTable from "../../../common/VideoStatusTable";
+import AlertComponent from "../../../common/Alert";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
@@ -41,11 +42,15 @@ const VideoList = ({ data, removeVideo }) => {
   const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertData, setAlertData] = useState({});
+  const [alertType, setAlertType] = useState("");
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
+  
   const handleVideoDialog = (item) => {
     setOpen(true);
     setCurrentVideoDetails([item]);
@@ -125,8 +130,8 @@ const VideoList = ({ data, removeVideo }) => {
                   </IconButton>
                 </Tooltip>
 
-                {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.permittedToCreateTask && (
+                {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") && (
                   <Tooltip title="Create Task">
                     <IconButton
                       onClick={() => {
@@ -140,8 +145,8 @@ const VideoList = ({ data, removeVideo }) => {
                   </Tooltip>
                 )}
 
-                {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.permittedToDeleteVideoAudio && (
+                {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") && (
                   <Tooltip title="Delete">
                     <IconButton onClick={() => handleDeleteVideo(item.id)}>
                       <DeleteIcon color="error" />
@@ -165,21 +170,19 @@ const VideoList = ({ data, removeVideo }) => {
       headers: apiObj.getHeaders().headers,
     });
     const resp = await res.json();
+    console.log(resp);
     if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
+      setShowAlert(true);
+      setAlertData(resp);
       setLoading(false);
       setOpenCreateTaskDialog(false);
+      setAlertType("pass");
     } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.error,
-        variant: "error",
-      });
+      setShowAlert(true);
+      setAlertData(resp);
       setLoading(false);
+      setOpenCreateTaskDialog(false);
+      setAlertType("fail");
     }
   };
 
@@ -412,6 +415,15 @@ const VideoList = ({ data, removeVideo }) => {
           submit={() => handleok(projectid)}
           loading={loading}
           message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
+        />
+      )}
+
+      {showAlert && (
+        <AlertComponent
+          open={showAlert}
+          data={alertData}
+          onClose={() => setShowAlert(false)}
+          alertType={alertType}
         />
       )}
     </>

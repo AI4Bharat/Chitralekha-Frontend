@@ -16,7 +16,11 @@ const ConfirmDialog = ({
   loading,
 }) => {
   return (
-    <Dialog open={openDialog} onClose={handleClose}>
+    <Dialog
+      open={openDialog}
+      onClose={handleClose}
+      PaperProps={{ style: { borderRadius: "10px" } }}
+    >
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
