@@ -25,6 +25,7 @@ import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
 import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
 import EditProject from "./containers/Organization/Project/EditProject";
+import SignUp from "./containers/UserManagement/signup";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -139,6 +140,8 @@ const RootRouter = () => {
             <Layout component={<EditProject />} Backbutton={true} />
           )}
         />
+
+        <Route path="/invite/:invitecode" element={<SignUp />} />
       </Routes>
     </HashRouter>
   );
