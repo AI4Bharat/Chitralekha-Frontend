@@ -1,6 +1,6 @@
 // TranslationRightPanel
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import {
   Button,
@@ -352,6 +352,18 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     },
   ];
 
+  const sourceLength = (index) => {
+    if (sourceText[index]?.text.trim() !== "")
+      return sourceText[index]?.text.trim().split(" ").length;
+    return 0;
+  };
+
+  const targetLength = (index) => {
+    if (sourceText[index]?.target_text.trim() !== "")
+      return sourceText[index]?.target_text.trim().split(" ").length;
+    return 0;
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -566,6 +578,13 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
+            console.log(
+              "diff",
+              index,
+              sourceLength(index),
+              targetLength(index),
+              sourceLength(index) - targetLength(index)
+            );
             return (
               <Box id={`sub_${index}`}>
                 <Box
@@ -711,44 +730,98 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       }}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
-                        <textarea
-                          className={`${classes.textAreaTransliteration} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
-                          dir={enableRTL_Typing ? "rtl" : "ltr"}
-                          rows={4}
-                          onBlur={() =>
-                            setTimeout(() => {
-                              setShowPopOver(false);
-                            }, 200)
-                          }
-                          {...props}
-                        />
+                        <div
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <textarea
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                            dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            rows={4}
+                            onBlur={() =>
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200)
+                            }
+                            {...props}
+                          />
+                          <span
+                            style={{
+                              background: "white",
+                              color:
+                                Math.abs(
+                                  sourceLength(index) - targetLength(index)
+                                ) >= 3
+                                  ? "red"
+                                  : "green",
+                              fontWeight: 700,
+                              height: "20px",
+                              width: "30px",
+                              borderRadius: "50%",
+                              position: "absolute",
+                              bottom: "-10px",
+                              right: "25px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {targetLength(index)}
+                          </span>
+                        </div>
                       )}
                     />
                   ) : (
-                    <textarea
-                      rows={4}
-                      className={`${classes.textAreaTransliteration} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
-                      dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      style={{ fontSize: fontSize, height: "100px" }}
-                      onChange={(event) => {
-                        changeTranscriptHandler(
-                          event.target.value,
-                          index,
-                          "transaltion"
-                        );
+                    <div
+                      style={{
+                        position: "relative",
                       }}
-                      onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() =>
-                        setTimeout(() => {
-                          setShowPopOver(false);
-                        }, 200)
-                      }
-                      value={item.target_text}
-                    />
+                    >
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{ fontSize: fontSize, height: "100px" }}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transaltion"
+                          );
+                        }}
+                        onMouseUp={(e) => onMouseUp(e, index)}
+                        onBlur={() =>
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200)
+                        }
+                        value={item.target_text}
+                      />
+                      <span
+                        style={{
+                          background: "white",
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          fontWeight: 700,
+                          height: "20px",
+                          width: "30px",
+                          borderRadius: "50%",
+                          position: "absolute",
+                          bottom: "-10px",
+                          right: "0px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {targetLength(index)}
+                      </span>
+                    </div>
                   )}
                 </CardContent>
               </Box>

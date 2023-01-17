@@ -343,6 +343,12 @@ const RightPanel = ({ currentIndex, player }) => {
     setSourceText(copySub);
   };
 
+  const targetLength = (index) => {
+    if (sourceText[index]?.text.trim() !== "")
+      return sourceText[index]?.text.trim().split(" ").length;
+    return 0;
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -682,45 +688,91 @@ const RightPanel = ({ currentIndex, player }) => {
                         width: "90%",
                       }}
                       renderComponent={(props) => (
-                        <textarea
-                          className={`${classes.customTextarea} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
-                          dir={enableRTL_Typing ? "rtl" : "ltr"}
-                          rows={4}
-                          onBlur={() =>
-                            setTimeout(() => {
-                              setShowPopOver(false);
-                            }, 200)
-                          }
-                          style={{ fontSize: fontSize, height: "120px" }}
-                          {...props}
-                        />
+                        <div
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <textarea
+                            className={`${classes.customTextarea} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                            dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            rows={4}
+                            onBlur={() =>
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200)
+                            }
+                            style={{ fontSize: fontSize, height: "120px" }}
+                            {...props}
+                          />
+                          <span
+                            id="charNum"
+                            style={{
+                              background: "white",
+                              color: "green",
+                              fontWeight: 700,
+                              height: "20px",
+                              width: "30px",
+                              borderRadius: "50%",
+                              position: "absolute",
+                              bottom: "-10px",
+                              right: "-25px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {targetLength(index)}
+                          </span>
+                        </div>
                       )}
                     />
                   ) : (
-                    <textarea
-                      onChange={(event) => {
-                        changeTranscriptHandler(event.target.value, index);
-                      }}
-                      onMouseUp={(e) => onMouseUp(e, index)}
-                      value={item.text}
-                      dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      className={`${classes.customTextarea} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
+                    <div
                       style={{
-                        width: "90%",
-                        fontSize: fontSize,
-                        height: "120px",
+                        position: "relative",
                       }}
-                      rows={4}
-                      onBlur={() =>
-                        setTimeout(() => {
-                          setShowPopOver(false);
-                        }, 200)
-                      }
-                    />
+                    >
+                      <textarea
+                        onChange={(event) => {
+                          changeTranscriptHandler(event.target.value, index);
+                        }}
+                        onMouseUp={(e) => onMouseUp(e, index)}
+                        value={item.text}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        className={`${classes.customTextarea} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
+                        style={{
+                          width: "90%",
+                          fontSize: fontSize,
+                          height: "120px",
+                        }}
+                        rows={4}
+                        onBlur={() =>
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200)
+                        }
+                      />
+                      <span
+                        id="charNum"
+                        style={{
+                          background: "white",
+                          color: "green",
+                          fontWeight: 700,
+                          height: "20px",
+                          width: "30px",
+                          borderRadius: "50%",
+                          position: "absolute",
+                          bottom: "-10px",
+                          right: "25px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {targetLength(index)}
+                      </span>
+                    </div>
                   )}
                 </CardContent>
               </Box>
