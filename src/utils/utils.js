@@ -176,7 +176,7 @@ export const roles = [
     showSelectCheckbox: true,
     canEditTask: true,
     canDeleteTask: true,
-    ProjectReport:false,
+    ProjectReport:true,
     organizationReport:true,
   },
 ];
