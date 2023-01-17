@@ -25,6 +25,7 @@ import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
 import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
 import EditProject from "./containers/Organization/Project/EditProject";
+import TaskList from "./containers/Organization/Project/TaskList";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -68,6 +69,12 @@ const RootRouter = () => {
           path="/my-organization/:id"
           element={ProtectedRouteWrapper(
             <Layout component={<MyOrganization />} />
+          )}
+        />
+        <Route
+          path="/task-list"
+          element={ProtectedRouteWrapper(
+            <Layout component={<TaskList />} />
           )}
         />
         <Route
