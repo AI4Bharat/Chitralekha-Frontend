@@ -49,7 +49,8 @@ const VideoList = ({ data, removeVideo }) => {
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
+  
   const handleVideoDialog = (item) => {
     setOpen(true);
     setCurrentVideoDetails([item]);
@@ -129,8 +130,8 @@ const VideoList = ({ data, removeVideo }) => {
                   </IconButton>
                 </Tooltip>
 
-                {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.permittedToCreateTask && (
+                {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") && (
                   <Tooltip title="Create Task">
                     <IconButton
                       onClick={() => {
@@ -144,8 +145,8 @@ const VideoList = ({ data, removeVideo }) => {
                   </Tooltip>
                 )}
 
-                {roles.filter((role) => role.value === userData?.role)[0]
-                  ?.permittedToDeleteVideoAudio && (
+                {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") && (
                   <Tooltip title="Delete">
                     <IconButton onClick={() => handleDeleteVideo(item.id)}>
                       <DeleteIcon color="error" />
