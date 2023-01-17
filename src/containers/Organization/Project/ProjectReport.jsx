@@ -55,46 +55,26 @@ const ProjectReport = ({}) => {
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
   };
-
+  let fetchedItems;
   useEffect(() => {
-    let fetchedItems;
 
     reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
       ? (fetchedItems = ProjectReportData.transcript_stats)
       : (fetchedItems = ProjectReportData.translation_stats);
 
     setProjectreport(fetchedItems);
-    let tempColumns = [];
-    let tempSelected = [];
-    if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.keys(fetchedItems[0]).forEach((key) => {
-        tempColumns.push({
-          name: key,
-          label: snakeToTitleCase(key),
-          options: {
-            filter: false,
-            sort: false,
-            align: "center",
-            customBodyRender: (value) => {
-              return value === null ? "-" : value;
-            },
-          },
-        });
-        tempSelected.push(key);
-      });
-    } else {
-      setProjectreport([]);
-    }
-    setColumns(tempColumns);
-    setSelectedColumns(tempSelected);
+    Projectreport();
   }, [ProjectReportData, languageLevelsStats, reportsLevel]);
 
   useEffect(() => {
-    let fetchedItems;
 
     fetchedItems = ProjectReportData;
 
     setProjectreport(fetchedItems);
+    Projectreport();
+  }, [ProjectReportData]);
+
+  const Projectreport = () => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
@@ -118,7 +98,7 @@ const ProjectReport = ({}) => {
     }
     setColumns(tempColumns);
     setSelectedColumns(tempSelected);
-  }, [ProjectReportData]);
+  };
 
   useEffect(() => {
     const newCols = columns.map((col) => {
@@ -145,7 +125,7 @@ const ProjectReport = ({}) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,

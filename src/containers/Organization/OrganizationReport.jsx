@@ -29,18 +29,17 @@ import { Padding } from "@mui/icons-material";
 const reportLevels = [
   { reportLevel: "User" },
   { reportLevel: "Language" },
-  {reportLevel:"Project"}
+  { reportLevel: "Project" },
 ];
 
 const languagelevelStats = [
-    { lable: "Transcript", value: "transcript_stats" },
-    { lable: "Translation", value: "translation_stats" },
-  ];
+  { lable: "Transcript", value: "transcript_stats" },
+  { lable: "Translation", value: "translation_stats" },
+];
 
 const OrganizationReport = ({}) => {
   const { id } = useParams();
   const dispatch = useDispatch();
-
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -49,9 +48,7 @@ const OrganizationReport = ({}) => {
   const [languageLevelsStats, setlanguageLevelStats] = useState("");
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const ReportData = useSelector(
-    (state) => state.getOrganizationReports?.data
-  );
+  const ReportData = useSelector((state) => state.getOrganizationReports?.data);
 
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
@@ -66,57 +63,33 @@ const OrganizationReport = ({}) => {
 
   const pageSearch = () => {
     return projectreport.filter((el) => {
-        console.log(el,"elelelelelel")
+      console.log(el, "elelelelelel");
       if (SearchProject == "") {
         return el;
       } else if (
-        el.username
-        ?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      } 
+      }
     });
   };
-
+  let fetchedItems;
   useEffect(() => {
-    let fetchedItems;
-
     reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
       ? (fetchedItems = ReportData.transcript_stats)
       : (fetchedItems = ReportData.translation_stats);
 
     setProjectreport(fetchedItems);
-    let tempColumns = [];
-    let tempSelected = [];
-    if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.keys(fetchedItems[0]).forEach((key) => {
-        tempColumns.push({
-          name: key,
-          label: snakeToTitleCase(key),
-          options: {
-            filter: false,
-            sort: false,
-            align: "center",
-            customBodyRender: (value) => {
-              return value === null ? "-" : value;
-            },
-          },
-        });
-        tempSelected.push(key);
-      });
-    } else {
-      setProjectreport([]);
-    }
-    setColumns(tempColumns);
-    setSelectedColumns(tempSelected);
+    OrgProjectreport();
   }, [ReportData, languageLevelsStats, reportsLevel]);
 
   useEffect(() => {
-    let fetchedItems;
-
     fetchedItems = ReportData;
-
     setProjectreport(fetchedItems);
+    OrgProjectreport();
+  }, [ReportData]);
+
+  const OrgProjectreport = () => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
@@ -140,7 +113,7 @@ const OrganizationReport = ({}) => {
     }
     setColumns(tempColumns);
     setSelectedColumns(tempSelected);
-  }, [ReportData]);
+  };
 
   useEffect(() => {
     const newCols = columns.map((col) => {
@@ -167,7 +140,7 @@ const OrganizationReport = ({}) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -199,8 +172,8 @@ const OrganizationReport = ({}) => {
             </Select>
           </FormControl>
         </Grid>
-       
-          <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+
+        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
           {reportsLevel === "Language" && (
             <FormControl fullWidth size="small">
               <InputLabel
@@ -222,9 +195,8 @@ const OrganizationReport = ({}) => {
                 ))}
               </Select>
             </FormControl>
-             )}
-          </Grid>
-       
+          )}
+        </Grid>
 
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}></Grid>
 
@@ -234,11 +206,7 @@ const OrganizationReport = ({}) => {
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable
-          data={pageSearch()}
-          columns={columns}
-          options={options}
-        />
+        <MUIDataTable data={pageSearch()} columns={columns} options={options} />
       </ThemeProvider>
     </>
   );
