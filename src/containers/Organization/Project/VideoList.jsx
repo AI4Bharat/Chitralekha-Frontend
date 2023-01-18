@@ -50,7 +50,7 @@ const VideoList = ({ data, removeVideo }) => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
-  
+
   const handleVideoDialog = (item) => {
     setOpen(true);
     setCurrentVideoDetails([item]);
@@ -130,8 +130,10 @@ const VideoList = ({ data, removeVideo }) => {
                   </IconButton>
                 </Tooltip>
 
-                {(projectInfo.managers.some((item) => item.id === userData.id) ||
-                userData.role === "ORG_OWNER") && (
+                {(projectInfo.managers.some(
+                  (item) => item.id === userData.id
+                ) ||
+                  userData.role === "ORG_OWNER") && (
                   <Tooltip title="Create Task">
                     <IconButton
                       onClick={() => {
@@ -145,8 +147,10 @@ const VideoList = ({ data, removeVideo }) => {
                   </Tooltip>
                 )}
 
-                {(projectInfo.managers.some((item) => item.id === userData.id) ||
-                userData.role === "ORG_OWNER") && (
+                {(projectInfo.managers.some(
+                  (item) => item.id === userData.id
+                ) ||
+                  userData.role === "ORG_OWNER") && (
                   <Tooltip title="Delete">
                     <IconButton onClick={() => handleDeleteVideo(item.id)}>
                       <DeleteIcon color="error" />
@@ -170,19 +174,36 @@ const VideoList = ({ data, removeVideo }) => {
       headers: apiObj.getHeaders().headers,
     });
     const resp = await res.json();
-    console.log(resp);
+
     if (res.ok) {
-      setShowAlert(true);
-      setAlertData(resp);
       setLoading(false);
       setOpenCreateTaskDialog(false);
-      setAlertType("pass");
+
+      if (isBulk) {
+        setShowAlert(true);
+        setAlertData(resp);
+        setAlertType("pass");
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      }
     } else {
-      setShowAlert(true);
-      setAlertData(resp);
       setLoading(false);
       setOpenCreateTaskDialog(false);
-      setAlertType("fail");
+      if (isBulk) {
+        setShowAlert(true);
+        setAlertData(resp);
+        setAlertType("fail");
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
     }
   };
 

@@ -4,7 +4,7 @@ import ProjectStyle from "../styles/ProjectStyle";
 
 const AlertComponent = ({ open, data, onClose, alertType }) => {
   const classes = ProjectStyle();
-
+  
   return (
     <Snackbar
       open={open}
@@ -30,14 +30,14 @@ const AlertComponent = ({ open, data, onClose, alertType }) => {
           {data.message}
         </Box>
 
-        <Box>
-          <Box className={classes.headerParent}>
-            <Box className={classes.content1}>Task Type</Box>
-            <Box className={classes.content2}>Message</Box>
-            <Box className={classes.content1}>Status</Box>
-          </Box>
+        {data?.response?.detailed_report?.length > 0 && (
+          <Box>
+            <Box className={classes.headerParent}>
+              <Box className={classes.content1}>Task Type</Box>
+              <Box className={classes.content2}>Message</Box>
+              <Box className={classes.content1}>Status</Box>
+            </Box>
 
-          {data?.response?.detailed_report?.length > 0 && (
             <Box
               style={{
                 maxHeight: "200px",
@@ -57,8 +57,8 @@ const AlertComponent = ({ open, data, onClose, alertType }) => {
                 })}
               </Box>
             </Box>
-          )}
-        </Box>
+          </Box>
+        )}
       </Alert>
     </Snackbar>
   );
