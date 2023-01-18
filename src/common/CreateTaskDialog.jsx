@@ -91,6 +91,7 @@ const CreateTaskDialog = ({
       video_ids: Array.isArray(videoDetails)
         ? videoDetails.map((item) => item.id)
         : [videoDetails.id],
+      is_single_task: !isBulk,
     };
     createTaskHandler(obj);
   };
@@ -152,7 +153,7 @@ const CreateTaskDialog = ({
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}      
+      maxWidth={"md"}
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4">Create New Task</DialogTitle>
@@ -318,7 +319,7 @@ const CreateTaskDialog = ({
           onClick={() => submitHandler()}
         >
           Create Task{" "}
-          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary"/>}
+          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
         </Button>
       </DialogActions>
     </Dialog>
