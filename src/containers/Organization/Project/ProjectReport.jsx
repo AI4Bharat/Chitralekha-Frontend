@@ -45,6 +45,7 @@ const ProjectReport = ({}) => {
   const ProjectReportData = useSelector(
     (state) => state.getProjectReports?.data
   );
+  const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
@@ -73,6 +74,18 @@ const ProjectReport = ({}) => {
     setProjectreport(fetchedItems);
     Projectreport();
   }, [ProjectReportData]);
+
+  const pageSearch = () => {
+    return projectreport.filter((el) => {
+      if (SearchProject == "") {
+        return el;
+      } else if (
+        Object.values(el).toString().toLowerCase().includes(SearchProject.toLowerCase())
+      ) {
+        return el;
+      }
+    });
+  };
 
   const Projectreport = () => {
     let tempColumns = [];
@@ -110,6 +123,15 @@ const ProjectReport = ({}) => {
     setColumns(newCols);
   }, [selectedColumns]);
 
+  const renderToolBar = () => {
+    return (
+      <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
+        <Search />
+      </Box>
+    );
+  };
+
+
   const options = {
     textLabels: {
       body: {
@@ -133,6 +155,7 @@ const ProjectReport = ({}) => {
     selectableRows: "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
 
   return (
@@ -193,7 +216,7 @@ const ProjectReport = ({}) => {
 
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
-          data={projectreport}
+          data={pageSearch()}
           columns={columns}
           options={options}
         />

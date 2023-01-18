@@ -32,53 +32,10 @@ const AdminLevelReport = ({}) => {
 
   const pageSearch = () => {
     return projectreport.filter((el) => {
-      console.log(el, "elelel");
       if (SearchProject == "") {
         return el;
       } else if (
-        el.title?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.num_projects
-          .toString()
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.num_videos
-          .toString()
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.num_translation_tasks
-          .toString()
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.num_transcription_tasks
-          .toString()
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.num_transcription_tasks_completed
-          .toString()
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.num_translation_tasks_completed
-          .toString()
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
+        Object.values(el).toString().toLowerCase().includes(SearchProject.toLowerCase())
       ) {
         return el;
       }

@@ -63,11 +63,10 @@ const OrganizationReport = ({}) => {
 
   const pageSearch = () => {
     return projectreport.filter((el) => {
-      console.log(el, "elelelelelel");
       if (SearchProject == "") {
         return el;
       } else if (
-        Object.keys(el).join('').toLowerCase().includes(SearchProject.toLowerCase())
+        Object.values(el).toString().toLowerCase().includes(SearchProject.toLowerCase())
       ) {
         return el;
       }
@@ -131,7 +130,7 @@ const OrganizationReport = ({}) => {
   const renderToolBar = () => {
     return (
       <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
-        {/* <Search /> */}
+        <Search />
       </Box>
     );
   };
