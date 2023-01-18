@@ -258,30 +258,6 @@ const TaskList = () => {
 
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
-  };
-
-  const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
-    setOpenPreviewDialog(true);
-    const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
-    //dispatch(APITransport(taskObj));
-    const res = await fetch(taskObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(taskObj.getBody()),
-      headers: taskObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    setLoading(false);
-    if (res.ok) {
-      setPreviewdata(resp);
-    } else {
-      setOpenPreviewDialog(false);
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
-  };
 
     setLoading(true);
     const apiObj = new DeleteTaskAPI(id, flag);
@@ -815,7 +791,7 @@ const TaskList = () => {
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+              {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
                 userData.role === "ORG_OWNER") &&
                 renderUpdateTaskButton(tableMeta)}
 
@@ -829,7 +805,7 @@ const TaskList = () => {
 
               {renderPreviewButton(tableMeta)}
 
-              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+              {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
                 userData.role === "ORG_OWNER") &&
                 renderDeleteButton(tableMeta)}
             </Box>
