@@ -6,7 +6,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { Grid, Typography, Switch, FormControlLabel } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Switch,
+  FormControlLabel,
+  IconButton,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -18,6 +24,7 @@ import { getTimeStamp, getMilliseconds } from "../utils/utils";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
+import CloseIcon from "@mui/icons-material/Close";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -202,10 +209,22 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         },
       }}
     >
-      <DialogTitle id="responsive-dialog-title">
-        <Typography variant="h4" style={{ marginRight: "auto" }}>
+      <DialogTitle id="responsive-dialog-title" display="flex">
+        <Typography
+          variant="h4"
+          style={{
+            marginRight: "auto",
+            lineHeight: "inherit",
+            overflowWrap: "break-word",
+            wordWrap: "break-word",
+            wordBreak: "break-word",
+          }}
+        >
           {videoDetails[0].name}
         </Typography>
+        <IconButton aria-label="close" onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
       <DialogContent>
@@ -298,13 +317,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       </DialogContent>
 
       <DialogActions style={{ padding: "24px" }}>
-        
-        <Button autoFocus onClick={handleClose}>
+        {/* <Button autoFocus onClick={handleClose}>
           Close
-        </Button>
+        </Button> */}
       </DialogActions>
-
-      
     </Dialog>
   );
 };
