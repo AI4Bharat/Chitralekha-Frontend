@@ -33,7 +33,7 @@ const CreateVideoDialog = ({
 }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
-  console.log(apiStatus, "apiStatus");
+
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
