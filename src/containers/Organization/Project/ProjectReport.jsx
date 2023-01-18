@@ -23,6 +23,7 @@ import Loader from "../../../common/Spinner";
 import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { snakeToTitleCase } from "../../../utils/utils";
+import DatasetStyle from "../../../styles/Dataset";
 
 const reportLevels = [{ reportLevel: "User" }, { reportLevel: "Language" }];
 
@@ -34,6 +35,7 @@ const languagelevelStats = [
 const ProjectReport = ({}) => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -125,7 +127,7 @@ const ProjectReport = ({}) => {
 
   const renderToolBar = () => {
     return (
-      <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
+      <Box className={classes.searchStyle}>
         <Search />
       </Box>
     );
@@ -205,12 +207,6 @@ const ProjectReport = ({}) => {
               </Select>
             </FormControl>
           )}
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}></Grid>
-
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          {/* <Search /> */}
         </Grid>
       </Grid>
 

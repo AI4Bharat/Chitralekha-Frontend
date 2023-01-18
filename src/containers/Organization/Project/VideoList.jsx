@@ -308,6 +308,14 @@ const VideoList = ({ data, removeVideo }) => {
     "Status",
   ];
 
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -323,7 +331,7 @@ const VideoList = ({ data, removeVideo }) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -334,6 +342,7 @@ const VideoList = ({ data, removeVideo }) => {
       : "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
     selectToolbarPlacement: "none",
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
@@ -378,10 +387,6 @@ const VideoList = ({ data, removeVideo }) => {
               Create Task
             </Button>
           )}
-
-        <Box sx={{ marginLeft: "auto" }}>
-          <Search />
-        </Box>
       </Box>
 
       <ThemeProvider theme={tableTheme}>

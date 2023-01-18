@@ -15,7 +15,7 @@ import {
   Grid,
 } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import PreviewIcon from "@mui/icons-material/Preview";
+
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -24,7 +24,7 @@ import FetchOrganizationReportsAPI from "../../redux/actions/api/Organization/Fe
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import { snakeToTitleCase } from "../../utils/utils";
 import Search from "../../common/Search";
-import { Padding } from "@mui/icons-material";
+import DatasetStyle from "../../styles/Dataset";
 
 const reportLevels = [
   { reportLevel: "User" },
@@ -40,6 +40,7 @@ const languagelevelStats = [
 const OrganizationReport = ({}) => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -72,7 +73,6 @@ const OrganizationReport = ({}) => {
       }
     });
   };
-
 
 
   let fetchedItems;
@@ -129,7 +129,7 @@ const OrganizationReport = ({}) => {
 
   const renderToolBar = () => {
     return (
-      <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
+      <Box className={classes.searchStyle}>
         <Search />
       </Box>
     );
@@ -217,7 +217,7 @@ const OrganizationReport = ({}) => {
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={pageSearch()} columns={columns} options={options} />
+        <MUIDataTable title="" data={pageSearch()} columns={columns} options={options} />
       </ThemeProvider>
     </>
   );

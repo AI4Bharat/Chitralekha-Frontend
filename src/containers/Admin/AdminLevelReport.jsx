@@ -83,7 +83,7 @@ const AdminLevelReport = ({}) => {
 
   const renderToolBar = () => {
     return (
-      <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
+      <Box className={classes.searchStyle}>
         <Search />
       </Box>
     );

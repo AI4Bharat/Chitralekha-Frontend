@@ -751,6 +751,14 @@ const TaskList = () => {
     setShowEditTaskBtn(!!temp.length);
   };
 
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -766,7 +774,7 @@ const TaskList = () => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -779,6 +787,7 @@ const TaskList = () => {
     jumpToPage: true,
     selectToolbarPlacement: "none",
     rowsSelected: rows,
+    customToolbar: renderToolBar,
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
@@ -950,11 +959,7 @@ const TaskList = () => {
             >
               Edit Tasks
             </Button>
-          )}
-
-        <Box sx={{ marginLeft: "auto" }}>
-          <Search />
-        </Box>
+          )}    
       </Box>
 
       <Grid>{renderSnackBar()}</Grid>
