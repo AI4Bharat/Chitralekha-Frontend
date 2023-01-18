@@ -67,12 +67,15 @@ const OrganizationReport = ({}) => {
       if (SearchProject == "") {
         return el;
       } else if (
-        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
+        Object.keys(el).join('').toLowerCase().includes(SearchProject.toLowerCase())
       ) {
         return el;
       }
     });
   };
+
+
+
   let fetchedItems;
   useEffect(() => {
     reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
@@ -125,6 +128,14 @@ const OrganizationReport = ({}) => {
     setColumns(newCols);
   }, [selectedColumns]);
 
+  const renderToolBar = () => {
+    return (
+      <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
+        {/* <Search /> */}
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -148,7 +159,10 @@ const OrganizationReport = ({}) => {
     selectableRows: "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
+
+  
 
   return (
     <>
@@ -200,11 +214,7 @@ const OrganizationReport = ({}) => {
           )}
         </Grid>
 
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}></Grid>
-
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          {/* <Search /> */}
-        </Grid>
+       
       </Grid>
 
       <ThemeProvider theme={tableTheme}>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
-import { ThemeProvider, Grid } from "@mui/material";
+import { ThemeProvider, Grid, Box } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 
 //Components
@@ -12,10 +12,11 @@ import FetchAdminLevelReportsAPI from "../../redux/actions/api/Admin/AdminLevelR
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import { snakeToTitleCase } from "../../utils/utils";
 import Search from "../../common/Search";
+import DatasetStyle from "../../styles/Dataset";
 
 const AdminLevelReport = ({}) => {
   const dispatch = useDispatch();
-
+  const classes = DatasetStyle();
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -31,45 +32,53 @@ const AdminLevelReport = ({}) => {
 
   const pageSearch = () => {
     return projectreport.filter((el) => {
-        console.log(el,"elelel")
+      console.log(el, "elelel");
       if (SearchProject == "") {
         return el;
       } else if (
-        el.title
+        el.title?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.num_projects
+          .toString()
           ?.toLowerCase()
           .includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
-        el.num_projects.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.num_videos
+          .toString()
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }
-      else if (
-        el.num_videos.toString()
-        ?.toLowerCase().includes(SearchProject?.toLowerCase())
+      } else if (
+        el.num_translation_tasks
+          .toString()
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }
-      else if (
-        el.num_translation_tasks.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
+      } else if (
+        el.num_transcription_tasks
+          .toString()
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }
-      else if (
-        el.num_transcription_tasks.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      }
-      else if (
+      } else if (
         el.num_transcription_tasks_completed
-        .toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
+          .toString()
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }
-      else if (
+      } else if (
         el.num_translation_tasks_completed
-        .toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
+          .toString()
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
       }
@@ -115,6 +124,14 @@ const AdminLevelReport = ({}) => {
     setColumns(newCols);
   }, [selectedColumns]);
 
+  const renderToolBar = () => {
+    return (
+      <Box sx={{ position: "absolute", right: "107px", bottom: "2px" }}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -138,19 +155,13 @@ const AdminLevelReport = ({}) => {
     selectableRows: "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
 
   return (
     <>
-      <Grid>
-        <Search />
-      </Grid>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable
-          data={pageSearch()}
-          columns={columns}
-          options={options}
-        />
+        <MUIDataTable data={pageSearch()} columns={columns} options={options} />
       </ThemeProvider>
     </>
   );
