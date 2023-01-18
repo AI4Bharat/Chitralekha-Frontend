@@ -11,6 +11,7 @@ import CustomizedSnackbars from "../../common/Snackbar";
 import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
+import AdminLevelReport from "./AdminLevelReport"
 
 //Apis
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
@@ -104,6 +105,7 @@ const DashBoard = () => {
               sx={{ fontSize: 16, fontWeight: "700" }}
             />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
           </Tabs>
         </Box>
@@ -155,6 +157,24 @@ const DashBoard = () => {
         <TabPanel
           value={value}
           index={2}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <AdminLevelReport />
+            </div>
+          </Box>
+        </TabPanel>
+        
+
+        <TabPanel
+          value={value}
+          index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         ></TabPanel>
       </Card>

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 //Themes
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
+import DatasetStyle from "../../../styles/Dataset";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -25,6 +26,7 @@ import DeleteDialog from "../../../common/DeleteDialog";
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -237,6 +239,14 @@ const ProjectMemberDetails = () => {
     },
   ];
 
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -256,7 +266,7 @@ const ProjectMemberDetails = () => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -264,6 +274,7 @@ const ProjectMemberDetails = () => {
     selectableRows: "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
 
   const renderSnackBar = () => {
@@ -282,7 +293,6 @@ const ProjectMemberDetails = () => {
 
   return (
     <>
-      <Search />
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>

@@ -270,6 +270,12 @@ const DatasetStyle = makeStyles({
     marginRight: "10px",
     marginBottom: "12px",
   },
+  searchStyle:{
+    position: "absolute",
+     right: "107px",
+      bottom: "2px" 
+
+  }
 });
 
 export default DatasetStyle;
