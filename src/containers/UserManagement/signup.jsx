@@ -32,7 +32,7 @@ import Loader from "../../common/Spinner";
 
 const SignUp = () => {
   let navigate = useNavigate();
-  const { inviteCode } = useParams();
+  const { invitecode } = useParams();
   const classes = LoginStyle();
   const dispatch = useDispatch();
 
@@ -49,6 +49,8 @@ const SignUp = () => {
     firstName: "",
     lastName: "",
     languages: [],
+    showPassword: false,
+    showConfirmPassword: false,
   });
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -67,6 +69,10 @@ const SignUp = () => {
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setValues({ ...values, showConfirmPassword: !values.showConfirmPassword });
   };
 
   const handleMouseDownPassword = (event) => {
@@ -95,7 +101,7 @@ const SignUp = () => {
       languages: values.languages.map((item) => item.label),
     };
 
-    let apiObj = new SignupAPI(inviteCode, data);
+    let apiObj = new SignupAPI(invitecode, data);
 
     let rsp_data;
     fetch(apiObj.apiEndPoint(), {
@@ -216,7 +222,7 @@ const SignUp = () => {
             onChange={handleChange("UserName")}
             error={error.userName ? true : false}
             value={values.UserName}
-            helperText={error.userName ? "Username is not proper" : ""}
+            helperText={error.userName ? "Please enter username" : ""}
           />
         </Grid>
 
@@ -283,12 +289,29 @@ const SignUp = () => {
             fullWidth
             name="password"
             placeholder="Re-enter your Password."
+            type={values.showConfirmPassword ? "text" : "password"}
             error={error.confirmPassword ? true : false}
             value={values.confirmPassword}
             onChange={handleChange("confirmPassword")}
             helperText={
               error.confirmPassword ? "Both password must match." : ""
             }
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowConfirmPassword}
+                    onMouseDown={handleMouseDownPassword}
+                  >
+                    {values.showConfirmPassword ? (
+                      <VisibilityIcon />
+                    ) : (
+                      <VisibilityOffIcon />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
 
