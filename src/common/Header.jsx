@@ -15,7 +15,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -132,7 +132,12 @@ const Header = () => {
         >
           <Container maxWidth="xl">
             <Toolbar disableGutters className={classes.toolbar}>
-              <Box display="flex" alignItems="center">
+              <Box
+                display="flex"
+                alignItems="center"
+                onClick={() => navigate("/")}
+                style={{cursor: "pointer"}}
+              >
                 <img
                   src={"Chitralekha_Logo_Transparent.png"}
                   alt="ai4bharat"

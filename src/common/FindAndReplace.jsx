@@ -133,7 +133,8 @@ const FindAndReplace = (props) => {
                 onClose={handleCloseModel}
                 aria-labelledby="responsive-dialog-title"
                 maxWidth={"lg"}
-            >
+                PaperProps={{ style: { borderRadius: "10px" } }}
+                >
                 <Grid
                     display="flex"
                     justifyContent={"space-between"}

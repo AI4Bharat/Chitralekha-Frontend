@@ -36,6 +36,9 @@ import getVideoSubtitle from "./Project/FetchVideoSubtitle";
 import getOrganizationList from "./Organization/FetchOrganizationList";
 import getAllUserList from "./Admin/FetchAllUsers";
 import getOrgOwnerList from "./Admin/FetchOrgOwners";
+import getProjectReports from "./Project/FetchProjectReports";
+import getOrganizationReports from "./Organization/FetchOrganizationReports";
+import getAdminReports from "./Admin/AdminLevelReport";
 
 const rootReducer = {
     apiStatus,
@@ -76,6 +79,9 @@ const rootReducer = {
     getOrganizationList,
     getOrgOwnerList,
     getAllUserList,
+    getProjectReports,
+    getOrganizationReports,
+    getAdminReports,
 };
 
 export default rootReducer;

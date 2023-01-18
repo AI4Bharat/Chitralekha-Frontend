@@ -354,7 +354,7 @@ const ProjectStyle = makeStyles({
   darkMode: {
     backgroundColor: "rgb(256 256 256 / 50%)",
     color: "#000",
-    fontWeight: "bolder"
+    fontWeight: "bolder",
   },
 
   lightMode: {
@@ -551,6 +551,37 @@ const ProjectStyle = makeStyles({
     clipPath:
       "polygon(0 10px,calc(100% - 15px) 10px,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,calc(100% - 15px) calc(100% - 10px),0 calc(100% - 10px))",
     backgroundColor: "#E0E0E0",
+  },
+
+  contentParent: {
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "rgba(254, 191, 44, 0.1)",
+    color: "rgba(0, 0, 0, 0.87)",
+    fontWeight: "normal",
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+  },
+
+  content1: {
+    width: "20%",
+    padding: "10px",
+  },
+
+  content2: {
+    width: "60%",
+    padding: "10px",
+  },
+
+  headerParent: {
+    display: "flex",
+    backgroundColor: "#F8F8FA !important",
+    color: "rgba(0, 0, 0, 0.87)",
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+  },
+
+  message: {
+    textAlign: "initial", 
+    marginBottom: "10px"
   },
 });
 

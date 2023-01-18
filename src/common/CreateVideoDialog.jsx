@@ -33,7 +33,7 @@ const CreateVideoDialog = ({
 }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
-  console.log(apiStatus, "apiStatus");
+
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
@@ -50,6 +50,7 @@ const CreateVideoDialog = ({
       onClose={handleUserDialogClose}
       close
       maxWidth={"md"}
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4">Create New Video/Audio</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>

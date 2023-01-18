@@ -40,6 +40,7 @@ import { roles } from "../../../utils/utils";
 import ProjectDescription from "./ProjectDescription";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import Loader from "../../../common/Spinner";
+import ProjectReport from "./ProjectReport";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -251,8 +252,8 @@ const Project = () => {
               {projectDetails.title}
             </Typography>
 
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.projectSettingVisible && (
+            {(projectInfo.managers.some((item) => item.id === userData.id) ||
+              userData.role === "ORG_OWNER") && (
               <IconButton
                 onClick={() =>
                   navigate(
@@ -327,6 +328,8 @@ const Project = () => {
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.ProjectReport && (  <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />   )}
           </Tabs>
         </Box>
 
@@ -386,8 +389,8 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.permittedToAddMembersInProject && (
+            {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
+              userData.role === "ORG_OWNER") && (
               <Button
                 className={classes.projectButton}
                 label={"Add Project Members"}
@@ -396,6 +399,22 @@ const Project = () => {
             )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
+            </div>
+          </Box>
+        </TabPanel>
+        <TabPanel
+          value={value}
+          index={3}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <ProjectReport />
             </div>
           </Box>
         </TabPanel>

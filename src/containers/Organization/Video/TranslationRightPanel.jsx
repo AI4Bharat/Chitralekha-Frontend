@@ -1,6 +1,6 @@
 // TranslationRightPanel
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import {
   Button,
@@ -13,7 +13,8 @@ import {
   Menu,
   MenuItem,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Divider,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ProjectStyle from "../../../styles/ProjectStyle";
@@ -38,7 +39,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import CheckIcon from "@mui/icons-material/Check";
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -63,7 +64,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
-  const [anchorElSettings, setAnchorElSettings] = useState(null)
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [anchorEle, setAnchorEle] = useState(null);
   const [anchorPos, setAnchorPos] = useState({
@@ -101,8 +102,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   };
 
   const handleCloseSettingsMenu = () => {
-    setAnchorElSettings(null)
-  }
+    setAnchorElSettings(null);
+  };
 
   const onMergeClick = (item, index) => {
     const existingsourceData = copySubs();
@@ -145,10 +146,14 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-  useEffect(()=>{
-    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
-    subtitleScrollEle.querySelector(`#sub_${currentIndex}`)?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex])
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById(
+      "subtitleContainerTranslation"
+    );
+    subtitleScrollEle
+      .querySelector(`#sub_${currentIndex}`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex]);
 
   const onReplacementDone = (updatedSource) => {
     setSourceText(updatedSource);
@@ -347,6 +352,18 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     },
   ];
 
+  const sourceLength = (index) => {
+    if (sourceText[index]?.text.trim() !== "")
+      return sourceText[index]?.text.trim().split(" ").length;
+    return 0;
+  };
+
+  const targetLength = (index) => {
+    if (sourceText[index]?.target_text.trim() !== "")
+      return sourceText[index]?.target_text.trim().split(" ").length;
+    return 0;
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -408,23 +425,42 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
               <MenuItem>
                 <FormControlLabel
                   label="Transliteration"
-                  control={<Checkbox checked={enableTransliteration} onChange={() => {
-                    handleCloseSettingsMenu()
-                    setTransliteration(!enableTransliteration)
-                  }} />}
+                  control={
+                    <Checkbox
+                      checked={enableTransliteration}
+                      onChange={() => {
+                        handleCloseSettingsMenu();
+                        setTransliteration(!enableTransliteration);
+                      }}
+                    />
+                  }
                 />
               </MenuItem>
               <MenuItem>
                 <FormControlLabel
                   label="RTL Typing"
-                  control={<Checkbox checked={enableRTL_Typing} onChange={() => {
-                    handleCloseSettingsMenu()
-                    setRTL_Typing(!enableRTL_Typing)
-                  }} />}
+                  control={
+                    <Checkbox
+                      checked={enableRTL_Typing}
+                      onChange={() => {
+                        handleCloseSettingsMenu();
+                        setRTL_Typing(!enableRTL_Typing);
+                      }}
+                    />
+                  }
                 />
               </MenuItem>
             </Menu>
           </>
+
+          <Divider
+            orientation="vertical"
+            style={{
+              border: "1px solid lightgray",
+              height: "auto",
+              margin: "0 5px",
+            }}
+          />
 
           <Tooltip title="Font Size" placement="bottom">
             <IconButton
@@ -483,6 +519,15 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             transliterationLang={taskData?.target_language}
           />
 
+          <Divider
+            orientation="vertical"
+            style={{
+              border: "1px solid lightgray",
+              height: "auto",
+              margin: "0 5px",
+            }}
+          />
+
           <Tooltip title="Save" placement="bottom">
             <IconButton
               sx={{
@@ -533,6 +578,13 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
           className={"subTitleContainer"}
         >
           {sourceText?.map((item, index) => {
+            console.log(
+              "diff",
+              index,
+              sourceLength(index),
+              targetLength(index),
+              sourceLength(index) - targetLength(index)
+            );
             return (
               <Box id={`sub_${index}`}>
                 <Box
@@ -678,44 +730,98 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       }}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
-                        <textarea
-                          className={`${classes.textAreaTransliteration} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
-                          dir={enableRTL_Typing ? "rtl" : "ltr"}
-                          rows={4}
-                          onBlur={() =>
-                            setTimeout(() => {
-                              setShowPopOver(false);
-                            }, 200)
-                          }
-                          {...props}
-                        />
+                        <div
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <textarea
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                            dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            rows={4}
+                            onBlur={() =>
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200)
+                            }
+                            {...props}
+                          />
+                          <span
+                            style={{
+                              background: "white",
+                              color:
+                                Math.abs(
+                                  sourceLength(index) - targetLength(index)
+                                ) >= 3
+                                  ? "red"
+                                  : "green",
+                              fontWeight: 700,
+                              height: "20px",
+                              width: "30px",
+                              borderRadius: "50%",
+                              position: "absolute",
+                              bottom: "-10px",
+                              right: "25px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {targetLength(index)}
+                          </span>
+                        </div>
                       )}
                     />
                   ) : (
-                    <textarea
-                      rows={4}
-                      className={`${classes.textAreaTransliteration} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
-                      dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      style={{ fontSize: fontSize, height: "100px" }}
-                      onChange={(event) => {
-                        changeTranscriptHandler(
-                          event.target.value,
-                          index,
-                          "transaltion"
-                        );
+                    <div
+                      style={{
+                        position: "relative",
                       }}
-                      onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() =>
-                        setTimeout(() => {
-                          setShowPopOver(false);
-                        }, 200)
-                      }
-                      value={item.target_text}
-                    />
+                    >
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{ fontSize: fontSize, height: "100px" }}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transaltion"
+                          );
+                        }}
+                        onMouseUp={(e) => onMouseUp(e, index)}
+                        onBlur={() =>
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200)
+                        }
+                        value={item.target_text}
+                      />
+                      <span
+                        style={{
+                          background: "white",
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          fontWeight: 700,
+                          height: "20px",
+                          width: "30px",
+                          borderRadius: "50%",
+                          position: "absolute",
+                          bottom: "-10px",
+                          right: "0px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {targetLength(index)}
+                      </span>
+                    </div>
                   )}
                 </CardContent>
               </Box>

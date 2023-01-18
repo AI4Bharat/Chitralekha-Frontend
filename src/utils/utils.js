@@ -73,6 +73,10 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
   },
   {
     label: "Transcript Reviewer",
@@ -86,6 +90,11 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
+    organizationReport:false,
   },
   {
     label: "Translation editor",
@@ -99,6 +108,9 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    ProjectReport:false,
+    organizationReport:false,
   },
   {
     label: "Translation Reviewer",
@@ -112,6 +124,10 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
   },
   {
     label: "Universal Editor",
@@ -124,6 +140,10 @@ export const roles = [
     taskAction: true,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
   },
   {
     label: "Project Manager",
@@ -137,6 +157,10 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: true,
     showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
+    ProjectReport:true,
+    organizationReport:false,
   },
   {
     label: "Organization Owner",
@@ -150,6 +174,10 @@ export const roles = [
     orgSettingVisible: true,
     projectSettingVisible: true,
     showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
+    ProjectReport:true,
+    organizationReport:true,
   },
 ];
 
@@ -563,3 +591,9 @@ export const MenuProps = {
     },
   },
 };
+
+export function snakeToTitleCase(str) {
+  return str.split("_").map((word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(" ");
+}

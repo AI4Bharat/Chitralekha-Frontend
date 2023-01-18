@@ -26,6 +26,7 @@ import {
   Tooltip,
   IconButton,
   Button,
+  DialogTitle,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import CustomButton from "../../../common/Button";
@@ -90,6 +91,8 @@ const TaskList = () => {
   const [selectedTaskId, setSelectedTaskId] = useState("");
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
   const [Previewdata, setPreviewdata] = useState("");
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const [deleteResponse, setDeleteResponse] = useState([]);
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -121,8 +124,7 @@ const TaskList = () => {
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
-
-
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
 
   const handleClose = () => {
     setOpen(false);
@@ -254,8 +256,7 @@ const TaskList = () => {
     });
   };
 
-  const handledeletetask = async (id) => {
-    setOpenDialog(true);
+  const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
   };
 
@@ -282,9 +283,8 @@ const TaskList = () => {
     }
   };
 
-  const handleokDialog = async () => {
     setLoading(true);
-    const apiObj = new DeleteTaskAPI(deleteTaskid);
+    const apiObj = new DeleteTaskAPI(id, flag);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
       body: JSON.stringify(apiObj.getBody()),
@@ -297,16 +297,37 @@ const TaskList = () => {
         message: resp?.message,
         variant: "success",
       });
-      setLoading(false);
       setOpenDialog(false);
+      setLoading(false);
       FetchTaskList();
     } else {
+      setOpenDialog(true);
+      setDeleteMsg(resp.message);
+      setDeleteResponse(resp.response);
+      setLoading(false);
+    }
+  };
+
+  const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
+    setOpenPreviewDialog(true);
+    const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
+    //dispatch(APITransport(taskObj));
+    const res = await fetch(taskObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(taskObj.getBody()),
+      headers: taskObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    setLoading(false);
+    if (res.ok) {
+      setPreviewdata(resp);
+    } else {
+      setOpenPreviewDialog(false);
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
       });
-      setLoading(false);
     }
   };
 
@@ -321,9 +342,7 @@ const TaskList = () => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <PreviewIcon />
@@ -341,9 +360,7 @@ const TaskList = () => {
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -364,9 +381,7 @@ const TaskList = () => {
             tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[12]}
             onClick={() => {
               if (
                 tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -390,10 +405,7 @@ const TaskList = () => {
     return (
       <Tooltip title="Delete">
         <IconButton
-          onClick={() => handledeletetask(tableData.rowData[0])}
-          disabled={
-            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[11] : false
-          }
+          onClick={() => handledeletetask(tableData.rowData[0], false)}
           color="error"
         >
           <DeleteIcon />
@@ -402,7 +414,7 @@ const TaskList = () => {
     );
   };
 
-  const renderEditTaskButton = (tableData) => {
+  const renderUpdateTaskButton = (tableData) => {
     return (
       <Tooltip title="Edit Task Details">
         <IconButton
@@ -422,10 +434,19 @@ const TaskList = () => {
     return (
       tableData.rowData[9] === "COMPLETE" && (
         <Tooltip title="Preview">
-          <IconButton onClick={() => handlePreviewTask(tableData.rowData[11], tableData.rowData[1], tableData.rowData[7])}>
+          <IconButton
+            onClick={() =>
+              handlePreviewTask(
+                tableData.rowData[11],
+                tableData.rowData[1],
+                tableData.rowData[7]
+              )
+            }
+          >
             <VisibilityIcon />
           </IconButton>
-        </Tooltip>)
+        </Tooltip>
+      )
     );
   };
 
@@ -483,7 +504,6 @@ const TaskList = () => {
         ];
       })
       : [];
-  console.log(userData.role, 'userData.role');
   const columns = [
     {
       name: "id",
@@ -530,10 +550,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -562,10 +579,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -594,10 +608,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -633,10 +644,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -672,10 +680,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -704,10 +709,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -813,24 +815,23 @@ const TaskList = () => {
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {userData.role === "PROJECT_MANAGER" &&
-                renderEditTaskButton(tableMeta)}
+              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") &&
+                renderUpdateTaskButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderViewButton(tableMeta)}
-              {/* If task is assigned to project manager himself then show him the edit btn */}
-              {userData.role === "PROJECT_MANAGER" &&
-                userData.id === tableMeta.rowData[10].id &&
+              {userData.id === tableMeta.rowData[10].id &&
+                renderViewButton(tableMeta)}
+
+              {userData.id === tableMeta.rowData[10].id &&
                 renderEditButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderEditButton(tableMeta)}
-
               {renderExportButton(tableMeta)}
-              {renderPreviewButton(tableMeta)}
-              {userData.role === "PROJECT_MANAGER" &&
-                renderDeleteButton(tableMeta)}
 
+              {renderPreviewButton(tableMeta)}
+
+              {(projectInfo.managers.some((item) => item.id === userData.id) ||
+                userData.role === "ORG_OWNER") &&
+                renderDeleteButton(tableMeta)}
             </Box>
           );
         },
@@ -853,6 +854,14 @@ const TaskList = () => {
     setShowEditTaskBtn(!!temp.length);
   };
 
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -868,7 +877,7 @@ const TaskList = () => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -881,6 +890,7 @@ const TaskList = () => {
     jumpToPage: true,
     selectToolbarPlacement: "none",
     rowsSelected: rows,
+    customToolbar: renderToolBar,
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
@@ -907,17 +917,11 @@ const TaskList = () => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        PaperProps={{ style: { borderRadius: "10px" } }}
       >
-        <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-            align="center"
-            sx={{ mb: 2, color: "black", fontSize: "25px" }}
-          >
-            Export Subtitle
-          </DialogContentText>
-          <Divider />
+        <DialogTitle variant="h4">Export Subtitle</DialogTitle>
 
+        <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
             {tasktype === "TRANSCRIPTION_EDIT" ||
               tasktype === "TRANSCRIPTION_REVIEW"
@@ -967,14 +971,26 @@ const TaskList = () => {
             </DialogActions>
           )}
           <DialogActions>
-            <CustomButton onClick={handleClose} label="Cancel" />
+            <CustomButton
+              buttonVariant="standard"
+              onClick={handleClose}
+              label="Cancel"
+            />
             {tasktype === "TRANSCRIPTION_EDIT" ||
-              tasktype === "TRANSCRIPTION_REVIEW" ? (
-              <CustomButton onClick={handleok} label="Export" autoFocus />
+            tasktype === "TRANSCRIPTION_REVIEW" ? (
+              <CustomButton
+                buttonVariant="contained"
+                onClick={handleok}
+                label="Export"
+                style={{ borderRadius: "8px" }}
+                autoFocus
+              />
             ) : (
               <CustomButton
                 onClick={handleokTranslation}
                 label="Export"
+                buttonVariant="contained"
+                style={{ borderRadius: "8px" }}
                 autoFocus
               />
             )}
@@ -1016,6 +1032,7 @@ const TaskList = () => {
         message: resp?.message,
         variant: "success",
       });
+      FetchTaskList();
       setLoading(false);
       setOpenEditTaskDialog(false);
     } else {
@@ -1045,11 +1062,7 @@ const TaskList = () => {
             >
               Edit Tasks
             </Button>
-          )}
-
-        <Box sx={{ marginLeft: "auto" }}>
-          <Search />
-        </Box>
+          )}    
       </Box>
 
       <Grid>{renderSnackBar()}</Grid>
@@ -1081,10 +1094,10 @@ const TaskList = () => {
         <DeleteDialog
           openDialog={openDialog}
           handleClose={() => handleCloseDialog()}
-          submit={() => handleokDialog()}
+          submit={() => handledeletetask(deleteTaskid, true)}
           loading={loading}
-          message={`Are you sure, you want to delete this task? The associated
-          transcript/translation will be deleted.`}
+          message={deleteMsg}
+          deleteResponse={deleteResponse}
         />
       )}
 
@@ -1105,7 +1118,6 @@ const TaskList = () => {
           openPreviewDialog={openPreviewDialog}
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
-
         />
       )}
     </>

@@ -1,14 +1,13 @@
+
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class DeleteTaskAPI extends API {
-  constructor(taskId, flag, data,timeout = 2000) {
-    super("DELETE", timeout, false);
-    this.type = C.DELETE_TASk;
-    this.data = data;
-    this.flag = flag;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${taskId}/delete_task/?flag=${flag}`;
+export default class FetchAdminLevelReportsAPI extends API {
+  constructor( timeout = 2000) {
+    super("GET", timeout, false);
+    this.type = C.GET_ADMIN_REPORTS; 
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}get_report_orgs/`;
   }
 
   processResponse(res) {
@@ -22,15 +21,13 @@ export default class DeleteTaskAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.data;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
+        "Authorization":`JWT ${localStorage.getItem('token')}`
       },
     };
     return this.headers;

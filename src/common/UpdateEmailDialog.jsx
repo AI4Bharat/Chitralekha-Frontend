@@ -67,6 +67,7 @@ const UpdateEmailDialog = ({
       close
       fullWidth={true}
       maxWidth="sm"
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle style={{ paddingTop: "1.25rem" }}>
         <Typography variant="h4">Verify Email</Typography>

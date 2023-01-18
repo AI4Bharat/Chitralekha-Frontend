@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 //Themes
 import { ThemeProvider, Tooltip, IconButton, Box, Switch } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -21,6 +22,7 @@ import Loader from "../../common/Spinner";
 const MemberList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const userList = useSelector((state) => state.getAllUserList.data);
   const searchList = useSelector((state) => state.searchList.data);
@@ -45,17 +47,19 @@ const MemberList = () => {
       ) {
         return el;
       } else if (
-        el.organization.title?.toLowerCase().includes(searchList?.toLowerCase())
+        el.organization?.title?.toLowerCase().includes(searchList?.toLowerCase())
       ) {
         return el;
       } else if (el.email?.toLowerCase().includes(searchList?.toLowerCase())) {
         return el;
-      } else if (el.role_label?.toLowerCase().includes(searchList?.toLowerCase())) {
+      } else if (
+        el.role_label?.toLowerCase().includes(searchList?.toLowerCase())
+      ) {
         return el;
       }
     });
   };
-  
+
   const result =
     userList && userList.length > 0
       ? pageSearch().map((item, i) => {
@@ -141,25 +145,23 @@ const MemberList = () => {
         customBodyRender: (_value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              <Tooltip title={statusToggle ? `Active` : `Inactive`}>
+              {/* <Tooltip title={statusToggle ? `Active` : `Inactive`}>
                 <Switch
                   checked={statusToggle}
                   onChange={(event) => setStatusToggle(event.target.checked)}
                   inputProps={{ "aria-label": "controlled" }}
                 />
-              </Tooltip>
+              </Tooltip> */}
 
               <Tooltip title="Edit">
                 <IconButton
-                  onClick={() =>
-                    navigate(`/profile/${tableMeta.rowData[0]}`)
-                  }
+                  onClick={() => navigate(`/profile/${tableMeta.rowData[0]}`)}
                 >
                   <EditIcon color="primary" />
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Delete">
+              {/* <Tooltip title="Delete">
                 <IconButton
                   onClick={() => {
                     setDeleteDialogOpen(true);
@@ -168,13 +170,20 @@ const MemberList = () => {
                 >
                   <DeleteIcon color="error" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </Box>
           );
         },
       },
     },
   ];
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
 
   const options = {
     textLabels: {
@@ -191,7 +200,7 @@ const MemberList = () => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -199,13 +208,13 @@ const MemberList = () => {
     selectableRows: "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
 
   const handleUserDelete = (id) => {};
 
   return (
     <>
-      <Search />
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>

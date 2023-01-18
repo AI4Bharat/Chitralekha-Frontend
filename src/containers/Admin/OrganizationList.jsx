@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
+import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
@@ -24,6 +25,7 @@ import Loader from "../../common/Spinner";
 const OrganizationList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const classes = DatasetStyle();
 
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const searchList = useSelector((state) => state.searchList.data);
@@ -208,6 +210,14 @@ const OrganizationList = () => {
     },
   ];
 
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -223,7 +233,7 @@ const OrganizationList = () => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -231,6 +241,7 @@ const OrganizationList = () => {
     selectableRows: "none",
     search: false,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
 
   const result =
@@ -296,8 +307,6 @@ const OrganizationList = () => {
   return (
     <>
       {renderSnackBar()}
-
-      <Search />
 
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
