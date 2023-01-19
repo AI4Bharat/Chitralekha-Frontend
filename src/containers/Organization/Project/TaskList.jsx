@@ -179,11 +179,24 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
+      const task = taskList.filter((task) => task.id === taskdata)[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+      // link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${exportTranslation}`
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
