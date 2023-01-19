@@ -484,7 +484,6 @@ export const getUpdatedTime = (value, type, time) => {
   const [ss, SSS] = sec.split(".");
 
   let newValue = "";
-  console.log(value, "iipipipip");
   if (type === "hours") {
     if (value < 0) {
       newValue = "00";

@@ -99,7 +99,7 @@ const VideoLanding = () => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
     dispatch(APITransport(apiObj));
   }, []);
-  console.log(taskDetails, "taskDetails");
+
   useEffect(() => {
     if (
       taskDetails &&
