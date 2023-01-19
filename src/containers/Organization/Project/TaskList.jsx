@@ -202,7 +202,7 @@ const TaskList = () => {
       link.parentNode.removeChild(link);
 
       window.URL.revokeObjectURL(blobUrl);
-    } else {
+    }  else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
