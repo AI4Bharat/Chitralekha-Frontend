@@ -284,6 +284,7 @@ const VideoList = ({ data, removeVideo }) => {
       name: "status",
       label: "Status",
       options: {
+        viewColumns: false,
         display: "exclude",
       },
     },
