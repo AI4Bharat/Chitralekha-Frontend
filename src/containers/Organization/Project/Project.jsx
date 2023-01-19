@@ -181,7 +181,7 @@ const Project = () => {
     } else {
       setSnackbarInfo({
         open: true,
-        message: resp?.error,
+        message: resp?.message,
         variant: "error",
       });
     }

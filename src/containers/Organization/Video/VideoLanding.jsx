@@ -99,13 +99,21 @@ const VideoLanding = () => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
     dispatch(APITransport(apiObj));
   }, []);
-
+  console.log(taskDetails, "taskDetails");
   useEffect(() => {
-    if (taskDetails && taskDetails?.video_url && taskDetails?.src_language && taskDetails?.project && taskDetails?.id && taskDetails?.task_type) {
+    if (
+      taskDetails &&
+      taskDetails?.video_url &&
+      taskDetails?.src_language &&
+      taskDetails?.project &&
+      taskDetails?.id &&
+      taskDetails?.task_type
+    ) {
       const apiObj = new FetchVideoDetailsAPI(
-        taskDetails.video_url,
+        encodeURIComponent(taskDetails.video_url.replace(/&amp;/g, "&")),
         taskDetails.src_language,
-        taskDetails.project
+        taskDetails.project,
+        taskDetails.is_audio_only
       );
       dispatch(APITransport(apiObj));
 

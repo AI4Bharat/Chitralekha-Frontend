@@ -119,7 +119,7 @@ const SignUp = () => {
           setSnackbarInfo({
             ...snackbar,
             open: true,
-            message: rsp_data.detail,
+            message: rsp_data.message,
             variant: "success",
           });
           navigate("/");
@@ -139,7 +139,7 @@ const SignUp = () => {
         setSnackbarInfo({
           ...snackbar,
           open: true,
-          message: rsp_data.detail,
+          message: rsp_data.message,
           variant: "error",
         });
       });
