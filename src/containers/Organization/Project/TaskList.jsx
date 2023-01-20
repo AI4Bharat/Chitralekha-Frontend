@@ -92,6 +92,7 @@ const TaskList = () => {
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
+  const[task_type,setTask_type] = useState()
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -111,7 +112,7 @@ const TaskList = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
-
+  console.log(taskList,"userDatauserData")
   const handleClose = () => {
     setOpen(false);
   };
@@ -255,6 +256,7 @@ const TaskList = () => {
     });
   };
 
+
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
 
@@ -285,6 +287,7 @@ const TaskList = () => {
 
   const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
     setOpenPreviewDialog(true);
+    setTask_type(Task_type)
     const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
@@ -1028,6 +1031,7 @@ const TaskList = () => {
           openPreviewDialog={openPreviewDialog}
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
+          task_type={task_type}
         />
       )}
     </>
