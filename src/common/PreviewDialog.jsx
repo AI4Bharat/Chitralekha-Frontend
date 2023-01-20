@@ -7,6 +7,7 @@ import {
   Box,
   IconButton,
   DialogTitle,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -25,7 +26,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
       aria-describedby="alert-dialog-description"
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle id="responsive-dialog-title" display="flex">
+      {/* <DialogTitle id="responsive-dialog-title" display="flex"> */}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -33,9 +34,11 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
         >
           <CloseIcon />
         </IconButton>
-      </DialogTitle>
-
+       
+      {/* </DialogTitle> */}
+      <Typography sx={{ml:4}} variant="h4">Subtitles</Typography>
       <DialogContent sx={{ height: "410px" }}>
+    
         <DialogContentText id="alert-dialog-description">
           {Previewdata?.data?.payload &&
           Previewdata?.data?.payload.length > 0 ? (
@@ -45,7 +48,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
                   id={`sub_${i}`}
                   textAlign={"start"}
                   sx={{
-                    margin: 2,
+                    mb: 2,
                     padding: 2,
                     border: "1px solid #000000",
                     borderRadius: 2,
@@ -59,7 +62,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data }) => {
           ) : (
             <Box
               sx={{
-                marginY: 2,
+                // marginY: 2,
                 padding: 3,
                 border: "1px solid #000000",
                 borderRadius: 2,
