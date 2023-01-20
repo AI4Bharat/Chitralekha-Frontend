@@ -78,25 +78,35 @@ const ProjectReport = ({}) => {
   }, [ProjectReportData]);
 
   const pageSearch = () => {
-    return projectreport.filter((el) => {
-      if (SearchProject == "") {
-        return el;
-      } else if (
-        Object.values(el).toString().toLowerCase().includes(SearchProject.toLowerCase())
-      ) {
-        return el;
-      }
+    let result = [];
+    let tableData = projectreport.map((el) => {
+      let elementArr = [];
+      Object.values(el).filter((valEle, index) => {
+        elementArr[index] = valEle.value;
+      });
+      return elementArr;
     });
+
+    result = tableData.filter((ele, index) => {
+      return ele.some((valEle) =>
+        valEle
+          ?.toString()
+          .toLowerCase()
+          .includes(SearchProject?.toString().toLowerCase())
+      );
+    });
+
+    return result;
   };
 
   const Projectreport = () => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.keys(fetchedItems[0]).forEach((key) => {
+      Object.entries(fetchedItems[0]).map((el, i) => {
         tempColumns.push({
-          name: key,
-          label: snakeToTitleCase(key),
+          name: el[0],
+          label: snakeToTitleCase(el[1].label),
           options: {
             filter: false,
             sort: false,
@@ -106,7 +116,7 @@ const ProjectReport = ({}) => {
             },
           },
         });
-        tempSelected.push(key);
+        tempSelected.push(el[0]);
       });
     } else {
       setProjectreport([]);
