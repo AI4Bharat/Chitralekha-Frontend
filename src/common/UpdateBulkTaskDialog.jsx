@@ -71,19 +71,16 @@ const UpdateBulkTaskDialog = ({
       const taskObj = new FetchTaskDetailsAPI(selectedTaskId);
       dispatch(APITransport(taskObj));
 
-      const userObj = new FetchProjectMembersAPI(projectId, taskDetails.task_type);
+      const userObj = new FetchProjectMembersAPI(
+        projectId,
+        taskDetails.task_type
+      );
       dispatch(APITransport(userObj));
     }
   }, []);
 
   useEffect(() => {
-    if (
-      !isBulk &&
-      taskDetails.description &&
-      taskDetails.priority &&
-      taskDetails.eta &&
-      taskDetails?.user
-    ) {
+    if (!isBulk && taskDetails?.user) {
       setDescription(taskDetails.description);
       setPriority(taskDetails.priority);
       setDate(taskDetails.eta);

@@ -54,7 +54,12 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <Box margin="auto" display="flex" flexDirection="column">
+      <Box
+        margin="auto"
+        display="flex"
+        flexDirection="column"
+        style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
+      >
         <Typography
           variant="h4"
           textAlign="center"
@@ -66,10 +71,20 @@ const VideoPanel = memo(
 
         <video
           onClick={onClick}
-          src={videoDetails?.direct_video_url}
+          src={
+            videoDetails?.video?.audio_only
+              ? videoDetails?.direct_audio_url
+              : videoDetails?.direct_video_url
+          }
+          style={{
+            cursor: "pointer",
+            width: videoDetails?.video?.audio_only ? "20%" : "",
+            width: videoDetails?.video?.audio_only ? "20%" : "",
+            margin: videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : ""
+          }}
+          poster={videoDetails?.video?.audio_only && "playpause.png"}
           ref={$video}
           // className={classes.videoPlayer}
-          style={fullscreenVideo ? { margin: "auto" } : {}}
         />
       </Box>
     );
