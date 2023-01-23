@@ -309,9 +309,7 @@ const TaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "SELECTED_SOURCE" &&
-      tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
-      tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
+      tableData.rowData[15]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
@@ -330,7 +328,7 @@ const TaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[9] === "COMPLETE" && (
+      tableData.rowData[15]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
@@ -348,13 +346,7 @@ const TaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      (((tableData.rowData[9] === "SELECTED_SOURCE" ||
-        tableData.rowData[9] === "INPROGRESS") &&
-        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        (tableData.rowData[9] !== "COMPLETE" &&
-          (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
-            tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
+      tableData.rowData[15]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
             disabled={!tableData.rowData[12]}
@@ -379,20 +371,20 @@ const TaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      <Tooltip title="Delete">
+      tableData.rowData[15]?.Delete && (<Tooltip title="Delete">
         <IconButton
           onClick={() => handledeletetask(tableData.rowData[0], false)}
           color="error"
         >
           <DeleteIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip>)
     );
   };
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      <Tooltip title="Edit Task Details">
+      tableData.rowData[15]?.Update && (<Tooltip title="Edit Task Details">
         <IconButton
           onClick={() => {
             setSelectedTaskId(tableData.rowData[0]);
@@ -402,13 +394,13 @@ const TaskList = () => {
         >
           <AppRegistrationIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip>)
     );
   };
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "COMPLETE" && (
+      tableData.rowData[15]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
             onClick={() =>
@@ -477,6 +469,7 @@ const TaskList = () => {
           item.user?.username,
           item.project_name,
           item.is_active,
+          item.buttons
         ];
       })
       : [];
@@ -773,6 +766,13 @@ const TaskList = () => {
       },
     },
     {
+      name: "buttons",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -789,6 +789,7 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
+          console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
