@@ -29,6 +29,7 @@ import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTr
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { MenuProps } from "../../../utils/utils";
+import ColorArray from "../../../utils/getColors";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -428,7 +429,8 @@ const EditProject = () => {
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        <Chip key={selected.value} label={selected.label} />
+                        {projectInfo.default_priority && 
+                        <Chip key={selected.value} label={selected.label} />}
                       </Box>
                     );
                   }}
@@ -476,7 +478,7 @@ const EditProject = () => {
                   {defaultTask.map((item, index) => {
                     return (
                       <>
-                        <Box className={classes.taskBox}>{item.label}</Box>
+                        <Card className={classes.taskBox} style={{ backgroundColor: ColorArray[index]?.colors,}}>{item.label}</Card>
                         {defaultTask.length > 1 &&
                           index + 1 < defaultTask.length && (
                             <div className={classes.arrow}></div>
