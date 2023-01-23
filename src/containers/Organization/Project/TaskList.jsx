@@ -42,6 +42,7 @@ import Loader from "../../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import UserMappedByRole from "../../../utils/UserMappedByRole";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -469,6 +470,7 @@ const TaskList = () => {
   const result =
     taskList && taskList.length > 0
       ? pageSearch().map((item, i) => {
+        const status = item.status_label && UserMappedByRole(item.status_label)?.element;
         return [
           item.id,
           item.task_type,
@@ -479,7 +481,7 @@ const TaskList = () => {
           item.src_language_label,
           item.target_language,
           item.target_language_label,
-          item.status,
+          status ? status : item.status_label,,
           item.user,
           item.video,
           item.user?.username,
@@ -675,7 +677,7 @@ const TaskList = () => {
       },
     },
     {
-      name: "status",
+      name: "status_label",
       label: "Status",
       options: {
         filter: false,
@@ -808,22 +810,22 @@ const TaskList = () => {
           console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
-              {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-                userData.role === "ORG_OWNER") &&
+              {(projectInfo?.managers?.some((item) => item.id === userData?.id) ||
+                userData?.role === "ORG_OWNER") &&
                 renderUpdateTaskButton(tableMeta)}
 
-              {userData.id === tableMeta.rowData[10].id &&
+              {userData?.id === tableMeta.rowData[10]?.id &&
                 renderViewButton(tableMeta)}
 
-              {userData.id === tableMeta.rowData[10].id &&
+              {userData?.id === tableMeta.rowData[10]?.id &&
                 renderEditButton(tableMeta)}
 
               {renderExportButton(tableMeta)}
 
               {renderPreviewButton(tableMeta)}
 
-              {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-                userData.role === "ORG_OWNER") &&
+              {(projectInfo?.managers?.some((item) => item.id === userData?.id) ||
+                userData?.role === "ORG_OWNER") &&
                 renderDeleteButton(tableMeta)}
             </Box>
           );
