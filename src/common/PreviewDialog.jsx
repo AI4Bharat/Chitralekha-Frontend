@@ -16,10 +16,8 @@ import CloseIcon from "@mui/icons-material/Close";
 const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
   const [Previewdata, setPreviewdata] = useState();
 
-
   useEffect(() => {
     setPreviewdata(data);
-
   }, [data]);
   return (
     <Dialog
@@ -49,20 +47,22 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
           Previewdata?.data?.payload.length > 0 ? (
             Previewdata?.data?.payload.map((el, i) => {
               return (
-               
                 <Box
-                    id={`sub_${i}`}
-                    textAlign={"start"}
-                    sx={{
-                      mb: 2,
-                      padding: 2,
-                      border: "1px solid #000000",
-                      borderRadius: 2,
-                      width: "90%",
-                    }}
-                  >
-                  { task_type == "TRANSCRIPTION_EDIT" || task_type === "TRANSCRIPTION_REVIEW" ? el.text : el.target_text}
-                  </Box>
+                  id={`sub_${i}`}
+                  textAlign={"start"}
+                  sx={{
+                    mb: 2,
+                    padding: 2,
+                    border: "1px solid #000000",
+                    borderRadius: 2,
+                    width: "90%",
+                  }}
+                >
+                  {task_type == "TRANSCRIPTION_EDIT" ||
+                  task_type === "TRANSCRIPTION_REVIEW"
+                    ? el.text
+                    : el.target_text}
+                </Box>
               );
             })
           ) : (
