@@ -158,7 +158,7 @@ const Header = () => {
                 sm={12}
                 md={7}
               >
-                {userData?.role !== "ADMIN" && (
+                {userData?.role !== "ADMIN" && (<>
                   <Typography variant="body1">
                     <NavLink
                       to={`/my-organization/${userData?.organization?.id}`}
@@ -172,7 +172,20 @@ const Header = () => {
                       Organizations
                     </NavLink>
                   </Typography>
-                )}
+                  <Typography variant="body1">
+                  <NavLink
+                    to={`/task-list`}
+                    className={({ isActive }) =>
+                      isActive
+                        ? `${classes.highlightedMenu} task-list`
+                        : `${classes.headerMenu} task-list`
+                    }
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Task List
+                  </NavLink>
+                </Typography>
+                </>)}
                 {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"
