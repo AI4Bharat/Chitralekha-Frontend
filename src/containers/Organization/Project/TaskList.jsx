@@ -485,7 +485,7 @@ const TaskList = () => {
           item.user?.username,
           item.project_name,
           item.is_active,
-          item.buttons
+          item.buttons,
         ];
       })
       : [];
@@ -580,6 +580,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        display: false,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -724,6 +725,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        display: false,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -756,6 +758,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        display: "excluded",
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
