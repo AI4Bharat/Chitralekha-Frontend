@@ -101,7 +101,7 @@ const TaskList = () => {
   const orgId = userData?.organization?.id;
 
   const FetchTaskList = () => {
-    
+
     console.log("userData ----- ", userData);
     if (location.pathname === "/task-list") {
       const apiObj = new FetchTaskListAPI(orgId, true);
@@ -112,15 +112,15 @@ const TaskList = () => {
     }
   };
 
-  useEffect(()=>{
-    if(orgId){
+  useEffect(() => {
+    if (orgId) {
       FetchTaskList();
     }
   }, [orgId])
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
-    localStorage.removeItem("sourceId"); 
+    localStorage.removeItem("sourceId");
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
@@ -810,23 +810,17 @@ const TaskList = () => {
           console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
-              {(projectInfo?.managers?.some((item) => item.id === userData?.id) ||
-                userData?.role === "ORG_OWNER") &&
-                renderUpdateTaskButton(tableMeta)}
+              {renderUpdateTaskButton(tableMeta)}
 
-              {userData?.id === tableMeta.rowData[10]?.id &&
-                renderViewButton(tableMeta)}
+              {renderViewButton(tableMeta)}
 
-              {userData?.id === tableMeta.rowData[10]?.id &&
-                renderEditButton(tableMeta)}
+              {renderEditButton(tableMeta)}
 
               {renderExportButton(tableMeta)}
 
               {renderPreviewButton(tableMeta)}
 
-              {(projectInfo?.managers?.some((item) => item.id === userData?.id) ||
-                userData?.role === "ORG_OWNER") &&
-                renderDeleteButton(tableMeta)}
+              {renderDeleteButton(tableMeta)}
             </Box>
           );
         },
@@ -972,7 +966,7 @@ const TaskList = () => {
               label="Cancel"
             />
             {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW" ? (
+              tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton
                 buttonVariant="contained"
                 onClick={handleok}
@@ -1057,7 +1051,7 @@ const TaskList = () => {
             >
               Edit Tasks
             </Button>
-          )}    
+          )}
       </Box>
 
       <Grid>{renderSnackBar()}</Grid>

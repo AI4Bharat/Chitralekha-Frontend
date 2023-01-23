@@ -182,7 +182,7 @@ const Header = () => {
                     }
                     activeClassName={classes.highlightedMenu}
                   >
-                    Task List
+                    Tasks
                   </NavLink>
                 </Typography>
                 </>)}
