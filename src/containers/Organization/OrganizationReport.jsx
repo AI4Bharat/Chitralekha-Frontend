@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 
-
 //Components
 import MUIDataTable from "mui-datatables";
 import Loader from "../../common/Spinner";
@@ -50,7 +49,7 @@ const OrganizationReport = ({}) => {
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const ReportData = useSelector((state) => state.getOrganizationReports?.data);
-
+  console.log(ReportData, "ReportDataReportData");
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
     const apiObj = new FetchOrganizationReportsAPI(id, event.target.value);
@@ -63,17 +62,26 @@ const OrganizationReport = ({}) => {
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const pageSearch = () => {
-    return projectreport.filter((el) => {
-      if (SearchProject == "") {
-        return el;
-      } else if (
-        Object.values(el).toString().toLowerCase().includes(SearchProject.toLowerCase())
-      ) {
-        return el;
-      }
+    let result = [];
+    let tableData = projectreport.map((el) => {
+      let elementArr = [];
+      Object.values(el).filter((valEle, index) => {
+        elementArr[index] = valEle.value;
+      });
+      return elementArr;
     });
-  };
 
+    result = tableData.filter((ele, index) => {
+      return ele.some((valEle) =>
+        valEle
+          ?.toString()
+          .toLowerCase()
+          .includes(SearchProject?.toString().toLowerCase())
+      );
+    });
+
+    return result;
+  };
 
   let fetchedItems;
   useEffect(() => {
@@ -95,10 +103,10 @@ const OrganizationReport = ({}) => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.keys(fetchedItems[0]).forEach((key) => {
+      Object.entries(fetchedItems[0]).map((el, i) => {
         tempColumns.push({
-          name: key,
-          label: snakeToTitleCase(key),
+          name: el[0],
+          label: snakeToTitleCase(el[1].label),
           options: {
             filter: false,
             sort: false,
@@ -108,8 +116,26 @@ const OrganizationReport = ({}) => {
             },
           },
         });
-        tempSelected.push(key);
+        tempSelected.push(el[0]);
       });
+      //   Object.values(fetchedItems).forEach((valObj, valIndex) => {
+      //     console.log("valObj --- ", valObj);
+      //     tempColumns.push({
+      //       name: valObj?.name.label,
+      //       label: snakeToTitleCase(valObj?.name.label),
+      //       options: {
+      //         filter: false,
+      //         sort: false,
+      //         align: "center",
+      //         customBodyRender: (value) => {
+      //           return value === null ? "-" : value;
+      //         },
+      //       },
+      //     });
+      //   tempSelected.push(valIndex);
+      //     // console.log(tempSelected,"tempSelectedtempSelected")
+      //   });
+      console.log("tempColumns --- ", tempColumns);
     } else {
       setProjectreport([]);
     }
@@ -161,8 +187,6 @@ const OrganizationReport = ({}) => {
     customToolbar: renderToolBar,
   };
 
-  
-
   return (
     <>
       <Grid container columnSpacing={3} rowSpacing={2} mb={2}>
@@ -178,7 +202,7 @@ const OrganizationReport = ({}) => {
               label="Select Reports Level"
               value={reportsLevel}
               onChange={handleChangeReportsLevel}
-              sx={{textAlign:"start"}}
+              sx={{ textAlign: "start" }}
             >
               {reportLevels.map((item) => (
                 <MenuItem value={item.reportLevel}>{item.reportLevel}</MenuItem>
@@ -203,7 +227,7 @@ const OrganizationReport = ({}) => {
                 label=" Select Project Stats"
                 value={languageLevelsStats}
                 onChange={handleChangelanguageLevelStats}
-                sx={{textAlign:"start"}}
+                sx={{ textAlign: "start" }}
               >
                 {languagelevelStats.map((item) => (
                   <MenuItem value={item.value}>{item.lable}</MenuItem>
@@ -212,12 +236,15 @@ const OrganizationReport = ({}) => {
             </FormControl>
           )}
         </Grid>
-
-       
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable title="" data={pageSearch()} columns={columns} options={options} />
+        <MUIDataTable
+          title=""
+          data={pageSearch()}
+          columns={columns}
+          options={options}
+        />
       </ThemeProvider>
     </>
   );

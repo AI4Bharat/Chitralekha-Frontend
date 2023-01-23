@@ -181,7 +181,7 @@ const Project = () => {
     } else {
       setSnackbarInfo({
         open: true,
-        message: resp?.error,
+        message: resp?.message,
         variant: "error",
       });
     }
@@ -251,30 +251,26 @@ const Project = () => {
             <Typography variant="h4" className={classes.mainTitle}>
               {projectDetails.title}
             </Typography>
-
-            {(projectInfo.managers.some((item) => item.id === userData.id) ||
-              userData.role === "ORG_OWNER") && (
-              <IconButton
-                onClick={() =>
-                  navigate(
-                    `/my-organization/${orgId}/project/${projectId}/edit-project`
-                  )
-                }
-                style={{
-                  padding: "0",
-                }}
-              >
-                <Tooltip title="Settings">
-                  <SettingsOutlinedIcon
-                    color="primary"
-                    style={{
-                      color: "#f1f1f1",
-                      fontSize: "2.25rem",
-                    }}
-                  />
-                </Tooltip>
-              </IconButton>
-            )}
+            <IconButton
+              onClick={() =>
+                navigate(
+                  `/my-organization/${orgId}/project/${projectId}/edit-project`
+                )
+              }
+              style={{
+                padding: "0",
+              }}
+            >
+              <Tooltip title="Settings">
+                <SettingsOutlinedIcon
+                  color="primary"
+                  style={{
+                    color: "#f1f1f1",
+                    fontSize: "2.25rem",
+                  }}
+                />
+              </Tooltip>
+            </IconButton>
           </Card>
         </Grid>
 

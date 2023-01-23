@@ -42,6 +42,7 @@ import Loader from "../../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import UserMappedByRole from "../../../utils/UserMappedByRole";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -93,6 +94,7 @@ const TaskList = () => {
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
+  const[task_type,setTask_type] = useState()
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -125,7 +127,7 @@ const TaskList = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
-
+  console.log(taskList,"userDatauserData")
   const handleClose = () => {
     setOpen(false);
   };
@@ -193,17 +195,30 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
+      const task = taskList.filter((task) => task.id === taskdata)[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+      // link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${exportTranslation}`
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
 
       window.URL.revokeObjectURL(blobUrl);
-    } else {
+    }  else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
@@ -256,6 +271,7 @@ const TaskList = () => {
     });
   };
 
+
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
 
@@ -286,6 +302,7 @@ const TaskList = () => {
 
   const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
     setOpenPreviewDialog(true);
+    setTask_type(Task_type)
     const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
@@ -453,6 +470,7 @@ const TaskList = () => {
   const result =
     taskList && taskList.length > 0
       ? pageSearch().map((item, i) => {
+        const status = item.status_label && UserMappedByRole(item.status_label)?.element;
         return [
           item.id,
           item.task_type,
@@ -463,7 +481,7 @@ const TaskList = () => {
           item.src_language_label,
           item.target_language,
           item.target_language_label,
-          item.status,
+          status ? status : item.status_label,,
           item.user,
           item.video,
           item.user?.username,
@@ -660,7 +678,7 @@ const TaskList = () => {
       },
     },
     {
-      name: "status",
+      name: "status_label",
       label: "Status",
       options: {
         filter: false,
@@ -1092,6 +1110,7 @@ const TaskList = () => {
           openPreviewDialog={openPreviewDialog}
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
+          task_type={task_type}
         />
       )}
     </>
