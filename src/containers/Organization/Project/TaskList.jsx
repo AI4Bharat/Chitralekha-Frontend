@@ -481,12 +481,12 @@ const TaskList = () => {
           item.src_language_label,
           item.target_language,
           item.target_language_label,
-          status ? status : item.status_label,,
+          status ? status : item.status_label,
           item.user,
-          item.video,
+          item.is_active,
           item.user?.username,
           item.project_name,
-          item.is_active,
+          item.video,
           item.buttons,
         ];
       })
@@ -511,14 +511,14 @@ const TaskList = () => {
       },
     },
     {
-      name: "task_type_label",
+      name: "task_type",
       label: "",
       options: {
         display: "excluded",
       },
     },
     {
-      name: "task_type",
+      name: "task_type_label",
       label: "Task Type",
       options: {
         filter: false,
@@ -606,14 +606,14 @@ const TaskList = () => {
       },
     },
     {
-      name: "src_language_label",
+      name: "src_language",
       label: "",
       options: {
         display: "excluded",
       },
     },
     {
-      name: "src_language",
+      name: "src_language_label",
       label: "Source Language",
       options: {
         filter: false,
@@ -642,14 +642,14 @@ const TaskList = () => {
       },
     },
     {
-      name: "target_language_label",
+      name: "target_language",
       label: "",
       options: {
         display: "excluded",
       },
     },
     {
-      name: "target_language",
+      name: "target_language_label",
       label: "Target Language",
       options: {
         filter: false,
@@ -727,7 +727,6 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
-        display: false,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -760,7 +759,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
-        display: "excluded",
+        // display: false,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
