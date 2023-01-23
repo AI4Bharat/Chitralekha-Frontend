@@ -46,6 +46,7 @@ const EditProject = () => {
     (state) => state.getTranslationTypes.data
   );
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -249,6 +250,8 @@ const EditProject = () => {
                 value={projectDetails?.title}
                 onChange={handleFieldChange}
                 InputLabelProps={{ shrink: true }}
+                disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                  userData.role === "ORG_OWNER")}
               />
             </Grid>
 
@@ -263,6 +266,8 @@ const EditProject = () => {
                   label="Manager"
                   onChange={(e) => setManagers(e.target.value)}
                   MenuProps={MenuProps}
+                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                    userData.role === "ORG_OWNER")}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -304,6 +309,8 @@ const EditProject = () => {
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
                   }
+                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                    userData.role === "ORG_OWNER")}
                 >
                   {transcriptTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -328,6 +335,8 @@ const EditProject = () => {
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
                   }
+                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                    userData.role === "ORG_OWNER")}
                 >
                   {translationTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -348,6 +357,8 @@ const EditProject = () => {
                   value={defaultTask}
                   label="Default Workflow"
                   onChange={(event) => setDefaultTask(event.target.value)}
+                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                    userData.role === "ORG_OWNER")}
                   MenuProps={MenuProps}
                   renderValue={(selected) => {
                     selected.sort((a, b) => a.id - b.id);
@@ -382,6 +393,8 @@ const EditProject = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
+                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                    userData.role === "ORG_OWNER")}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -410,6 +423,8 @@ const EditProject = () => {
                 inputFormat="DD/MM/YYYY"
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
+                disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                  userData.role === "ORG_OWNER")}
                 renderInput={(params) => <TextField {...params} />}
                 className={classes.datePicker}
               />
@@ -426,6 +441,8 @@ const EditProject = () => {
                   onChange={(event) => setPriority(event.target.value)}
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
+                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                    userData.role === "ORG_OWNER")}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -455,6 +472,8 @@ const EditProject = () => {
                 value={projectDetails?.description}
                 onChange={handleFieldChange}
                 InputLabelProps={{ shrink: true }}
+                disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                  userData.role === "ORG_OWNER")}
               />
             </Grid>
 
