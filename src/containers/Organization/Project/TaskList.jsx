@@ -101,8 +101,6 @@ const TaskList = () => {
   const orgId = userData?.organization?.id;
 
   const FetchTaskList = () => {
-
-    console.log("userData ----- ", userData);
     if (location.pathname === "/task-list") {
       const apiObj = new FetchTaskListAPI(orgId, true);
       dispatch(APITransport(apiObj));
@@ -333,7 +331,7 @@ const TaskList = () => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={!tableData.rowData[12]}
+            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <PreviewIcon />
@@ -351,7 +349,7 @@ const TaskList = () => {
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={!tableData.rowData[12]}
+            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -366,7 +364,7 @@ const TaskList = () => {
       tableData.rowData[15]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={!tableData.rowData[12]}
+            disabled={!tableData.rowData[11]}
             onClick={() => {
               if (
                 tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -403,6 +401,7 @@ const TaskList = () => {
     return (
       tableData.rowData[15]?.Update && (<Tooltip title="Edit Task Details">
         <IconButton
+          color="primary"
           onClick={() => {
             setSelectedTaskId(tableData.rowData[0]);
             setOpenEditTaskDialog(true);
@@ -420,9 +419,10 @@ const TaskList = () => {
       tableData.rowData[15]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
+            color="primary"
             onClick={() =>
               handlePreviewTask(
-                tableData.rowData[11],
+                tableData.rowData[14],
                 tableData.rowData[1],
                 tableData.rowData[7]
               )
@@ -759,7 +759,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
-        // display: false,
+        display: location.pathname === "/task-list" ? true : "excluded",
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
