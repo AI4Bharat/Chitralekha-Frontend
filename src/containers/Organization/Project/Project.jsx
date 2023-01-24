@@ -192,6 +192,14 @@ const Project = () => {
     dispatch(APITransport(apiObj));
     setVideoLink("");
     setIsAudio(false);
+    setCreateVideoDialog(false);
+    setSnackbarInfo({
+      open: true,
+      message: "Your request is being processed.",
+      variant: "info",
+  })
+
+  setTimeout(() => navigate(`/task-list`), 6000);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
       body: JSON.stringify(apiObj.getBody()),
@@ -325,7 +333,9 @@ const Project = () => {
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             {roles.filter((role) => role.value === userData?.role)[0]
-              ?.ProjectReport && (  <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />   )}
+              ?.ProjectReport && (
+              <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
           </Tabs>
         </Box>
 
