@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { roles } from "../../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +42,7 @@ import Loader from "../../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import UserMappedByRole from "../../../utils/UserMappedByRole";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -66,6 +67,7 @@ const TaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -92,26 +94,38 @@ const TaskList = () => {
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
+  const[task_type,setTask_type] = useState()
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const orgId = userData?.organization?.id;
 
   const FetchTaskList = () => {
-    const apiObj = new FetchTaskListAPI(projectId);
-    dispatch(APITransport(apiObj));
+    if (location.pathname === "/task-list") {
+      const apiObj = new FetchTaskListAPI(orgId, true);
+      dispatch(APITransport(apiObj));
+    } else {
+      const apiObj = new FetchTaskListAPI(projectId);
+      dispatch(APITransport(apiObj));
+    }
   };
+
+  useEffect(() => {
+    if (orgId) {
+      FetchTaskList();
+    }
+  }, [orgId])
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
-    FetchTaskList();
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
-
+  console.log(taskList,"userDatauserData")
   const handleClose = () => {
     setOpen(false);
   };
@@ -255,6 +269,7 @@ const TaskList = () => {
     });
   };
 
+
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
 
@@ -285,6 +300,7 @@ const TaskList = () => {
 
   const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
     setOpenPreviewDialog(true);
+    setTask_type(Task_type)
     const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
@@ -308,16 +324,14 @@ const TaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "SELECTED_SOURCE" &&
-      tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
-      tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
+      tableData.rowData[15]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={!tableData.rowData[12]}
+            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <PreviewIcon />
@@ -329,13 +343,13 @@ const TaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[9] === "COMPLETE" && (
+      tableData.rowData[15]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={!tableData.rowData[12]}
+            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -347,16 +361,10 @@ const TaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      (((tableData.rowData[9] === "SELECTED_SOURCE" ||
-        tableData.rowData[9] === "INPROGRESS") &&
-        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        (tableData.rowData[9] !== "COMPLETE" &&
-          (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
-            tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
+      tableData.rowData[15]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={!tableData.rowData[12]}
+            disabled={!tableData.rowData[11]}
             onClick={() => {
               if (
                 tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -378,21 +386,22 @@ const TaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      <Tooltip title="Delete">
+      tableData.rowData[15]?.Delete && (<Tooltip title="Delete">
         <IconButton
           onClick={() => handledeletetask(tableData.rowData[0], false)}
           color="error"
         >
           <DeleteIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip>)
     );
   };
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      <Tooltip title="Edit Task Details">
+      tableData.rowData[15]?.Update && (<Tooltip title="Edit Task Details">
         <IconButton
+          color="primary"
           onClick={() => {
             setSelectedTaskId(tableData.rowData[0]);
             setOpenEditTaskDialog(true);
@@ -401,18 +410,19 @@ const TaskList = () => {
         >
           <AppRegistrationIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip>)
     );
   };
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "COMPLETE" && (
+      tableData.rowData[15]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
+            color="primary"
             onClick={() =>
               handlePreviewTask(
-                tableData.rowData[11],
+                tableData.rowData[14],
                 tableData.rowData[1],
                 tableData.rowData[7]
               )
@@ -460,24 +470,27 @@ const TaskList = () => {
   const result =
     taskList && taskList.length > 0
       ? pageSearch().map((item, i) => {
-          return [
-            item.id,
-            item.task_type,
-            item.task_type_label,
-            item.video_name,
-            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-            item.src_language,
-            item.src_language_label,
-            item.target_language,
-            item.target_language_label,
-            item.status,
-            item.user,
-            item.video,
-            item.is_active,
-          ];
-        })
+        const status = item.status_label && UserMappedByRole(item.status_label)?.element;
+        return [
+          item.id,
+          item.task_type,
+          item.task_type_label,
+          item.video_name,
+          moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+          item.src_language,
+          item.src_language_label,
+          item.target_language,
+          item.target_language_label,
+          status ? status : item.status_label,
+          item.user,
+          item.is_active,
+          item.user?.username,
+          item.project_name,
+          item.video,
+          item.buttons,
+        ];
+      })
       : [];
-
   const columns = [
     {
       name: "id",
@@ -498,14 +511,14 @@ const TaskList = () => {
       },
     },
     {
-      name: "task_type_label",
+      name: "task_type",
       label: "",
       options: {
         display: "excluded",
       },
     },
     {
-      name: "task_type",
+      name: "task_type_label",
       label: "Task Type",
       options: {
         filter: false,
@@ -569,6 +582,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        display: false,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -592,14 +606,14 @@ const TaskList = () => {
       },
     },
     {
-      name: "src_language_label",
+      name: "src_language",
       label: "",
       options: {
         display: "excluded",
       },
     },
     {
-      name: "src_language",
+      name: "src_language_label",
       label: "Source Language",
       options: {
         filter: false,
@@ -628,14 +642,14 @@ const TaskList = () => {
       },
     },
     {
-      name: "target_language_label",
+      name: "target_language",
       label: "",
       options: {
         display: "excluded",
       },
     },
     {
-      name: "target_language",
+      name: "target_language_label",
       label: "Target Language",
       options: {
         filter: false,
@@ -664,7 +678,7 @@ const TaskList = () => {
       },
     },
     {
-      name: "status",
+      name: "status_label",
       label: "Status",
       options: {
         filter: false,
@@ -707,6 +721,78 @@ const TaskList = () => {
       },
     },
     {
+      name: "username",
+      label: "Assignee",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "project_name",
+      label: "Project Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        display: location.pathname === "/task-list" ? true : "excluded",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color:
+                  tableMeta.rowData[11]
+                    ? ""
+                    : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "buttons",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -723,25 +809,20 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
+          console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
-              {(projectInfo.managers.some((item) => item.id === userData.id) ||
-                userData.role === "ORG_OWNER") &&
-                renderUpdateTaskButton(tableMeta)}
+              {renderUpdateTaskButton(tableMeta)}
 
-              {userData.id === tableMeta.rowData[10].id &&
-                renderViewButton(tableMeta)}
+              {renderViewButton(tableMeta)}
 
-              {userData.id === tableMeta.rowData[10].id &&
-                renderEditButton(tableMeta)}
+              {renderEditButton(tableMeta)}
 
               {renderExportButton(tableMeta)}
 
               {renderPreviewButton(tableMeta)}
 
-              {(projectInfo.managers.some((item) => item.id === userData.id) ||
-                userData.role === "ORG_OWNER") &&
-                renderDeleteButton(tableMeta)}
+              {renderDeleteButton(tableMeta)}
             </Box>
           );
         },
@@ -834,12 +915,12 @@ const TaskList = () => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
             {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW"
+              tasktype === "TRANSCRIPTION_REVIEW"
               ? "Transcription"
               : "Translation"}
           </DialogContentText>
           {tasktype === "TRANSCRIPTION_EDIT" ||
-          tasktype === "TRANSCRIPTION_REVIEW" ? (
+            tasktype === "TRANSCRIPTION_REVIEW" ? (
             <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
               <FormControl>
                 <RadioGroup
@@ -887,7 +968,7 @@ const TaskList = () => {
               label="Cancel"
             />
             {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW" ? (
+              tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton
                 buttonVariant="contained"
                 onClick={handleok}
@@ -972,7 +1053,7 @@ const TaskList = () => {
             >
               Edit Tasks
             </Button>
-          )}    
+          )}
       </Box>
 
       <Grid>{renderSnackBar()}</Grid>
@@ -1028,6 +1109,7 @@ const TaskList = () => {
           openPreviewDialog={openPreviewDialog}
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
+          task_type={task_type}
         />
       )}
     </>

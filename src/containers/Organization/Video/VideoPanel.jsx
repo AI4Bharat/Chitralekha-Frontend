@@ -1,25 +1,28 @@
-import { Button, Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import React, {
   createRef,
   memo,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProjectStyle from "../../../styles/ProjectStyle";
 
 const VideoPanel = memo(
-  ({ setPlayer, setCurrentTime, setPlaying }) => {
+  ({
+    setPlayer,
+    setCurrentTime,
+    setPlaying,
+  }) => {
     const dispatch = useDispatch();
     const classes = ProjectStyle();
     const $video = createRef();
+
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
     const fullscreenVideo = useSelector(
       (state) => state.commonReducer.fullscreenVideo
     );
+
 
     const isPlaying = ($video) => {
       return !!(
@@ -54,39 +57,24 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <Box
-        margin="auto"
-        display="flex"
-        flexDirection="column"
-        style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
-      >
-        <Typography
-          variant="h4"
-          textAlign="center"
-          paddingY={4}
-          style={fullscreenVideo ? { color: "white" } : {}}
-        >
-          {videoDetails?.video?.name}
-        </Typography>
-
-        <video
-          onClick={onClick}
-          src={
-            videoDetails?.video?.audio_only
-              ? videoDetails?.direct_audio_url
-              : videoDetails?.direct_video_url
-          }
-          style={{
-            cursor: "pointer",
-            width: videoDetails?.video?.audio_only ? "20%" : "",
-            width: videoDetails?.video?.audio_only ? "20%" : "",
-            margin: videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : ""
-          }}
-          poster={videoDetails?.video?.audio_only && "playpause.png"}
-          ref={$video}
-          // className={classes.videoPlayer}
-        />
-      </Box>
+      <video
+        onClick={onClick}
+        src={
+          videoDetails?.video?.audio_only
+            ? videoDetails?.direct_audio_url
+            : videoDetails?.direct_video_url
+        }
+        style={{
+          cursor: "pointer",
+          width: videoDetails?.video?.audio_only ? "20%" : "",
+          width: videoDetails?.video?.audio_only ? "20%" : "",
+          margin:
+            videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
+        }}
+        poster={videoDetails?.video?.audio_only && "playpause.png"}
+        ref={$video}
+        // className={classes.videoPlayer}
+      />
     );
   },
   () => true
