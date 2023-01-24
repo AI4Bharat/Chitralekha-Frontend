@@ -173,6 +173,11 @@ const CustomMenuComponent = ({
               handleClose();
             }}
           >
+            <CheckIcon
+              style={{
+                visibility: player.playbackRate === item.speed ? "" : "hidden",
+              }}
+            />
             <Typography
               variant="body2"
               textAlign="center"

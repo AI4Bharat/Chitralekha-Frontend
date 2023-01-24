@@ -3,6 +3,9 @@ import {
   Button,
   CircularProgress,
   Grid,
+  IconButton,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -27,8 +30,8 @@ import { Box } from "@mui/system";
 import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
-import FastForwardIcon from "@mui/icons-material/FastForward";
-import FastRewindIcon from "@mui/icons-material/FastRewind";
+import CustomMenuComponent from "../../../common/CustomMenuComponent";
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -58,6 +61,7 @@ const VideoLanding = () => {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -409,18 +413,58 @@ const VideoLanding = () => {
         sx={{ marginTop: 7, overflow: "hidden" }}
       >
         <Grid width="100%" overflow="hidden" md={8} xs={12} id="video">
-          <VideoPanel
-            setPlayer={setPlayer}
-            setCurrentTime={setCurrentTime}
-            setPlaying={setPlaying}
-            playing={playing}
-            currentTime={currentTime}
-            fontMenu={fontMenu}
-            setFontSize={setFontSize}
-            fontSize={fontSize}
-            darkAndLightMode={darkAndLightMode}
-            setDarkAndLightMode={setDarkAndLightMode}
-          />
+          <Box
+            margin="auto"
+            display="flex"
+            flexDirection="column"
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
+          >
+            <Box display="flex" flexDirection="row">
+              <Typography
+                variant="h4"
+                textAlign="center"
+                paddingY={4}
+                width="90%"
+                style={fullscreenVideo ? { color: "white" } : {}}
+              >
+                {videoDetails?.video?.name}
+              </Typography>
+
+              <Tooltip title="Settings" placement="bottom">
+                <IconButton
+                  sx={{
+                    backgroundColor: "#2C2799",
+                    borderRadius: "50%",
+                    color: "#fff",
+                    margin: "auto",
+                    "&:hover": {
+                      backgroundColor: "#271e4f",
+                    },
+                  }}
+                  onClick={(event) => setAnchorElSettings(event.currentTarget)}
+                >
+                  <ArrowDropDownCircleIcon />
+                </IconButton>
+              </Tooltip>
+
+              <CustomMenuComponent
+                anchorElSettings={anchorElSettings}
+                handleClose={() => setAnchorElSettings(null)}
+                fontMenu={fontMenu}
+                setFontSize={setFontSize}
+                fontSize={fontSize}
+                darkAndLightMode={darkAndLightMode}
+                setDarkAndLightMode={setDarkAndLightMode}
+                player={player}
+              />
+            </Box>
+
+            <VideoPanel
+              setPlayer={setPlayer}
+              setCurrentTime={setCurrentTime}
+              setPlaying={setPlaying}
+            />
+          </Box>
 
           {currentSubs ? (
             <div
@@ -438,7 +482,9 @@ const VideoLanding = () => {
 
               <ReactTextareaAutosize
                 className={`${classes.playerTextarea} ${
-                  darkAndLightMode === "dark" ? classes.darkMode : classes.lightMode
+                  darkAndLightMode === "dark"
+                    ? classes.darkMode
+                    : classes.lightMode
                 }`}
                 value={
                   currentSubs.target_text
