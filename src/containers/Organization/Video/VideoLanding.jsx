@@ -31,7 +31,7 @@ import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
 import CustomMenuComponent from "../../../common/CustomMenuComponent";
-import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
+import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -419,16 +419,25 @@ const VideoLanding = () => {
             flexDirection="column"
             style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
           >
-            <Box display="flex" flexDirection="row">
-              <Typography
-                variant="h4"
-                textAlign="center"
-                paddingY={4}
-                width="90%"
-                style={fullscreenVideo ? { color: "white" } : {}}
-              >
-                {videoDetails?.video?.name}
-              </Typography>
+            <Box
+              display="flex"
+              flexDirection="row"
+              style={fullscreenVideo ? { width: "60%", margin: "auto" } : {}}
+              border={"1px solid #eaeaea"}
+              borderRight="none"
+            >
+              <Tooltip title={videoDetails?.video?.name} placement="bottom">
+                <Typography
+                  variant="h4"
+                  textAlign="center"
+                  margin={4}
+                  width="90%"
+                  className={classes.videoName}
+                  style={fullscreenVideo ? { color: "white" } : {}}
+                >
+                  {videoDetails?.video?.name}
+                </Typography>
+              </Tooltip>
 
               <Tooltip title="Settings" placement="bottom">
                 <IconButton
@@ -443,7 +452,7 @@ const VideoLanding = () => {
                   }}
                   onClick={(event) => setAnchorElSettings(event.currentTarget)}
                 >
-                  <ArrowDropDownCircleIcon />
+                  <WidgetsOutlinedIcon />
                 </IconButton>
               </Tooltip>
 
@@ -456,6 +465,7 @@ const VideoLanding = () => {
                 darkAndLightMode={darkAndLightMode}
                 setDarkAndLightMode={setDarkAndLightMode}
                 player={player}
+                contianer={document.getElementById("video")}
               />
             </Box>
 

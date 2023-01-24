@@ -615,6 +615,12 @@ const ProjectStyle = makeStyles({
     textAlign: "initial", 
     marginBottom: "10px"
   },
+
+  videoName: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
 });
 
 export default ProjectStyle;
