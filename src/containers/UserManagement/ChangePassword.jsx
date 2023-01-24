@@ -64,7 +64,6 @@ const ChangePassword = () => {
       headers: apiObj.getHeaders().headers,
     });
     const resp = await res.json();
-    console.log(resp,"respresp",res)
     if (res.ok) {
       setSnackbarInfo({
         open: true,
