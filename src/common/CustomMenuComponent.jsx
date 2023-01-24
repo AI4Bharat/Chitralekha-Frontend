@@ -175,7 +175,7 @@ const CustomMenuComponent = ({
           >
             <CheckIcon
               style={{
-                visibility: player.playbackRate === item.speed ? "" : "hidden",
+                visibility: player?.playbackRate === item.speed ? "" : "hidden",
               }}
             />
             <Typography
