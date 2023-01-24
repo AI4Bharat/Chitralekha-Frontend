@@ -561,15 +561,46 @@ const ProjectStyle = makeStyles({
     color: "rgba(0, 0, 0, 0.87)",
     fontWeight: "normal",
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    textAlign: "left",
   },
 
-  content1: {
+  header: {
+    width: "30%",
+    fontWeight: "600",
+    padding: "10px",
+    textAlign: "center",
+  },
+
+  contentTaskType: {
     width: "20%",
     padding: "10px",
+    color: "red",
+    backgroundColor: "lightgreen",
+    width: "20%",
+    margin: "10px",
+    fontWeight: "600",
+    padding: "10px",
+    borderRadius: "15px",
+    textAlign: "center",
+  },
+
+  contentStatus: {
+    display: "flex",
+    flexDirection: "column",
+    width: "30%",
+    alignItems: "center",
+  },
+
+  contentStatusTop: {
+    borderRadius: "10px",
+    width: "75%",
+    backgroundColor: "#FFD981",
+    textAlign: "center",
+    margin: "10px 0 5px 0",
   },
 
   content2: {
-    width: "60%",
+    width: "50%",
     padding: "10px",
   },
 
