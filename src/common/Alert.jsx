@@ -64,9 +64,9 @@ const AlertComponent = ({ open, data, onClose }) => {
                         </Box>
                         <Box>
                           {item.status === "Fail" ? (
-                            <CancelOutlinedIcon />
+                            <CancelOutlinedIcon  color="error"/>
                           ) : (
-                            <TaskAltIcon />
+                            <TaskAltIcon color= "success" />
                           )}
                         </Box>
                       </Box>
