@@ -542,6 +542,7 @@ const ProjectStyle = makeStyles({
     padding: "20px",
     border: "1px solid #eaeaea",
     backgroundColor: "#E0E0E0",
+    borderRadius:"25px"
   },
 
   arrow: {
