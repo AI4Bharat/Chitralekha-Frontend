@@ -18,6 +18,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import { useEffect } from "react";
+import CustomizedSnackbars from "../../common/Snackbar"
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -37,26 +38,48 @@ const ChangePassword = () => {
     open: false,
     message: "",
     variant: "success",
-  });
+});
 
-  useEffect(() => {
-    if (apiStatus.message) {
-      setSnackbarInfo({
-        ...snackbar,
-        open: true,
-        message: apiStatus.message,
-        variant: apiStatus.error ? "error" : "Success",
-      });
-    }
-  }, [apiStatus]);
+  // useEffect(() => {
+  //   if (apiStatus.message) {
+  //     setSnackbarInfo({
+  //       ...snackbar,
+  //       open: true,
+  //       message: apiStatus.current_password,
+  //       variant: apiStatus.error ? "error" : "Success",
+  //     });
+  //   }
+  // }, [apiStatus]);
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async() => {
     let apiObj = new ChangePasswordAPI(
       newPassword.value,
       currentPassword.value
     );
 
-    dispatch(APITransport(apiObj));
+   // dispatch(APITransport(apiObj));
+   const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    console.log(resp,"respresp",res)
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.current_password,
+        variant: "success",
+      })
+
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.current_password,
+        variant: "error",
+      })
+    }
+
   };
 
   const handleClickShowCurrentPassword = () => {
@@ -79,14 +102,15 @@ const ChangePassword = () => {
 
   const renderSnackBar = () => {
     return (
-      <Snackbar
-        open={snackbar.open}
-        handleClose={handleSnackbarClose}
-        autoHideDuration={6000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert severity={snackbar.variant}>{snackbar.message}</Alert>
-      </Snackbar>
+      <CustomizedSnackbars
+      open={snackbar.open}
+      handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+      }
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      variant={snackbar.variant}
+      message={[snackbar.message]}
+  />
     );
   };
 
