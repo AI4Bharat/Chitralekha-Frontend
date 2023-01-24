@@ -113,7 +113,7 @@ const CreateVideoDialog = ({
           variant="contained"
           sx={{ borderRadius: 2 }}
           onClick={() => addBtnClickHandler()}
-          disabled={!videoLink}
+           disabled={lang && videoLink  ? false : true}
         >
           Create {apiStatus.progress && <Loader size={20} margin="0 0 0 5px" />}
         </Button>
