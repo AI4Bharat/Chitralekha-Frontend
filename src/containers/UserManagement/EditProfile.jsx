@@ -11,6 +11,8 @@ import {
   MenuItem,
   Chip,
   Checkbox,
+  FormGroup,
+  FormControlLabel,
 } from "@mui/material";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import React, { useEffect, useState } from "react";
@@ -41,12 +43,13 @@ const EditProfile = () => {
   const [originalEmail, setOriginalEmail] = useState("");
   const [enableVerifyEmail, setEnableVerifyEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
+  const [emailVerifyLoading, setEmailVerifyLoading] = useState("");
   const [userDetails, setUserDetails] = useState(null);
   const [organization, setOrganization] = useState("");
   const [role, setRole] = useState("");
   const [language, setLanguage] = useState([]);
   const [availabilityStatus, setAvailabilityStatus] = useState("");
+  const [showChangePassword, setShowChangePassword] = useState("");
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -165,7 +168,7 @@ const EditProfile = () => {
       variant: "success",
     });
   };
-  console.log(language);
+
   const handleSubmit = () => {
     let updateProfileReqBody = {
       username: userDetails.username,
@@ -194,6 +197,8 @@ const EditProfile = () => {
     }
   };
 
+  const handlePasswordUpdate = () => {};
+
   return (
     <>
       <Grid
@@ -216,6 +221,7 @@ const EditProfile = () => {
                 Edit Profile
               </Typography>
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -226,6 +232,7 @@ const EditProfile = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -236,6 +243,7 @@ const EditProfile = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -271,6 +279,7 @@ const EditProfile = () => {
                 />
               )}
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -441,6 +450,72 @@ const EditProfile = () => {
                 Update Profile
               </Button>
             </Grid>
+
+            {loggedInUserData.role === "ADMIN" && (
+              <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showChangePassword}
+                        onChange={(event) =>
+                          setShowChangePassword(event.target.checked)
+                        }
+                        inputProps={{ "aria-label": "controlled" }}
+                      />
+                    }
+                    label="Change Password"
+                  />
+                </FormGroup>
+              </Grid>
+            )}
+
+            {showChangePassword && (
+              <>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                  <OutlinedTextField
+                    required
+                    fullWidth
+                    label="New Password"
+                    name="newPassword"
+                    value={userDetails?.newPassword}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                  <OutlinedTextField
+                    required
+                    fullWidth
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    value={userDetails?.confirmPassword}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="flex-end"
+                  style={{ marginTop: 20 }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handlePasswordUpdate}
+                    disabled={
+                      !userDetails?.newPassword || !userDetails?.confirmPassword
+                    }
+                    sx={{ borderRadius: "8px" }}
+                  >
+                    Update Password
+                  </Button>
+                </Grid>
+              </>
+            )}
           </Grid>
         </Card>
       </Grid>
