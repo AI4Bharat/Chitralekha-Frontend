@@ -32,6 +32,7 @@ import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
 import CustomMenuComponent from "../../../common/CustomMenuComponent";
 import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -370,6 +371,8 @@ const VideoLanding = () => {
           sx={{
             color: "#fff",
             zIndex: 999999,
+            display: "flex",
+            flexDirection: "column",
             "&.MuiBackdrop-root": {
               backgroundColor: "#1d1d1d",
             },
@@ -377,6 +380,9 @@ const VideoLanding = () => {
           open={true}
         >
           <CircularProgress color="inherit" size="50px" />
+          <Typography sx={{ mt: 3 }}>
+            Please wait while your request is being processed
+          </Typography>
         </Backdrop>
       );
     }

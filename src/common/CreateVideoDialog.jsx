@@ -12,6 +12,7 @@ import {
   RadioGroup,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +20,7 @@ import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSuppor
 import APITransport from "../redux/actions/apitransport/apitransport";
 import Loader from "./Spinner";
 import { MenuProps } from "../utils/utils";
+import { Box } from "@mui/system";
 
 const CreateVideoDialog = ({
   open,
@@ -95,28 +97,44 @@ const CreateVideoDialog = ({
         </FormControl>
 
         <TextField
-          label={"Enter Link from Youtube or Google Drive Here"}
+          label={
+            isAudio === "true"
+              ? "Enter Link from Google Drive Here"
+              : "Enter Link from Youtube Here"
+          }
           fullWidth
           multiline
           rows={4}
           value={videoLink}
           onChange={(event) => setVideoLink(event.target.value)}
-          sx={{ mt: 3, mb: 3 }}
+          sx={{ mb: 3, mt: 3 }}
         />
       </DialogContent>
-      <DialogActions style={{ padding: "0 24px 24px 0" }}>
-        <Button autoFocus onClick={handleUserDialogClose}>
-          Close
-        </Button>
-        <Button
-          autoFocus
-          variant="contained"
-          sx={{ borderRadius: 2 }}
-          onClick={() => addBtnClickHandler()}
-           disabled={lang && videoLink  ? false : true}
-        >
-          Create {apiStatus.progress && <Loader size={20} margin="0 0 0 5px" />}
-        </Button>
+      <DialogActions
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 24px 24px 24px",
+        }}
+      >
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            *Supported Formats: {isAudio === "false" ? "Youtube Link" : "mp3"}
+          </Typography>
+        </Box>
+        <Box>
+          <Button onClick={handleUserDialogClose}>Close</Button>
+          <Button
+            variant="contained"
+            sx={{ borderRadius: 2, lineHeight: 1 }}
+            onClick={() => addBtnClickHandler()}
+            disabled={lang && videoLink ? false : true}
+          >
+            Create{" "}
+            {apiStatus.progress && <Loader size={20} margin="0 0 0 5px" />}
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );

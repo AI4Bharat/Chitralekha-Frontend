@@ -19,6 +19,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
+import C from "../redux/constants";
 
 const Header = () => {
   const classes = headerStyle();
@@ -109,6 +110,7 @@ const Header = () => {
       onClick: () => {
         handleCloseUserMenu();
         localStorage.clear();
+        dispatch({ type: C.LOGOUT });
         navigate("/");
       },
     },
