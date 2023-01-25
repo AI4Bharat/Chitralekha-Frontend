@@ -25,6 +25,7 @@ import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import CloseIcon from "@mui/icons-material/Close";
+import C from "../redux/constants";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -107,6 +108,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       videoDetails[0].audio_only
     );
     dispatch(APITransport(apiObj));
+
+    return () => {
+      dispatch({ type: C.CLEAR_VIDEO_DETAILS });
+    }
   }, []);
 
   const onFullScreenChange = (status) => {
