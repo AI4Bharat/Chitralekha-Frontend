@@ -13,6 +13,7 @@ const CustomMenuComponent = ({
   darkAndLightMode,
   setDarkAndLightMode,
   player,
+  contianer,
 }) => {
   const [anchorElFonts, setAnchorElFonts] = useState(null);
   const [anchorElTheme, setAnchorElTheme] = useState(null);
@@ -90,6 +91,7 @@ const CustomMenuComponent = ({
         }}
         open={Boolean(anchorElSettings)}
         onClose={handleClose}
+        container={contianer}
       >
         {settingsMenu.map((item, index) => (
           <MenuItem key={index} onClick={(event) => item.onClick(event)}>
@@ -123,6 +125,7 @@ const CustomMenuComponent = ({
         }}
         open={Boolean(anchorElFonts)}
         onClose={() => setAnchorElFonts(null)}
+        container={contianer}
       >
         {fontMenu.map((item, index) => (
           <MenuItem
@@ -163,6 +166,7 @@ const CustomMenuComponent = ({
         }}
         open={Boolean(anchorElPlayback)}
         onClose={() => setAnchorElPlayback(null)}
+        container={contianer}
       >
         {playbackSpeed.map((item, index) => (
           <MenuItem
@@ -205,6 +209,7 @@ const CustomMenuComponent = ({
         onClose={() => {
           setAnchorElTheme(null);
         }}
+        container={contianer}
       >
         {themeMenu.map((item, index) => (
           <MenuItem
