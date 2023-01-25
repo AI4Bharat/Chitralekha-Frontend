@@ -351,15 +351,6 @@ const RightPanel = ({ currentIndex, player }) => {
     return 0;
   };
 
-  useEffect(() => {
-    if (sourceText?.length ===  0)
-      setSourceText([newSub({
-        start_time: '00:00:00.000',
-        end_time: '00:00:05.000',
-        text: "Please type here..",
-      })])
-  }, [sourceText, newSub])
-
   return (
     <>
       {renderSnackBar()}
