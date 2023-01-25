@@ -694,28 +694,51 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     }
                   }}
                 >
-                  <textarea
-                    rows={4}
-                    className={`${classes.textAreaTransliteration} ${
-                      currentIndex === index ? classes.boxHighlight : ""
-                    }`}
-                    dir={enableRTL_Typing ? "rtl" : "ltr"}
-                    style={{ fontSize: fontSize, height: "100px" }}
-                    value={item.text}
-                    onMouseUp={(e) => onMouseUp(e, index)}
-                    onBlur={() =>
-                      setTimeout(() => {
-                        setShowPopOver(false);
-                      }, 200)
-                    }
-                    onChange={(event) => {
-                      changeTranscriptHandler(
-                        event.target.value,
-                        index,
-                        "transcript"
-                      );
-                    }}
-                  />
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <textarea
+                      rows={4}
+                      className={`${classes.textAreaTransliteration} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      dir={enableRTL_Typing ? "rtl" : "ltr"}
+                      style={{ fontSize: fontSize, height: "100px" }}
+                      value={item.text}
+                      onMouseUp={(e) => onMouseUp(e, index)}
+                      onBlur={() =>
+                        setTimeout(() => {
+                          setShowPopOver(false);
+                        }, 200)
+                      }
+                      onChange={(event) => {
+                        changeTranscriptHandler(
+                          event.target.value,
+                          index,
+                          "transcript"
+                        );
+                      }}
+                    />
+                    <span
+                      style={{
+                        background: "white",
+                        color:
+                          Math.abs(sourceLength(index) - targetLength(index)) >=
+                          3
+                            ? "red"
+                            : "green",
+                        fontWeight: 700,
+                        height: "20px",
+                        width: "30px",
+                        borderRadius: "50%",
+                        position: "absolute",
+                        bottom: "-10px",
+                        left: "25px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {sourceLength(index)}
+                    </span>
+                  </div>
+
                   {enableTransliteration ? (
                     <IndicTransliterate
                       lang={taskData?.target_language}
@@ -776,6 +799,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     <div
                       style={{
                         position: "relative",
+                        width: "100%"
                       }}
                     >
                       <textarea
@@ -815,7 +839,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                           borderRadius: "50%",
                           position: "absolute",
                           bottom: "-10px",
-                          right: "0px",
+                          right: "25px",
                           textAlign: "center",
                         }}
                       >
