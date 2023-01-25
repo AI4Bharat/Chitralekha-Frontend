@@ -13,6 +13,7 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
+  IconButton,
 } from "@mui/material";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import React, { useEffect, useState } from "react";
@@ -29,6 +30,9 @@ import { useParams } from "react-router-dom";
 import FetchOrganizationListAPI from "../../redux/actions/api/Organization/FetchOrganizationList";
 import { Box } from "@mui/system";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import UpdateMemberPasswordAPI from "../../redux/actions/api/Admin/UpdateMemberPassword";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const EditProfile = () => {
   const { id } = useParams();
@@ -50,6 +54,10 @@ const EditProfile = () => {
   const [language, setLanguage] = useState([]);
   const [availabilityStatus, setAvailabilityStatus] = useState("");
   const [showChangePassword, setShowChangePassword] = useState("");
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirmPassword: false,
+  });
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -83,7 +91,6 @@ const EditProfile = () => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
   }, []);
-  console.log(userData.languages, " userData.languages");
 
   useEffect(() => {
     if (userData?.email && userData?.role && userData?.organization) {
@@ -197,7 +204,33 @@ const EditProfile = () => {
     }
   };
 
-  const handlePasswordUpdate = () => {};
+  const handlePasswordUpdate = () => {
+    const apiObj = new UpdateMemberPasswordAPI(userDetails?.newPassword, id);
+
+    fetch(apiObj.apiEndPoint(), {
+      method: "PATCH",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    })
+      .then(async (res) => {
+        if (!res.ok) throw await res.json();
+        else return await res.json();
+      })
+      .then((res) => {
+        setSnackbarState({
+          open: true,
+          message: res.message,
+          variant: "success",
+        });
+      })
+      .catch((err) => {
+        setSnackbarState({
+          open: true,
+          message: err.message,
+          variant: "error",
+        });
+      });
+  };
 
   return (
     <>
@@ -481,6 +514,27 @@ const EditProfile = () => {
                     value={userDetails?.newPassword}
                     onChange={handleFieldChange}
                     InputLabelProps={{ shrink: true }}
+                    type={showPassword.password ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                password: !showPassword.password,
+                              })
+                            }
+                          >
+                            {showPassword.password ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
 
@@ -493,6 +547,27 @@ const EditProfile = () => {
                     value={userDetails?.confirmPassword}
                     onChange={handleFieldChange}
                     InputLabelProps={{ shrink: true }}
+                    type={showPassword.confirmPassword ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                confirmPassword: !showPassword.confirmPassword,
+                              })
+                            }
+                          >
+                            {showPassword.confirmPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
 
