@@ -355,7 +355,7 @@ const RightPanel = ({ currentIndex, player }) => {
       <Box
         sx={{
           display: "flex",
-          border: fullscreen ? "" : "1px solid #eaeaea",
+          border: "1px solid #eaeaea",
         }}
         flexDirection="column"
       >

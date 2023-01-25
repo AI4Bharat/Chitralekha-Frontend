@@ -122,6 +122,7 @@ const SignUp = () => {
             message: rsp_data.message,
             variant: "success",
           });
+          localStorage.clear();
           navigate("/");
           setValues({
             UserName: "",
@@ -177,6 +178,12 @@ const SignUp = () => {
       setLoading(true);
     }
   };
+
+  const handleAlreadyhaveaccount = () =>{
+    console.log("navigate")
+    localStorage.clear();
+    navigate("/");
+  }
 
   const renderSnackBar = () => {
     return (
@@ -373,10 +380,11 @@ const SignUp = () => {
             <Typography variant={"body2"} className={classes.Typo}>
               Already have an account ?
             </Typography>
-            <Typography variant={"body2"}>
+            <Typography variant={"body2"} >
               <Link
                 className={classes.link}
-                href="/"
+                onClick={handleAlreadyhaveaccount}
+               
                 style={{ fontSize: "14px" }}
               >
                 Sign in

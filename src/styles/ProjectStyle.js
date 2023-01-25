@@ -542,6 +542,7 @@ const ProjectStyle = makeStyles({
     padding: "20px",
     border: "1px solid #eaeaea",
     backgroundColor: "#E0E0E0",
+    borderRadius:"25px"
   },
 
   arrow: {
@@ -560,15 +561,46 @@ const ProjectStyle = makeStyles({
     color: "rgba(0, 0, 0, 0.87)",
     fontWeight: "normal",
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    textAlign: "left",
   },
 
-  content1: {
+  header: {
+    width: "30%",
+    fontWeight: "600",
+    padding: "10px",
+    textAlign: "center",
+  },
+
+  contentTaskType: {
     width: "20%",
     padding: "10px",
+    color: "rgba(73, 124, 39)",
+    backgroundColor: "rgba(45, 191, 56 ,0.3 )",
+    width: "20%",
+    margin: "10px",
+    fontWeight: "600",
+    padding: "10px",
+    borderRadius: "15px",
+    textAlign: "center",
+  },
+
+  contentStatus: {
+    display: "flex",
+    flexDirection: "column",
+    width: "30%",
+    alignItems: "center",
+  },
+
+  contentStatusTop: {
+    borderRadius: "10px",
+    width: "75%",
+    backgroundColor: "#FFD981",
+    textAlign: "center",
+    margin: "10px 0 5px 0",
   },
 
   content2: {
-    width: "60%",
+    width: "50%",
     padding: "10px",
   },
 
@@ -582,6 +614,12 @@ const ProjectStyle = makeStyles({
   message: {
     textAlign: "initial", 
     marginBottom: "10px"
+  },
+
+  videoName: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 });
 
