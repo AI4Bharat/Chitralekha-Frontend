@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { roles } from "../../../utils/utils";
@@ -43,6 +43,8 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import UserMappedByRole from "../../../utils/UserMappedByRole";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import FilterList from "../../../common/FilterList";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -61,7 +63,7 @@ import DeleteDialog from "../../../common/DeleteDialog";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
-
+const filterStatus = ["Complete", "New", "Inprogress", "Selected Source"];
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -94,8 +96,12 @@ const TaskList = () => {
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
-  const[task_type,setTask_type] = useState()
-
+  const [task_type, setTask_type] = useState();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedFilters, setsSelectedFilters] = useState("");
+  const [filterData, setfilterData] = useState([]);
+  const popoverOpen = Boolean(anchorEl);
+  const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
@@ -114,7 +120,7 @@ const TaskList = () => {
     if (orgId) {
       FetchTaskList();
     }
-  }, [orgId])
+  }, [orgId]);
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
@@ -125,9 +131,9 @@ const TaskList = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
-  console.log(taskList,"userDatauserData")
   const handleClose = () => {
     setOpen(false);
+    setAnchorEl(null);
   };
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -139,6 +145,11 @@ const TaskList = () => {
     setTaskdata(id);
     setTasktype(tasttype);
   };
+
+  const handleShowFilter = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -216,7 +227,7 @@ const TaskList = () => {
       link.parentNode.removeChild(link);
 
       window.URL.revokeObjectURL(blobUrl);
-    }  else {
+    } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
@@ -269,7 +280,6 @@ const TaskList = () => {
     });
   };
 
-
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
 
@@ -300,7 +310,7 @@ const TaskList = () => {
 
   const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
     setOpenPreviewDialog(true);
-    setTask_type(Task_type)
+    setTask_type(Task_type);
     const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
@@ -386,31 +396,35 @@ const TaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Delete && (<Tooltip title="Delete">
-        <IconButton
-          onClick={() => handledeletetask(tableData.rowData[0], false)}
-          color="error"
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>)
+      tableData.rowData[15]?.Delete && (
+        <Tooltip title="Delete">
+          <IconButton
+            onClick={() => handledeletetask(tableData.rowData[0], false)}
+            color="error"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Update && (<Tooltip title="Edit Task Details">
-        <IconButton
-          color="primary"
-          onClick={() => {
-            setSelectedTaskId(tableData.rowData[0]);
-            setOpenEditTaskDialog(true);
-            setIsBulk(false);
-          }}
-        >
-          <AppRegistrationIcon />
-        </IconButton>
-      </Tooltip>)
+      tableData.rowData[15]?.Update && (
+        <Tooltip title="Edit Task Details">
+          <IconButton
+            color="primary"
+            onClick={() => {
+              setSelectedTaskId(tableData.rowData[0]);
+              setOpenEditTaskDialog(true);
+              setIsBulk(false);
+            }}
+          >
+            <AppRegistrationIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
@@ -435,8 +449,24 @@ const TaskList = () => {
     );
   };
 
-  const pageSearch = () => {
-    return taskList.filter((el) => {
+  useEffect(() => {
+    setfilterData(taskList);
+  }, [taskList, SearchProject]);
+
+  useEffect(() => {
+    const result = taskList.filter((ele, index) => {
+      if (selectedFilters.task_Status === "") {
+        return ele;
+      } else {
+        return ele.status_label === selectedFilters.task_Status;
+      }
+    });
+
+    setfilterData(result);
+  }, [selectedFilters.task_Status]);
+
+  useEffect(() => {
+    const pageSearchData = taskList?.filter((el) => {
       if (SearchProject == "") {
         return el;
       } else if (
@@ -460,36 +490,38 @@ const TaskList = () => {
       ) {
         return el;
       } else if (
-        el.status?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       }
     });
-  };
+    setfilterData(pageSearchData);
+  }, [SearchProject]);
 
   const result =
     taskList && taskList.length > 0
-      ? pageSearch().map((item, i) => {
-        const status = item.status_label && UserMappedByRole(item.status_label)?.element;
-        return [
-          item.id,
-          item.task_type,
-          item.task_type_label,
-          item.video_name,
-          moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-          item.src_language,
-          item.src_language_label,
-          item.target_language,
-          item.target_language_label,
-          status ? status : item.status_label,
-          item.user,
-          item.is_active,
-          item.user?.username,
-          item.project_name,
-          item.video,
-          item.buttons,
-        ];
-      })
+      ? filterData?.map((item, i) => {
+          const status =
+            item.status_label && UserMappedByRole(item.status_label)?.element;
+          return [
+            item.id,
+            item.task_type,
+            item.task_type_label,
+            item.video_name,
+            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+            item.src_language,
+            item.src_language_label,
+            item.target_language,
+            item.target_language_label,
+            status ? status : item.status_label,
+            item.user,
+            item.is_active,
+            item.user?.username,
+            item.project_name,
+            item.video,
+            item.buttons,
+          ];
+        })
       : [];
   const columns = [
     {
@@ -681,7 +713,7 @@ const TaskList = () => {
       name: "status_label",
       label: "Status",
       options: {
-        filter: false,
+        filter: true,
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
@@ -740,10 +772,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[11] ? "" : "grey",
               }}
             >
               {value}
@@ -773,10 +802,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[11] ? "" : "grey",
               }}
             >
               {value}
@@ -847,9 +873,16 @@ const TaskList = () => {
 
   const renderToolBar = () => {
     return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
+      <>
+        <Tooltip title="Filter Table">
+          <Button onClick={handleShowFilter}>
+            <FilterListIcon sx={{ color: "#515A5A" }} />
+          </Button>
+        </Tooltip>
+        <Box className={classes.TaskListsearch}>
+          <Search />
+        </Box>
+      </>
     );
   };
 
@@ -915,12 +948,12 @@ const TaskList = () => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
             {tasktype === "TRANSCRIPTION_EDIT" ||
-              tasktype === "TRANSCRIPTION_REVIEW"
+            tasktype === "TRANSCRIPTION_REVIEW"
               ? "Transcription"
               : "Translation"}
           </DialogContentText>
           {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW" ? (
+          tasktype === "TRANSCRIPTION_REVIEW" ? (
             <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
               <FormControl>
                 <RadioGroup
@@ -968,7 +1001,7 @@ const TaskList = () => {
               label="Cancel"
             />
             {tasktype === "TRANSCRIPTION_EDIT" ||
-              tasktype === "TRANSCRIPTION_REVIEW" ? (
+            tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton
                 buttonVariant="contained"
                 onClick={handleok}
@@ -1110,6 +1143,17 @@ const TaskList = () => {
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
           task_type={task_type}
+        />
+      )}
+      {popoverOpen && (
+        <FilterList
+          id={filterId}
+          open={popoverOpen}
+          anchorEl={anchorEl}
+          handleClose={handleClose}
+          filterStatusData={filterStatus}
+          updateFilters={setsSelectedFilters}
+          currentFilters={selectedFilters}
         />
       )}
     </>

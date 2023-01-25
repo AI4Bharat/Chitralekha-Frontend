@@ -275,7 +275,19 @@ const DatasetStyle = makeStyles({
      right: "107px",
       bottom: "2px" 
 
-  }
+  },
+  TaskListsearch:{
+    position: "absolute",
+     right: "175px",
+      bottom: "2px"
+
+  },
+  clearAllBtn: {
+    float: "right",
+    margin: "9px 16px 0px auto",
+    padding: "14px",
+    height: "15px",
+  },
 });
 
 export default DatasetStyle;
