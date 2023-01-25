@@ -77,6 +77,7 @@ export const roles = [
     canDeleteTask: false,
     ProjectReport:false,
     organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Transcript Reviewer",
@@ -95,6 +96,7 @@ export const roles = [
     ProjectReport:false,
     organizationReport:false,
     organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Translation editor",
@@ -111,6 +113,7 @@ export const roles = [
     canEditTask: false,
     ProjectReport:false,
     organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Translation Reviewer",
@@ -128,6 +131,7 @@ export const roles = [
     canDeleteTask: false,
     ProjectReport:false,
     organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Universal Editor",
@@ -144,6 +148,7 @@ export const roles = [
     canDeleteTask: false,
     ProjectReport:false,
     organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Project Manager",
@@ -161,6 +166,7 @@ export const roles = [
     canDeleteTask: true,
     ProjectReport:true,
     organizationReport:false,
+    canAddMembers: true,
   },
   {
     label: "Organization Owner",
@@ -178,6 +184,7 @@ export const roles = [
     canDeleteTask: true,
     ProjectReport:true,
     organizationReport:true,
+    canAddMembers: true,
   },
 ];
 

@@ -27,6 +27,7 @@ import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails"
 import EditProject from "./containers/Organization/Project/EditProject";
 import TaskList from "./containers/Organization/Project/TaskList";
 import SignUp from "./containers/UserManagement/signup";
+import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -149,6 +150,8 @@ const RootRouter = () => {
         />
 
         <Route path="/invite/:invitecode" element={<SignUp />} />
+      
+        <Route path="/forget-password/confirm/:uid/:token" element={<ConfirmForgetPassword />} />
       </Routes>
     </HashRouter>
   );
