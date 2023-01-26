@@ -124,7 +124,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     );
 
     dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
-    setSourceText(existingsourceData);
     saveTranscriptHandler(false, true, existingsourceData);
   };
 
@@ -156,7 +155,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   }, [currentIndex]);
 
   const onReplacementDone = (updatedSource) => {
-    setSourceText(updatedSource);
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
   };
@@ -175,7 +173,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    setSourceText(arr);
     saveTranscriptHandler(false, false);
   };
 
@@ -287,7 +284,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     );
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
     saveTranscriptHandler(false, true, copySub);
   };
 
@@ -309,7 +305,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     }
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
   };
 
   const addNewSubtitleBox = (index) => {
@@ -330,7 +325,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     );
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
   };
 
   const fontMenu = [

@@ -53,6 +53,7 @@ const RightPanel = ({ currentIndex, player }) => {
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
   const newSub = useCallback((item) => new Sub(item), []);
+  const [sourceText, setSourceText] = useState([]);
 
   const formatSub = useCallback(
     (sub) => {
@@ -71,7 +72,6 @@ const RightPanel = ({ currentIndex, player }) => {
     [subtitles, formatSub]
   );
 
-  const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -98,8 +98,17 @@ const RightPanel = ({ currentIndex, player }) => {
   const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   useEffect(() => {
-    setSourceText(subtitles);
-  }, [subtitles]);
+    if (subtitles?.length === 0){
+      const defaultSubs = [newSub({
+        start_time: '00:00:00.000',
+        end_time: '00:00:00.000',
+        text: "Please type here..",
+      })]
+      dispatch(setSubtitles(defaultSubs, C.SUBTITLES))
+    }
+    else
+      setSourceText(subtitles);
+  }, [subtitles, newSub, dispatch]);
 
   const handleCloseSettingsMenu = () => {
     setAnchorElSettings(null);
@@ -125,7 +134,6 @@ const RightPanel = ({ currentIndex, player }) => {
     existingsourceData.splice(index + 1, 1);
 
     dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
-    setSourceText(existingsourceData);
     saveTranscriptHandler(false, true, existingsourceData);
   };
 
@@ -188,12 +196,10 @@ const RightPanel = ({ currentIndex, player }) => {
     );
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
     saveTranscriptHandler(false, true, copySub);
   };
 
   const onReplacementDone = (updatedSource) => {
-    setSourceText(updatedSource);
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
   };
@@ -207,7 +213,6 @@ const RightPanel = ({ currentIndex, player }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    setSourceText(arr);
     saveTranscriptHandler(false, false);
   };
 
@@ -295,7 +300,6 @@ const RightPanel = ({ currentIndex, player }) => {
     }
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
   };
 
   const onDelete = (index) => {
@@ -325,7 +329,6 @@ const RightPanel = ({ currentIndex, player }) => {
 
   const addNewSubtitleBox = (index) => {
     const copySub = copySubs();
-
     copySub.splice(
       index + 1,
       0,
@@ -340,7 +343,6 @@ const RightPanel = ({ currentIndex, player }) => {
     );
 
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
   };
 
   const targetLength = (index) => {
