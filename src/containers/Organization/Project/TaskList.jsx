@@ -309,6 +309,7 @@ const TaskList = () => {
   };
 
   const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
+    setPreviewdata({});
     setOpenPreviewDialog(true);
     setTask_type(Task_type);
     const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
