@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import {
-  Button,
-  TextField,
   CardContent,
   Grid,
   Typography,
-  Switch,
   IconButton,
   Tooltip,
   Menu,
@@ -26,10 +23,7 @@ import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import DT from "duration-time-conversion";
-import Sub from "../../../utils/Sub";
 import MergeIcon from "@mui/icons-material/Merge";
-import { getUpdatedTime } from "../../../utils/utils";
 import TimeBoxes from "../../../common/TimeBoxes";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import ConfirmDialog from "../../../common/ConfirmDialog";
@@ -39,6 +33,15 @@ import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  addSubtitleBox,
+  fontMenu,
+  newSub,
+  onMerge,
+  onSplit,
+  onSubtitleDelete,
+  timeChange,
+} from "../../../utils/subtitleUtils";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -49,48 +52,20 @@ const RightPanel = ({ currentIndex, player }) => {
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
-  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
-  const newSub = useCallback((item) => new Sub(item), []);
   const [sourceText, setSourceText] = useState([]);
-
-  const formatSub = useCallback(
-    (sub) => {
-      if (Array.isArray(sub)) {
-        return sub.map((item) => newSub(item));
-      }
-      return newSub(sub);
-    },
-    [newSub]
-  );
-
-  const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
-
-  const copySubs = useCallback(
-    () => formatSub(subtitles),
-    [subtitles, formatSub]
-  );
-
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
-
   const [showPopOver, setShowPopOver] = useState(false);
-
   const [selectionStart, setSelectionStart] = useState();
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
-  const [anchorEle, setAnchorEle] = useState(null);
-  const [anchorPos, setAnchorPos] = useState({
-    positionX: 0,
-    positionY: 0,
-  });
   const [enableTransliteration, setTransliteration] = useState(true);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
-  const [showSplitButton, setShowSplitButton] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [anchorElFont, setAnchorElFont] = useState(null);
@@ -98,16 +73,16 @@ const RightPanel = ({ currentIndex, player }) => {
   const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   useEffect(() => {
-    if (subtitles?.length === 0){
-      const defaultSubs = [newSub({
-        start_time: '00:00:00.000',
-        end_time: '00:00:00.000',
-        text: "Please type here..",
-      })]
-      dispatch(setSubtitles(defaultSubs, C.SUBTITLES))
-    }
-    else
-      setSourceText(subtitles);
+    if (subtitles?.length === 0) {
+      const defaultSubs = [
+        newSub({
+          start_time: "00:00:00.000",
+          end_time: "00:00:00.000",
+          text: "Please type here..",
+        }),
+      ];
+      dispatch(setSubtitles(defaultSubs, C.SUBTITLES));
+    } else setSourceText(subtitles);
   }, [subtitles, newSub, dispatch]);
 
   const handleCloseSettingsMenu = () => {
@@ -122,81 +97,29 @@ const RightPanel = ({ currentIndex, player }) => {
   }, [currentIndex]);
 
   const onMergeClick = (item, index) => {
-    const existingsourceData = [...sourceText];
-    const newItemObj = existingsourceData[index];
-
-    newItemObj["end_time"] = existingsourceData[index + 1]["end_time"];
-
-    newItemObj["text"] =
-      newItemObj["text"] + " " + existingsourceData[index + 1]["text"];
-
-    existingsourceData[index] = newItemObj;
-    existingsourceData.splice(index + 1, 1);
-
-    dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
-    saveTranscriptHandler(false, true, existingsourceData);
+    const sub = onMerge(sourceText, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
   };
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
       e.preventDefault();
-      setAnchorPos({
-        positionX: e.clientX,
-        positionY: e.clientY,
-      });
       setShowPopOver(true);
-      setAnchorEle(e.currentTarget);
       setCurrentIndexToSplitTextBlock(blockIdx);
       setSelectionStart(e.target.selectionStart);
     }
   };
 
   const onSplitClick = () => {
-    const copySub = copySubs();
-
-    const targetTextBlock = sourceText[currentIndexToSplitTextBlock];
-    const index = hasSub(subtitles[currentIndexToSplitTextBlock]);
-
-    const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
-    const text2 = targetTextBlock.text.slice(selectionStart).trim();
-
-    if (!text1 || !text2) return;
-
-    const splitDuration = (
-      targetTextBlock.duration *
-      (selectionStart / targetTextBlock.text.length)
-    ).toFixed(3);
-
-    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-      return;
-
-    copySub.splice(currentIndexToSplitTextBlock, 1);
-    const middleTime = DT.d2t(
-      targetTextBlock.startTime + parseFloat(splitDuration)
+    const sub = onSplit(
+      sourceText,
+      currentIndexToSplitTextBlock,
+      selectionStart
     );
 
-    copySub.splice(
-      index,
-      0,
-      newSub({
-        start_time: subtitles[currentIndexToSplitTextBlock].start_time,
-        end_time: middleTime,
-        text: text1,
-      })
-    );
-
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: middleTime,
-        end_time: subtitles[currentIndexToSplitTextBlock].end_time,
-        text: text2,
-      })
-    );
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
-    saveTranscriptHandler(false, true, copySub);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
   };
 
   const onReplacementDone = (updatedSource) => {
@@ -283,66 +206,18 @@ const RightPanel = ({ currentIndex, player }) => {
   };
 
   const handleTimeChange = (value, index, type, time) => {
-    const copySub = [...sourceText];
-
-    if (type === "startTime") {
-      copySub[index].start_time = getUpdatedTime(
-        value,
-        time,
-        copySub[index].start_time
-      );
-    } else {
-      copySub[index].end_time = getUpdatedTime(
-        value,
-        time,
-        copySub[index].start_time
-      );
-    }
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    const sub = timeChange(sourceText, value, index, type, time);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
 
   const onDelete = (index) => {
-    const copySub = [...sourceText];
-    copySub.splice(index, 1);
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    const sub = onSubtitleDelete(sourceText, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
 
-  const fontMenu = [
-    {
-      label: "small",
-      size: "small",
-    },
-    {
-      label: "Normal",
-      size: "large",
-    },
-    {
-      label: "Large",
-      size: "x-large",
-    },
-    {
-      size: "xx-large",
-      label: "Huge",
-    },
-  ];
-
   const addNewSubtitleBox = (index) => {
-    const copySub = copySubs();
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: copySub[index].end_time,
-        end_time:
-          index < sourceText.length - 1
-            ? copySub[index + 1].start_time
-            : copySub[index].end_time,
-        text: "SUB_TEXT",
-      })
-    );
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    const sub = addSubtitleBox(sourceText, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
 
   const targetLength = (index) => {

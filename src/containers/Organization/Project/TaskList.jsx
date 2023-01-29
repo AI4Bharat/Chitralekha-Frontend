@@ -881,6 +881,22 @@ const TaskList = () => {
           </Button>
         </Tooltip>
         <Box className={classes.TaskListsearch}>
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn && (
+              <Button
+                variant="contained"
+                className={classes.createTaskBtn}
+                onClick={() => {
+                  setOpenEditTaskDialog(true);
+                  setIsBulk(true);
+                }}
+                sx={{ float: "left" }}
+              >
+                Edit Tasks
+              </Button>
+            )}
+
           <Search />
         </Box>
       </>
@@ -1073,23 +1089,6 @@ const TaskList = () => {
 
   return (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        {roles.filter((role) => role.value === userData?.role)[0]
-          ?.permittedToCreateTask &&
-          showEditTaskBtn && (
-            <Button
-              variant="contained"
-              className={classes.createTaskBtn}
-              onClick={() => {
-                setOpenEditTaskDialog(true);
-                setIsBulk(true);
-              }}
-            >
-              Edit Tasks
-            </Button>
-          )}
-      </Box>
-
       <Grid>{renderSnackBar()}</Grid>
 
       <ThemeProvider theme={tableTheme}>

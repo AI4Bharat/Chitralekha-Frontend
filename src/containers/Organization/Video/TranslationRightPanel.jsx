@@ -1,13 +1,11 @@
 // TranslationRightPanel
 
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import {
-  Button,
   CardContent,
   Grid,
   Typography,
-  Switch,
   Tooltip,
   IconButton,
   Menu,
@@ -28,18 +26,22 @@ import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
 import { getUpdatedTime } from "../../../utils/utils";
 import TimeBoxes from "../../../common/TimeBoxes";
-import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import Sub from "../../../utils/Sub";
-import DT from "duration-time-conversion";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import CheckIcon from "@mui/icons-material/Check";
 import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  addSubtitleBox,
+  fontMenu,
+  onMerge,
+  onSubtitleDelete,
+  timeChange,
+} from "../../../utils/subtitleUtils";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -53,52 +55,23 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
-  const [showPopOver, setShowPopOver] = useState(false);
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
-  const [selectionStart, setSelectionStart] = useState();
-  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
-    useState();
   const [enableTransliteration, setTransliteration] = useState(true);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
-  const [anchorEle, setAnchorEle] = useState(null);
-  const [anchorPos, setAnchorPos] = useState({
-    positionX: 0,
-    positionY: 0,
-  });
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
 
-  const newSub = useCallback((item) => new Sub(item), []);
-
-  const formatSub = useCallback(
-    (sub) => {
-      if (Array.isArray(sub)) {
-        return sub.map((item) => newSub(item));
-      }
-      return newSub(sub);
-    },
-    [newSub]
-  );
-
-  const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
-
-  const copySubs = useCallback(
-    () => formatSub(subtitles),
-    [subtitles, formatSub]
-  );
-
   const onDelete = (index) => {
-    const copySub = copySubs();
-    copySub.splice(index, 1);
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    const sub = onSubtitleDelete(sourceText, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
 
   const handleCloseSettingsMenu = () => {
@@ -106,39 +79,9 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   };
 
   const onMergeClick = (item, index) => {
-    const existingsourceData = copySubs();
-
-    existingsourceData.splice(
-      index,
-      2,
-      newSub({
-        start_time: existingsourceData[index].start_time,
-        end_time: existingsourceData[index + 1].end_time,
-        text: `${existingsourceData[index].text} ${
-          existingsourceData[index + 1].text
-        }`,
-        target_text: `${existingsourceData[index].target_text} ${
-          existingsourceData[index + 1].target_text
-        }`,
-      })
-    );
-
-    dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
-    saveTranscriptHandler(false, true, existingsourceData);
-  };
-
-  const onMouseUp = (e, blockIdx) => {
-    if (e.target.selectionStart < e.target.value.length) {
-      e.preventDefault();
-      setAnchorPos({
-        positionX: e.clientX,
-        positionY: e.clientY,
-      });
-      setShowPopOver(true);
-      setAnchorEle(e.currentTarget);
-      setCurrentIndexToSplitTextBlock(blockIdx);
-      setSelectionStart(e.target.selectionStart);
-    }
+    const sub = onMerge(sourceText, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
   };
 
   useEffect(() => {
@@ -239,112 +182,15 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const onSplitClick = () => {
-    const copySub = [...sourceText];
-
-    const targetTextBlock = sourceText[currentIndexToSplitTextBlock];
-    const index = hasSub(subtitles[currentIndexToSplitTextBlock]);
-
-    const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
-    const text2 = targetTextBlock.text.slice(selectionStart).trim();
-
-    if (!text1 || !text2) return;
-
-    const splitDuration = (
-      targetTextBlock.duration *
-      (selectionStart / targetTextBlock.text.length)
-    ).toFixed(3);
-
-    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-      return;
-
-    copySub.splice(currentIndexToSplitTextBlock, 1);
-    const middleTime = DT.d2t(
-      targetTextBlock.startTime + parseFloat(splitDuration)
-    );
-
-    copySub.splice(
-      index,
-      0,
-      newSub({
-        start_time: subtitles[currentIndexToSplitTextBlock].start_time,
-        end_time: middleTime,
-        text: text1,
-      })
-    );
-
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: middleTime,
-        end_time: subtitles[currentIndexToSplitTextBlock].end_time,
-        text: text2,
-      })
-    );
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
-    saveTranscriptHandler(false, true, copySub);
-  };
-
   const handleTimeChange = (value, index, type, time) => {
-    const copySub = [...sourceText];
-
-    if (type === "startTime") {
-      copySub[index].start_time = getUpdatedTime(
-        value,
-        time,
-        copySub[index].start_time
-      );
-    } else {
-      copySub[index].end_time = getUpdatedTime(
-        value,
-        time,
-        copySub[index].start_time
-      );
-    }
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    const sub = timeChange(sourceText, value, index, type, time);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
 
   const addNewSubtitleBox = (index) => {
-    const copySub = copySubs();
-
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: copySub[index].end_time,
-        end_time:
-          index < sourceText.length - 1
-            ? copySub[index + 1].start_time
-            : copySub[index].end_time,
-        text: "SUB_TEXT",
-        target_text: "SUB_TEXT",
-      })
-    );
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
+    const sub = addSubtitleBox(sourceText, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
-
-  const fontMenu = [
-    {
-      label: "small",
-      size: "small",
-    },
-    {
-      label: "Normal",
-      size: "large",
-    },
-    {
-      label: "Large",
-      size: "x-large",
-    },
-    {
-      size: "xx-large",
-      label: "Huge",
-    },
-  ];
 
   const sourceLength = (index) => {
     if (sourceText[index]?.text.trim() !== "")
@@ -376,13 +222,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
           margin={"23.5px 0"}
           justifyContent="center"
         >
-          {/* <Grid display={"flex"} alignItems={"center"}>
-            <Typography>Transliteration</Typography>
-            <Switch
-              checked={enableTransliteration}
-              onChange={() => setTransliteration(!enableTransliteration)}
-            />
-          </Grid> */}
           <>
             <Tooltip title="Settings" placement="bottom">
               <IconButton
@@ -565,7 +404,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
             overflowX: "hidden",
             height: window.innerHeight * 0.667,
             backgroundColor: "black",
-            // color: "white",
             marginTop: "5px",
           }}
           id={"subtitleContainerTranslation"}
@@ -592,27 +430,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     index={index}
                     type={"startTime"}
                   />
-
-                  {/* <Tooltip title="Split Subtitle" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        marginRight: "10px",
-                        color: "#fff",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                        "&:disabled": {
-                          background: "grey",
-                        },
-                      }}
-                      onClick={onSplitClick}
-                      disabled={!showPopOver}
-                    >
-                      <SplitscreenIcon />
-                    </IconButton>
-                  </Tooltip> */}
 
                   {index < sourceText.length - 1 && (
                     <Tooltip title="Merge Next" placement="bottom">
@@ -697,12 +514,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
-                      onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() =>
-                        setTimeout(() => {
-                          setShowPopOver(false);
-                        }, 200)
-                      }
                       onChange={(event) => {
                         changeTranscriptHandler(
                           event.target.value,
@@ -741,7 +552,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index, "transaltion");
                       }}
-                      onFocus={(e) => onMouseUp(e, index)}
                       containerStyles={{
                         width: "100%",
                       }}
@@ -758,11 +568,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
-                            onBlur={() =>
-                              setTimeout(() => {
-                                setShowPopOver(false);
-                              }, 200)
-                            }
                             {...props}
                           />
                           <span
@@ -793,7 +598,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     <div
                       style={{
                         position: "relative",
-                        width: "100%"
+                        width: "100%",
                       }}
                     >
                       <textarea
@@ -810,12 +615,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                             "transaltion"
                           );
                         }}
-                        onMouseUp={(e) => onMouseUp(e, index)}
-                        onBlur={() =>
-                          setTimeout(() => {
-                            setShowPopOver(false);
-                          }, 200)
-                        }
                         value={item.target_text}
                       />
                       <span
