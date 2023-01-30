@@ -11,6 +11,9 @@ import {
   MenuItem,
   Chip,
   Checkbox,
+  FormGroup,
+  FormControlLabel,
+  IconButton,
 } from "@mui/material";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import React, { useEffect, useState } from "react";
@@ -27,6 +30,9 @@ import { useParams } from "react-router-dom";
 import FetchOrganizationListAPI from "../../redux/actions/api/Organization/FetchOrganizationList";
 import { Box } from "@mui/system";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import UpdateMemberPasswordAPI from "../../redux/actions/api/Admin/UpdateMemberPassword";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const EditProfile = () => {
   const { id } = useParams();
@@ -41,12 +47,17 @@ const EditProfile = () => {
   const [originalEmail, setOriginalEmail] = useState("");
   const [enableVerifyEmail, setEnableVerifyEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
+  const [emailVerifyLoading, setEmailVerifyLoading] = useState("");
   const [userDetails, setUserDetails] = useState(null);
   const [organization, setOrganization] = useState("");
   const [role, setRole] = useState("");
   const [language, setLanguage] = useState([]);
   const [availabilityStatus, setAvailabilityStatus] = useState("");
+  const [showChangePassword, setShowChangePassword] = useState("");
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirmPassword: false,
+  });
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -80,7 +91,6 @@ const EditProfile = () => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
   }, []);
-  console.log(userData.languages, " userData.languages");
 
   useEffect(() => {
     if (userData?.email && userData?.role && userData?.organization) {
@@ -165,7 +175,7 @@ const EditProfile = () => {
       variant: "success",
     });
   };
-  console.log(language);
+
   const handleSubmit = () => {
     let updateProfileReqBody = {
       username: userDetails.username,
@@ -194,6 +204,34 @@ const EditProfile = () => {
     }
   };
 
+  const handlePasswordUpdate = () => {
+    const apiObj = new UpdateMemberPasswordAPI(userDetails?.newPassword, id);
+
+    fetch(apiObj.apiEndPoint(), {
+      method: "PATCH",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    })
+      .then(async (res) => {
+        if (!res.ok) throw await res.json();
+        else return await res.json();
+      })
+      .then((res) => {
+        setSnackbarState({
+          open: true,
+          message: res.message,
+          variant: "success",
+        });
+      })
+      .catch((err) => {
+        setSnackbarState({
+          open: true,
+          message: err.message,
+          variant: "error",
+        });
+      });
+  };
+
   return (
     <>
       <Grid
@@ -216,6 +254,7 @@ const EditProfile = () => {
                 Edit Profile
               </Typography>
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -226,6 +265,7 @@ const EditProfile = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -236,6 +276,7 @@ const EditProfile = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -271,6 +312,7 @@ const EditProfile = () => {
                 />
               )}
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <OutlinedTextField
                 fullWidth
@@ -441,6 +483,114 @@ const EditProfile = () => {
                 Update Profile
               </Button>
             </Grid>
+
+            {loggedInUserData.role === "ADMIN" && (
+              <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showChangePassword}
+                        onChange={(event) =>
+                          setShowChangePassword(event.target.checked)
+                        }
+                        inputProps={{ "aria-label": "controlled" }}
+                      />
+                    }
+                    label="Change Password"
+                  />
+                </FormGroup>
+              </Grid>
+            )}
+
+            {showChangePassword && (
+              <>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                  <OutlinedTextField
+                    required
+                    fullWidth
+                    label="New Password"
+                    name="newPassword"
+                    value={userDetails?.newPassword}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                    type={showPassword.password ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                password: !showPassword.password,
+                              })
+                            }
+                          >
+                            {showPassword.password ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                  <OutlinedTextField
+                    required
+                    fullWidth
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    value={userDetails?.confirmPassword}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                    type={showPassword.confirmPassword ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                confirmPassword: !showPassword.confirmPassword,
+                              })
+                            }
+                          >
+                            {showPassword.confirmPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="flex-end"
+                  style={{ marginTop: 20 }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handlePasswordUpdate}
+                    disabled={
+                      !userDetails?.newPassword || !userDetails?.confirmPassword
+                    }
+                    sx={{ borderRadius: "8px" }}
+                  >
+                    Update Password
+                  </Button>
+                </Grid>
+              </>
+            )}
           </Grid>
         </Card>
       </Grid>
