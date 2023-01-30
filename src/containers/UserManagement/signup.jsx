@@ -25,6 +25,7 @@ import SignupAPI from "../../redux/actions/api/User/Signup";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import FetchInviteUserInfoAPI from "../../redux/actions/api/User/FetchInviteUserInfo";
 import { MenuProps } from "../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../redux/actions/apitransport/apitransport";
@@ -39,6 +40,7 @@ const SignUp = () => {
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.data
   );
+  const userInfo = useSelector((state) => state.getInviteUserInfo.data);
 
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
@@ -67,6 +69,16 @@ const SignUp = () => {
     languages: false,
   });
 
+  useEffect(() => {
+    if (userInfo.email) {
+      setValues({
+        ...values,
+        email: userInfo.email,
+        UserName: userInfo.username,
+      });
+    }
+  }, [userInfo]);
+
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
@@ -85,6 +97,9 @@ const SignUp = () => {
   };
 
   useEffect(() => {
+    const apiObj = new FetchInviteUserInfoAPI(invitecode);
+    dispatch(APITransport(apiObj));
+
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
   }, []);
@@ -179,11 +194,11 @@ const SignUp = () => {
     }
   };
 
-  const handleAlreadyhaveaccount = () =>{
-    console.log("navigate")
+  const handleAlreadyhaveaccount = () => {
+    console.log("navigate");
     localStorage.clear();
     navigate("/");
-  }
+  };
 
   const renderSnackBar = () => {
     return (
@@ -380,11 +395,10 @@ const SignUp = () => {
             <Typography variant={"body2"} className={classes.Typo}>
               Already have an account ?
             </Typography>
-            <Typography variant={"body2"} >
+            <Typography variant={"body2"}>
               <Link
                 className={classes.link}
                 onClick={handleAlreadyhaveaccount}
-               
                 style={{ fontSize: "14px" }}
               >
                 Sign in

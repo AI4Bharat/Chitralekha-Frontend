@@ -147,7 +147,7 @@ const VideoList = ({ data, removeVideo }) => {
                   </Tooltip>
                 )}
 
-                {(projectInfo.managers.some(
+                {(projectInfo.managers?.some(
                   (item) => item.id === userData.id
                 ) ||
                   userData.role === "ORG_OWNER") && (
