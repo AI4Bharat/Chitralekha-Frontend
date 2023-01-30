@@ -60,10 +60,11 @@ import setComparisonTable from "../../../redux/actions/api/Project/SetComparison
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
 import DeleteDialog from "../../../common/DeleteDialog";
+import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
-const filterStatus = ["Complete", "New", "Inprogress", "Selected Source"];
+
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -98,14 +99,20 @@ const TaskList = () => {
   const [deleteResponse, setDeleteResponse] = useState([]);
   const [task_type, setTask_type] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedFilters, setsSelectedFilters] = useState("");
+  const [selectedFilters, setsSelectedFilters] = useState({
+    status: [],
+    taskType: [],
+    SrcLanguage: [],
+    TgtLanguage: [],
+  });
   const [filterData, setfilterData] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterTaskType, setFilterTaskType] = useState(" ");
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
-
   const FetchTaskList = () => {
     if (location.pathname === "/task-list") {
       const apiObj = new FetchTaskListAPI(orgId, true);
@@ -115,6 +122,23 @@ const TaskList = () => {
       dispatch(APITransport(apiObj));
     }
   };
+
+  useEffect(() => {
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
+  }, []);
+
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
+
+  useEffect(() => {
+    const statusData = selectedFilters?.status?.map((el) => el);
+    setFilterStatus(statusData.toString());
+
+    const taskTypeData = selectedFilters?.taskType?.map((el) => el);
+    setFilterTaskType(taskTypeData.toString());
+  }, [selectedFilters.status, selectedFilters?.taskType]);
 
   useEffect(() => {
     if (orgId) {
@@ -454,16 +478,73 @@ const TaskList = () => {
   }, [taskList, SearchProject]);
 
   useEffect(() => {
-    const result = taskList.filter((ele, index) => {
-      if (selectedFilters.task_Status === "") {
-        return ele;
-      } else {
-        return ele.status_label === selectedFilters.task_Status;
-      }
-    });
+    FilterData();
+  }, [filterStatus, filterTaskType, selectedFilters]);
 
-    setfilterData(result);
-  }, [selectedFilters.task_Status]);
+  const FilterData = () => {
+    let statusFilter = [];
+    let filterResult = [];
+    let lngResult = [];
+    let TaskTypefilter = [];
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("status") &&
+      selectedFilters.status.length > 0
+    ) {
+      statusFilter = taskList.filter((value) => {
+        if (selectedFilters.status.includes(value.status_label)) {
+          return value;
+        }
+      });
+    } else {
+      statusFilter = taskList;
+    }
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("taskType") &&
+      selectedFilters.taskType.length > 0
+    ) {
+      TaskTypefilter = statusFilter.filter((value) => {
+        if (selectedFilters.taskType.includes(value.task_type_label)) {
+          return value;
+        }
+      });
+    } else {
+      TaskTypefilter = statusFilter;
+    }
+
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("SrcLanguage") &&
+      selectedFilters.SrcLanguage.length > 0
+    ) {
+      lngResult = TaskTypefilter.filter((value) => {
+        if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
+          return value;
+        }
+      });
+    } else {
+      lngResult = TaskTypefilter;
+    }
+
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("TgtLanguage") &&
+      selectedFilters.TgtLanguage.length > 0
+    ) {
+      filterResult = lngResult.filter((value) => {
+        if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
+          return value;
+        }
+      });
+    } else {
+      filterResult = lngResult;
+    }
+    taskList.filteredData = filterResult;
+    setfilterData(filterResult);
+
+    return taskList;
+  };
 
   useEffect(() => {
     const pageSearchData = taskList?.filter((el) => {
@@ -547,6 +628,7 @@ const TaskList = () => {
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
@@ -642,6 +724,7 @@ const TaskList = () => {
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
@@ -678,6 +761,7 @@ const TaskList = () => {
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
@@ -835,7 +919,7 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log("tableMeta ------ ", tableMeta);
+          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}
@@ -874,11 +958,11 @@ const TaskList = () => {
   const renderToolBar = () => {
     return (
       <>
-        <Tooltip title="Filter Table">
-          <Button onClick={handleShowFilter}>
+        <Button style={{ minWidth: "25px" }} onClick={handleShowFilter}>
+          <Tooltip title={"Filter Table"}>
             <FilterListIcon sx={{ color: "#515A5A" }} />
-          </Button>
-        </Tooltip>
+          </Tooltip>
+        </Button>
         <Box className={classes.TaskListsearch}>
           <Search />
         </Box>
@@ -1151,9 +1235,9 @@ const TaskList = () => {
           open={popoverOpen}
           anchorEl={anchorEl}
           handleClose={handleClose}
-          filterStatusData={filterStatus}
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
+          supportedLanguages={supportedLanguages}
         />
       )}
     </>
