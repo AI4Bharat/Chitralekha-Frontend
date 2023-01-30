@@ -45,26 +45,21 @@ const DatasetStyle = makeStyles({
     alignItems: "center",
     columnGap: "10px",
   },
-  clearAllBtn: {
-    float: "right",
-    margin: "9px 16px 0px auto",
-    padding: "0",
-    height: "15px",
-  },
+ 
   filterContainer: {
     borderBottom: "1px solid #00000029",
-    padding: "18px",
-    // marginTop: "20px",
-    // width: "600px",
+    paddingLeft: "18.5px",
+    marginTop: "20px",
+    width: "750px",
     maxHeight: "270px",
     overflow: "auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
     "@media (max-width:550px)": {
-      // width: "330px",
+      width: "330px",
       maxHeight: "170px",
     },
+  },
+  filterTypo: {
+    marginBottom: "9px",
   },
   statusFilterContainer: {
     // display : 'contents',
@@ -283,10 +278,10 @@ const DatasetStyle = makeStyles({
 
   },
   clearAllBtn: {
-    float: "right",
-    margin: "9px 16px 0px auto",
+    // float: "right",
+     margin: "10px 10px 10px 0px",
     padding: "14px",
-    height: "15px",
+    // height: "15px",
   },
 });
 

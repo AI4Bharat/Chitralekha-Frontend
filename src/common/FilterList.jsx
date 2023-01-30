@@ -8,35 +8,119 @@ import {
   FormControlLabel,
   Radio,
   Box,
-  Checkbox
+  Checkbox,
+  Grid,
 } from "@mui/material";
 import { translate } from "../config/localisation";
 import DatasetStyle from "../styles/Dataset";
 import { snakeToTitleCase } from "../utils/utils";
+import { TaskTypes, TaskStatus } from "../config/taskItems";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();
-  const { filterStatusData, currentFilters, updateFilters } = props;
-  const [selectedStatus, setSelectedStatus] = useState(
-    currentFilters.task_Status
+  const { currentFilters, updateFilters, supportedLanguages } = props;
+  const [selectedType, setSelectedType] = useState(currentFilters.taskType);
+  const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
+  const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
+    currentFilters.SrcLanguage
+  );
+  const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
+    currentFilters.TgtLanguage
   );
 
-
-  const handleStatusChange = (e) => {
+  const handleChange = (e) => {
     updateFilters({
       ...currentFilters,
-      task_Status: selectedStatus,
+      taskType: selectedType,
+      status: selectedStatus,
+      SrcLanguage: selectedSrcLanguage,
+      TgtLanguage: selectedTgtLanguage,
     });
     props.handleClose();
   };
 
-  const handleChangeCheckbox = (event) =>{
-    if (event.target.value === selectedStatus) {
-        setSelectedStatus("");
-      } else {
-        setSelectedStatus(event.target.value);
+  //   const handleChangeCheckbox = (event) =>{
+  //     if (event.target.value === selectedStatus) {
+  //         setSelectedStatus("");
+  //       } else {
+  //         setSelectedStatus(event.target.value);
+  //       }
+  //   }
+  const handleDatasetChange = (e) => {
+    if (e.target.checked) setSelectedType([...selectedType, e.target.name]);
+    else {
+      const selected = Object.assign([], selectedType);
+      const index = selected?.indexOf(e.target.name);
+
+      if (index > -1) {
+        selected.splice(index, 1);
+        setSelectedType(selected);
       }
-  }
+    }
+  };
+  const handleStatusChange = (e) => {
+    if (e.target.checked) setSelectedStatus([...selectedStatus, e.target.name]);
+    else {
+      const selected = Object.assign([], selectedStatus);
+      const index = selected?.indexOf(e.target.name);
+
+      if (index > -1) {
+        selected.splice(index, 1);
+        setSelectedStatus(selected);
+      }
+    }
+  };
+
+  const handleSrcLanguageChange = (e) => {
+    if (e.target.checked)
+      setSelectedSrcLanguage([...selectedSrcLanguage, e.target.name]);
+    else {
+      const selected = Object.assign([], selectedSrcLanguage);
+      const index = selected?.indexOf(e.target.name);
+
+      if (index > -1) {
+        selected.splice(index, 1);
+        setSelectedSrcLanguage(selected);
+      }
+    }
+  };
+
+  const handleTgtLanguageChange = (e) => {
+    if (e.target.checked)
+      setSelectedTgtLanguage([...selectedTgtLanguage, e.target.name]);
+    else {
+      const selected = Object.assign([], selectedTgtLanguage);
+      const index = selected?.indexOf(e.target.name);
+
+      if (index > -1) {
+        selected.splice(index, 1);
+        setSelectedTgtLanguage(selected);
+      }
+    }
+  };
+
+  const isChecked = (type, param) => {
+    const index =
+      param === "status"
+        ? selectedStatus?.indexOf(type)
+        : param === "taskType"
+        ? selectedType?.indexOf(type)
+        : param === "SrcLanguage"
+        ? selectedSrcLanguage?.indexOf(type)
+        : selectedTgtLanguage?.indexOf(type);
+    if (index > -1) return true;
+    return false;
+  };
+
+  const handleChangeCancelAll = () => {
+    updateFilters({
+      taskType: [],
+      status: [],
+      SrcLanguage :[],
+      TgtLanguage:[],
+    });
+    props.handleClose();
+  };
 
   return (
     <div>
@@ -54,69 +138,144 @@ const FilterList = (props) => {
           horizontal: "right",
         }}
       >
-        <Box className={classes.filterContainer}>
-          <Typography
-            variant="body2"
-            sx={{ mr: 5, fontWeight: "700" }}
-            className={classes.filterTypo}
-          >
-            Status :
-          </Typography>
-          <FormGroup sx={{ display: "flex", flexDirection: "column" }}>
-            {filterStatusData.map((type) => {
-              return (
-                <FormControlLabel
-                  control={
-                     <Checkbox 
-                      checked={selectedStatus === type ? true : false}
-                      //onChange={handleChangeCheckbox}
-                      name={type}
-                      color="primary"
-                      inputProps={{ 'aria-label': 'controlled' }}
-                      
-                    />
-                  }
-                  onChange={handleChangeCheckbox}
-                  value={type}
-                  label={snakeToTitleCase(type)}
-                  sx={{
-                    fontSize: "1rem",
-                  }}
-                />
-              );
-            })}
-          </FormGroup>
-          <Divider />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              columnGap: "10px",
-            }}
-          >
-            <Button
-              onClick={props.handleClose}
-              variant="outlined"
-              color="primary"
-              size="small"
-              className={classes.clearAllBtn}
+        <Grid container className={classes.filterContainer}>
+          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Typography
+              variant="body2"
+              sx={{ mr: 5,mb:1, fontWeight: "900" }}
+              className={classes.filterTypo}
             >
-              {" "}
-              Cancel
-            </Button>
-            <Button
-              onClick={handleStatusChange}
-              variant="contained"
-              color="primary"
-              size="small"
-              className={classes.clearAllBtn}
+              Source Language :
+            </Typography>
+            <FormGroup>
+              {supportedLanguages?.map((type) => {
+                return (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isChecked(type.label, "SrcLanguage")}
+                        onChange={(e) => handleSrcLanguageChange(e)}
+                        name={type.label}
+                      />
+                    }
+                    label={type.label}
+                    sx={{
+                      fontSize: "1rem",
+                    }}
+                  />
+                );
+              })}
+            </FormGroup>
+          </Grid>
+          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Typography
+              variant="body2"
+              sx={{ mr: 5,mb:1, fontWeight: "900" }}
+              className={classes.filterTypo}
             >
-              {" "}
-              Apply
-            </Button>
-          </Box>
+              Target Language :
+            </Typography>
+            <FormGroup>
+              {supportedLanguages?.map((type) => {
+                return (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isChecked(type.label, "TgtLanguage")}
+                        onChange={(e) => handleTgtLanguageChange(e)}
+                        name={type.label}
+                      />
+                    }
+                    label={type.label}
+                    sx={{
+                      fontSize: "1rem",
+                    }}
+                  />
+                );
+              })}
+            </FormGroup>
+          </Grid>
+          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Typography
+              variant="body2"
+              sx={{ mr: 5,mb:1, fontWeight: "900" }}
+              className={classes.filterTypo}
+            >
+              Status :
+            </Typography>
+            <FormGroup>
+              {TaskStatus?.map((type) => {
+                return (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isChecked(type.label, "status")}
+                        onChange={(e) => handleStatusChange(e)}
+                        name={type.label}
+                      />
+                    }
+                    label={type.label}
+                    sx={{
+                      fontSize: "1rem",
+                    }}
+                  />
+                );
+              })}
+            </FormGroup>
+          </Grid>
+          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Typography variant="body2" sx={{ mr: 5, mb:1,fontWeight: "900" }}>
+              Task Type :
+            </Typography>
+            <FormGroup>
+              {TaskTypes?.map((type) => {
+                return (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isChecked(type.label, "taskType")}
+                        onChange={(e) => handleDatasetChange(e)}
+                        name={type.label}
+                        color="primary"
+                      />
+                    }
+                    label={type.label}
+                  />
+                );
+              })}
+            </FormGroup>
+          </Grid>
+        </Grid>
+        <Divider />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            columnGap: "10px",
+          }}
+        >
+          <Button
+            onClick={handleChangeCancelAll}
+            variant="outlined"
+            color="primary"
+            size="small"
+            className={classes.clearAllBtn}
+          >
+            {" "}
+            Clear All
+          </Button>
+          <Button
+            onClick={handleChange}
+            variant="contained"
+            color="primary"
+            size="small"
+            className={classes.clearAllBtn}
+          >
+            {" "}
+            Apply
+          </Button>
         </Box>
       </Popover>
     </div>
