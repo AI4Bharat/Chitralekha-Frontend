@@ -167,7 +167,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "24px",
     backgroundColor: "#F3F3F3",
     marginLeft: "0px",
-    width: "300px",
+    width: "500px",
     textAlign: "left",
     // float: "right",
     marginBottom: "30px",
@@ -227,7 +227,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "24px",
     backgroundColor: "#F3F3F3",
     marginLeft: "0px",
-    width: "300px",
+    width: "330px",
     //textAlign: "left",
     //justifyContent:"center"
     //float: "right",

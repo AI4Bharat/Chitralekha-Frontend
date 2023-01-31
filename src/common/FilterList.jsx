@@ -18,7 +18,7 @@ import { TaskTypes, TaskStatus } from "../config/taskItems";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();
-  const { currentFilters, updateFilters, supportedLanguages } = props;
+  const { currentFilters, updateFilters, supportedLanguages,taskList } = props;
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
   const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
@@ -27,7 +27,7 @@ const FilterList = (props) => {
   const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
     currentFilters.TgtLanguage
   );
-
+console.log(taskList.target_languages_list,"taskListtaskList")
   const handleChange = (e) => {
     updateFilters({
       ...currentFilters,
@@ -148,17 +148,17 @@ const FilterList = (props) => {
               Source Language :
             </Typography>
             <FormGroup>
-              {supportedLanguages?.map((type) => {
+              {taskList?.src_languages_list?.map((type) => {
                 return (
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={isChecked(type.label, "SrcLanguage")}
+                        checked={isChecked(type, "SrcLanguage")}
                         onChange={(e) => handleSrcLanguageChange(e)}
-                        name={type.label}
+                        name={type}
                       />
                     }
-                    label={type.label}
+                    label={type}
                     sx={{
                       fontSize: "1rem",
                     }}
@@ -176,17 +176,17 @@ const FilterList = (props) => {
               Target Language :
             </Typography>
             <FormGroup>
-              {supportedLanguages?.map((type) => {
+              {taskList?.target_languages_list?.map((type) => {
                 return (
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={isChecked(type.label, "TgtLanguage")}
+                        checked={isChecked(type, "TgtLanguage")}
                         onChange={(e) => handleTgtLanguageChange(e)}
-                        name={type.label}
+                        name={type}
                       />
                     }
-                    label={type.label}
+                    label={type}
                     sx={{
                       fontSize: "1rem",
                     }}
