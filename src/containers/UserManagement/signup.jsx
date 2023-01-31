@@ -227,6 +227,7 @@ const SignUp = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <OutlinedTextField
             fullWidth
+            disabled
             name="email"
             placeholder="Enter your Email ID."
             onChange={handleChange("email")}

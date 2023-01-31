@@ -24,7 +24,11 @@ const UserList = ({ data }) => {
       if (SearchProject == "") {
         return el;
       } else if (
-        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }else if (
+        el.last_name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (el.email?.toLowerCase().includes(SearchProject?.toLowerCase())) {
@@ -41,7 +45,7 @@ const UserList = ({ data }) => {
     data && data.length > 0
       ? pageSearch().map((item, i) => {
       return [
-        item.username,
+        `${item.first_name} ${item.last_name}`,
         item.email,
         item.role,
         <Link
@@ -59,8 +63,8 @@ const UserList = ({ data }) => {
 
   const columns = [
     {
-      name: "username",
-      label: "Username",
+      name: "name",
+      label: "Name",
       options: {
         filter: false,
         sort: false,

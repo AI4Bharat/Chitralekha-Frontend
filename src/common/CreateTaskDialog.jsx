@@ -256,7 +256,7 @@ const CreateTaskDialog = ({
               >
                 {projectMembers.map((item, index) => (
                   <MenuItem key={index} value={item}>
-                    {item.username}
+                    {`${item.first_name} ${item.last_name} (${item.email})`}
                   </MenuItem>
                 ))}
               </Select>
