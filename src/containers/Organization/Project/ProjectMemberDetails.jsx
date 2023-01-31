@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { roles } from "../../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
@@ -43,6 +42,8 @@ const ProjectMemberDetails = () => {
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const projectDetails = useSelector((state) => state.getProjectDetails.data);
 
   const removeProjectMember = async (id) => {
     setLoading(true);
@@ -125,7 +126,8 @@ const ProjectMemberDetails = () => {
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Delete">
+              {(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+                  userData.role === "ORG_OWNER") && <Tooltip title="Delete">
                 <IconButton
                   onClick={() => {
                     setMemberId(item.id);
@@ -134,7 +136,7 @@ const ProjectMemberDetails = () => {
                 >
                   <DeleteIcon color="error" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip>}
             </Box>,
           ];
         })
