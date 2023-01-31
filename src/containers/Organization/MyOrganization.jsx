@@ -221,7 +221,11 @@ const MyOrganization = () => {
             aria-label="basic tabs example"
           >
             <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.canAddMembers && (
+            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />)}
+
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.orgSettingVisible && (  <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />)}
 

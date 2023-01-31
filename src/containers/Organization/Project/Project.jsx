@@ -199,7 +199,7 @@ const Project = () => {
       variant: "info",
   })
 
-  setTimeout(() => navigate(`/task-list`), 6000);
+  setTimeout(() => navigate(`/my-organization/${orgId}/project/${projectId}`), 6000);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
       body: JSON.stringify(apiObj.getBody()),

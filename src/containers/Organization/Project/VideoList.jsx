@@ -147,7 +147,7 @@ const VideoList = ({ data, removeVideo }) => {
                   </Tooltip>
                 )}
 
-                {(projectInfo.managers.some(
+                {(projectInfo.managers?.some(
                   (item) => item.id === userData.id
                 ) ||
                   userData.role === "ORG_OWNER") && (
@@ -332,7 +332,27 @@ const VideoList = ({ data, removeVideo }) => {
 
   const renderToolBar = () => {
     return (
-      <Box className={classes.searchStyle}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        className={classes.searchStyle}
+      >
+        {roles.filter((role) => role.value === userData?.role)[0]
+          ?.permittedToCreateTask &&
+          showCreateTaskBtn && (
+            <Button
+              variant="contained"
+              className={classes.createTaskBtn}
+              onClick={() => {
+                setOpenCreateTaskDialog(true);
+                setIsBulk(true);
+              }}
+            >
+              Create Task
+            </Button>
+          )}
+
         <Search />
       </Box>
     );
@@ -394,23 +414,6 @@ const VideoList = ({ data, removeVideo }) => {
 
   return (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        {roles.filter((role) => role.value === userData?.role)[0]
-          ?.permittedToCreateTask &&
-          showCreateTaskBtn && (
-            <Button
-              variant="contained"
-              className={classes.createTaskBtn}
-              onClick={() => {
-                setOpenCreateTaskDialog(true);
-                setIsBulk(true);
-              }}
-            >
-              Create Task
-            </Button>
-          )}
-      </Box>
-
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>

@@ -3,11 +3,11 @@ import React from "react";
 import { useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
+import { fontMenu } from "../utils/subtitleUtils";
 
 const CustomMenuComponent = ({
   anchorElSettings,
   handleClose,
-  fontMenu,
   setFontSize,
   fontSize,
   darkAndLightMode,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { roles } from "../../../utils/utils";
@@ -43,6 +43,8 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import UserMappedByRole from "../../../utils/UserMappedByRole";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import FilterList from "../../../common/FilterList";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -58,6 +60,7 @@ import setComparisonTable from "../../../redux/actions/api/Project/SetComparison
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
 import DeleteDialog from "../../../common/DeleteDialog";
+import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -94,12 +97,22 @@ const TaskList = () => {
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
-  const[task_type,setTask_type] = useState()
-
+  const [task_type, setTask_type] = useState();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedFilters, setsSelectedFilters] = useState({
+    status: [],
+    taskType: [],
+    SrcLanguage: [],
+    TgtLanguage: [],
+  });
+  const [filterData, setfilterData] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterTaskType, setFilterTaskType] = useState(" ");
+  const popoverOpen = Boolean(anchorEl);
+  const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
-
   const FetchTaskList = () => {
     if (location.pathname === "/task-list") {
       const apiObj = new FetchTaskListAPI(orgId, true);
@@ -111,10 +124,27 @@ const TaskList = () => {
   };
 
   useEffect(() => {
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
+  }, []);
+
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
+
+  useEffect(() => {
+    const statusData = selectedFilters?.status?.map((el) => el);
+    setFilterStatus(statusData.toString());
+
+    const taskTypeData = selectedFilters?.taskType?.map((el) => el);
+    setFilterTaskType(taskTypeData.toString());
+  }, [selectedFilters.status, selectedFilters?.taskType]);
+
+  useEffect(() => {
     if (orgId) {
       FetchTaskList();
     }
-  }, [orgId])
+  }, [orgId]);
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
@@ -125,9 +155,9 @@ const TaskList = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
-  console.log(taskList,"userDatauserData")
   const handleClose = () => {
     setOpen(false);
+    setAnchorEl(null);
   };
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -139,6 +169,11 @@ const TaskList = () => {
     setTaskdata(id);
     setTasktype(tasttype);
   };
+
+  const handleShowFilter = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -216,7 +251,7 @@ const TaskList = () => {
       link.parentNode.removeChild(link);
 
       window.URL.revokeObjectURL(blobUrl);
-    }  else {
+    } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
@@ -269,7 +304,6 @@ const TaskList = () => {
     });
   };
 
-
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
 
@@ -299,8 +333,9 @@ const TaskList = () => {
   };
 
   const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
+    setPreviewdata({});
     setOpenPreviewDialog(true);
-    setTask_type(Task_type)
+    setTask_type(Task_type);
     const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
@@ -386,31 +421,35 @@ const TaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Delete && (<Tooltip title="Delete">
-        <IconButton
-          onClick={() => handledeletetask(tableData.rowData[0], false)}
-          color="error"
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>)
+      tableData.rowData[15]?.Delete && (
+        <Tooltip title="Delete">
+          <IconButton
+            onClick={() => handledeletetask(tableData.rowData[0], false)}
+            color="error"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Update && (<Tooltip title="Edit Task Details">
-        <IconButton
-          color="primary"
-          onClick={() => {
-            setSelectedTaskId(tableData.rowData[0]);
-            setOpenEditTaskDialog(true);
-            setIsBulk(false);
-          }}
-        >
-          <AppRegistrationIcon />
-        </IconButton>
-      </Tooltip>)
+      tableData.rowData[15]?.Update && (
+        <Tooltip title="Edit Task Details">
+          <IconButton
+            color="primary"
+            onClick={() => {
+              setSelectedTaskId(tableData.rowData[0]);
+              setOpenEditTaskDialog(true);
+              setIsBulk(false);
+            }}
+          >
+            <AppRegistrationIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
@@ -435,8 +474,81 @@ const TaskList = () => {
     );
   };
 
-  const pageSearch = () => {
-    return taskList.filter((el) => {
+  useEffect(() => {
+    setfilterData(taskList);
+  }, [taskList, SearchProject]);
+
+  useEffect(() => {
+    FilterData();
+  }, [filterStatus, filterTaskType, selectedFilters]);
+
+  const FilterData = () => {
+    let statusFilter = [];
+    let filterResult = [];
+    let lngResult = [];
+    let TaskTypefilter = [];
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("status") &&
+      selectedFilters.status.length > 0
+    ) {
+      statusFilter = taskList.filter((value) => {
+        if (selectedFilters.status.includes(value.status_label)) {
+          return value;
+        }
+      });
+    } else {
+      statusFilter = taskList;
+    }
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("taskType") &&
+      selectedFilters.taskType.length > 0
+    ) {
+      TaskTypefilter = statusFilter.filter((value) => {
+        if (selectedFilters.taskType.includes(value.task_type_label)) {
+          return value;
+        }
+      });
+    } else {
+      TaskTypefilter = statusFilter;
+    }
+
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("SrcLanguage") &&
+      selectedFilters.SrcLanguage.length > 0
+    ) {
+      lngResult = TaskTypefilter.filter((value) => {
+        if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
+          return value;
+        }
+      });
+    } else {
+      lngResult = TaskTypefilter;
+    }
+
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("TgtLanguage") &&
+      selectedFilters.TgtLanguage.length > 0
+    ) {
+      filterResult = lngResult.filter((value) => {
+        if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
+          return value;
+        }
+      });
+    } else {
+      filterResult = lngResult;
+    }
+    taskList.filteredData = filterResult;
+    setfilterData(filterResult);
+
+    return taskList;
+  };
+
+  useEffect(() => {
+    const pageSearchData = taskList?.filter((el) => {
       if (SearchProject == "") {
         return el;
       } else if (
@@ -460,36 +572,38 @@ const TaskList = () => {
       ) {
         return el;
       } else if (
-        el.status?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       }
     });
-  };
+    setfilterData(pageSearchData);
+  }, [SearchProject]);
 
   const result =
     taskList && taskList.length > 0
-      ? pageSearch().map((item, i) => {
-        const status = item.status_label && UserMappedByRole(item.status_label)?.element;
-        return [
-          item.id,
-          item.task_type,
-          item.task_type_label,
-          item.video_name,
-          moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-          item.src_language,
-          item.src_language_label,
-          item.target_language,
-          item.target_language_label,
-          status ? status : item.status_label,
-          item.user,
-          item.is_active,
-          item.user?.username,
-          item.project_name,
-          item.video,
-          item.buttons,
-        ];
-      })
+      ? filterData?.map((item, i) => {
+          const status =
+            item.status_label && UserMappedByRole(item.status_label)?.element;
+          return [
+            item.id,
+            item.task_type,
+            item.task_type_label,
+            item.video_name,
+            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+            item.src_language,
+            item.src_language_label,
+            item.target_language,
+            item.target_language_label,
+            status ? status : item.status_label,
+            item.user,
+            item.is_active,
+            item.user?.username,
+            item.project_name,
+            item.video,
+            item.buttons,
+          ];
+        })
       : [];
   const columns = [
     {
@@ -515,6 +629,7 @@ const TaskList = () => {
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
@@ -610,6 +725,7 @@ const TaskList = () => {
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
@@ -646,6 +762,7 @@ const TaskList = () => {
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
@@ -681,7 +798,7 @@ const TaskList = () => {
       name: "status_label",
       label: "Status",
       options: {
-        filter: false,
+        filter: true,
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
@@ -740,10 +857,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[11] ? "" : "grey",
               }}
             >
               {value}
@@ -773,10 +887,7 @@ const TaskList = () => {
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[11] ? "" : "grey",
               }}
             >
               {value}
@@ -809,7 +920,7 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
-          console.log("tableMeta ------ ", tableMeta);
+          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}
@@ -847,9 +958,32 @@ const TaskList = () => {
 
   const renderToolBar = () => {
     return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
+      <>
+        <Button style={{ minWidth: "25px" }} onClick={handleShowFilter}>
+          <Tooltip title={"Filter Table"}>
+            <FilterListIcon sx={{ color: "#515A5A" }} />
+          </Tooltip>
+        </Button>
+        <Box className={classes.TaskListsearch}>
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn && (
+              <Button
+                variant="contained"
+                className={classes.createTaskBtn}
+                onClick={() => {
+                  setOpenEditTaskDialog(true);
+                  setIsBulk(true);
+                }}
+                sx={{ float: "left" }}
+              >
+                Edit Tasks
+              </Button>
+            )}
+
+          <Search />
+        </Box>
+      </>
     );
   };
 
@@ -915,12 +1049,12 @@ const TaskList = () => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
             {tasktype === "TRANSCRIPTION_EDIT" ||
-              tasktype === "TRANSCRIPTION_REVIEW"
+            tasktype === "TRANSCRIPTION_REVIEW"
               ? "Transcription"
               : "Translation"}
           </DialogContentText>
           {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW" ? (
+          tasktype === "TRANSCRIPTION_REVIEW" ? (
             <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
               <FormControl>
                 <RadioGroup
@@ -968,7 +1102,7 @@ const TaskList = () => {
               label="Cancel"
             />
             {tasktype === "TRANSCRIPTION_EDIT" ||
-              tasktype === "TRANSCRIPTION_REVIEW" ? (
+            tasktype === "TRANSCRIPTION_REVIEW" ? (
               <CustomButton
                 buttonVariant="contained"
                 onClick={handleok}
@@ -1039,23 +1173,6 @@ const TaskList = () => {
 
   return (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        {roles.filter((role) => role.value === userData?.role)[0]
-          ?.permittedToCreateTask &&
-          showEditTaskBtn && (
-            <Button
-              variant="contained"
-              className={classes.createTaskBtn}
-              onClick={() => {
-                setOpenEditTaskDialog(true);
-                setIsBulk(true);
-              }}
-            >
-              Edit Tasks
-            </Button>
-          )}
-      </Box>
-
       <Grid>{renderSnackBar()}</Grid>
 
       <ThemeProvider theme={tableTheme}>
@@ -1110,6 +1227,17 @@ const TaskList = () => {
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
           task_type={task_type}
+        />
+      )}
+      {popoverOpen && (
+        <FilterList
+          id={filterId}
+          open={popoverOpen}
+          anchorEl={anchorEl}
+          handleClose={handleClose}
+          updateFilters={setsSelectedFilters}
+          currentFilters={selectedFilters}
+          supportedLanguages={supportedLanguages}
         />
       )}
     </>
