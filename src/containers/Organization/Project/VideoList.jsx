@@ -120,6 +120,7 @@ const VideoList = ({ data, removeVideo }) => {
             item.url,
             item.duration,
             item.status,
+            item.description,
             <>
               <Box sx={{ display: "flex" }}>
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
@@ -289,6 +290,25 @@ const VideoList = ({ data, removeVideo }) => {
       },
     },
     {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: "exclude",
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -330,6 +350,23 @@ const VideoList = ({ data, removeVideo }) => {
     "Status",
   ];
 
+  const toolBarActions = [
+    {
+      title: "Bulk Task Creation",
+      icon: <NoteAddIcon />,
+      onClick: () => {
+        setOpenCreateTaskDialog(true);
+        setIsBulk(true);
+      },
+    },
+    {
+      title: "Bulk Delete",
+      icon: <DeleteIcon />,
+      onClick: () => {},
+      style: { backgroundColor: "red", marginRight: "auto" },
+    },
+  ];
+
   const renderToolBar = () => {
     return (
       <Box
@@ -340,18 +377,20 @@ const VideoList = ({ data, removeVideo }) => {
       >
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
-          showCreateTaskBtn && (
-            <Button
-              variant="contained"
-              className={classes.createTaskBtn}
-              onClick={() => {
-                setOpenCreateTaskDialog(true);
-                setIsBulk(true);
-              }}
-            >
-              Create Task
-            </Button>
-          )}
+          showCreateTaskBtn &&
+          toolBarActions.map((item) => {
+            return (
+              <Tooltip title={item.title} placement="bottom">
+                <IconButton
+                  className={classes.createTaskBtn}
+                  onClick={item.onClick}
+                  style={item.style}
+                >
+                  {item.icon}
+                </IconButton>
+              </Tooltip>
+            );
+          })}
 
         <Search />
       </Box>
@@ -415,7 +454,7 @@ const VideoList = ({ data, removeVideo }) => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={result} columns={columns} options={options} />
+        <MUIDataTable title={<></>} data={result} columns={columns} options={options} />
       </ThemeProvider>
 
       {open && (

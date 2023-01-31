@@ -32,6 +32,8 @@ const CreateVideoDialog = ({
   setIsAudio,
   lang,
   setLang,
+  videoDescription,
+  setVideoDescription,
 }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -107,6 +109,16 @@ const CreateVideoDialog = ({
           rows={4}
           value={videoLink}
           onChange={(event) => setVideoLink(event.target.value)}
+          sx={{ mt: 3 }}
+        />
+
+        <TextField
+          label="Description"
+          fullWidth
+          multiline
+          rows={4}
+          value={videoDescription}
+          onChange={(event) => setVideoDescription(event.target.value)}
           sx={{ mb: 3, mt: 3 }}
         />
       </DialogContent>

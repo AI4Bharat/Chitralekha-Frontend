@@ -109,6 +109,7 @@ const Project = () => {
     { name: "CreatedAt", value: null },
     { name: "UserName", value: null },
   ]);
+  const [videoDescription, setVideoDescription] = useState("");
 
   useEffect(() => {
     setProjectData([
@@ -188,16 +189,18 @@ const Project = () => {
   };
 
   const addNewVideoHandler = async () => {
-    const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
+    const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
+    const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
+
+    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc);
     dispatch(APITransport(apiObj));
-    setVideoLink("");
     setIsAudio(false);
     setCreateVideoDialog(false);
     setSnackbarInfo({
       open: true,
       message: "Your request is being processed.",
       variant: "info",
-  })
+    });
 
   setTimeout(() => navigate(`/my-organization/${orgId}/project/${projectId}`), 6000);
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -437,6 +440,8 @@ const Project = () => {
           addBtnClickHandler={addNewVideoHandler}
           lang={lang}
           setLang={setLang}
+          videoDescription={videoDescription}
+          setVideoDescription={setVideoDescription}
         />
       )}
       <AddProjectMembers
