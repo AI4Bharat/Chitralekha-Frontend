@@ -34,7 +34,7 @@ const Search = (props) => {
           <SearchIcon fontSize="small" />
         </Grid>
         <InputBase
-          sx={{ ml: 4 }}
+           sx={{ mr: 8,}}
           inputRef={ref}
           placeholder="Search..."
           value={searchValue}

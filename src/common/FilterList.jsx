@@ -18,7 +18,7 @@ import { TaskTypes, TaskStatus } from "../config/taskItems";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();
-  const { currentFilters, updateFilters, supportedLanguages } = props;
+  const { currentFilters, updateFilters, supportedLanguages,taskList } = props;
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
   const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
@@ -27,7 +27,7 @@ const FilterList = (props) => {
   const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
     currentFilters.TgtLanguage
   );
-
+  console.log(taskList,"taskListtaskList")
   const handleChange = (e) => {
     updateFilters({
       ...currentFilters,
@@ -139,6 +139,8 @@ const FilterList = (props) => {
         }}
       >
         <Grid container className={classes.filterContainer}>
+        {taskList?.src_languages_list && taskList?.src_languages_list.length > 0 && (
+          <>
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
@@ -148,17 +150,17 @@ const FilterList = (props) => {
               Source Language :
             </Typography>
             <FormGroup>
-              {supportedLanguages?.map((type) => {
+              { taskList?.src_languages_list?.map((type) => {
                 return (
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={isChecked(type.label, "SrcLanguage")}
+                        checked={isChecked(type, "SrcLanguage")}
                         onChange={(e) => handleSrcLanguageChange(e)}
-                        name={type.label}
+                        name={type}
                       />
                     }
-                    label={type.label}
+                    label={type}
                     sx={{
                       fontSize: "1rem",
                     }}
@@ -167,7 +169,12 @@ const FilterList = (props) => {
               })}
             </FormGroup>
           </Grid>
-          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+          </>
+           )} 
+         
+        {taskList?.target_languages_list && taskList?.target_languages_list.length > 0 && (
+          <>
+           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
@@ -176,17 +183,17 @@ const FilterList = (props) => {
               Target Language :
             </Typography>
             <FormGroup>
-              {supportedLanguages?.map((type) => {
+              { taskList?.target_languages_list?.map((type) => {
                 return (
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={isChecked(type.label, "TgtLanguage")}
+                        checked={isChecked(type, "TgtLanguage")}
                         onChange={(e) => handleTgtLanguageChange(e)}
-                        name={type.label}
+                        name={type}
                       />
                     }
-                    label={type.label}
+                    label={type}
                     sx={{
                       fontSize: "1rem",
                     }}
@@ -194,7 +201,9 @@ const FilterList = (props) => {
                 );
               })}
             </FormGroup>
-          </Grid>
+          </Grid>  
+          </> ) }
+       
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
@@ -223,6 +232,7 @@ const FilterList = (props) => {
               })}
             </FormGroup>
           </Grid>
+      
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography variant="body2" sx={{ mr: 5, mb:1,fontWeight: "900" }}>
               Task Type :
