@@ -54,12 +54,17 @@ const tableTheme = createTheme({
       },
     },
     MUIDataTableSelectCell: {
-      styleOverrides:{
+      styleOverrides: {
         checkboxRoot: {
-            margin: "auto"
+          margin: "auto",
+        },
+        fixedLeft: {
+          position: "static",
         }
-      }
+      },
     },
+
+
   },
 });
 
