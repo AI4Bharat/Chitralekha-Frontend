@@ -65,7 +65,6 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
 
-
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -106,7 +105,7 @@ const TaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
-  console.log(selectedFilters,"selectedFiltersselectedFilters")
+
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
@@ -152,10 +151,9 @@ const TaskList = () => {
     localStorage.removeItem("sourceId");
   }, []);
 
-   const taskList = useSelector((state) => state.getTaskList.data);
+  const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
-  // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
-  console.log(SearchProject,"SearchProjectSearchProject")
+  
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
@@ -187,7 +185,9 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
-      const task = taskList.tasks_list.filter((task) => task.id === taskdata)[0];
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === taskdata
+      )[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
@@ -230,7 +230,9 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
-      const task = taskList.tasks_list.filter((task) => task.id === taskdata)[0];
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === taskdata
+      )[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
@@ -482,7 +484,7 @@ const TaskList = () => {
 
   useEffect(() => {
     FilterData();
-  }, [filterStatus, filterTaskType,]);
+  }, [filterStatus, filterTaskType]);
 
   const FilterData = () => {
     let statusFilter = [];
@@ -565,11 +567,15 @@ const TaskList = () => {
       ) {
         return el;
       } else if (
-        el.src_language_label?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.src_language_label
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
-        el.target_language_label?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.target_language_label
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
@@ -579,10 +585,10 @@ const TaskList = () => {
       }
     });
     setfilterData(pageSearchData);
-  }, [ SearchProject]);
+  }, [SearchProject]);
 
   const result =
-  taskList.tasks_list && taskList.tasks_list.length > 0
+    taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
             item.status_label && UserMappedByRole(item.status_label)?.element;
@@ -599,17 +605,14 @@ const TaskList = () => {
             status ? status : item.status_label,
             item.user,
             item.is_active,
-            item.user?.username,
+            `${item.user?.first_name} ${item.user?.last_name}`,
             item.project_name,
             item.video,
             item.buttons,
           ];
-          
         })
       : [];
-    
 
-  
   const columns = [
     {
       name: "id",
@@ -961,6 +964,29 @@ const TaskList = () => {
     setShowEditTaskBtn(!!temp.length);
   };
 
+  const toolBarActions = [
+    {
+      title: "Bulk Task Update",
+      icon: <AppRegistrationIcon />,
+      onClick: () => {
+        setOpenEditTaskDialog(true);
+        setIsBulk(true);
+      },
+    },
+    {
+      title: "Bulk Task Delete",
+      icon: <DeleteIcon />,
+      onClick: () => {},
+      style: { backgroundColor: "red" },
+    },
+    {
+      title: "Bulk Task Dowload",
+      icon: <FileDownloadIcon />,
+      onClick: () => {},
+      style: { marginRight: "auto" },
+    },
+  ];
+
   const renderToolBar = () => {
     return (
       <>
@@ -969,22 +995,29 @@ const TaskList = () => {
             <FilterListIcon sx={{ color: "#515A5A" }} />
           </Tooltip>
         </Button>
-        <Box className={classes.TaskListsearch}>
+
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          className={classes.searchStyle}
+        >
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
-            showEditTaskBtn && (
-              <Button
-                variant="contained"
-                className={classes.createTaskBtn}
-                onClick={() => {
-                  setOpenEditTaskDialog(true);
-                  setIsBulk(true);
-                }}
-                sx={{ float: "left" }}
-              >
-                Edit Tasks
-              </Button>
-            )}
+            showEditTaskBtn &&
+            toolBarActions.map((item) => {
+              return (
+                <Tooltip title={item.title} placement="bottom">
+                  <IconButton
+                    className={classes.createTaskBtn}
+                    onClick={item.onClick}
+                    style={item.style}
+                  >
+                    {item.icon}
+                  </IconButton>
+                </Tooltip>
+              );
+            })}
 
           <Search />
         </Box>
