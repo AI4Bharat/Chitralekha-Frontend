@@ -27,7 +27,7 @@ const FilterList = (props) => {
   const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
     currentFilters.TgtLanguage
   );
-console.log(taskList.target_languages_list,"taskListtaskList")
+  console.log(taskList,"taskListtaskList")
   const handleChange = (e) => {
     updateFilters({
       ...currentFilters,
@@ -139,6 +139,8 @@ console.log(taskList.target_languages_list,"taskListtaskList")
         }}
       >
         <Grid container className={classes.filterContainer}>
+        {taskList?.src_languages_list && taskList?.src_languages_list.length > 0 && (
+          <>
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
@@ -148,7 +150,7 @@ console.log(taskList.target_languages_list,"taskListtaskList")
               Source Language :
             </Typography>
             <FormGroup>
-              {taskList?.src_languages_list?.map((type) => {
+              { taskList?.src_languages_list?.map((type) => {
                 return (
                   <FormControlLabel
                     control={
@@ -167,7 +169,12 @@ console.log(taskList.target_languages_list,"taskListtaskList")
               })}
             </FormGroup>
           </Grid>
-          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+          </>
+           )} 
+         
+        {taskList?.target_languages_list && taskList?.target_languages_list.length > 0 && (
+          <>
+           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
@@ -176,7 +183,7 @@ console.log(taskList.target_languages_list,"taskListtaskList")
               Target Language :
             </Typography>
             <FormGroup>
-              {taskList?.target_languages_list?.map((type) => {
+              { taskList?.target_languages_list?.map((type) => {
                 return (
                   <FormControlLabel
                     control={
@@ -194,7 +201,9 @@ console.log(taskList.target_languages_list,"taskListtaskList")
                 );
               })}
             </FormGroup>
-          </Grid>
+          </Grid>  
+          </> ) }
+       
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
@@ -223,6 +232,7 @@ console.log(taskList.target_languages_list,"taskListtaskList")
               })}
             </FormGroup>
           </Grid>
+      
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography variant="body2" sx={{ mr: 5, mb:1,fontWeight: "900" }}>
               Task Type :
