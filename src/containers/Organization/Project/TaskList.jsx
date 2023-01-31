@@ -65,6 +65,7 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
 
+
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -105,6 +106,7 @@ const TaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
+  console.log(selectedFilters,"selectedFiltersselectedFilters")
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
@@ -122,7 +124,6 @@ const TaskList = () => {
       dispatch(APITransport(apiObj));
     }
   };
-
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
@@ -151,9 +152,10 @@ const TaskList = () => {
     localStorage.removeItem("sourceId");
   }, []);
 
-  const taskList = useSelector((state) => state.getTaskList.data);
+   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
+  console.log(SearchProject,"SearchProjectSearchProject")
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
@@ -185,7 +187,7 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
-      const task = taskList.filter((task) => task.id === taskdata)[0];
+      const task = taskList.tasks_list.filter((task) => task.id === taskdata)[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
@@ -228,7 +230,7 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
-      const task = taskList.filter((task) => task.id === taskdata)[0];
+      const task = taskList.tasks_list.filter((task) => task.id === taskdata)[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
@@ -475,12 +477,12 @@ const TaskList = () => {
   };
 
   useEffect(() => {
-    setfilterData(taskList);
-  }, [taskList, SearchProject]);
+    setfilterData(taskList.tasks_list);
+  }, [taskList.tasks_list]);
 
   useEffect(() => {
     FilterData();
-  }, [filterStatus, filterTaskType, selectedFilters]);
+  }, [filterStatus, filterTaskType,]);
 
   const FilterData = () => {
     let statusFilter = [];
@@ -492,13 +494,13 @@ const TaskList = () => {
       selectedFilters.hasOwnProperty("status") &&
       selectedFilters.status.length > 0
     ) {
-      statusFilter = taskList.filter((value) => {
+      statusFilter = taskList.tasks_list.filter((value) => {
         if (selectedFilters.status.includes(value.status_label)) {
           return value;
         }
       });
     } else {
-      statusFilter = taskList;
+      statusFilter = taskList.tasks_list;
     }
     if (
       selectedFilters &&
@@ -543,13 +545,12 @@ const TaskList = () => {
     }
     taskList.filteredData = filterResult;
     setfilterData(filterResult);
-
-    return taskList;
+    return taskList.tasks_list;
   };
 
   useEffect(() => {
-    const pageSearchData = taskList?.filter((el) => {
-      if (SearchProject == "") {
+    const pageSearchData = taskList.tasks_list?.filter((el) => {
+      if (SearchProject === "") {
         return el;
       } else if (
         el.id.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
@@ -564,11 +565,11 @@ const TaskList = () => {
       ) {
         return el;
       } else if (
-        el.src_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.src_language_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
-        el.target_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.target_language_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
@@ -578,10 +579,10 @@ const TaskList = () => {
       }
     });
     setfilterData(pageSearchData);
-  }, [SearchProject]);
+  }, [ SearchProject]);
 
   const result =
-    taskList && taskList.length > 0
+  taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
             item.status_label && UserMappedByRole(item.status_label)?.element;
@@ -603,8 +604,12 @@ const TaskList = () => {
             item.video,
             item.buttons,
           ];
+          
         })
       : [];
+    
+
+  
   const columns = [
     {
       name: "id",
@@ -942,7 +947,7 @@ const TaskList = () => {
   ];
 
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = taskList.filter((_item, index) => {
+    const temp = taskList.tasks_list.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
@@ -1238,6 +1243,7 @@ const TaskList = () => {
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
           supportedLanguages={supportedLanguages}
+          taskList={taskList}
         />
       )}
     </>

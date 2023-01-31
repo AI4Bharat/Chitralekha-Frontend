@@ -130,7 +130,7 @@ const VideoList = ({ data, removeVideo }) => {
                   </IconButton>
                 </Tooltip>
 
-                {(projectInfo.managers.some(
+                {(projectInfo?.managers?.some(
                   (item) => item.id === userData.id
                 ) ||
                   userData.role === "ORG_OWNER") && (
