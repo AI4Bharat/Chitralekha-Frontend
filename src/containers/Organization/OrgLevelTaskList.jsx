@@ -116,6 +116,7 @@ const OrgLevelTaskList = () => {
   const orgId = userData?.organization?.id;
   
   const FetchTaskList = () => {
+    setLoading(true);
       const apiObj = new FetchOrgTaskList(orgId);
       dispatch(APITransport(apiObj));
   };
@@ -138,7 +139,7 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     if (orgId) {
-      FetchTaskList();
+        FetchTaskList();
     }
   }, [orgId]);
 
@@ -149,6 +150,10 @@ const OrgLevelTaskList = () => {
 
   const taskList = useSelector((state) => state.getOrgTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
+
+  useEffect(()=>{
+    setLoading(false);
+}, [taskList])
   
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
