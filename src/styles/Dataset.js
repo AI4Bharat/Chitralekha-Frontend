@@ -45,26 +45,21 @@ const DatasetStyle = makeStyles({
     alignItems: "center",
     columnGap: "10px",
   },
-  clearAllBtn: {
-    float: "right",
-    margin: "9px 16px 0px auto",
-    padding: "0",
-    height: "15px",
-  },
+ 
   filterContainer: {
     borderBottom: "1px solid #00000029",
-    padding: "18px",
-    // marginTop: "20px",
-    // width: "600px",
+    paddingLeft: "18.5px",
+    marginTop: "20px",
+    width: "750px",
     maxHeight: "270px",
     overflow: "auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
     "@media (max-width:550px)": {
-      // width: "330px",
+      width: "330px",
       maxHeight: "170px",
     },
+  },
+  filterTypo: {
+    marginBottom: "9px",
   },
   statusFilterContainer: {
     // display : 'contents',
@@ -172,7 +167,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "24px",
     backgroundColor: "#F3F3F3",
     marginLeft: "0px",
-    width: "300px",
+    width: "500px",
     textAlign: "left",
     // float: "right",
     marginBottom: "30px",
@@ -232,7 +227,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "24px",
     backgroundColor: "#F3F3F3",
     marginLeft: "0px",
-    width: "300px",
+    width: "330px",
     //textAlign: "left",
     //justifyContent:"center"
     //float: "right",
@@ -265,17 +260,34 @@ const DatasetStyle = makeStyles({
   },
 
   createTaskBtn: {
-    borderRadius: "8px",
     backgroundColor: "#2C2799",
+    borderRadius: "50%",
+    color: "#fff",
     marginRight: "10px",
     marginBottom: "12px",
+    "&:hover": {
+      backgroundColor: "#271e4f",
+    },
   },
   searchStyle:{
     position: "absolute",
-     right: "107px",
-      bottom: "2px" 
+    //  right: "107px",
+    bottom: "2px",
+    width: "85%",
+    justifyContent: "flex-end",
+  },
+  TaskListsearch:{
+    position: "absolute",
+     right: "175px",
+      bottom: "2px"
 
-  }
+  },
+  clearAllBtn: {
+    // float: "right",
+     margin: "10px 10px 10px 0px",
+    padding: "14px",
+    // height: "15px",
+  },
 });
 
 export default DatasetStyle;

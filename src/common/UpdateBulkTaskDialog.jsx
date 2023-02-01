@@ -150,12 +150,17 @@ const UpdateBulkTaskDialog = ({
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
                   renderValue={(selected) => {
-                    return <Chip key={selected.id} label={selected.username} />;
+                    return (
+                      <Chip
+                        key={selected.id}
+                        label={`${selected.first_name} ${selected.last_name} (${selected.email})`}
+                      />
+                    );
                   }}
                 >
                   {projectMembers.map((item, index) => (
                     <MenuItem key={index} value={item}>
-                      {item.username}
+                      {`${item.first_name} ${item.last_name} (${item.email})`}
                     </MenuItem>
                   ))}
                 </Select>

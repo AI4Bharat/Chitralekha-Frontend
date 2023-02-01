@@ -4,8 +4,7 @@ import {
   CircularProgress,
   Grid,
   IconButton,
-  Menu,
-  MenuItem,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
@@ -23,7 +22,6 @@ import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchT
 import TranslationRightPanel from "./TranslationRightPanel";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Sub from "../../../utils/Sub";
-import DT from "duration-time-conversion";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
@@ -31,11 +29,9 @@ import { Box } from "@mui/system";
 import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
-import FastForwardIcon from "@mui/icons-material/FastForward";
-import FastRewindIcon from "@mui/icons-material/FastRewind";
-import Settings from "@mui/icons-material/Settings";
-import CheckIcon from "@mui/icons-material/Check";
-import CustomSwitchDarkBackground from "../../../common/CustomSwitchDarkBackground";
+import CustomMenuComponent from "../../../common/CustomMenuComponent";
+import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
+import { getKeyCode, newSub, onSplit } from "../../../utils/subtitleUtils";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -62,10 +58,9 @@ const VideoLanding = () => {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [focusing, setFocusing] = useState(false);
   const [inputItemCursor, setInputItemCursor] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
-  const [darkAndLightMode, setDarkAndLightMode] = useState(true);
+  const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -76,24 +71,7 @@ const VideoLanding = () => {
     (state) => state.commonReducer.fullscreenVideo
   );
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
-
   const subs = useSelector((state) => state.commonReducer.subtitles);
-
-  const hasSub = useCallback((sub) => subs.indexOf(sub), [subs]);
-
-  const newSub = useCallback((item) => new Sub(item), []);
-
-  const formatSub = useCallback(
-    (sub) => {
-      if (Array.isArray(sub)) {
-        return sub.map((item) => newSub(item));
-      }
-      return newSub(sub);
-    },
-    [newSub]
-  );
-
-  const copySubs = useCallback(() => formatSub(subs), [subs, formatSub]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -160,79 +138,33 @@ const VideoLanding = () => {
     );
   };
 
-  const onChange = useCallback((event) => {
+  const onChange = (event) => {
     player.pause();
     if (event.target.selectionStart) {
       setInputItemCursor(event.target.selectionStart);
     }
-  }, []);
+  };
 
-  const onClick = useCallback((event) => {
-    // player.pause();
+  const onClick = (event) => {
     if (event.target.selectionStart) {
       setInputItemCursor(event.target.selectionStart);
     }
-  }, []);
+  };
 
-  const onFocus = useCallback((event) => {
+  const onFocus = (event) => {
     setFocusing(true);
     if (event.target.selectionStart) {
       setInputItemCursor(event.target.selectionStart);
     }
-  }, []);
+  };
 
-  const onBlur = useCallback(() => {
+  const onBlur = () => {
     setTimeout(() => setFocusing(false), 500);
-  }, []);
+  };
 
-  const onSplit = useCallback(() => {
-    const copySub = copySubs();
-
-    const index = hasSub(subs[currentIndex]);
-
-    const text1 = copySub[currentIndex].text.slice(0, inputItemCursor).trim();
-    const text2 = copySub[currentIndex].text.slice(inputItemCursor).trim();
-
-    if (!text1 || !text2) return;
-
-    const splitDuration = (
-      copySub[currentIndex].duration *
-      (inputItemCursor / copySub[currentIndex].text.length)
-    ).toFixed(3);
-
-    if (
-      splitDuration < 0.2 ||
-      copySub[currentIndex].duration - splitDuration < 0.2
-    )
-      return;
-
-    copySub.splice(index, 1);
-    const middleTime = DT.d2t(
-      subs[currentIndex].startTime + parseFloat(splitDuration)
-    );
-
-    copySub.splice(
-      index,
-      0,
-      newSub({
-        start_time: subs[currentIndex].start_time,
-        end_time: middleTime,
-        text: text1,
-      })
-    );
-
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: middleTime,
-        end_time: subs[currentIndex].end_time,
-        text: text2,
-      })
-    );
-
+  const onSplitClick = useCallback(() => {
+    const copySub = onSplit(subs, currentIndex, inputItemCursor);
     dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setCurrentSubs(copySub[currentIndex]);
 
     const reqBody = {
       task_id: taskId,
@@ -244,19 +176,6 @@ const VideoLanding = () => {
     const obj = new SaveTranscriptAPI(reqBody, "TRANSCRIPTION_EDIT");
     dispatch(APITransport(obj));
   }, [inputItemCursor]);
-
-  function getKeyCode(event) {
-    const tag = document.activeElement.tagName.toUpperCase();
-    const editable = document.activeElement.getAttribute("contenteditable");
-    if (
-      tag !== "INPUT" &&
-      tag !== "TEXTAREA" &&
-      editable !== "" &&
-      editable !== "true"
-    ) {
-      return Number(event.keyCode);
-    }
-  }
 
   const onKeyDown = (event) => {
     const keyCode = getKeyCode(event);
@@ -362,11 +281,6 @@ const VideoLanding = () => {
     }
   };
 
-  const playbackRateHandler = (rate) => {
-    player.playbackRate = rate;
-    setPlaybackRate(rate);
-  };
-
   const renderLoader = () => {
     if (videoDetails.length <= 0) {
       return (
@@ -374,6 +288,8 @@ const VideoLanding = () => {
           sx={{
             color: "#fff",
             zIndex: 999999,
+            display: "flex",
+            flexDirection: "column",
             "&.MuiBackdrop-root": {
               backgroundColor: "#1d1d1d",
             },
@@ -381,29 +297,13 @@ const VideoLanding = () => {
           open={true}
         >
           <CircularProgress color="inherit" size="50px" />
+          <Typography sx={{ mt: 3 }}>
+            Please wait while your request is being processed
+          </Typography>
         </Backdrop>
       );
     }
   };
-
-  const fontMenu = [
-    {
-      label: "small",
-      size: "small",
-    },
-    {
-      label: "Normal",
-      size: "large",
-    },
-    {
-      label: "Large",
-      size: "x-large",
-    },
-    {
-      label: "Huge",
-      size: "xx-large",
-    },
-  ];
 
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
@@ -417,13 +317,67 @@ const VideoLanding = () => {
         sx={{ marginTop: 7, overflow: "hidden" }}
       >
         <Grid width="100%" overflow="hidden" md={8} xs={12} id="video">
-          <VideoPanel
-            setPlayer={setPlayer}
-            setCurrentTime={setCurrentTime}
-            setPlaying={setPlaying}
-            playing={playing}
-            currentTime={currentTime}
-          />
+          <Box
+            margin="auto"
+            display="flex"
+            flexDirection="column"
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
+          >
+            <Box
+              display="flex"
+              flexDirection="row"
+              style={fullscreenVideo ? { width: "60%", margin: "auto" } : {}}
+              border={"1px solid #eaeaea"}
+              borderRight="none"
+            >
+              <Tooltip title={videoDetails?.video?.name} placement="bottom">
+                <Typography
+                  variant="h4"
+                  textAlign="center"
+                  margin={4}
+                  width="90%"
+                  className={classes.videoName}
+                  style={fullscreenVideo ? { color: "white" } : {}}
+                >
+                  {videoDetails?.video?.name}
+                </Typography>
+              </Tooltip>
+
+              <Tooltip title="Settings" placement="bottom">
+                <IconButton
+                  sx={{
+                    backgroundColor: "#2C2799",
+                    borderRadius: "50%",
+                    color: "#fff",
+                    margin: "auto",
+                    "&:hover": {
+                      backgroundColor: "#271e4f",
+                    },
+                  }}
+                  onClick={(event) => setAnchorElSettings(event.currentTarget)}
+                >
+                  <WidgetsOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+
+              <CustomMenuComponent
+                anchorElSettings={anchorElSettings}
+                handleClose={() => setAnchorElSettings(null)}
+                setFontSize={setFontSize}
+                fontSize={fontSize}
+                darkAndLightMode={darkAndLightMode}
+                setDarkAndLightMode={setDarkAndLightMode}
+                player={player}
+                contianer={document.getElementById("video")}
+              />
+            </Box>
+
+            <VideoPanel
+              setPlayer={setPlayer}
+              setCurrentTime={setCurrentTime}
+              setPlaying={setPlaying}
+            />
+          </Box>
 
           {currentSubs ? (
             <div
@@ -434,14 +388,16 @@ const VideoLanding = () => {
               }}
             >
               {!currentSubs.target_text && focusing ? (
-                <div className={classes.operate} onClick={onSplit}>
+                <div className={classes.operate} onClick={onSplitClick}>
                   Split Subtitle
                 </div>
               ) : null}
 
               <ReactTextareaAutosize
                 className={`${classes.playerTextarea} ${
-                  darkAndLightMode ? classes.darkMode : classes.lightMode
+                  darkAndLightMode === "dark"
+                    ? classes.darkMode
+                    : classes.lightMode
                 }`}
                 value={
                   currentSubs.target_text
@@ -460,92 +416,6 @@ const VideoLanding = () => {
               />
             </div>
           ) : null}
-
-          <CustomSwitchDarkBackground
-            style={{
-              position: "absolute",
-              bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "18%",
-              right: fullscreenVideo ? "34%" : fullscreen ? "46%" : "49%",
-            }}
-            labelPlacement="start"
-            checked={darkAndLightMode}
-            onChange={() => setDarkAndLightMode(!darkAndLightMode)}
-          />
-
-          <div
-            className={classes.playbackRate}
-            style={{
-              bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "",
-              right: fullscreenVideo ? "26%" : fullscreen ? "38%" : "",
-            }}
-          >
-            <Button
-              onClick={() =>
-                playbackRate >= 0.2 && playbackRateHandler(playbackRate - 0.1)
-              }
-              sx={{ color: " #fff" }}
-            >
-              <FastRewindIcon />
-            </Button>
-            <p style={{ margin: 0, color: " #fff" }}>
-              {Math.round(playbackRate * 10) / 10}x
-            </p>
-            <Button
-              onClick={() =>
-                playbackRate <= 15.9 && playbackRateHandler(playbackRate + 0.1)
-              }
-              sx={{ color: " #fff" }}
-            >
-              <FastForwardIcon />
-            </Button>
-          </div>
-
-          <Box>
-            <Button
-              className={classes.settingBtn}
-              onClick={(event) => setAnchorElFont(event.currentTarget)}
-              variant="contained"
-              style={{
-                bottom: fullscreenVideo ? "28%" : fullscreen ? "3%" : "",
-                right: fullscreenVideo ? "23%" : fullscreen ? "35%" : "",
-              }}
-            >
-              <Settings />
-            </Button>
-          </Box>
-
-          <Menu
-            sx={{ mt: "45px" }}
-            anchorEl={anchorElFont}
-            keepMounted
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            open={Boolean(anchorElFont)}
-            onClose={() => setAnchorElFont(null)}
-          >
-            {fontMenu.map((item, index) => (
-              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
-                <CheckIcon
-                  style={{
-                    visibility: fontSize === item.size ? "" : "hidden",
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  textAlign="center"
-                  sx={{ fontSize: item.size, marginLeft: "10px" }}
-                >
-                  {item.label}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
 
           {!fullscreen && (
             <Box>

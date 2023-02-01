@@ -1,21 +1,17 @@
-import C from "../../constants";
+import constants from "../../constants";
 
-const initialState = {
+let initialState = {
   data: [],
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case C.GET_VIDEO_DETAILS:
+    case constants.GET_INVITE_USER_DETAILS:
       return {
         ...state,
         data: action.payload,
       };
-    case C.CLEAR_VIDEO_DETAILS:
-      return {
-        ...state,
-        data: [],
-      };
+
     default:
       return {
         ...state,

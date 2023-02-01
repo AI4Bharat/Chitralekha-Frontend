@@ -109,6 +109,7 @@ const Project = () => {
     { name: "CreatedAt", value: null },
     { name: "UserName", value: null },
   ]);
+  const [videoDescription, setVideoDescription] = useState("");
 
   useEffect(() => {
     setProjectData([
@@ -188,10 +189,20 @@ const Project = () => {
   };
 
   const addNewVideoHandler = async () => {
-    const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
+    const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
+    const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
+
+    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc);
     dispatch(APITransport(apiObj));
-    setVideoLink("");
     setIsAudio(false);
+    setCreateVideoDialog(false);
+    setSnackbarInfo({
+      open: true,
+      message: "Your request is being processed.",
+      variant: "info",
+    });
+
+  setTimeout(() => navigate(`/my-organization/${orgId}/project/${projectId}`), 6000);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
       body: JSON.stringify(apiObj.getBody()),
@@ -325,7 +336,9 @@ const Project = () => {
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             {roles.filter((role) => role.value === userData?.role)[0]
-              ?.ProjectReport && (  <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />   )}
+              ?.ProjectReport && (
+              <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
           </Tabs>
         </Box>
 
@@ -427,6 +440,8 @@ const Project = () => {
           addBtnClickHandler={addNewVideoHandler}
           lang={lang}
           setLang={setLang}
+          videoDescription={videoDescription}
+          setVideoDescription={setVideoDescription}
         />
       )}
       <AddProjectMembers
