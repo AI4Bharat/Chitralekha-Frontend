@@ -870,7 +870,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
-        display: location.pathname === "/task-list" ? true : "excluded",
+        display: "excluded",
         setCellHeaderProps: () => ({
           style: {
             height: "30px",

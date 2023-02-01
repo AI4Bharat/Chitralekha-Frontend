@@ -877,7 +877,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         align: "center",
-        display: location.pathname === "/task-list" ? true : "excluded",
+        display: true,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
