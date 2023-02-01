@@ -123,8 +123,8 @@ export const onSubtitleDelete = (subtitles, index) => {
 export const onSplit = (subtitles, currentIndex, selectionStart) => {
   const copySub = copySubs(subtitles);
 
-  const targetTextBlock = copySub[currentIndex];
-  const index = hasSub(copySub[currentIndex], copySub);
+  const targetTextBlock = subtitles[currentIndex];
+  const index = hasSub(subtitles[currentIndex], subtitles);
 
   const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
   const text2 = targetTextBlock.text.slice(selectionStart).trim();
