@@ -60,7 +60,6 @@ import setComparisonTable from "../../../redux/actions/api/Project/SetComparison
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
 import DeleteDialog from "../../../common/DeleteDialog";
-import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
@@ -105,7 +104,6 @@ const TaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
-
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
@@ -123,14 +121,6 @@ const TaskList = () => {
       dispatch(APITransport(apiObj));
     }
   };
-  useEffect(() => {
-    const langObj = new FetchSupportedLanguagesAPI();
-    dispatch(APITransport(langObj));
-  }, []);
-
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
-  );
 
   useEffect(() => {
     const statusData = selectedFilters?.status?.map((el) => el);
@@ -480,11 +470,7 @@ const TaskList = () => {
 
   useEffect(() => {
     setfilterData(taskList.tasks_list);
-  }, [taskList.tasks_list]);
-
-  useEffect(() => {
-    FilterData();
-  }, [filterStatus, filterTaskType]);
+  }, [taskList.tasks_list,SearchProject]);
 
   const FilterData = () => {
     let statusFilter = [];
@@ -531,7 +517,6 @@ const TaskList = () => {
     } else {
       lngResult = TaskTypefilter;
     }
-
     if (
       selectedFilters &&
       selectedFilters.hasOwnProperty("TgtLanguage") &&
@@ -549,9 +534,12 @@ const TaskList = () => {
     setfilterData(filterResult);
     return taskList.tasks_list;
   };
+  useMemo(() => {
+    FilterData();
+  }, [filterStatus, filterTaskType,selectedFilters,SearchProject]);
 
   useEffect(() => {
-    const pageSearchData = taskList.tasks_list?.filter((el) => {
+    const pageSearchData = filterData?.filter((el) => {
       if (SearchProject === "") {
         return el;
       } else if (
@@ -1275,7 +1263,6 @@ const TaskList = () => {
           handleClose={handleClose}
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
-          supportedLanguages={supportedLanguages}
           taskList={taskList}
         />
       )}
