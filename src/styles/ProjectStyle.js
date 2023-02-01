@@ -542,7 +542,7 @@ const ProjectStyle = makeStyles({
     padding: "20px",
     border: "1px solid #eaeaea",
     backgroundColor: "#E0E0E0",
-    borderRadius:"25px"
+    borderRadius: "25px",
   },
 
   arrow: {
@@ -612,14 +612,27 @@ const ProjectStyle = makeStyles({
   },
 
   message: {
-    textAlign: "initial", 
-    marginBottom: "10px"
+    textAlign: "initial",
+    marginBottom: "10px",
   },
 
   videoName: {
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+  },
+
+  optionIconBtn: {
+    backgroundColor: "#0083e2",
+    borderRadius: "50%",
+    marginRight: "10px",
+    color: "#fff",
+    "&:disabled": {
+      background: "grey",
+    },
+    "&:hover": {
+      backgroundColor: "#271e4f",
+    },
   },
 });
 
