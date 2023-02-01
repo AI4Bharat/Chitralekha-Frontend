@@ -27,7 +27,6 @@ const FilterList = (props) => {
   const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
     currentFilters.TgtLanguage
   );
-  console.log(taskList,"taskListtaskList")
   const handleChange = (e) => {
     updateFilters({
       ...currentFilters,
