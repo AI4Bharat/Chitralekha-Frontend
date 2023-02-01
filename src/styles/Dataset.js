@@ -260,16 +260,21 @@ const DatasetStyle = makeStyles({
   },
 
   createTaskBtn: {
-    borderRadius: "8px",
     backgroundColor: "#2C2799",
+    borderRadius: "50%",
+    color: "#fff",
     marginRight: "10px",
     marginBottom: "12px",
+    "&:hover": {
+      backgroundColor: "#271e4f",
+    },
   },
   searchStyle:{
     position: "absolute",
-     right: "107px",
-      bottom: "2px" 
-
+    //  right: "107px",
+    bottom: "2px",
+    width: "85%",
+    justifyContent: "flex-end",
   },
   TaskListsearch:{
     position: "absolute",
