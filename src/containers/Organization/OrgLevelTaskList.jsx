@@ -1,13 +1,14 @@
+// OrgLevelTaskList
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { roles } from "../../../utils/utils";
+import { roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 //Themes
-import tableTheme from "../../../theme/tableTheme";
-import DatasetStyle from "../../../styles/Dataset";
+import tableTheme from "../../theme/tableTheme";
+import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import {
@@ -29,44 +30,43 @@ import {
   DialogTitle,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../../common/Button";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import Search from "../../../common/Search";
+import CustomButton from "../../common/Button";
+import CustomizedSnackbars from "../../common/Snackbar";
+import Search from "../../common/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PreviewIcon from "@mui/icons-material/Preview";
-import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../../common/ViewTaskDialog";
-import Loader from "../../../common/Spinner";
+import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
+import ViewTaskDialog from "../../common/ViewTaskDialog";
+import Loader from "../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
-import PreviewDialog from "../../../common/PreviewDialog";
+import PreviewDialog from "../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import UserMappedByRole from "../../../utils/UserMappedByRole";
+import UserMappedByRole from "../../utils/UserMappedByRole";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import FilterList from "../../../common/FilterList";
+import FilterList from "../../common/FilterList";
 
 //Apis
-import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
-import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
-import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
-import EditBulkTaskDetailAPI from "../../../redux/actions/api/Project/EditBulkTaskDetails";
-import EditTaskDetailAPI from "../../../redux/actions/api/Project/EditTaskDetails";
-import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
-import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
-import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
-import DeleteDialog from "../../../common/DeleteDialog";
-import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
+import APITransport from "../../redux/actions/apitransport/apitransport";
+import DeleteTaskAPI from "../../redux/actions/api/Project/DeleteTask";
+import ComparisionTableAPI from "../../redux/actions/api/Project/ComparisonTable";
+import exportTranscriptionAPI from "../../redux/actions/api/Project/ExportTranscrip";
+import EditBulkTaskDetailAPI from "../../redux/actions/api/Project/EditBulkTaskDetails";
+import EditTaskDetailAPI from "../../redux/actions/api/Project/EditTaskDetails";
+import exportTranslationAPI from "../../redux/actions/api/Project/ExportTranslation";
+import CompareTranscriptionSource from "../../redux/actions/api/Project/CompareTranscriptionSource";
+import setComparisonTable from "../../redux/actions/api/Project/SetComparisonTableData";
+import clearComparisonTable from "../../redux/actions/api/Project/ClearComparisonTable";
+import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
+import DeleteDialog from "../../common/DeleteDialog";
+import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import FetchOrgTaskList from "../../redux/actions/api/Organization/FetchOrgTaskList";
 
 const Transcription = ["srt", "vtt", "txt", "ytt"];
 const Translation = ["srt", "vtt", "txt"];
 
-const TaskList = () => {
-  const { projectId } = useParams();
+const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
@@ -113,8 +113,10 @@ const TaskList = () => {
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const orgId = userData?.organization?.id;
+  
   const FetchTaskList = () => {
-      const apiObj = new FetchTaskListAPI(projectId);
+      const apiObj = new FetchOrgTaskList(orgId);
       dispatch(APITransport(apiObj));
   };
   useEffect(() => {
@@ -135,12 +137,17 @@ const TaskList = () => {
   }, [selectedFilters.status, selectedFilters?.taskType]);
 
   useEffect(() => {
+    if (orgId) {
+      FetchTaskList();
+    }
+  }, [orgId]);
+
+  useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
-    FetchTaskList();
   }, []);
 
-  const taskList = useSelector((state) => state.getTaskList.data);
+  const taskList = useSelector((state) => state.getOrgTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
@@ -1272,4 +1279,4 @@ const TaskList = () => {
   );
 };
 
-export default TaskList;
+export default OrgLevelTaskList;
