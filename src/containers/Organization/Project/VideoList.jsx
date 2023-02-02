@@ -1,29 +1,32 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { roles } from "../../../utils/utils";
 
 //Themes
-import { Box, ThemeProvider, Tooltip, IconButton, Button } from "@mui/material";
+import DatasetStyle from "../../../styles/Dataset";
 import tableTheme from "../../../theme/tableTheme";
+
+//Icons
+import FileDownload from "@mui/icons-material/FileDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
+import { Box, ThemeProvider, Tooltip, IconButton, Button } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
-import DatasetStyle from "../../../styles/Dataset";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Search from "../../../common/Search";
 import Loader from "../../../common/Spinner";
+import DeleteDialog from "../../../common/DeleteDialog";
+import VideoStatusTable from "../../../common/VideoStatusTable";
+import AlertComponent from "../../../common/Alert";
 
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
-import { roles } from "../../../utils/utils";
-import DeleteDialog from "../../../common/DeleteDialog";
-import VideoStatusTable from "../../../common/VideoStatusTable";
-import AlertComponent from "../../../common/Alert";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
@@ -128,6 +131,12 @@ const VideoList = ({ data, removeVideo }) => {
             <>
               <Box sx={{ display: "flex" }}>
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
+
+                <Tooltip title="Download Related Tasks">
+                  <IconButton onClick={() => {}}>
+                    <FileDownload color="primary" />
+                  </IconButton>
+                </Tooltip>
 
                 <Tooltip title="View">
                   <IconButton onClick={() => handleVideoDialog(item)}>
@@ -362,13 +371,14 @@ const VideoList = ({ data, removeVideo }) => {
         setOpenCreateTaskDialog(true);
         setIsBulk(true);
       },
+      style: { marginRight: "auto" }
     },
-    {
-      title: "Bulk Delete",
-      icon: <DeleteIcon />,
-      onClick: () => {},
-      style: { backgroundColor: "red", marginRight: "auto" },
-    },
+    // {
+    //   title: "Bulk Delete",
+    //   icon: <DeleteIcon />,
+    //   onClick: () => {},
+    //   style: { backgroundColor: "red", marginRight: "auto" },
+    // },
   ];
 
   const renderToolBar = () => {
