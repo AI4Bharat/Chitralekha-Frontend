@@ -227,7 +227,7 @@ const DatasetStyle = makeStyles({
     borderRadius: "24px",
     backgroundColor: "#F3F3F3",
     marginLeft: "0px",
-    width: "330px",
+    width: "350px",
     //textAlign: "left",
     //justifyContent:"center"
     //float: "right",
@@ -245,7 +245,7 @@ const DatasetStyle = makeStyles({
     justifyContent: "center",
     color: "#00000029",
     marginLeft: "10px",
-    marginTop: "10px",
+    marginTop: "7px",
   },
   descCardIcon: {
     display: "flex",

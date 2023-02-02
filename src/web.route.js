@@ -28,6 +28,7 @@ import EditProject from "./containers/Organization/Project/EditProject";
 import TaskList from "./containers/Organization/Project/TaskList";
 import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
+import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -76,7 +77,7 @@ const RootRouter = () => {
         <Route
           path="/task-list"
           element={ProtectedRouteWrapper(
-            <Layout component={<TaskList />} />
+            <Layout component={<OrgLevelTaskList />} />
           )}
         />
         <Route

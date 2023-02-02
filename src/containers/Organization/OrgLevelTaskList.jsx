@@ -1,63 +1,72 @@
+// OrgLevelTaskList
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { roles } from "../../../utils/utils";
+import { roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 //Themes
-import tableTheme from "../../../theme/tableTheme";
-import DatasetStyle from "../../../styles/Dataset";
+import tableTheme from "../../theme/tableTheme";
+import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import {
   ThemeProvider,
   Box,
   Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Divider,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
   Tooltip,
   IconButton,
   Button,
+  DialogTitle,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import Search from "../../../common/Search";
-import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../../common/ViewTaskDialog";
-import Loader from "../../../common/Spinner";
-import PreviewDialog from "../../../common/PreviewDialog";
-import UserMappedByRole from "../../../utils/UserMappedByRole";
-import FilterList from "../../../common/FilterList";
-import DeleteDialog from "../../../common/DeleteDialog";
-import ExportDialog from "../../../common/ExportDialog";
-
-//Icons
+import CustomButton from "../../common/Button";
+import CustomizedSnackbars from "../../common/Snackbar";
+import Search from "../../common/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PreviewIcon from "@mui/icons-material/Preview";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
+import ViewTaskDialog from "../../common/ViewTaskDialog";
+import Loader from "../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import PreviewDialog from "../../common/PreviewDialog";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import UserMappedByRole from "../../utils/UserMappedByRole";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import FilterList from "../../common/FilterList";
 
 //Apis
-import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
-import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
-import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
-import EditBulkTaskDetailAPI from "../../../redux/actions/api/Project/EditBulkTaskDetails";
-import EditTaskDetailAPI from "../../../redux/actions/api/Project/EditTaskDetails";
-import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
-import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
-import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
-import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptExportTypes";
-import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
-import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
+import APITransport from "../../redux/actions/apitransport/apitransport";
+import DeleteTaskAPI from "../../redux/actions/api/Project/DeleteTask";
+import ComparisionTableAPI from "../../redux/actions/api/Project/ComparisonTable";
+import exportTranscriptionAPI from "../../redux/actions/api/Project/ExportTranscrip";
+import EditBulkTaskDetailAPI from "../../redux/actions/api/Project/EditBulkTaskDetails";
+import EditTaskDetailAPI from "../../redux/actions/api/Project/EditTaskDetails";
+import exportTranslationAPI from "../../redux/actions/api/Project/ExportTranslation";
+import CompareTranscriptionSource from "../../redux/actions/api/Project/CompareTranscriptionSource";
+import setComparisonTable from "../../redux/actions/api/Project/SetComparisonTableData";
+import clearComparisonTable from "../../redux/actions/api/Project/ClearComparisonTable";
+import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
+import DeleteDialog from "../../common/DeleteDialog";
+import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import FetchOrgTaskList from "../../redux/actions/api/Organization/FetchOrgTaskList";
 
-const TaskList = () => {
-  const { projectId } = useParams();
+const Transcription = ["srt", "vtt", "txt", "ytt"];
+const Translation = ["srt", "vtt", "txt"];
+
+const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
@@ -96,28 +105,29 @@ const TaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
+
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
-  const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
-
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
-
-  const transcriptExportTypes = useSelector(
-    (state) => state.getTranscriptExportTypes.data.export_types
-  );
-  const translationExportTypes = useSelector(
-    (state) => state.getTranslationExportTypes.data.export_types
-  );
-
+  
   const FetchTaskList = () => {
-      const apiObj = new FetchTaskListAPI(projectId);
+    setLoading(true);
+      const apiObj = new FetchOrgTaskList(orgId);
       dispatch(APITransport(apiObj));
   };
+  useEffect(() => {
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
+  }, []);
+
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
 
   useEffect(() => {
     const statusData = selectedFilters?.status?.map((el) => el);
@@ -128,21 +138,24 @@ const TaskList = () => {
   }, [selectedFilters.status, selectedFilters?.taskType]);
 
   useEffect(() => {
+    if (orgId) {
+        FetchTaskList();
+    }
+  }, [orgId]);
+
+  useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
-
-    const transcriptExportObj = new FetchTranscriptExportTypesAPI();
-    dispatch(APITransport(transcriptExportObj));
-
-    const translationExportObj = new FetchTranslationExportTypesAPI();
-    dispatch(APITransport(translationExportObj));
-    
-    FetchTaskList();
   }, []);
 
-  const taskList = useSelector((state) => state.getTaskList.data);
+  const taskList = useSelector((state) => state.getOrgTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
 
+  useEffect(()=>{
+    setLoading(false);
+}, [taskList])
+  
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
@@ -298,9 +311,8 @@ const TaskList = () => {
 
   const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
-    setLoading(true);
-    setIsBulkTaskDelete(false);
 
+    setLoading(true);
     const apiObj = new DeleteTaskAPI(id, flag);
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "DELETE",
@@ -469,7 +481,11 @@ const TaskList = () => {
 
   useEffect(() => {
     setfilterData(taskList.tasks_list);
-  }, [taskList.tasks_list, SearchProject]);
+  }, [taskList.tasks_list]);
+
+  useEffect(() => {
+    FilterData();
+  }, [filterStatus, filterTaskType]);
 
   const FilterData = () => {
     let statusFilter = [];
@@ -516,6 +532,7 @@ const TaskList = () => {
     } else {
       lngResult = TaskTypefilter;
     }
+
     if (
       selectedFilters &&
       selectedFilters.hasOwnProperty("TgtLanguage") &&
@@ -534,12 +551,8 @@ const TaskList = () => {
     return taskList.tasks_list;
   };
 
-  useMemo(() => {
-    FilterData();
-  }, [filterStatus, filterTaskType, selectedFilters, SearchProject]);
-
   useEffect(() => {
-    const pageSearchData = filterData?.filter((el) => {
+    const pageSearchData = taskList.tasks_list?.filter((el) => {
       if (SearchProject === "") {
         return el;
       } else if (
@@ -869,7 +882,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         align: "center",
-        display: "excluded",
+        display: true,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -916,6 +929,7 @@ const TaskList = () => {
         }),
         setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
+          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}
@@ -951,38 +965,6 @@ const TaskList = () => {
     setShowEditTaskBtn(!!temp.length);
   };
 
-  const handleBulkDelete = async (taskIds, flag) => {
-    setLoading(true);
-    setIsBulkTaskDelete(true);
-
-    const apiObj = new DeleteBulkTaskAPI(flag, taskIds);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setOpenDialog(false);
-      setLoading(false);
-      FetchTaskList();
-    } else {
-      setDeleteTaskid(resp.task_ids);
-      setOpenDialog(true);
-      setDeleteMsg(resp.message);
-      setDeleteResponse(resp.error_report);
-      setLoading(false);
-    }
-  };
-
   const toolBarActions = [
     {
       title: "Bulk Task Update",
@@ -995,18 +977,15 @@ const TaskList = () => {
     {
       title: "Bulk Task Delete",
       icon: <DeleteIcon />,
-      onClick: () => {
-        const taskIds = currentSelectedTasks.map((item) => item.id);
-        handleBulkDelete(taskIds, false);
-      },
-      style: { backgroundColor: "red", marginRight: "auto" },
+      onClick: () => {},
+      style: { backgroundColor: "red" },
     },
-    // {
-    //   title: "Bulk Task Dowload",
-    //   icon: <FileDownloadIcon />,
-    //   onClick: () => {},
-    //   style: { marginRight: "auto" },
-    // },
+    {
+      title: "Bulk Task Dowload",
+      icon: <FileDownloadIcon />,
+      onClick: () => {},
+      style: { marginRight: "auto" },
+    },
   ];
 
   const renderToolBar = () => {
@@ -1095,6 +1074,96 @@ const TaskList = () => {
     );
   };
 
+  const renderDialog = () => {
+    return (
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{ style: { borderRadius: "10px" } }}
+      >
+        <DialogTitle variant="h4">Export Subtitle</DialogTitle>
+
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
+            {tasktype === "TRANSCRIPTION_EDIT" ||
+            tasktype === "TRANSCRIPTION_REVIEW"
+              ? "Transcription"
+              : "Translation"}
+          </DialogContentText>
+          {tasktype === "TRANSCRIPTION_EDIT" ||
+          tasktype === "TRANSCRIPTION_REVIEW" ? (
+            <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  {Transcription?.map((item, index) => (
+                    <FormControlLabel
+                      value={item}
+                      control={<Radio />}
+                      checked={exportTranscription === item}
+                      label={item}
+                      onClick={handleClickRadioButton}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
+          ) : (
+            <DialogActions sx={{ mr: 17, mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  {Translation?.map((item, index) => (
+                    <FormControlLabel
+                      value={item}
+                      control={<Radio />}
+                      checked={exportTranslation === item}
+                      label={item}
+                      onClick={handleClickRadioButtonTranslation}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
+          )}
+          <DialogActions>
+            <CustomButton
+              buttonVariant="standard"
+              onClick={handleClose}
+              label="Cancel"
+            />
+            {tasktype === "TRANSCRIPTION_EDIT" ||
+            tasktype === "TRANSCRIPTION_REVIEW" ? (
+              <CustomButton
+                buttonVariant="contained"
+                onClick={handleok}
+                label="Export"
+                style={{ borderRadius: "8px" }}
+                autoFocus
+              />
+            ) : (
+              <CustomButton
+                onClick={handleokTranslation}
+                label="Export"
+                buttonVariant="contained"
+                style={{ borderRadius: "8px" }}
+                autoFocus
+              />
+            )}
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   const handleUpdateTask = async (data) => {
     setLoading(true);
 
@@ -1160,35 +1229,19 @@ const TaskList = () => {
               getTranscriptionSourceComparison(id, source, isSubmitCall);
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
+          // submitHandler={({id, source}) => {
+
+          // }}
           id={currentTaskDetails[0]}
         />
       )}
-
-      {open && (
-        <ExportDialog
-          open={open}
-          handleClose={handleClose}
-          taskType={tasktype}
-          handleTranscriptRadioButton={handleClickRadioButton}
-          handleTranslationRadioButton={handleClickRadioButtonTranslation}
-          handleTranscriptExport={handleok}
-          handleTranslationExport={handleokTranslation}
-          exportTranscription={exportTranscription}
-          exportTranslation={exportTranslation}
-          transcriptionOptions={transcriptExportTypes}
-          translationOptions={translationExportTypes}
-        />
-      )}
+      {renderDialog()}
 
       {openDialog && (
         <DeleteDialog
           openDialog={openDialog}
           handleClose={() => handleCloseDialog()}
-          submit={() => {
-            isBulkTaskDelete
-              ? handleBulkDelete(deleteTaskid, true)
-              : handledeletetask(deleteTaskid, true);
-          }}
+          submit={() => handledeletetask(deleteTaskid, true)}
           loading={loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
@@ -1223,6 +1276,7 @@ const TaskList = () => {
           handleClose={handleClose}
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
+          supportedLanguages={supportedLanguages}
           taskList={taskList}
         />
       )}
@@ -1230,4 +1284,4 @@ const TaskList = () => {
   );
 };
 
-export default TaskList;
+export default OrgLevelTaskList;

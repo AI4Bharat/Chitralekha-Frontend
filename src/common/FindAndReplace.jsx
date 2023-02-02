@@ -50,7 +50,7 @@ const FindAndReplace = (props) => {
     }
 
     const onFindClick = () => {
-        const textToFind = findValue.toLowerCase()
+        const textToFind = findValue.toLowerCase().trim()
         const indexListInDataOfTextOccurence = [];
         subtitlesData.map((item, index) => {
             if (item[subtitleDataKey].toLowerCase().includes(textToFind)) {

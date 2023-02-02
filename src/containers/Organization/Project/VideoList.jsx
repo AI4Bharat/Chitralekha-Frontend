@@ -110,6 +110,10 @@ const VideoList = ({ data, removeVideo }) => {
         el.name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      }else if (
+        el.description?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
       }
     });
   };
