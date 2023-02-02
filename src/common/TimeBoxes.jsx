@@ -1,5 +1,5 @@
 import { Box, TextField } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import ProjectStyle from "../styles/ProjectStyle";
 
 const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
@@ -79,4 +79,4 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
   );
 };
 
-export default TimeBoxes;
+export default memo(TimeBoxes);
