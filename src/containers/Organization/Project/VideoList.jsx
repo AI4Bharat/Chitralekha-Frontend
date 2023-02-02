@@ -129,9 +129,9 @@ const VideoList = ({ data, removeVideo }) => {
       method: "GET",
       headers: obj.getHeaders().headers,
     });
-
+    const resp = await res.blob();
     if (res.ok) {
-      const resp = await res.blob();
+    //  const resp = await res.blob();
       const newBlob = new Blob([resp], { type: "application/zip" });
 
       const blobUrl = window.URL.createObjectURL(newBlob);
@@ -154,7 +154,7 @@ const VideoList = ({ data, removeVideo }) => {
 
       setLoading(false);
     } else {
-      const resp = await res.json();
+      //const resp = await res.json();
 
       setLoading(false);
       setSnackbarInfo({
