@@ -40,6 +40,8 @@ import getProjectReports from "./Project/FetchProjectReports";
 import getOrganizationReports from "./Organization/FetchOrganizationReports";
 import getAdminReports from "./Admin/AdminLevelReport";
 import getInviteUserInfo from "./User/FetchInviteUserInfo";
+import getTranscriptExportTypes from "./Project/FetchTranscriptExportTypes";
+import getTranslationExportTypes from "./Project/FetchTranslationExportTypes";
 
 const rootReducer = {
     apiStatus,
@@ -84,6 +86,8 @@ const rootReducer = {
     getOrganizationReports,
     getAdminReports,
     getInviteUserInfo,
+    getTranscriptExportTypes,
+    getTranslationExportTypes,
 };
 
 export default rootReducer;
