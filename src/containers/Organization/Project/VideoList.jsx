@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { roles } from "../../../utils/utils";
+import moment from "moment";
 
 //Themes
 import DatasetStyle from "../../../styles/Dataset";
@@ -27,9 +28,14 @@ import AlertComponent from "../../../common/Alert";
 //APIs
 import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
 import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
+import ExportAllDialog from "../../../common/ExportAllDialog";
+import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
+import BulkDownloadForVideoAPI from "../../../redux/actions/api/Project/BulkDownloadForVideo";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -48,11 +54,18 @@ const VideoList = ({ data, removeVideo }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [alertType, setAlertType] = useState("");
+  const [openExportDialog, setOpenExportDialog] = useState(false);
+  const [exportType, setExportType] = useState("srt");
+  const [videoIdForDowload, setVideoIdForDowload] = useState("");
+  const [videoName, setVideoName] = useState("");
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
+  const translationExportTypes = useSelector(
+    (state) => state.getTranslationExportTypes.data.export_types
+  );
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -96,6 +109,62 @@ const VideoList = ({ data, removeVideo }) => {
     setprojectid(id);
   };
 
+  useEffect(() => {
+    const translationExportObj = new FetchTranslationExportTypesAPI();
+    dispatch(APITransport(translationExportObj));
+  }, []);
+
+  const handleDownloadAll = (item) => {
+    setVideoName(item.name);
+    setVideoIdForDowload(item.id);
+    setOpenExportDialog(true);
+  };
+
+  const handleDownload = async () => {
+    setOpenExportDialog(false);
+    setLoading(true);
+
+    const obj = new BulkDownloadForVideoAPI(videoIdForDowload, exportType);
+    const res = await fetch(obj.apiEndPoint(), {
+      method: "GET",
+      headers: obj.getHeaders().headers,
+    });
+
+    if (res.ok) {
+      const resp = await res.blob();
+      const newBlob = new Blob([resp], { type: "application/zip" });
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video_${videoName}_${moment().format(
+          "DDMMYYYY"
+        )}_${moment().format("HHMMSS")}.zip`
+      );
+
+      document.body.appendChild(link);
+
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setLoading(false);
+    } else {
+      const resp = await res.json();
+
+      setLoading(false);
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
   const pageSearch = () => {
     return data.filter((el) => {
       if (SearchProject == "") {
@@ -110,7 +179,7 @@ const VideoList = ({ data, removeVideo }) => {
         el.name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      }else if (
+      } else if (
         el.description?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
@@ -133,7 +202,7 @@ const VideoList = ({ data, removeVideo }) => {
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
 
                 <Tooltip title="Download Related Tasks">
-                  <IconButton onClick={() => {}}>
+                  <IconButton onClick={() => handleDownloadAll(item)}>
                     <FileDownload color="primary" />
                   </IconButton>
                 </Tooltip>
@@ -371,7 +440,7 @@ const VideoList = ({ data, removeVideo }) => {
         setOpenCreateTaskDialog(true);
         setIsBulk(true);
       },
-      style: { marginRight: "auto" }
+      style: { marginRight: "auto" },
     },
     // {
     //   title: "Bulk Delete",
@@ -468,8 +537,20 @@ const VideoList = ({ data, removeVideo }) => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable title={<></>} data={result} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
+
+      {openExportDialog && (
+        <ExportAllDialog
+          open={openExportDialog}
+          handleClose={() => setOpenExportDialog(false)}
+          exportOptions={translationExportTypes}
+          exportType={exportType}
+          handleExportRadioButton={setExportType}
+          handleExport={() => handleDownload()}
+          loading={loading}
+        />
+      )}
 
       {open && (
         <VideoDialog
