@@ -39,6 +39,9 @@ const tableTheme = createTheme({
         left: {
           flex: 0,
         },
+        root:{
+          height:"30px"
+        }
       },
     },
     MUIDataTableFilter: {
@@ -68,6 +71,18 @@ const tableTheme = createTheme({
         fixedLeft: {
           position: "static",
         },
+      },
+    },
+    MUIDataTableSearch: {
+      styleOverrides: {
+        searchText: {
+         width:"400px"
+         
+        },
+        searchIcon:{
+          marginRight:"-6px"
+        },
+        
       },
     },
   },

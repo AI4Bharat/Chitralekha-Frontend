@@ -25,7 +25,7 @@ import C from "../../../redux/constants";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import MergeIcon from "@mui/icons-material/Merge";
 import TimeBoxes from "../../../common/TimeBoxes";
-import SplitscreenIcon from "@mui/icons-material/Splitscreen";
+
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
@@ -42,6 +42,8 @@ import {
   onSubtitleDelete,
   timeChange,
 } from "../../../utils/subtitleUtils";
+import ButtonComponent from "./ButtonComponent";
+import { memo } from "react";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -96,11 +98,14 @@ const RightPanel = ({ currentIndex, player }) => {
       ?.scrollIntoView(true, { block: "start" });
   }, [currentIndex]);
 
-  const onMergeClick = (item, index) => {
-    const sub = onMerge(sourceText, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, true, sub);
-  };
+  const onMergeClick = useCallback(
+    (index) => {
+      const sub = onMerge(sourceText, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, true, sub);
+    },
+    [sourceText]
+  );
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -111,7 +116,7 @@ const RightPanel = ({ currentIndex, player }) => {
     }
   };
 
-  const onSplitClick = () => {
+  const onSplitClick = useCallback(() => {
     const sub = onSplit(
       sourceText,
       currentIndexToSplitTextBlock,
@@ -120,24 +125,27 @@ const RightPanel = ({ currentIndex, player }) => {
 
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, true, sub);
-  };
+  }, [sourceText, currentIndexToSplitTextBlock, selectionStart]);
 
   const onReplacementDone = (updatedSource) => {
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
     saveTranscriptHandler(false, true);
   };
 
-  const changeTranscriptHandler = (text, index) => {
-    const arr = [...sourceText];
-    arr.forEach((element, i) => {
-      if (index === i) {
-        element.text = text;
-      }
-    });
+  const changeTranscriptHandler = useCallback(
+    (text, index) => {
+      const arr = [...sourceText];
+      arr.forEach((element, i) => {
+        if (index === i) {
+          element.text = text;
+        }
+      });
 
-    dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false);
-  };
+      dispatch(setSubtitles(arr, C.SUBTITLES));
+      saveTranscriptHandler(false, false);
+    },
+    [sourceText]
+  );
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -205,20 +213,29 @@ const RightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const handleTimeChange = (value, index, type, time) => {
-    const sub = timeChange(sourceText, value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  };
+  const handleTimeChange = useCallback(
+    (value, index, type, time) => {
+      const sub = timeChange(sourceText, value, index, type, time);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [sourceText]
+  );
 
-  const onDelete = (index) => {
-    const sub = onSubtitleDelete(sourceText, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  };
+  const onDelete = useCallback(
+    (index) => {
+      const sub = onSubtitleDelete(sourceText, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [sourceText]
+  );
 
-  const addNewSubtitleBox = (index) => {
-    const sub = addSubtitleBox(sourceText, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  };
+  const addNewSubtitleBox = useCallback(
+    (index) => {
+      const sub = addSubtitleBox(sourceText, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [sourceText]
+  );
 
   const targetLength = (index) => {
     if (sourceText[index]?.text.trim() !== "")
@@ -333,6 +350,38 @@ const RightPanel = ({ currentIndex, player }) => {
             </IconButton>
           </Tooltip>
 
+          <Menu
+            sx={{ mt: "45px" }}
+            anchorEl={anchorElFont}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            open={Boolean(anchorElFont)}
+            onClose={() => setAnchorElFont(null)}
+          >
+            {fontMenu.map((item, index) => (
+              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
+                <CheckIcon
+                  style={{
+                    visibility: fontSize === item.size ? "" : "hidden",
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  textAlign="center"
+                  sx={{ fontSize: item.size, marginLeft: "10px" }}
+                >
+                  {item.label}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+
           <FindAndReplace
             sourceData={sourceText}
             subtitleDataKey={"text"}
@@ -419,116 +468,16 @@ const RightPanel = ({ currentIndex, player }) => {
                     type={"startTime"}
                   />
 
-                  <Tooltip title="Split Subtitle" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        marginRight: "10px",
-                        color: "#fff",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                        "&:disabled": {
-                          background: "grey",
-                        },
-                      }}
-                      onClick={onSplitClick}
-                      disabled={!showPopOver}
-                    >
-                      <SplitscreenIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  {index < sourceText.length - 1 && (
-                    <Tooltip title="Merge Next" placement="bottom">
-                      <IconButton
-                        sx={{
-                          backgroundColor: "#0083e2",
-                          borderRadius: "50%",
-                          marginRight: "10px",
-                          color: "#fff",
-                          transform: "rotate(180deg)",
-                          "&:hover": {
-                            backgroundColor: "#271e4f",
-                          },
-                        }}
-                        onClick={() => onMergeClick(item, index)}
-                      >
-                        <MergeIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-
-                  <Tooltip title="Delete" placement="bottom">
-                    <IconButton
-                      color="error"
-                      sx={{
-                        backgroundColor: "red",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => onDelete(index)}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Add Subtitle Box" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => addNewSubtitleBox(index)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Menu
-                    sx={{ mt: "45px" }}
-                    anchorEl={anchorElFont}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "center",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "center",
-                    }}
-                    open={Boolean(anchorElFont)}
-                    onClose={() => setAnchorElFont(null)}
-                  >
-                    {fontMenu.map((item, index) => (
-                      <MenuItem
-                        key={index}
-                        onClick={() => setFontSize(item.size)}
-                      >
-                        <CheckIcon
-                          style={{
-                            visibility: fontSize === item.size ? "" : "hidden",
-                          }}
-                        />
-                        <Typography
-                          variant="body2"
-                          textAlign="center"
-                          sx={{ fontSize: item.size, marginLeft: "10px" }}
-                        >
-                          {item.label}
-                        </Typography>
-                      </MenuItem>
-                    ))}
-                  </Menu>
+                  <ButtonComponent
+                    index={index}
+                    sourceText={sourceText}
+                    onMergeClick={onMergeClick}
+                    onDelete={onDelete}
+                    addNewSubtitleBox={addNewSubtitleBox}
+                    onSplitClick={onSplitClick}
+                    showPopOver={showPopOver}
+                    showSplit={true}
+                  />
 
                   <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -560,10 +509,15 @@ const RightPanel = ({ currentIndex, player }) => {
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index);
                       }}
-                      onFocus={(e) => onMouseUp(e, index)}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{
                         width: "90%",
                       }}
+                      onBlur={() =>
+                        setTimeout(() => {
+                          setShowPopOver(false);
+                        }, 200)
+                      }
                       renderComponent={(props) => (
                         <div
                           style={{
@@ -576,6 +530,7 @@ const RightPanel = ({ currentIndex, player }) => {
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
+                            onMouseUp={(e) => onMouseUp(e, index)}
                             onBlur={() =>
                               setTimeout(() => {
                                 setShowPopOver(false);
@@ -671,4 +626,4 @@ const RightPanel = ({ currentIndex, player }) => {
   );
 };
 
-export default RightPanel;
+export default memo(RightPanel);

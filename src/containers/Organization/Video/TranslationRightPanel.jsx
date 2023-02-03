@@ -1,6 +1,6 @@
 // TranslationRightPanel
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Box from "@mui/material/Box";
 import {
   CardContent,
@@ -26,9 +26,6 @@ import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
 import { getUpdatedTime } from "../../../utils/utils";
 import TimeBoxes from "../../../common/TimeBoxes";
-import AddIcon from "@mui/icons-material/Add";
-import MergeIcon from "@mui/icons-material/Merge";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
@@ -42,6 +39,8 @@ import {
   onSubtitleDelete,
   timeChange,
 } from "../../../utils/subtitleUtils";
+import ButtonComponent from "./ButtonComponent";
+import { memo } from "react";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
@@ -69,20 +68,26 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
 
-  const onDelete = (index) => {
-    const sub = onSubtitleDelete(sourceText, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  };
+  const onDelete = useCallback(
+    (index) => {
+      const sub = onSubtitleDelete(sourceText, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [sourceText]
+  );
 
   const handleCloseSettingsMenu = () => {
     setAnchorElSettings(null);
   };
 
-  const onMergeClick = (item, index) => {
-    const sub = onMerge(sourceText, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, true, sub);
-  };
+  const onMergeClick = useCallback(
+    (index) => {
+      const sub = onMerge(sourceText, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, true, sub);
+    },
+    [sourceText]
+  );
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -182,15 +187,21 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const handleTimeChange = (value, index, type, time) => {
-    const sub = timeChange(sourceText, value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  };
+  const handleTimeChange = useCallback(
+    (value, index, type, time) => {
+      const sub = timeChange(sourceText, value, index, type, time);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [sourceText]
+  );
 
-  const addNewSubtitleBox = (index) => {
-    const sub = addSubtitleBox(sourceText, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  };
+  const addNewSubtitleBox = useCallback(
+    (index) => {
+      const sub = addSubtitleBox(sourceText, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [sourceText]
+  );
 
   const sourceLength = (index) => {
     if (sourceText[index]?.text.trim() !== "")
@@ -431,60 +442,13 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     type={"startTime"}
                   />
 
-                  {index < sourceText.length - 1 && (
-                    <Tooltip title="Merge Next" placement="bottom">
-                      <IconButton
-                        sx={{
-                          backgroundColor: "#0083e2",
-                          borderRadius: "50%",
-                          marginRight: "10px",
-                          color: "#fff",
-                          transform: "rotate(180deg)",
-                          "&:hover": {
-                            backgroundColor: "#271e4f",
-                          },
-                        }}
-                        onClick={() => onMergeClick(item, index)}
-                      >
-                        <MergeIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-
-                  <Tooltip title="Delete" placement="bottom">
-                    <IconButton
-                      color="error"
-                      sx={{
-                        backgroundColor: "red",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => onDelete(index)}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Add Subtitle Box" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => addNewSubtitleBox(index)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <ButtonComponent
+                    index={index}
+                    sourceText={sourceText}
+                    onMergeClick={onMergeClick}
+                    onDelete={onDelete}
+                    addNewSubtitleBox={addNewSubtitleBox}
+                  />
 
                   <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -660,4 +624,4 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   );
 };
 
-export default TranslationRightPanel;
+export default memo(TranslationRightPanel);

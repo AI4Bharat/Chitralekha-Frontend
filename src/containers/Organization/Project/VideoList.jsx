@@ -1,32 +1,41 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { roles } from "../../../utils/utils";
+import moment from "moment";
 
 //Themes
-import { Box, ThemeProvider, Tooltip, IconButton, Button } from "@mui/material";
+import DatasetStyle from "../../../styles/Dataset";
 import tableTheme from "../../../theme/tableTheme";
+
+//Icons
+import FileDownload from "@mui/icons-material/FileDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
+import { Box, ThemeProvider, Tooltip, IconButton, Button } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
-import DatasetStyle from "../../../styles/Dataset";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Search from "../../../common/Search";
 import Loader from "../../../common/Spinner";
-
-//APIs
-import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
-import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
-import { roles } from "../../../utils/utils";
 import DeleteDialog from "../../../common/DeleteDialog";
 import VideoStatusTable from "../../../common/VideoStatusTable";
 import AlertComponent from "../../../common/Alert";
 
+//APIs
+import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
+import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
+import ExportAllDialog from "../../../common/ExportAllDialog";
+import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
+import BulkDownloadForVideoAPI from "../../../redux/actions/api/Project/BulkDownloadForVideo";
+
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -45,11 +54,18 @@ const VideoList = ({ data, removeVideo }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [alertType, setAlertType] = useState("");
+  const [openExportDialog, setOpenExportDialog] = useState(false);
+  const [exportType, setExportType] = useState("srt");
+  const [videoIdForDowload, setVideoIdForDowload] = useState("");
+  const [videoName, setVideoName] = useState("");
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
+  const translationExportTypes = useSelector(
+    (state) => state.getTranslationExportTypes.data.export_types
+  );
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -93,6 +109,60 @@ const VideoList = ({ data, removeVideo }) => {
     setprojectid(id);
   };
 
+  useEffect(() => {
+    const translationExportObj = new FetchTranslationExportTypesAPI();
+    dispatch(APITransport(translationExportObj));
+  }, []);
+
+  const handleDownloadAll = (item) => {
+    setVideoName(item.name);
+    setVideoIdForDowload(item.id);
+    setOpenExportDialog(true);
+  };
+
+  const handleDownload = async () => {
+    setOpenExportDialog(false);
+    setLoading(true);
+
+    const obj = new BulkDownloadForVideoAPI(videoIdForDowload, exportType);
+    const res = await fetch(obj.apiEndPoint(), {
+      method: "GET",
+      headers: obj.getHeaders().headers,
+    });
+
+    const resp = await res.blob();
+    if (res.ok) {
+      const newBlob = new Blob([resp], { type: "application/zip" });
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video_${videoName}_${moment().format(
+          "DDMMYYYY"
+        )}_${moment().format("HHMMSS")}.zip`
+      );
+
+      document.body.appendChild(link);
+
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setLoading(false);
+    } else {
+      setLoading(false);
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
   const pageSearch = () => {
     return data.filter((el) => {
       if (SearchProject == "") {
@@ -105,6 +175,10 @@ const VideoList = ({ data, removeVideo }) => {
         return el;
       } else if (
         el.name?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.description?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       }
@@ -124,6 +198,12 @@ const VideoList = ({ data, removeVideo }) => {
             <>
               <Box sx={{ display: "flex" }}>
                 {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
+
+                <Tooltip title="Download Related Tasks">
+                  <IconButton onClick={() => handleDownloadAll(item)}>
+                    <FileDownload color="primary" />
+                  </IconButton>
+                </Tooltip>
 
                 <Tooltip title="View">
                   <IconButton onClick={() => handleVideoDialog(item)}>
@@ -358,13 +438,14 @@ const VideoList = ({ data, removeVideo }) => {
         setOpenCreateTaskDialog(true);
         setIsBulk(true);
       },
+      style: { marginRight: "auto" },
     },
-    {
-      title: "Bulk Delete",
-      icon: <DeleteIcon />,
-      onClick: () => {},
-      style: { backgroundColor: "red", marginRight: "auto" },
-    },
+    // {
+    //   title: "Bulk Delete",
+    //   icon: <DeleteIcon />,
+    //   onClick: () => {},
+    //   style: { backgroundColor: "red", marginRight: "auto" },
+    // },
   ];
 
   const renderToolBar = () => {
@@ -392,11 +473,12 @@ const VideoList = ({ data, removeVideo }) => {
             );
           })}
 
-        <Search />
+        {/* <Search /> */}
+        
       </Box>
     );
   };
-
+ 
   const options = {
     textLabels: {
       body: {
@@ -412,6 +494,7 @@ const VideoList = ({ data, removeVideo }) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
+     search: true,
     download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
@@ -421,7 +504,7 @@ const VideoList = ({ data, removeVideo }) => {
       ?.showSelectCheckbox
       ? "multiple"
       : "none",
-    search: false,
+    
     jumpToPage: true,
     customToolbar: renderToolBar,
     selectToolbarPlacement: "none",
@@ -454,8 +537,20 @@ const VideoList = ({ data, removeVideo }) => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable title={<></>} data={result} columns={columns} options={options} />
+        <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
+
+      {openExportDialog && (
+        <ExportAllDialog
+          open={openExportDialog}
+          handleClose={() => setOpenExportDialog(false)}
+          exportOptions={translationExportTypes}
+          exportType={exportType}
+          handleExportRadioButton={setExportType}
+          handleExport={() => handleDownload()}
+          loading={loading}
+        />
+      )}
 
       {open && (
         <VideoDialog
