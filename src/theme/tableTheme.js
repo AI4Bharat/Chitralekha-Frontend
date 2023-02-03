@@ -39,6 +39,9 @@ const tableTheme = createTheme({
         left: {
           flex: 0,
         },
+        root:{
+          height:"30px"
+        }
       },
     },
     MUIDataTableFilter: {
