@@ -400,9 +400,9 @@ const VideoLanding = () => {
                     : classes.lightMode
                 }`}
                 value={
-                  currentSubs.target_text
-                    ? currentSubs.target_text
-                    : currentSubs.text
+                  taskDetails.task_type.includes("TRANSCRIPTION")
+                    ? currentSubs.text
+                    : currentSubs.target_text
                 }
                 style={{
                   fontSize: fontSize,

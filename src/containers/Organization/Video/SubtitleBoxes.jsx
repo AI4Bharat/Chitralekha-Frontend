@@ -34,19 +34,8 @@ let lastWidth = 0;
 let lastDiffX = 0;
 let isDroging = false;
 
-function getCurrentSubs(subs, beginTime, duration) {
-  return subs?.filter((item) => {
-    return (
-      (item.startTime <= beginTime && item.endTime >= beginTime + duration) ||
-      (item.startTime <= beginTime && item.endTime <= beginTime + duration) ||
-      (item.startTime >= beginTime && item.endTime >= beginTime + duration) ||
-      (item.startTime >= beginTime && item.endTime <= beginTime + duration)
-    );
-  });
-}
-
 export default React.memo(
-  function ({ player, render, currentTime, updateSubEnglish }) {
+  function ({ player, render, currentTime }) {
     const { taskId } = useParams();
     const classes = ProjectStyle();
     const $blockRef = React.createRef();
@@ -59,8 +48,7 @@ export default React.memo(
     const [currentSubs, setCurrentSubs] = useState([]);
 
     useEffect(() => {
-      let subs = getCurrentSubs(subtitles, render.beginTime, render.duration);
-      setCurrentSubs(subs);
+      setCurrentSubs(subtitles);
     }, [subtitles, render]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
@@ -107,10 +95,6 @@ export default React.memo(
         if (index >= 0) {
           copySub.splice(index, 1);
           dispatch(setSubtitles(copySub, C.SUBTITLES));
-
-          let subs = getCurrentSubs(copySub, render.beginTime, render.duration);
-
-          setCurrentSubs(subs);
           saveTranscript(taskDetails?.task_type);
         }
       },
@@ -236,7 +220,7 @@ export default React.memo(
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, subtitles, updateSub, updateSubEnglish]);
+    }, [gridGap, hasSub, subtitles, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -358,7 +342,7 @@ export default React.memo(
                     onMouseDown={(event) => onMouseDown(sub, event)}
                   >
                     <p className={classes.subTextP}>
-                      {sub.target_text ? sub.target_text : sub.text}
+                      {taskDetails.task_type.includes("TRANSCRIPTION") ? sub.text : sub.target_text }
                     </p>
                   </div>
 
