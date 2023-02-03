@@ -46,6 +46,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import UserMappedByRole from "../../utils/UserMappedByRole";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import FilterList from "../../common/FilterList";
+import C from "../../redux/constants";
 
 //Apis
 import APITransport from "../../redux/actions/apitransport/apitransport";
@@ -123,6 +124,10 @@ const OrgLevelTaskList = () => {
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    return () => {
+        dispatch({type: C.CLEAR_ORG_TASK_LIST, payload: []})
+    }
   }, []);
 
   const supportedLanguages = useSelector(
@@ -152,7 +157,9 @@ const OrgLevelTaskList = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
 
   useEffect(()=>{
-    setLoading(false);
+      if(taskList.tasks_list){
+          setLoading(false);
+      }
 }, [taskList])
   
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
@@ -1029,7 +1036,7 @@ const OrgLevelTaskList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No tasks assigned to you",
+        noMatch: loading ? <Loader /> : "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",

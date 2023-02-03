@@ -45,6 +45,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import UserMappedByRole from "../../../utils/UserMappedByRole";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import FilterList from "../../../common/FilterList";
+import C from "../../../redux/constants"
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -118,8 +119,13 @@ const TaskList = () => {
       dispatch(APITransport(apiObj));
   };
   useEffect(() => {
+    setLoading(true)
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    return () => {
+      dispatch({type: C.CLEAR_PROJECT_TASK_LIST, payload: []})
+    }
   }, []);
 
   const supportedLanguages = useSelector(
@@ -140,9 +146,17 @@ const TaskList = () => {
     FetchTaskList();
   }, []);
 
+
+
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
   
+  useEffect(()=>{
+    if(taskList?.tasks_list){
+      setLoading(false)
+    }
+  }, [taskList])
+
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
@@ -1017,7 +1031,7 @@ const TaskList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No tasks assigned to you",
+        noMatch: loading ? <Loader /> : "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",
