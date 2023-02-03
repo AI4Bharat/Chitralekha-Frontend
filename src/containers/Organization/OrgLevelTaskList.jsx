@@ -1020,7 +1020,7 @@ const OrgLevelTaskList = () => {
               );
             })}
 
-          <Search />
+          {/* <Search /> */}
         </Box>
       </>
     );
@@ -1050,7 +1050,7 @@ const OrgLevelTaskList = () => {
       ?.showSelectCheckbox
       ? "multiple"
       : "none",
-    search: false,
+    search: true,
     jumpToPage: true,
     selectToolbarPlacement: "none",
     rowsSelected: rows,

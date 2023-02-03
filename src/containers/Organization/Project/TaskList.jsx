@@ -996,7 +996,7 @@ const TaskList = () => {
               );
             })}
 
-          <Search />
+          {/* <Search /> */}
         </Box>
       </>
     );
@@ -1026,7 +1026,7 @@ const TaskList = () => {
       ?.showSelectCheckbox
       ? "multiple"
       : "none",
-    search: false,
+    search: true,
     jumpToPage: true,
     selectToolbarPlacement: "none",
     rowsSelected: rows,
