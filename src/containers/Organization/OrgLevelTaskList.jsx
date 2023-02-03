@@ -62,9 +62,10 @@ import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTas
 import DeleteDialog from "../../common/DeleteDialog";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
 import FetchOrgTaskList from "../../redux/actions/api/Organization/FetchOrgTaskList";
-
-const Transcription = ["srt", "vtt", "txt", "ytt"];
-const Translation = ["srt", "vtt", "txt"];
+import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
+import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
+import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
+import ExportDialog from "../../common/ExportDialog";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
@@ -109,12 +110,20 @@ const OrgLevelTaskList = () => {
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
+  const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
+
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
-  
+  const transcriptExportTypes = useSelector(
+    (state) => state.getTranscriptExportTypes.data.export_types
+  );
+  const translationExportTypes = useSelector(
+    (state) => state.getTranslationExportTypes.data.export_types
+  );
+
   const FetchTaskList = () => {
     setLoading(true);
       const apiObj = new FetchOrgTaskList(orgId);
@@ -123,6 +132,13 @@ const OrgLevelTaskList = () => {
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    const transcriptExportObj = new FetchTranscriptExportTypesAPI();
+    dispatch(APITransport(transcriptExportObj));
+
+    const translationExportObj = new FetchTranslationExportTypesAPI();
+    dispatch(APITransport(translationExportObj));
+    
   }, []);
 
   const supportedLanguages = useSelector(
@@ -965,6 +981,38 @@ const OrgLevelTaskList = () => {
     setShowEditTaskBtn(!!temp.length);
   };
 
+  const handleBulkDelete = async (taskIds, flag) => {
+    setLoading(true);
+    setIsBulkTaskDelete(true);
+
+    const apiObj = new DeleteBulkTaskAPI(flag, taskIds);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "DELETE",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      setOpenDialog(false);
+      setLoading(false);
+      FetchTaskList();
+    } else {
+      setDeleteTaskid(resp.task_ids);
+      setOpenDialog(true);
+      setDeleteMsg(resp.message);
+      setDeleteResponse(resp.error_report);
+      setLoading(false);
+    }
+  };
+
   const toolBarActions = [
     {
       title: "Bulk Task Update",
@@ -978,14 +1026,14 @@ const OrgLevelTaskList = () => {
       title: "Bulk Task Delete",
       icon: <DeleteIcon />,
       onClick: () => {},
-      style: { backgroundColor: "red" },
+      style: { backgroundColor: "red", marginRight: "auto" },
     },
-    {
-      title: "Bulk Task Dowload",
-      icon: <FileDownloadIcon />,
-      onClick: () => {},
-      style: { marginRight: "auto" },
-    },
+    // {
+    //   title: "Bulk Task Dowload",
+    //   icon: <FileDownloadIcon />,
+    //   onClick: () => {},
+    //   style: { marginRight: "auto" },
+    // },
   ];
 
   const renderToolBar = () => {
@@ -1074,96 +1122,6 @@ const OrgLevelTaskList = () => {
     );
   };
 
-  const renderDialog = () => {
-    return (
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        PaperProps={{ style: { borderRadius: "10px" } }}
-      >
-        <DialogTitle variant="h4">Export Subtitle</DialogTitle>
-
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
-            {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW"
-              ? "Transcription"
-              : "Translation"}
-          </DialogContentText>
-          {tasktype === "TRANSCRIPTION_EDIT" ||
-          tasktype === "TRANSCRIPTION_REVIEW" ? (
-            <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
-              <FormControl>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                >
-                  {Transcription?.map((item, index) => (
-                    <FormControlLabel
-                      value={item}
-                      control={<Radio />}
-                      checked={exportTranscription === item}
-                      label={item}
-                      onClick={handleClickRadioButton}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </DialogActions>
-          ) : (
-            <DialogActions sx={{ mr: 17, mb: 1, mt: 1 }}>
-              <FormControl>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                >
-                  {Translation?.map((item, index) => (
-                    <FormControlLabel
-                      value={item}
-                      control={<Radio />}
-                      checked={exportTranslation === item}
-                      label={item}
-                      onClick={handleClickRadioButtonTranslation}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </DialogActions>
-          )}
-          <DialogActions>
-            <CustomButton
-              buttonVariant="standard"
-              onClick={handleClose}
-              label="Cancel"
-            />
-            {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW" ? (
-              <CustomButton
-                buttonVariant="contained"
-                onClick={handleok}
-                label="Export"
-                style={{ borderRadius: "8px" }}
-                autoFocus
-              />
-            ) : (
-              <CustomButton
-                onClick={handleokTranslation}
-                label="Export"
-                buttonVariant="contained"
-                style={{ borderRadius: "8px" }}
-                autoFocus
-              />
-            )}
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-
   const handleUpdateTask = async (data) => {
     setLoading(true);
 
@@ -1235,13 +1193,32 @@ const OrgLevelTaskList = () => {
           id={currentTaskDetails[0]}
         />
       )}
-      {renderDialog()}
+      
+      {open && (
+        <ExportDialog
+          open={open}
+          handleClose={handleClose}
+          taskType={tasktype}
+          handleTranscriptRadioButton={handleClickRadioButton}
+          handleTranslationRadioButton={handleClickRadioButtonTranslation}
+          handleTranscriptExport={handleok}
+          handleTranslationExport={handleokTranslation}
+          exportTranscription={exportTranscription}
+          exportTranslation={exportTranslation}
+          transcriptionOptions={transcriptExportTypes}
+          translationOptions={translationExportTypes}
+        />
+      )}
 
       {openDialog && (
         <DeleteDialog
           openDialog={openDialog}
           handleClose={() => handleCloseDialog()}
-          submit={() => handledeletetask(deleteTaskid, true)}
+          submit={() => {
+            isBulkTaskDelete
+              ? handleBulkDelete(deleteTaskid, true)
+              : handledeletetask(deleteTaskid, true);
+          }}
           loading={loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
