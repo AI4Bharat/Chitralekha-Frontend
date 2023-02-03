@@ -70,6 +70,18 @@ const tableTheme = createTheme({
         },
       },
     },
+    MUIDataTableSearch: {
+      styleOverrides: {
+        searchText: {
+         width:"400px"
+         
+        },
+        searchIcon:{
+          marginRight:"-6px"
+        },
+        
+      },
+    },
   },
 });
 
