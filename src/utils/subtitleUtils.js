@@ -1,6 +1,7 @@
 import Sub from "./Sub";
 import { getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
+import store from '../redux/store/store';
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -13,11 +14,13 @@ export const formatSub = (sub) => {
   return newSub(sub);
 };
 
-export const hasSub = (sub, subtitles) => {
+export const hasSub = (sub) => {
+  const subtitles = store.getState().commonReducer.subtitles;
   return subtitles.indexOf(sub);
 };
 
-export const copySubs = (subtitles) => {
+export const copySubs = () => {
+  const subtitles = store.getState().commonReducer.subtitles;
   return formatSub(subtitles);
 };
 
@@ -53,8 +56,9 @@ export const getKeyCode = (event) => {
   }
 };
 
-export const timeChange = (sourceText, value, index, type, time) => {
-  const copySub = [...sourceText];
+export const timeChange = (value, index, type, time) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
 
   if (type === "startTime") {
     copySub[index].start_time = getUpdatedTime(
@@ -73,15 +77,17 @@ export const timeChange = (sourceText, value, index, type, time) => {
   return copySub;
 };
 
-export const addSubtitleBox = (sourceText, index) => {
-  const copySub = copySubs(sourceText);
+export const addSubtitleBox = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = copySubs(subtitles);
+
   copySub.splice(
     index + 1,
     0,
     newSub({
       start_time: copySub[index].end_time,
       end_time:
-        index < sourceText.length - 1
+        index < subtitles.length - 1
           ? copySub[index + 1].start_time
           : copySub[index].end_time,
       text: "SUB_TEXT",
@@ -92,7 +98,8 @@ export const addSubtitleBox = (sourceText, index) => {
   return copySub;
 };
 
-export const onMerge = (subtitles, index) => {
+export const onMerge = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
   const existingsourceData = copySubs(subtitles);
 
   existingsourceData.splice(
@@ -113,14 +120,17 @@ export const onMerge = (subtitles, index) => {
   return existingsourceData;
 };
 
-export const onSubtitleDelete = (subtitles, index) => {
+export const onSubtitleDelete = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
   const copySub = copySubs(subtitles);
   copySub.splice(index, 1);
 
   return copySub;
 };
 
-export const onSplit = (subtitles, currentIndex, selectionStart) => {
+export const onSplit = (currentIndex, selectionStart) => {
+  const subtitles = store.getState().commonReducer.subtitles;
   const copySub = copySubs(subtitles);
 
   const targetTextBlock = subtitles[currentIndex];
@@ -166,4 +176,34 @@ export const onSplit = (subtitles, currentIndex, selectionStart) => {
   );
 
   return copySub;
+};
+
+export const fullscreenUtil = (element) => {
+  let doc = window.document;
+  let docEl = element;
+
+  const requestFullScreen =
+    docEl.requestFullscreen ||
+    docEl.mozRequestFullScreen ||
+    docEl.webkitRequestFullScreen ||
+    docEl.msRequestFullscreen;
+
+  const cancelFullScreen =
+    doc.exitFullscreen ||
+    doc.mozCancelFullScreen ||
+    doc.webkitExitFullscreen ||
+    doc.msExitFullscreen;
+
+  if (
+    !doc.fullscreenElement &&
+    !doc.mozFullScreenElement &&
+    !doc.webkitFullscreenElement &&
+    !doc.msFullscreenElement
+  ) {
+    requestFullScreen.call(docEl);
+    return true;
+  } else {
+    cancelFullScreen.call(doc);
+    return false;
+  }
 };
