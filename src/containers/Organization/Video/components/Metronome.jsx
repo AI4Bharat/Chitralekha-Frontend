@@ -1,11 +1,11 @@
 import React, { useEffect, useCallback, useState } from "react";
 import DT from "duration-time-conversion";
 import isEqual from "lodash/isEqual";
-import ProjectStyle from "../../../styles/ProjectStyle";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setSubtitles } from "../../../redux/actions/Common";
-import C from "../../../redux/constants";
+import { setSubtitles } from "../../../../redux/actions/Common";
+import C from "../../../../redux/constants";
+import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -21,7 +21,7 @@ const findIndex = (subs, startTime) => {
 
 export default React.memo(
   function Component({ render, newSub, player, playing }) {
-    const classes = ProjectStyle();
+    const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
     const [isDroging, setIsDroging] = useState(false);
@@ -30,7 +30,6 @@ export default React.memo(
     const gridGap = document.body.clientWidth / render.gridNum;
 
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
-    const taskData = useSelector((state) => state.getTaskDetails.data);
 
     const getEventTime = useCallback(
       (event) => {

@@ -7,17 +7,16 @@ import React, {
   useState,
 } from "react";
 import WFPlayer from "wfplayer";
-import ProjectStyle from "../../../styles/ProjectStyle";
 import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
 import { throttle } from "lodash";
-import Metronome from "./Metronome";
-import { useSelector } from "react-redux";
-import SubtitleBoxes from "./SubtitleBoxes";
+import Metronome from "./components/Metronome";
+import SubtitleBoxes from "./components/SubtitleBoxes";
+import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
 const WaveForm = memo(
   ({ player, setWaveform, setRender }) => {
-    const classes = ProjectStyle();
+    const classes = VideoLandingStyle();
     const $waveform = createRef();
 
     useEffect(() => {
@@ -46,93 +45,94 @@ const WaveForm = memo(
     }, [player, $waveform, setWaveform, setRender]);
 
     return <div className={classes.waveform} ref={$waveform} />;
-  },
-  () => true
+  }
 );
 
-const Progress = ({ player, waveform, currentTime, subtitle = [] }) => {
-  const classes = ProjectStyle();
-  const [grabbing, setGrabbing] = useState(false);
+const Progress = memo(
+  ({ player, waveform, currentTime, subtitle = [] }) => {
+    const classes = VideoLandingStyle();
+    const [grabbing, setGrabbing] = useState(false);
 
-  const onProgressClick = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
-      const currentTime =
-        (event.pageX / document.body.clientWidth) * player.duration;
-      player.currentTime = currentTime;
-      waveform.seek(currentTime);
-    },
-    [player, waveform]
-  );
-
-  const onGrabDown = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
-      setGrabbing(true);
-    },
-    [setGrabbing]
-  );
-
-  const onGrabMove = useCallback(
-    (event) => {
-      if (grabbing) {
+    const onProgressClick = useCallback(
+      (event) => {
+        if (event.button !== 0) return;
         const currentTime =
           (event.pageX / document.body.clientWidth) * player.duration;
         player.currentTime = currentTime;
+        waveform.seek(currentTime);
+      },
+      [player, waveform]
+    );
+
+    const onGrabDown = useCallback(
+      (event) => {
+        if (event.button !== 0) return;
+        setGrabbing(true);
+      },
+      [setGrabbing]
+    );
+
+    const onGrabMove = useCallback(
+      (event) => {
+        if (grabbing) {
+          const currentTime =
+            (event.pageX / document.body.clientWidth) * player.duration;
+          player.currentTime = currentTime;
+        }
+      },
+      [grabbing, player]
+    );
+
+    const onDocumentMouseUp = useCallback(() => {
+      if (grabbing) {
+        setGrabbing(false);
+        waveform.seek(player.currentTime);
       }
-    },
-    [grabbing, player]
-  );
+    }, [grabbing, waveform, player.currentTime]);
 
-  const onDocumentMouseUp = useCallback(() => {
-    if (grabbing) {
-      setGrabbing(false);
-      waveform.seek(player.currentTime);
-    }
-  }, [grabbing, waveform, player.currentTime]);
+    useEffect(() => {
+      document.addEventListener("mouseup", onDocumentMouseUp);
+      document.addEventListener("mousemove", onGrabMove);
+      return () => {
+        document.removeEventListener("mouseup", onDocumentMouseUp);
+        document.removeEventListener("mousemove", onGrabMove);
+      };
+    }, [onDocumentMouseUp, onGrabMove]);
 
-  useEffect(() => {
-    document.addEventListener("mouseup", onDocumentMouseUp);
-    document.addEventListener("mousemove", onGrabMove);
-    return () => {
-      document.removeEventListener("mouseup", onDocumentMouseUp);
-      document.removeEventListener("mousemove", onGrabMove);
-    };
-  }, [onDocumentMouseUp, onGrabMove]);
-
-  return (
-    <Box className={classes.progress} onClick={onProgressClick}>
-      <Box
-        className={classes.bar}
-        style={{
-          width: `${(currentTime / player.duration) * 100}%`,
-        }}
-      >
-        <Box className={classes.handle} onMouseDown={onGrabDown}></Box>
+    return (
+      <Box className={classes.progress} onClick={onProgressClick}>
+        <Box
+          className={classes.bar}
+          style={{
+            width: `${(currentTime / player.duration) * 100}%`,
+          }}
+        >
+          <Box className={classes.handle} onMouseDown={onGrabDown}></Box>
+        </Box>
+        <Box className={classes.timelineSubtitle}>
+          {subtitle.length <= 200
+            ? subtitle.map((item, index) => {
+                const { duration } = player;
+                return (
+                  <span
+                    key={index}
+                    className={classes.item}
+                    style={{
+                      left: `${(item.startTime / duration) * 100}%`,
+                      width: `${(item.duration / duration) * 100}%`,
+                    }}
+                  />
+                );
+              })
+            : null}
+        </Box>
       </Box>
-      <Box className={classes.timelineSubtitle}>
-        {subtitle.length <= 200
-          ? subtitle.map((item, index) => {
-              const { duration } = player;
-              return (
-                <span
-                  key={index}
-                  className={classes.item}
-                  style={{
-                    left: `${(item.startTime / duration) * 100}%`,
-                    width: `${(item.duration / duration) * 100}%`,
-                  }}
-                />
-              );
-            })
-          : null}
-      </Box>
-    </Box>
-  );
-};
+    );
+  }
+);
 
-const Grab = ({ player, waveform }) => {
-  const classes = ProjectStyle();
+const Grab = memo(({ player, waveform }) => {
+  const classes = VideoLandingStyle();
 
   const [grabStartX, setGrabStartX] = useState(0);
   const [grabStartTime, setGrabStartTime] = useState(0);
@@ -182,10 +182,10 @@ const Grab = ({ player, waveform }) => {
       onMouseMove={onGrabMove}
     />
   );
-};
+});
 
-const Duration = ({ player, currentTime }) => {
-  const classes = ProjectStyle();
+const Duration = memo(({ player, currentTime }) => {
+  const classes = VideoLandingStyle();
 
   const getDuration = useCallback((time) => {
     time = time === Infinity ? 0 : time;
@@ -201,19 +201,20 @@ const Duration = ({ player, currentTime }) => {
       )}
     </div>
   );
-};
+});
 
-const Timeline = ({
-  waveform,
-  setWaveform,
-  player,
-  render,
-  setRender,
-  currentTime,
-  playing,
-  newSub,
-}) => {
+const Timeline = ({ player, currentTime, playing }) => {
   const $footer = createRef();
+  const classes = VideoLandingStyle();
+
+  const [waveform, setWaveform] = useState();
+  const [render, setRender] = useState({
+    padding: 2,
+    duration: 10,
+    gridGap: 10,
+    gridNum: 110,
+    beginTime: -5,
+  });
 
   const onWheel = useCallback(
     (event) => {
@@ -246,16 +247,7 @@ const Timeline = ({
   }, [onWheel]);
 
   return (
-    <Box
-      style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        height: "150px",
-        width: "100%",
-      }}
-      ref={$footer}
-    >
+    <Box className={classes.timeLineParent} ref={$footer}>
       {player && (
         <>
           <Progress
@@ -270,12 +262,7 @@ const Timeline = ({
             setRender={setRender}
           />
           <Grab player={player} waveform={waveform} />
-          <Metronome
-            render={render}
-            player={player}
-            playing={playing}
-            newSub={newSub}
-          />
+          <Metronome render={render} player={player} playing={playing} />
           <SubtitleBoxes
             render={render}
             player={player}
@@ -288,4 +275,4 @@ const Timeline = ({
   );
 };
 
-export default Timeline;
+export default memo(Timeline);
