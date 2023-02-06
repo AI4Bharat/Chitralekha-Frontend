@@ -4,18 +4,30 @@ import {
   ContextMenuTrigger,
   connectMenu,
 } from "react-contextmenu";
-import React, { useEffect, useCallback, useState } from "react";
+import React, {
+  useEffect,
+  useCallback,
+  useState,
+  createRef,
+  memo,
+} from "react";
 import isEqual from "lodash/isEqual";
 import DT from "duration-time-conversion";
-import { getKeyCode } from "../../../utils/utils";
-import ProjectStyle from "../../../styles/ProjectStyle";
-import Sub from "../../../utils/Sub";
+import { getKeyCode } from "../../../../utils/utils";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { setSubtitles } from "../../../redux/actions/Common";
-import C from "../../../redux/constants";
+import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
+import APITransport from "../../../../redux/actions/apitransport/apitransport";
+import { setSubtitles } from "../../../../redux/actions/Common";
+import C from "../../../../redux/constants";
+import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import {
+  copySubs,
+  formatSub,
+  hasSub,
+  onMerge,
+  onSubtitleDelete,
+} from "../../../../utils/subtitleUtils";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -34,24 +46,14 @@ let lastWidth = 0;
 let lastDiffX = 0;
 let isDroging = false;
 
-function getCurrentSubs(subs, beginTime, duration) {
-  return subs?.filter((item) => {
-    return (
-      (item.startTime <= beginTime && item.endTime >= beginTime + duration) ||
-      (item.startTime <= beginTime && item.endTime <= beginTime + duration) ||
-      (item.startTime >= beginTime && item.endTime >= beginTime + duration) ||
-      (item.startTime >= beginTime && item.endTime <= beginTime + duration)
-    );
-  });
-}
-
-export default React.memo(
-  function ({ player, render, currentTime, updateSubEnglish }) {
+export default memo(
+  function ({ player, render, currentTime }) {
     const { taskId } = useParams();
-    const classes = ProjectStyle();
-    const $blockRef = React.createRef();
-    const $subsRef = React.createRef();
+    const classes = VideoLandingStyle();
     const dispatch = useDispatch();
+
+    const $blockRef = createRef();
+    const $subsRef = createRef();
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
@@ -59,8 +61,7 @@ export default React.memo(
     const [currentSubs, setCurrentSubs] = useState([]);
 
     useEffect(() => {
-      let subs = getCurrentSubs(subtitles, render.beginTime, render.duration);
-      setCurrentSubs(subs);
+      setCurrentSubs(subtitles);
     }, [subtitles, render]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
@@ -80,65 +81,19 @@ export default React.memo(
       dispatch(APITransport(obj));
     };
 
-    const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
+    const removeSub = useCallback((sub) => {
+      const index = hasSub(sub);
+      const res = onSubtitleDelete(index);
+      dispatch(setSubtitles(res, C.SUBTITLES));
+      saveTranscript(taskDetails?.task_type);
+    }, []);
 
-    const newSub = useCallback((item) => new Sub(item), []);
-
-    const formatSub = useCallback(
-      (sub) => {
-        if (Array.isArray(sub)) {
-          return sub.map((item) => newSub(item));
-        }
-        return newSub(sub);
-      },
-      [newSub]
-    );
-
-    const copySubs = useCallback(
-      () => formatSub(subtitles),
-      [subtitles, formatSub]
-    );
-
-    const removeSub = useCallback(
-      (sub) => {
-        const index = hasSub(sub);
-        const copySub = copySubs();
-
-        if (index >= 0) {
-          copySub.splice(index, 1);
-          dispatch(setSubtitles(copySub, C.SUBTITLES));
-
-          let subs = getCurrentSubs(copySub, render.beginTime, render.duration);
-
-          setCurrentSubs(subs);
-          saveTranscript(taskDetails?.task_type);
-        }
-      },
-      [hasSub, copySubs]
-    );
-
-    const mergeSub = useCallback(
-      (sub) => {
-        const index = hasSub(sub);
-        const copySub = copySubs();
-        if (index >= 0) {
-          const next = copySub[index + 1];
-          if (next) {
-            const merge = newSub({
-              start_time: sub.start_time,
-              end_time: next.end_time,
-              text: sub.text.trim() + "\n" + next.text.trim(),
-              target_text: sub.target_text + "\n" + next.target_text,
-            });
-            copySub[index] = merge;
-            copySub.splice(index + 1, 1);
-            dispatch(setSubtitles(copySub, C.SUBTITLES));
-            saveTranscript(taskDetails?.task_type);
-          }
-        }
-      },
-      [hasSub, copySubs, newSub]
-    );
+    const mergeSub = useCallback((sub) => {
+      const index = hasSub(sub);
+      const res = onMerge(index);
+      dispatch(setSubtitles(res, C.SUBTITLES));
+      saveTranscript(taskDetails?.task_type);
+    }, []);
 
     const updateSub = useCallback(
       (sub, obj) => {
@@ -229,14 +184,12 @@ export default React.memo(
         lastTarget.style.transform = `translate(0)`;
       }
 
-      // saveTranscript(taskDetails?.task_type);
-
       lastType = "";
       lastX = 0;
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, subtitles, updateSub, updateSubEnglish]);
+    }, [gridGap, hasSub, subtitles, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -358,7 +311,9 @@ export default React.memo(
                     onMouseDown={(event) => onMouseDown(sub, event)}
                   >
                     <p className={classes.subTextP}>
-                      {sub.target_text ? sub.target_text : sub.text}
+                      {taskDetails.task_type.includes("TRANSCRIPTION")
+                        ? sub.text
+                        : sub.target_text}
                     </p>
                   </div>
 

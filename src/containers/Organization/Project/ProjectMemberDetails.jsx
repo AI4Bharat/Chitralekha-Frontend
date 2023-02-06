@@ -263,9 +263,9 @@ const ProjectMemberDetails = () => {
     filter: false,
     viewColumns: true,
     selectableRows: "none",
-    search: false,
+    search: true,
     jumpToPage: true,
-    customToolbar: renderToolBar,
+    // customToolbar: renderToolBar,
   };
 
   const renderSnackBar = () => {

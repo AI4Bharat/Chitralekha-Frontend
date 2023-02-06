@@ -3,10 +3,9 @@ import React, {
   memo,
   useCallback,
   useEffect,
-  useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ProjectStyle from "../../../styles/ProjectStyle";
+import { useSelector } from "react-redux";
+import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 
 const VideoPanel = memo(
   ({
@@ -14,15 +13,13 @@ const VideoPanel = memo(
     setCurrentTime,
     setPlaying,
   }) => {
-    const dispatch = useDispatch();
-    const classes = ProjectStyle();
+    const classes = VideoLandingStyle();
     const $video = createRef();
 
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
     const fullscreenVideo = useSelector(
       (state) => state.commonReducer.fullscreenVideo
     );
-
 
     const isPlaying = ($video) => {
       return !!(

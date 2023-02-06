@@ -3,13 +3,13 @@ import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import ProjectStyle from "../../../styles/ProjectStyle";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { memo } from "react";
+import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 
 const ButtonComponent = ({
   index,
-  sourceText,
+  lastItem,
   onMergeClick,
   onDelete,
   addNewSubtitleBox,
@@ -17,21 +17,23 @@ const ButtonComponent = ({
   showPopOver,
   showSplit,
 }) => {
-  const classes = ProjectStyle();
+  const classes = VideoLandingStyle();
 
   return (
     <>
-     {showSplit && (<Tooltip title="Split Subtitle" placement="bottom">
-        <IconButton
-          className={classes.optionIconBtn}
-          onClick={onSplitClick}
-          disabled={!showPopOver}
-        >
-          <SplitscreenIcon />
-        </IconButton>
-      </Tooltip>)}
+      {showSplit && (
+        <Tooltip title="Split Subtitle" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={onSplitClick}
+            disabled={!showPopOver}
+          >
+            <SplitscreenIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
-      {index < sourceText.length - 1 && (
+      {lastItem && (
         <Tooltip title="Merge Next" placement="bottom">
           <IconButton
             sx={{ transform: "rotate(180deg)" }}

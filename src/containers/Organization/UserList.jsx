@@ -114,6 +114,7 @@ const UserList = ({ data }) => {
 
   const renderToolBar = () => {
     return (
+
       <Box className={classes.searchStyle}>
         <Search />
       </Box>
@@ -141,9 +142,9 @@ const UserList = ({ data }) => {
     filter: false,
     viewColumns: true,
     selectableRows: "none",
-    search: false,
+    search: true,
     jumpToPage: true,
-    customToolbar: renderToolBar,
+   // customToolbar: renderToolBar,
   };
 
   return (
