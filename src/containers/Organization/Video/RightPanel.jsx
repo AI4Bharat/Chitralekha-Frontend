@@ -1,53 +1,31 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, memo } from "react";
 import Box from "@mui/material/Box";
-import {
-  CardContent,
-  Grid,
-  Typography,
-  IconButton,
-  Tooltip,
-  Menu,
-  MenuItem,
-  FormControlLabel,
-  Checkbox,
-  Divider,
-} from "@mui/material";
+import { CardContent, Grid } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
-import FindAndReplace from "../../../common/FindAndReplace";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import MergeIcon from "@mui/icons-material/Merge";
 import TimeBoxes from "../../../common/TimeBoxes";
-
 import ConfirmDialog from "../../../common/ConfirmDialog";
-import CheckIcon from "@mui/icons-material/Check";
-import AddIcon from "@mui/icons-material/Add";
-import FormatSizeIcon from "@mui/icons-material/FormatSize";
-import SaveIcon from "@mui/icons-material/Save";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import SettingsIcon from "@mui/icons-material/Settings";
 import {
   addSubtitleBox,
-  fontMenu,
   newSub,
   onMerge,
   onSplit,
   onSubtitleDelete,
   timeChange,
 } from "../../../utils/subtitleUtils";
-import ButtonComponent from "./ButtonComponent";
-import { memo } from "react";
+import ButtonComponent from "./components/ButtonComponent";
+import SettingsButtonComponent from "./components/SettingsButtonComponent";
+import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
 const RightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
-  const classes = ProjectStyle();
+  const classes = VideoLandingStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -70,9 +48,7 @@ const RightPanel = ({ currentIndex, player }) => {
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
-  const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   useEffect(() => {
     if (subtitles?.length === 0) {
@@ -84,12 +60,10 @@ const RightPanel = ({ currentIndex, player }) => {
         }),
       ];
       dispatch(setSubtitles(defaultSubs, C.SUBTITLES));
-    } else setSourceText(subtitles);
-  }, [subtitles, newSub, dispatch]);
-
-  const handleCloseSettingsMenu = () => {
-    setAnchorElSettings(null);
-  };
+    } else {
+      setSourceText(subtitles);
+    }
+  }, [subtitles]);
 
   useEffect(() => {
     const subtitleScrollEle = document.getElementById("subTitleContainer");
@@ -98,14 +72,11 @@ const RightPanel = ({ currentIndex, player }) => {
       ?.scrollIntoView(true, { block: "start" });
   }, [currentIndex]);
 
-  const onMergeClick = useCallback(
-    (index) => {
-      const sub = onMerge(sourceText, index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
-    },
-    [sourceText]
-  );
+  const onMergeClick = useCallback((index) => {
+    const sub = onMerge(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
+  }, []);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -117,20 +88,11 @@ const RightPanel = ({ currentIndex, player }) => {
   };
 
   const onSplitClick = useCallback(() => {
-    const sub = onSplit(
-      sourceText,
-      currentIndexToSplitTextBlock,
-      selectionStart
-    );
+    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
 
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, true, sub);
-  }, [sourceText, currentIndexToSplitTextBlock, selectionStart]);
-
-  const onReplacementDone = (updatedSource) => {
-    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
-    saveTranscriptHandler(false, true);
-  };
+  }, [currentIndexToSplitTextBlock, selectionStart]);
 
   const changeTranscriptHandler = useCallback(
     (text, index) => {
@@ -213,29 +175,20 @@ const RightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const handleTimeChange = useCallback(
-    (value, index, type, time) => {
-      const sub = timeChange(sourceText, value, index, type, time);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-    },
-    [sourceText]
-  );
+  const handleTimeChange = useCallback((value, index, type, time) => {
+    const sub = timeChange(value, index, type, time);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, []);
 
-  const onDelete = useCallback(
-    (index) => {
-      const sub = onSubtitleDelete(sourceText, index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-    },
-    [sourceText]
-  );
+  const onDelete = useCallback((index) => {
+    const sub = onSubtitleDelete(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, []);
 
-  const addNewSubtitleBox = useCallback(
-    (index) => {
-      const sub = addSubtitleBox(sourceText, index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-    },
-    [sourceText]
-  );
+  const addNewSubtitleBox = useCallback((index) => {
+    const sub = addSubtitleBox(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, []);
 
   const targetLength = (index) => {
     if (sourceText[index]?.text.trim() !== "")
@@ -246,221 +199,25 @@ const RightPanel = ({ currentIndex, player }) => {
   return (
     <>
       {renderSnackBar()}
-      <Box
-        sx={{
-          display: "flex",
-          border: "1px solid #eaeaea",
-        }}
-        flexDirection="column"
-      >
-        <Grid
-          display={"flex"}
-          direction={"row"}
-          flexWrap={"wrap"}
-          margin={"23.5px 0"}
-          justifyContent={"center"}
-        >
-          <>
-            <Tooltip title="Settings" placement="bottom">
-              <IconButton
-                sx={{
-                  backgroundColor: "#2C2799",
-                  borderRadius: "50%",
-                  color: "#fff",
-                  marginX: "5px",
-                  "&:hover": {
-                    backgroundColor: "#271e4f",
-                  },
-                }}
-                onClick={(event) => setAnchorElSettings(event.currentTarget)}
-              >
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElSettings}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-              open={Boolean(anchorElSettings)}
-              onClose={handleCloseSettingsMenu}
-            >
-              <MenuItem>
-                <FormControlLabel
-                  label="Transliteration"
-                  control={
-                    <Checkbox
-                      checked={enableTransliteration}
-                      onChange={() => {
-                        handleCloseSettingsMenu();
-                        setTransliteration(!enableTransliteration);
-                      }}
-                    />
-                  }
-                />
-              </MenuItem>
-              <MenuItem>
-                <FormControlLabel
-                  label="RTL Typing"
-                  control={
-                    <Checkbox
-                      checked={enableRTL_Typing}
-                      onChange={() => {
-                        handleCloseSettingsMenu();
-                        setRTL_Typing(!enableRTL_Typing);
-                      }}
-                    />
-                  }
-                />
-              </MenuItem>
-            </Menu>
-          </>
-
-          <Divider
-            orientation="vertical"
-            style={{
-              border: "1px solid lightgray",
-              height: "auto",
-              margin: "0 5px",
-            }}
-          />
-
-          <Tooltip title="Font Size" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={(event) => setAnchorElFont(event.currentTarget)}
-            >
-              <FormatSizeIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            sx={{ mt: "45px" }}
-            anchorEl={anchorElFont}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            open={Boolean(anchorElFont)}
-            onClose={() => setAnchorElFont(null)}
-          >
-            {fontMenu.map((item, index) => (
-              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
-                <CheckIcon
-                  style={{
-                    visibility: fontSize === item.size ? "" : "hidden",
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  textAlign="center"
-                  sx={{ fontSize: item.size, marginLeft: "10px" }}
-                >
-                  {item.label}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-
-          <FindAndReplace
-            sourceData={sourceText}
-            subtitleDataKey={"text"}
-            onReplacementDone={onReplacementDone}
+      <Box className={classes.rightPanelParentBox}>
+        <Grid className={classes.rightPanelParentGrid}>
+          <SettingsButtonComponent
+            setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
-            transliterationLang={taskData?.src_language}
+            setRTL_Typing={setRTL_Typing}
+            enableRTL_Typing={enableRTL_Typing}
+            setFontSize={setFontSize}
+            fontSize={fontSize}
+            saveTranscriptHandler={saveTranscriptHandler}
+            setOpenConfirmDialog={setOpenConfirmDialog}
           />
-
-          <Divider
-            orientation="vertical"
-            style={{
-              border: "1px solid lightgray",
-              height: "auto",
-              margin: "0 5px",
-            }}
-          />
-
-          <Tooltip title="Save" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={() => saveTranscriptHandler(false, true)}
-            >
-              <SaveIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Complete" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={() => setOpenConfirmDialog(true)}
-            >
-              <VerifiedIcon />
-            </IconButton>
-          </Tooltip>
         </Grid>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            borderTop: "1px solid #eaeaea",
-            overflowY: "scroll",
-            overflowX: "hidden",
-            height: window.innerHeight * 0.667,
-            backgroundColor: "black",
-            // color: "white",
-            marginTop: "5px",
-            width: "100%",
-            textAlign: "center",
-          }}
-          id={"subTitleContainer"}
-          className={"subTitleContainer"}
-        >
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {sourceText?.map((item, index) => {
             return (
               <Box id={`sub_${index}`}>
-                <Box
-                  display="flex"
-                  padding="10px 0 0 20px"
-                  width={"95%"}
-                  justifyContent="center"
-                  alignItems={"center"}
-                >
+                <Box className={classes.topBox}>
                   <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
@@ -470,7 +227,7 @@ const RightPanel = ({ currentIndex, player }) => {
 
                   <ButtonComponent
                     index={index}
-                    sourceText={sourceText}
+                    lastItem={index < sourceText.length - 1}
                     onMergeClick={onMergeClick}
                     onDelete={onDelete}
                     addNewSubtitleBox={addNewSubtitleBox}
@@ -488,11 +245,7 @@ const RightPanel = ({ currentIndex, player }) => {
                 </Box>
 
                 <CardContent
-                  sx={{
-                    padding: "5px 0",
-                    borderBottom: 2,
-                    alignItems: "center",
-                  }}
+                  className={classes.cardContent}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -519,11 +272,7 @@ const RightPanel = ({ currentIndex, player }) => {
                         }, 200)
                       }
                       renderComponent={(props) => (
-                        <div
-                          style={{
-                            position: "relative",
-                          }}
-                        >
+                        <div className={classes.relative}>
                           <textarea
                             className={`${classes.customTextarea} ${
                               currentIndex === index ? classes.boxHighlight : ""
@@ -539,32 +288,14 @@ const RightPanel = ({ currentIndex, player }) => {
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
                           />
-                          <span
-                            id="charNum"
-                            style={{
-                              background: "white",
-                              color: "green",
-                              fontWeight: 700,
-                              height: "20px",
-                              width: "30px",
-                              borderRadius: "50%",
-                              position: "absolute",
-                              bottom: "-10px",
-                              right: "-25px",
-                              textAlign: "center",
-                            }}
-                          >
+                          <span id="charNum" className={classes.wordCount}>
                             {targetLength(index)}
                           </span>
                         </div>
                       )}
                     />
                   ) : (
-                    <div
-                      style={{
-                        position: "relative",
-                      }}
-                    >
+                    <div className={classes.relative}>
                       <textarea
                         onChange={(event) => {
                           changeTranscriptHandler(event.target.value, index);
@@ -589,18 +320,8 @@ const RightPanel = ({ currentIndex, player }) => {
                       />
                       <span
                         id="charNum"
-                        style={{
-                          background: "white",
-                          color: "green",
-                          fontWeight: 700,
-                          height: "20px",
-                          width: "30px",
-                          borderRadius: "50%",
-                          position: "absolute",
-                          bottom: "-10px",
-                          right: "25px",
-                          textAlign: "center",
-                        }}
+                        className={classes.wordCount}
+                        style={{ right: "25px" }}
                       >
                         {targetLength(index)}
                       </span>
