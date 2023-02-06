@@ -622,6 +622,7 @@ const OrgLevelTaskList = () => {
             item.task_type,
             item.task_type_label,
             item.video_name,
+            item.description,
             moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
             item.src_language,
             item.src_language_label,
@@ -700,6 +701,36 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
           style: {
