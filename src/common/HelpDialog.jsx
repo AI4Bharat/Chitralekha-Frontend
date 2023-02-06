@@ -4,13 +4,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import headerStyle from "../styles/header";
 import { translate } from "../config/localisation";
-import PopularHelpResourcesDialog from "./PopularHelpResourcesDialog";
 
 const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
   const classes = headerStyle();
-  const [openDialog, setOpenDialog] = useState(false);
   const [Addnewvideo, setAddnewvideo] = useState(false);
   const [EditingReviewTasks, setEditingReviewTasks] = useState(false);
+  const [AssignTasks,setAssignTasks] = useState(false);
+  const [EditTranscription,setEditTranscription] = useState(false);
+  const[Workflow,setWorkflow] = useState(false)
 
   const handleaddnewvideo = () => {
     setAddnewvideo(true);
@@ -19,10 +20,24 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
   const handleEditingReviewTasks = () => {
     setEditingReviewTasks(true);
   };
+  const handleAssignTasks = () =>{
+    setAssignTasks(true)
+  }
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+  const handleEditTranscription = () =>{
+    setEditTranscription(true)
+  }
+
+  const handleWorkflow = () =>{
+    setWorkflow(true)
+  }
+const handleback = ()=>{
+    setWorkflow(true)
+    setEditTranscription(true) 
+    setAssignTasks(true)
+}
+
+
   return (
     <>
       <Dialog
@@ -34,6 +49,12 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
       >
         <Grid sx={{ width: "500px", p: 2 }}>
           <Grid sx={{ display: "flex" }}>
+          <IconButton
+              aria-label="close"
+              onClick={handleback}
+            >
+              <CloseIcon />
+            </IconButton>
             <Typography sx={{ ml: 25 }} variant="h4" align="center">
               Help
             </Typography>
@@ -45,7 +66,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
               <CloseIcon />
             </IconButton>
           </Grid>
-          {(Addnewvideo === false && EditingReviewTasks === false) && (
+          {(Addnewvideo === false && EditingReviewTasks === false && AssignTasks === false && EditTranscription === false && Workflow === false) && (
             <Grid sx={{ mt: 2, color: "black" }}>
               <Typography variant="subtitle2" sx={{ fontSize: "20px" }}>
                 {translate("label.Popularhelpresources")}
@@ -77,7 +98,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
               </Grid>
               <Grid
                 className={classes.HelpGridStyle}
-                onClick={handleaddnewvideo}
+                onClick={handleAssignTasks}
               >
                 <div className={classes.ArticleIconStyle}>
                   <ArticleOutlinedIcon color="primary" fontSize="medium" />
@@ -89,7 +110,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
               </Grid>
               <Grid
                 className={classes.HelpGridStyle}
-                onClick={handleaddnewvideo}
+                onClick={handleEditTranscription}
               >
                 <div className={classes.ArticleIconStyle}>
                   <ArticleOutlinedIcon color="primary" fontSize="medium" />
@@ -101,7 +122,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
               </Grid>
               <Grid
                 className={classes.HelpGridStyle}
-                onClick={handleaddnewvideo}
+                onClick={handleWorkflow}
               >
                 <div className={classes.ArticleIconStyle}>
                   <ArticleOutlinedIcon color="primary" fontSize="medium" />
@@ -136,15 +157,40 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
               some content here 2 ......................
             </Typography>
           </Grid>)}
+          {AssignTasks === true &&(
+         <Grid className={classes.HelpGridStyle}>
+            <div className={classes.ArticleIconStyle}>
+              <ArticleOutlinedIcon color="primary" fontSize="medium" />
+            </div>
+
+            <Typography variant="subtitle1" align="center">
+              some content here 3 ......................
+            </Typography>
+          </Grid>)}
+          {EditTranscription === true &&(
+         <Grid className={classes.HelpGridStyle}>
+            <div className={classes.ArticleIconStyle}>
+              <ArticleOutlinedIcon color="primary" fontSize="medium" />
+            </div>
+
+            <Typography variant="subtitle1" align="center">
+              some content here 4 ......................
+            </Typography>
+          </Grid>)}
+          {Workflow === true &&(
+         <Grid className={classes.HelpGridStyle}>
+            <div className={classes.ArticleIconStyle}>
+              <ArticleOutlinedIcon color="primary" fontSize="medium" />
+            </div>
+
+            <Typography variant="subtitle1" align="center">
+              some content here 5 ......................
+            </Typography>
+          </Grid>)}
         </>
         
       </Dialog>
-      {openDialog && (
-        <PopularHelpResourcesDialog
-          openDialog={openDialog}
-          handleCloseDialog={() => handleCloseDialog()}
-        />
-      )}
+    
     </>
   );
 };
