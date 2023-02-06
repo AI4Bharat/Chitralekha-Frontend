@@ -41,6 +41,7 @@ import ProjectDescription from "./ProjectDescription";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import Loader from "../../../common/Spinner";
 import ProjectReport from "./ProjectReport";
+import C from "../../../redux/constants";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -79,17 +80,36 @@ const Project = () => {
     dispatch(APITransport(userObj));
   };
 
-  useEffect(() => {
-    getProjectMembers();
-  }, []);
-
   const GetManagerName = () => {
     const apiObj = new FetchManagerNameAPI();
     dispatch(APITransport(apiObj));
   };
 
+  const getProjectnDetails = () => {
+    const apiObj = new FetchProjectDetailsAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  const getProjectVideoList = () => {
+    const apiObj = new FetchVideoListAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  const getOrganizatioUsersList = () => {
+    const userObj = new FetchOrganizatioUsersAPI(orgId);
+    dispatch(APITransport(userObj));
+  };
+
   useEffect(() => {
+    getProjectMembers();
     GetManagerName();
+    getProjectnDetails();
+    getProjectVideoList();
+    getOrganizatioUsersList();
+
+    return ()=> {
+      dispatch({type: C.CLEAR_PROJECT_VIDEOS, payload: []})
+    }
   }, []);
 
   const [value, setValue] = useState(0);
@@ -130,32 +150,8 @@ const Project = () => {
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
-  }, [projectInfo]);
-
-  useEffect(() => {
     setVideoList(projectvideoList);
-  }, [projectvideoList]);
-
-  const getProjectnDetails = () => {
-    const apiObj = new FetchProjectDetailsAPI(projectId);
-    dispatch(APITransport(apiObj));
-  };
-
-  const getProjectVideoList = () => {
-    const apiObj = new FetchVideoListAPI(projectId);
-    dispatch(APITransport(apiObj));
-  };
-
-  const getOrganizatioUsersList = () => {
-    const userObj = new FetchOrganizatioUsersAPI(orgId);
-    dispatch(APITransport(userObj));
-  };
-
-  useEffect(() => {
-    getProjectnDetails();
-    getProjectVideoList();
-    getOrganizatioUsersList();
-  }, []);
+  }, [projectInfo, projectvideoList]);
 
   const addNewMemberHandler = async () => {
     const selectedMemberIdArr = addmembers.map((el, i) => {
@@ -197,6 +193,7 @@ const Project = () => {
     setIsAudio(false);
     setCreateVideoDialog(false);
     setSnackbarInfo({
+
       open: true,
       message: "Your request is being processed.",
       variant: "info",

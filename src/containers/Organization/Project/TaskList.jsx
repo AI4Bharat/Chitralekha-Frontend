@@ -27,6 +27,7 @@ import Loader from "../../../common/Spinner";
 import PreviewDialog from "../../../common/PreviewDialog";
 import UserMappedByRole from "../../../utils/UserMappedByRole";
 import FilterList from "../../../common/FilterList";
+import C from "../../../redux/constants"
 import DeleteDialog from "../../../common/DeleteDialog";
 import ExportDialog from "../../../common/ExportDialog";
 
@@ -55,6 +56,7 @@ import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreview
 import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
+import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -118,6 +120,19 @@ const TaskList = () => {
       const apiObj = new FetchTaskListAPI(projectId);
       dispatch(APITransport(apiObj));
   };
+  useEffect(() => {
+    setLoading(true)
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
+
+    return () => {
+      dispatch({type: C.CLEAR_PROJECT_TASK_LIST, payload: []})
+    }
+  }, []);
+
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
 
   useEffect(() => {
     const statusData = selectedFilters?.status?.map((el) => el);
@@ -140,9 +155,18 @@ const TaskList = () => {
     FetchTaskList();
   }, []);
 
+
+
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
+  
+  useEffect(()=>{
+    if(taskList?.tasks_list){
+      setLoading(false)
+    }
+  }, [taskList])
 
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
@@ -1050,7 +1074,7 @@ const TaskList = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No tasks assigned to you",
+        noMatch: loading ? <Loader /> : "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",
