@@ -80,6 +80,21 @@ const CreatenewProject = () => {
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const disableBtn = () => {
+    if (!title || managerUsername.length <= 0) {
+      return true;
+    }
+
+    if (
+      defaultTask.some((item) => item.value.includes("TRANSLATION")) &&
+      translationLanguage.length <= 0
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   const getOrganizatioUsersList = () => {
     const projectrole = "PROJECT_MANAGER";
     const userObj = new FetchOrganizatioProjectManagersUserAPI(
@@ -121,7 +136,7 @@ const CreatenewProject = () => {
       );
       setDefaultTask(items);
     }
-    
+
     if (organizationDetails.default_target_languages) {
       const items = supportedLanguages.filter((item) =>
         organizationDetails.default_target_languages.includes(item.value)
@@ -367,7 +382,7 @@ const CreatenewProject = () => {
             variant="contained"
             style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
             onClick={() => handleCreateProject()}
-            disabled={title && managerUsername ? false : true}
+            disabled={disableBtn()}
           >
             Create Project{" "}
             {loading && (

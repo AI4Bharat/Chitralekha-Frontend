@@ -74,6 +74,21 @@ const CreateNewOrg = () => {
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const disableBtn = () => {
+    if (!title || !owner) {
+      return true;
+    }
+
+    if (
+      defaultTask.some((item) => item.value.includes("TRANSLATION")) &&
+      translationLanguage.length <= 0
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     const apiObj = new FetchOrgOwnersAPI();
     dispatch(APITransport(apiObj));
@@ -312,7 +327,7 @@ const CreateNewOrg = () => {
             variant="contained"
             style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
             onClick={() => handleCreateProject()}
-            disabled={title && owner ? false : true}
+            disabled={disableBtn()}
           >
             Create Organization{" "}
             {loading && (

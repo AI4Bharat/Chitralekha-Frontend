@@ -475,11 +475,12 @@ const VideoList = ({ data, removeVideo }) => {
             );
           })}
 
-        <Search />
+        {/* <Search /> */}
+        
       </Box>
     );
   };
-
+ 
   const options = {
     textLabels: {
       body: {
@@ -495,6 +496,7 @@ const VideoList = ({ data, removeVideo }) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
+     search: true,
     download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
@@ -504,7 +506,7 @@ const VideoList = ({ data, removeVideo }) => {
       ?.showSelectCheckbox
       ? "multiple"
       : "none",
-    search: false,
+    
     jumpToPage: true,
     customToolbar: renderToolBar,
     selectToolbarPlacement: "none",

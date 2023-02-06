@@ -200,9 +200,12 @@ const ProjectList = ({ data, removeProjectList }) => {
   ];
   const renderToolBar = () => {
     return (
-      <Box className={classes.searchStyle}>
+      <>
+      {/* <Box className={classes.searchStyle}>
         <Search />
-      </Box>
+      </Box> */}
+      </>
+      
     );
   };
 
@@ -227,7 +230,7 @@ const ProjectList = ({ data, removeProjectList }) => {
     filter: false,
     viewColumns: true,
     selectableRows: "none",
-    search: false,
+    search: true,
     jumpToPage: true,
     customToolbar: renderToolBar,
   };
