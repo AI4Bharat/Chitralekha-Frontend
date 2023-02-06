@@ -15,7 +15,7 @@ import {
 import React from "react";
 import Loader from "./Spinner";
 
-const headers = ["Task Type", "Target Language", "Video Name"];
+const headers = ["Video Id", "Task Type", "Target Language", "Video Name"];
 
 const DeleteDialog = ({
   openDialog,
@@ -73,8 +73,9 @@ const DeleteDialog = ({
                               height: "60px",
                             }}
                           >
+                            <TableCell>{item.video_id}</TableCell>
                             <TableCell>{item.task_type}</TableCell>
-                            <TableCell sx={{ width: "25%" }}>
+                            <TableCell>
                               {item.target_language}
                             </TableCell>
                             <TableCell>{item.video_name}</TableCell>
