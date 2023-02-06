@@ -6,9 +6,9 @@ import {
   Menu,
   Tooltip,
   Typography,
+  MenuItem
 } from "@mui/material";
 import React, { memo, useState } from "react";
-import { MenuItem } from "react-contextmenu";
 import FindAndReplace from "../../../../common/FindAndReplace";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
@@ -107,6 +107,40 @@ const SettingsButtonComponent = ({
 
       <Menu
         sx={{ mt: "45px" }}
+        id="menu-appbar"
+        anchorEl={anchorElFont}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        open={Boolean(anchorElFont)}
+        onClose={() => setAnchorElFont(null)}
+      >
+        {fontMenu.map((item, index) => (
+          <MenuItem key={index} onClick={(event) => setFontSize(item.size)}>
+            <CheckIcon
+              style={{
+                visibility: fontSize === item.size ? "" : "hidden",
+              }}
+            />
+            <Typography
+              variant="body2"
+              textAlign="center"
+              sx={{ fontSize: item.size, marginLeft: "10px" }}
+            >
+              {item.label}
+            </Typography>
+          </MenuItem>
+        ))}
+      </Menu>
+
+      {/* <Menu
+        sx={{ mt: "45px" }}
         anchorEl={anchorElFont}
         anchorOrigin={anchorOrigin}
         keepMounted
@@ -135,7 +169,7 @@ const SettingsButtonComponent = ({
             </Typography>
           </MenuItem>
         ))}
-      </Menu>
+      </Menu> */}
 
       <FindAndReplace subtitleDataKey={"text"} />
 
