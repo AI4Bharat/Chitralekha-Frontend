@@ -256,62 +256,67 @@ const VideoLanding = () => {
               setCurrentTime={setCurrentTime}
               setPlaying={setPlaying}
             />
-          </Box>
 
-          {currentSubs && (
-            <div
-              className={classes.subtitlePanel}
-              style={{
-                bottom: fullscreen ? "10%" : fullscreenVideo ? "15%" : "",
-                margin: fullscreenVideo ? "auto" : "",
-              }}
-            >
-              {taskDetails?.task_type?.includes("TRANSCRIPTION") && focusing ? (
-                <div className={classes.operate} onClick={onSplitClick}>
-                  Split Subtitle
-                </div>
-              ) : null}
-
-              <ReactTextareaAutosize
-                className={`${classes.playerTextarea} ${
-                  darkAndLightMode === "dark"
-                    ? classes.darkMode
-                    : classes.lightMode
-                }`}
-                value={
-                  taskDetails?.task_type?.includes("TRANSCRIPTION")
-                    ? currentSubs.text
-                    : currentSubs.target_text
-                }
+            {currentSubs && (
+              <div
+                className={classes.subtitlePanel}
                 style={{
-                  fontSize: fontSize,
-                }}
-                spellCheck={false}
-                onChange={onChange}
-                onClick={onClick}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                onKeyDown={onFocus}
-              />
-            </div>
-          )}
-
-          {!fullscreen && (
-            <Box>
-              <Button
-                className={classes.fullscreenVideoBtn}
-                aria-label="fullscreen"
-                onClick={() => handleFullscreenVideo()}
-                variant="contained"
-                style={{
-                  bottom: fullscreenVideo ? "28%" : "",
-                  right: fullscreenVideo ? "20%" : "",
+                  bottom: fullscreen || fullscreenVideo ? "10%" : "",
+                  margin: fullscreenVideo ? "auto" : "",
                 }}
               >
-                {fullscreenVideo ? <FullscreenExitIcon /> : <FullscreenIcon />}
-              </Button>
-            </Box>
-          )}
+                {taskDetails?.task_type?.includes("TRANSCRIPTION") &&
+                focusing ? (
+                  <div className={classes.operate} onClick={onSplitClick}>
+                    Split Subtitle
+                  </div>
+                ) : null}
+
+                <ReactTextareaAutosize
+                  className={`${classes.playerTextarea} ${
+                    darkAndLightMode === "dark"
+                      ? classes.darkMode
+                      : classes.lightMode
+                  }`}
+                  value={
+                    taskDetails?.task_type?.includes("TRANSCRIPTION")
+                      ? currentSubs.text
+                      : currentSubs.target_text
+                  }
+                  style={{
+                    fontSize: fontSize,
+                  }}
+                  spellCheck={false}
+                  onChange={onChange}
+                  onClick={onClick}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                  onKeyDown={onFocus}
+                />
+              </div>
+            )}
+
+            {!fullscreen && (
+              <Box>
+                <Button
+                  className={classes.fullscreenVideoBtn}
+                  aria-label="fullscreen"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                  style={{
+                    bottom: fullscreenVideo ? "4%" : "",
+                    right: fullscreenVideo ? "18%" : "",
+                  }}
+                >
+                  {fullscreenVideo ? (
+                    <FullscreenExitIcon />
+                  ) : (
+                    <FullscreenIcon />
+                  )}
+                </Button>
+              </Box>
+            )}
+          </Box>
         </Grid>
 
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
