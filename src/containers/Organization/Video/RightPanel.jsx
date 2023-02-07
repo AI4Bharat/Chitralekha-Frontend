@@ -18,6 +18,8 @@ import {
   onSplit,
   onSubtitleDelete,
   timeChange,
+  onUndoAction,
+  onRedoAction,
 } from "../../../utils/subtitleUtils";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
@@ -49,6 +51,8 @@ const RightPanel = ({ currentIndex, player }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
 
   useEffect(() => {
     if (subtitles?.length === 0) {
@@ -73,10 +77,17 @@ const RightPanel = ({ currentIndex, player }) => {
   }, [currentIndex]);
 
   const onMergeClick = useCallback((index) => {
+    const selectionStart = sourceText[index].text.length;
     const sub = onMerge(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    setUndoStack([...undoStack, {
+      type: "merge",
+      index: index,
+      selectionStart: selectionStart,
+    }]);
+    setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
-  }, []);
+  }, [undoStack]);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -89,10 +100,15 @@ const RightPanel = ({ currentIndex, player }) => {
 
   const onSplitClick = useCallback(() => {
     const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
-
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    setUndoStack([...undoStack, {
+      type: "split",
+      index: currentIndexToSplitTextBlock,
+      selectionStart: selectionStart,
+    }]);
+    setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
-  }, [currentIndexToSplitTextBlock, selectionStart]);
+  }, [currentIndexToSplitTextBlock, selectionStart, undoStack]);
 
   const changeTranscriptHandler = useCallback(
     (text, index) => {
@@ -181,14 +197,46 @@ const RightPanel = ({ currentIndex, player }) => {
   }, []);
 
   const onDelete = useCallback((index) => {
+    let data = subtitles[index];
     const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+    setUndoStack([...undoStack, {
+      type: "delete",
+      index: index,
+      data: data,
+    }]);
+    setRedoStack([]);
+  }, [undoStack]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+    setUndoStack([...undoStack, {
+      type: "add",
+      index: index,
+    }]);
+    setRedoStack([]);
+  }, [undoStack]);
+
+  const onUndo = useCallback(() => {
+    if (undoStack.length > 0) {
+      const lastAction = undoStack[undoStack.length - 1];
+      const sub = onUndoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setUndoStack(undoStack.slice(0, undoStack.length - 1));
+      setRedoStack([...redoStack, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const onRedo = useCallback(() => {
+    if (redoStack.length > 0) {
+      const lastAction = redoStack[redoStack.length - 1];
+      const sub = onRedoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setRedoStack(redoStack.slice(0, redoStack.length - 1));
+      setUndoStack([...undoStack, lastAction]);
+    }
+  }, [undoStack, redoStack]);
 
   const targetLength = (index) => {
     if (sourceText[index]?.text.trim() !== "")
@@ -210,6 +258,10 @@ const RightPanel = ({ currentIndex, player }) => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            undoStack={undoStack}
+            redoStack={redoStack}
           />
         </Grid>
 
