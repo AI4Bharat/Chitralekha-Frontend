@@ -247,3 +247,48 @@ export const playbackSpeed = [
     speed: 2,
   },
 ];
+
+export const onUndoAction = (lastAction) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  if (lastAction.type === "merge") {
+    console.log(lastAction, "lastAction");
+    return (
+      onSplit(
+        lastAction.index,
+        lastAction.selectionStart >= subtitles[lastAction.index].text.length
+          ? subtitles[lastAction.index].text.length / 2
+          : lastAction.selectionStart
+      ) ?? subtitles
+    );
+  } else if (lastAction.type === "split") {
+    return onMerge(lastAction.index) ?? subtitles;
+  } else if (lastAction.type === "delete") {
+    const copySub = copySubs(subtitles);
+    copySub.splice(lastAction.index, 0, lastAction.data);
+    return copySub;
+  } else if (lastAction.type === "add") {
+    return onSubtitleDelete(lastAction.index+1);
+  }
+  return subtitles;
+};
+
+export const onRedoAction = (lastAction) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  if (lastAction.type === "merge") {
+    return onMerge(lastAction.index) ?? subtitles;
+  } else if (lastAction.type === "split") {
+    return (
+      onSplit(
+        lastAction.index,
+        lastAction.selectionStart >= subtitles[lastAction.index].text.length
+          ? subtitles[lastAction.index].text.length / 2
+          : lastAction.selectionStart
+      ) ?? subtitles
+    );
+  } else if (lastAction.type === "delete") {
+    return onSubtitleDelete(lastAction.index);
+  } else if (lastAction.type === "add") {
+    return addSubtitleBox(lastAction.index);
+  }
+  return subtitles;
+};
