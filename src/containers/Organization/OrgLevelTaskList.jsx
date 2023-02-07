@@ -388,7 +388,7 @@ const OrgLevelTaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[15]?.View && (
+      tableData.rowData[16]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
@@ -407,7 +407,7 @@ const OrgLevelTaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Export && (
+      tableData.rowData[16]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
@@ -425,7 +425,7 @@ const OrgLevelTaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Edit && (
+      tableData.rowData[16]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
             disabled={!tableData.rowData[11]}
@@ -450,7 +450,7 @@ const OrgLevelTaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Delete && (
+      tableData.rowData[16]?.Delete && (
         <Tooltip title="Delete">
           <IconButton
             onClick={() => handledeletetask(tableData.rowData[0], false)}
@@ -465,7 +465,7 @@ const OrgLevelTaskList = () => {
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Update && (
+      tableData.rowData[16]?.Update && (
         <Tooltip title="Edit Task Details">
           <IconButton
             color="primary"
@@ -484,7 +484,7 @@ const OrgLevelTaskList = () => {
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Preview && (
+      tableData.rowData[16]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
             color="primary"
@@ -633,6 +633,7 @@ const OrgLevelTaskList = () => {
             `${item.user?.first_name} ${item.user?.last_name}`,
             item.project_name,
             item.video,
+            item.description,
             item.buttons,
           ];
         })
@@ -723,6 +724,7 @@ const OrgLevelTaskList = () => {
         },
       },
     },
+    
     {
       name: "created_at",
       label: "Created At",
@@ -934,6 +936,36 @@ const OrgLevelTaskList = () => {
       label: "",
       options: {
         display: "excluded",
+      },
+    },
+    {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: "exclude",
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       },
     },
     {
