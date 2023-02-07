@@ -573,6 +573,12 @@ const OrgLevelTaskList = () => {
       filterResult = lngResult;
     }
     taskList.filteredData = filterResult;
+
+    setSelectedBulkTaskId("");
+    setCurrentSelectedTask("");
+    setRows([]);
+    setShowEditTaskBtn(false);
+
     setfilterData(filterResult);
     return taskList.tasks_list;
   };
@@ -1009,7 +1015,7 @@ const OrgLevelTaskList = () => {
   ];
 
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = taskList.tasks_list.filter((_item, index) => {
+    const temp = filterData.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
@@ -1220,7 +1226,7 @@ const OrgLevelTaskList = () => {
 
   const handleBulkTaskDownload = async () => {
     setOpen(false);
-
+    console.log(selectedBulkTaskid,'selectedBulkTaskid');
     const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
 
     const res = await fetch(apiObj.apiEndPoint(), {
