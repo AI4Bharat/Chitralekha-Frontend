@@ -1,4 +1,14 @@
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
 import React from "react";
 import CustomButton from "./Button";
 
@@ -14,6 +24,8 @@ const ExportDialog = ({
   exportTranslation,
   transcriptionOptions,
   translationOptions,
+  isBulkTaskDownload,
+  handleBulkTaskDownload,
 }) => {
   return (
     <Dialog
@@ -27,10 +39,7 @@ const ExportDialog = ({
 
       <DialogContent>
         <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
-          {taskType === "TRANSCRIPTION_EDIT" ||
-          taskType === "TRANSCRIPTION_REVIEW"
-            ? "Transcription"
-            : "Translation"}
+          Select Export Type
         </DialogContentText>
         {taskType === "TRANSCRIPTION_EDIT" ||
         taskType === "TRANSCRIPTION_REVIEW" ? (
@@ -80,8 +89,16 @@ const ExportDialog = ({
             onClick={handleClose}
             label="Cancel"
           />
-          {taskType === "TRANSCRIPTION_EDIT" ||
-          taskType === "TRANSCRIPTION_REVIEW" ? (
+          {isBulkTaskDownload ? (
+            <CustomButton
+              buttonVariant="contained"
+              onClick={handleBulkTaskDownload}
+              label="Export"
+              style={{ borderRadius: "8px" }}
+              autoFocus
+            />
+          ) : taskType === "TRANSCRIPTION_EDIT" ||
+            taskType === "TRANSCRIPTION_REVIEW" ? (
             <CustomButton
               buttonVariant="contained"
               onClick={handleTranscriptExport}

@@ -15,6 +15,7 @@ const VideoLandingStyle = makeStyles({
     margin: "auto",
     display: "flex",
     flexDirection: "column",
+    position: "relative",
   },
 
   videoNameBox: {
@@ -39,16 +40,12 @@ const VideoLandingStyle = makeStyles({
   },
 
   subtitlePanel: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
     position: "absolute",
     zIndex: "20",
     left: "0",
     right: "0",
-    bottom: "23%",
-    width: "63%",
+    bottom: "18%",
+    width: "94%",
     padding: "0 30px",
     userSelect: "none",
     pointerEvents: "none",
@@ -94,8 +91,8 @@ const VideoLandingStyle = makeStyles({
 
   fullscreenVideoBtn: {
     position: "absolute",
-    bottom: "18%",
-    right: "35%",
+    bottom: "12%",
+    right: "3%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
