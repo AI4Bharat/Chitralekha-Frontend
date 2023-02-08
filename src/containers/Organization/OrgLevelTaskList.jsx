@@ -575,7 +575,6 @@ const OrgLevelTaskList = () => {
     taskList.filteredData = filterResult;
 
     setSelectedBulkTaskId("");
-    setCurrentSelectedTask("");
     setRows([]);
     setShowEditTaskBtn(false);
 
@@ -1226,7 +1225,7 @@ const OrgLevelTaskList = () => {
 
   const handleBulkTaskDownload = async () => {
     setOpen(false);
-    console.log(selectedBulkTaskid,'selectedBulkTaskid');
+    console.log(selectedBulkTaskid, "selectedBulkTaskid");
     const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
 
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -1275,7 +1274,7 @@ const OrgLevelTaskList = () => {
         variant: "error",
       });
     }
-  }
+  };
 
   return (
     <>

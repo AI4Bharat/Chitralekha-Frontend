@@ -558,7 +558,6 @@ const TaskList = () => {
     taskList.filteredData = filterResult;
 
     setSelectedBulkTaskId("");
-    setCurrentSelectedTask("");
     setRows([]);
     setShowEditTaskBtn(false);
 

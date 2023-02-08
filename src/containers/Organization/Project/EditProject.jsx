@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -64,7 +64,10 @@ const EditProject = () => {
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
-  const [priority, setPriority] = useState({});
+  const [priority, setPriority] = useState({
+    label: null,
+    value: null,
+  });
   const [taskDescription, setTaskDescription] = useState("");
 
   useEffect(() => {
@@ -222,6 +225,32 @@ const EditProject = () => {
   };
 
   defaultTask.sort((a, b) => a.id - b.id);
+
+  const getDisableOption = useCallback(
+    (data) => {
+      if (data.value === "TRANSCRIPTION_EDIT") {
+        return false;
+      }
+
+      if (
+        data.value === "TRANSCRIPTION_REVIEW" ||
+        data.value === "TRANSLATION_EDIT"
+      ) {
+        if (defaultTask.some((item) => item.value === "TRANSCRIPTION_EDIT")) {
+          return false;
+        }
+        return true;
+      }
+
+      if (data.value === "TRANSLATION_REVIEW") {
+        if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
+          return false;
+        }
+        return true;
+      }
+    },
+    [defaultTask]
+  );
 
   return (
     <>
@@ -403,7 +432,11 @@ const EditProject = () => {
                   }}
                 >
                   {bulkTaskTypes.map((item, index) => (
-                    <MenuItem key={index} value={item}>
+                    <MenuItem
+                      key={index}
+                      value={item}
+                      disabled={getDisableOption(item)}
+                    >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
                     </MenuItem>
@@ -479,7 +512,7 @@ const EditProject = () => {
                 <Select
                   fullWidth
                   labelId="select-priority"
-                  label="Select Priority"
+                  label="Select Task Priority"
                   value={priority}
                   onChange={(event) => setPriority(event.target.value)}
                   style={{ zIndex: "0" }}
@@ -494,7 +527,9 @@ const EditProject = () => {
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        <Chip key={selected.value} label={selected.label} />
+                        {selected.value && (
+                          <Chip key={selected.value} label={selected.label} />
+                        )}
                       </Box>
                     );
                   }}

@@ -53,6 +53,7 @@ const VideoLanding = () => {
   const [inputItemCursor, setInputItemCursor] = useState(0);
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
+  const [subtitlePlacement, setSubtitlePlacement] = useState("bottom");
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -249,6 +250,8 @@ const VideoLanding = () => {
               darkAndLightMode={darkAndLightMode}
               setDarkAndLightMode={setDarkAndLightMode}
               player={player}
+              subtitlePlacement={subtitlePlacement}
+              setSubtitlePlacement={setSubtitlePlacement}
             />
 
             <VideoPanel
@@ -263,6 +266,7 @@ const VideoLanding = () => {
                 style={{
                   bottom: fullscreen || fullscreenVideo ? "10%" : "",
                   margin: fullscreenVideo ? "auto" : "",
+                  top: subtitlePlacement === "top" ? "15%" : "",
                 }}
               >
                 {taskDetails?.task_type?.includes("TRANSCRIPTION") &&
