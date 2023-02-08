@@ -108,7 +108,6 @@ const OrgLevelTaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
-
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
@@ -1020,7 +1019,7 @@ const OrgLevelTaskList = () => {
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
 
     const taskIds = temp.map((item) => item.id);

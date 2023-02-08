@@ -424,7 +424,7 @@ const VideoList = ({ data, removeVideo }) => {
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
 
     setRows(temp2);
