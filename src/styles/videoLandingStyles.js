@@ -40,10 +40,6 @@ const VideoLandingStyle = makeStyles({
   },
 
   subtitlePanel: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
     position: "absolute",
     zIndex: "20",
     left: "0",

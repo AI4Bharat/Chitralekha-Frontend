@@ -248,6 +248,11 @@ export const playbackSpeed = [
   },
 ];
 
+export const placementMenu = [
+  { label: "Top", mode: "top" },
+  { label: "Bottom", mode: "bottom" },
+];
+
 export const onUndoAction = (lastAction) => {
   const subtitles = store.getState().commonReducer.subtitles;
   if (lastAction.type === "merge") {
