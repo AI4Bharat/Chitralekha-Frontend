@@ -999,9 +999,8 @@ const TaskList = () => {
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
-
     setCurrentSelectedTask(temp);
     setRows(temp2);
     setShowEditTaskBtn(!!temp.length);
