@@ -4,7 +4,7 @@ const configs = {
     ? process.env.REACT_APP_APIGW_BASE_URL
     : "https://backend.chitralekha.ai4bharat.org"
     // : "https://backend.dev.chitralekha.ai4bharat.org"
-    // : "http://127.0.0.1:8000",
+    /// : "http://127.0.0.1:8000",
 };
 
 export default configs;
