@@ -77,7 +77,7 @@ const RightPanel = ({ currentIndex, player }) => {
   }, [currentIndex]);
 
   const onMergeClick = useCallback((index) => {
-    const selectionStart = sourceText[index].text.length;
+    const selectionStart = subtitles[index].text.length;
     const sub = onMerge(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     setUndoStack([...undoStack, {
@@ -87,7 +87,7 @@ const RightPanel = ({ currentIndex, player }) => {
     }]);
     setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
-  }, [undoStack]);
+  }, [undoStack, subtitles]);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -197,7 +197,7 @@ const RightPanel = ({ currentIndex, player }) => {
   }, []);
 
   const onDelete = useCallback((index) => {
-    let data = subtitles[index];
+    const data = subtitles[index];
     const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     setUndoStack([...undoStack, {
@@ -206,7 +206,7 @@ const RightPanel = ({ currentIndex, player }) => {
       data: data,
     }]);
     setRedoStack([]);
-  }, [undoStack]);
+  }, [undoStack, subtitles]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
