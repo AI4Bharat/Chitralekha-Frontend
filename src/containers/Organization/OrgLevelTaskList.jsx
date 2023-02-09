@@ -67,6 +67,7 @@ import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
 import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
 import ExportDialog from "../../common/ExportDialog";
+import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
@@ -107,11 +108,12 @@ const OrgLevelTaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
-
   const [filterData, setfilterData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
+  const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
+  const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -127,24 +129,22 @@ const OrgLevelTaskList = () => {
 
   const FetchTaskList = () => {
     setLoading(true);
-      const apiObj = new FetchOrgTaskList(orgId);
-      dispatch(APITransport(apiObj));
+    const apiObj = new FetchOrgTaskList(orgId);
+    dispatch(APITransport(apiObj));
   };
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
 
-    
     const transcriptExportObj = new FetchTranscriptExportTypesAPI();
     dispatch(APITransport(transcriptExportObj));
 
     const translationExportObj = new FetchTranslationExportTypesAPI();
     dispatch(APITransport(translationExportObj));
-    
+
     return () => {
-        dispatch({type: C.CLEAR_ORG_TASK_LIST, payload: []})
-    }
-    
+      dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
+    };
   }, []);
 
   const supportedLanguages = useSelector(
@@ -161,7 +161,7 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     if (orgId) {
-        FetchTaskList();
+      FetchTaskList();
     }
   }, [orgId]);
 
@@ -173,12 +173,12 @@ const OrgLevelTaskList = () => {
   const taskList = useSelector((state) => state.getOrgTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
 
-  useEffect(()=>{
-      if(taskList.tasks_list){
-          setLoading(false);
-      }
-}, [taskList])
-  
+  useEffect(() => {
+    if (taskList.tasks_list) {
+      setLoading(false);
+    }
+  }, [taskList]);
+
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
@@ -193,6 +193,7 @@ const OrgLevelTaskList = () => {
     setOpen(true);
     setTaskdata(id);
     setTasktype(tasttype);
+    setIsBulkTaskDownload(false);
   };
 
   const handleShowFilter = (event) => {
@@ -571,6 +572,11 @@ const OrgLevelTaskList = () => {
       filterResult = lngResult;
     }
     taskList.filteredData = filterResult;
+
+    setSelectedBulkTaskId("");
+    setRows([]);
+    setShowEditTaskBtn(false);
+
     setfilterData(filterResult);
     return taskList.tasks_list;
   };
@@ -724,7 +730,7 @@ const OrgLevelTaskList = () => {
         },
       },
     },
-    
+
     {
       name: "created_at",
       label: "Created At",
@@ -1007,15 +1013,19 @@ const OrgLevelTaskList = () => {
   ];
 
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = taskList.tasks_list.filter((_item, index) => {
+    const temp = filterData.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
 
+    const taskIds = temp.map((item) => item.id);
+    let temp3 = taskIds.join();
+
+    setSelectedBulkTaskId(temp3);
     setCurrentSelectedTask(temp);
     setRows(temp2);
     setShowEditTaskBtn(!!temp.length);
@@ -1066,14 +1076,18 @@ const OrgLevelTaskList = () => {
       title: "Bulk Task Delete",
       icon: <DeleteIcon />,
       onClick: () => {},
-      style: { backgroundColor: "red", marginRight: "auto" },
+      style: { backgroundColor: "red" },
     },
-    // {
-    //   title: "Bulk Task Dowload",
-    //   icon: <FileDownloadIcon />,
-    //   onClick: () => {},
-    //   style: { marginRight: "auto" },
-    // },
+    {
+      title: "Bulk Task Dowload",
+      icon: <FileDownloadIcon />,
+      onClick: () => {
+        setOpen(true);
+        setTasktype("TRANSLATION_EDIT");
+        setIsBulkTaskDownload(true);
+      },
+      style: { marginRight: "auto" },
+    },
   ];
 
   const renderToolBar = () => {
@@ -1208,6 +1222,59 @@ const OrgLevelTaskList = () => {
     }
   };
 
+  const handleBulkTaskDownload = async () => {
+    setOpen(false);
+    console.log(selectedBulkTaskid, "selectedBulkTaskid");
+    const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    if (res.ok) {
+      const resp = await res.blob();
+      const newBlob = new Blob([resp], { type: "application/zip" });
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`
+      );
+
+      document.body.appendChild(link);
+
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setLoading(false);
+    } else {
+      const resp = await res.json();
+
+      setLoading(false);
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
   return (
     <>
       <Grid>{renderSnackBar()}</Grid>
@@ -1233,7 +1300,7 @@ const OrgLevelTaskList = () => {
           id={currentTaskDetails[0]}
         />
       )}
-      
+
       {open && (
         <ExportDialog
           open={open}
@@ -1247,6 +1314,8 @@ const OrgLevelTaskList = () => {
           exportTranslation={exportTranslation}
           transcriptionOptions={transcriptExportTypes}
           translationOptions={translationExportTypes}
+          isBulkTaskDownload={isBulkTaskDownload}
+          handleBulkTaskDownload={handleBulkTaskDownload}
         />
       )}
 
