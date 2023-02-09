@@ -107,9 +107,9 @@ const Project = () => {
     getProjectVideoList();
     getOrganizatioUsersList();
 
-    return ()=> {
-      dispatch({type: C.CLEAR_PROJECT_VIDEOS, payload: []})
-    }
+    return () => {
+      dispatch({ type: C.CLEAR_PROJECT_VIDEOS, payload: [] });
+    };
   }, []);
 
   const [value, setValue] = useState(0);
@@ -187,14 +187,14 @@ const Project = () => {
   const addNewVideoHandler = async () => {
     const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
     const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
-
+    const create = true;
     setSnackbarInfo({
       open: true,
       message: "Your request is being processed.",
       variant: "info",
     });
 
-    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc);
+    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc,create);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
@@ -210,7 +210,6 @@ const Project = () => {
         message: "Video added successfully",
         variant: "success",
       });
-      
     } else {
       setSnackbarInfo({
         open: true,
