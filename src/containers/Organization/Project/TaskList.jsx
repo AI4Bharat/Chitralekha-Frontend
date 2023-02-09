@@ -57,6 +57,7 @@ import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/Fe
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
+import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -374,6 +375,28 @@ const TaskList = () => {
     }
   };
 
+  const generateTranslationCall = async (id) => {
+    const apiObj = new GenerateTranslationOutputAPI(id);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      navigate(`/task/${id}/translate`);
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  }
+
   const renderViewButton = (tableData) => {
     return (
       tableData.rowData[16]?.View && (
@@ -424,7 +447,7 @@ const TaskList = () => {
               ) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
               } else {
-                navigate(`/task/${tableData.rowData[0]}/translate`);
+                generateTranslationCall(tableData.rowData[0]);
               }
             }}
             color="primary"
