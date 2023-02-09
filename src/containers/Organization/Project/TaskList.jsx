@@ -377,27 +377,31 @@ const TaskList = () => {
     }
   };
 
-  const generateTranslationCall = async (id) => {
-    const apiObj = new GenerateTranslationOutputAPI(id);
+  const generateTranslationCall = async (id, taskStatus) => {
+    if (taskStatus === "SELECTED_SOURCE") {
+      const apiObj = new GenerateTranslationOutputAPI(id);
 
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      navigate(`/task/${id}/translate`);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
       });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        navigate(`/task/${id}/translate`);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } else {
+      navigate(`/task/${id}/translate`);
     }
-  }
+  };
 
   const renderViewButton = (tableData) => {
     return (
@@ -449,7 +453,10 @@ const TaskList = () => {
               ) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
               } else {
-                generateTranslationCall(tableData.rowData[0]);
+                generateTranslationCall(
+                  tableData.rowData[0],
+                  tableData.rowData[17]
+                );
               }
             }}
             color="primary"
@@ -652,6 +659,7 @@ const TaskList = () => {
             item.video,
             item.description,
             item.buttons,
+            item.status,
           ];
         })
       : [];
@@ -1017,6 +1025,14 @@ const TaskList = () => {
             </Box>
           );
         },
+      },
+    },
+    {
+      name: "status",
+      label: "",
+      options: {
+        display: "excluded",
+        viewColumns: false,
       },
     },
   ];
