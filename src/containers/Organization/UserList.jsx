@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 //Themes
-import { ThemeProvider, Tooltip,IconButton, } from "@mui/material";
+import { ThemeProvider, Tooltip,IconButton,Box } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 import PreviewIcon from '@mui/icons-material/Preview';
 
@@ -11,18 +11,24 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import MUIDataTable from "mui-datatables";
 import Search from "../../common/Search";
 import Loader from "../../common/Spinner";
+import DatasetStyle from "../../styles/Dataset";
 
 
 const UserList = ({ data }) => {
   const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const classes = DatasetStyle();
 
   const pageSearch = () => {
     return data.filter((el) => {
       if (SearchProject == "") {
         return el;
       } else if (
-        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      }else if (
+        el.last_name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (el.email?.toLowerCase().includes(SearchProject?.toLowerCase())) {
@@ -39,7 +45,7 @@ const UserList = ({ data }) => {
     data && data.length > 0
       ? pageSearch().map((item, i) => {
       return [
-        item.username,
+        `${item.first_name} ${item.last_name}`,
         item.email,
         item.role,
         <Link
@@ -57,8 +63,8 @@ const UserList = ({ data }) => {
 
   const columns = [
     {
-      name: "username",
-      label: "Username",
+      name: "name",
+      label: "Name",
       options: {
         filter: false,
         sort: false,
@@ -106,6 +112,15 @@ const UserList = ({ data }) => {
     },
   ];
 
+  const renderToolBar = () => {
+    return (
+
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -121,19 +136,19 @@ const UserList = ({ data }) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
     selectableRows: "none",
-    search: false,
+    search: true,
     jumpToPage: true,
+   // customToolbar: renderToolBar,
   };
 
   return (
     <>
-    <Search/>
     <ThemeProvider theme={tableTheme}>
       <MUIDataTable data={result} columns={columns} options={options} />
     </ThemeProvider>

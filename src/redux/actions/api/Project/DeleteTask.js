@@ -3,11 +3,12 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class DeleteTaskAPI extends API {
-  constructor(taskId,data,timeout = 2000) {
+  constructor(taskId, flag, data,timeout = 2000) {
     super("DELETE", timeout, false);
     this.type = C.DELETE_TASk;
     this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${taskId}/`;
+    this.flag = flag;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${taskId}/delete_task/?flag=${flag}`;
   }
 
   processResponse(res) {

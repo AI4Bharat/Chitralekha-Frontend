@@ -22,7 +22,7 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 
 const ConfirmForgetPassword = () => {
   const classes = LoginStyle();
-  const { key, token } = useParams();
+  const { uid, token } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -66,7 +66,7 @@ const ConfirmForgetPassword = () => {
   }, [apiStatus]);
 
   const handleSubmit = () => {
-    let obj = new ConfirmForgotPasswordAPI(key, token, values.confirmPassword);
+    let obj = new ConfirmForgotPasswordAPI(uid, token, values.confirmPassword);
     dispatch(APITransport(obj));
   };
 

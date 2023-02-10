@@ -1,4 +1,4 @@
-import themeDefault from './theme';
+import themeDefault from "./theme";
 import { createTheme } from "@mui/material/styles";
 
 const tableTheme = createTheme({
@@ -34,6 +34,16 @@ const tableTheme = createTheme({
         },
       },
     },
+    MUIDataTableToolbar: {
+      styleOverrides: {
+        left: {
+          flex: 0,
+        },
+        root:{
+          height:"30px"
+        }
+      },
+    },
     MUIDataTableFilter: {
       styleOverrides: {
         root: {
@@ -54,11 +64,26 @@ const tableTheme = createTheme({
       },
     },
     MUIDataTableSelectCell: {
-      styleOverrides:{
+      styleOverrides: {
         checkboxRoot: {
-            margin: "auto"
-        }
-      }
+          margin: "auto",
+        },
+        fixedLeft: {
+          position: "static",
+        },
+      },
+    },
+    MUIDataTableSearch: {
+      styleOverrides: {
+        searchText: {
+         width:"400px"
+         
+        },
+        searchIcon:{
+          marginRight:"-6px"
+        },
+        
+      },
     },
   },
 });

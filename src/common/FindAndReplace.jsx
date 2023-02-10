@@ -7,6 +7,9 @@ import ChevronRight from '@mui/icons-material/ChevronRight';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import { IndicTransliterate } from '@ai4bharat/indic-transliterate';
 import FindReplaceIcon from '@mui/icons-material/FindReplace';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSubtitles } from '../redux/actions/Common';
+import C from "../redux/constants";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -14,13 +17,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const FindAndReplace = (props) => {
     const classes = ProjectStyle();
+    const dispatch = useDispatch();
+
     const {
-        sourceData,
         subtitleDataKey,
-        onReplacementDone,
-        enableTransliteration,
-        transliterationLang
     } = { ...props }
+
+    const transliterationLang = useSelector((state) => state.getTaskDetails.data?.src_language)
+    const sourceData = useSelector((state) => state.commonReducer.subtitles);
 
     const [subtitlesData, setSubtitlesData] = useState();
     const [showFindReplaceModel, setShowFindReplaceModel] = useState(false);
@@ -29,12 +33,15 @@ const FindAndReplace = (props) => {
     const [foundIndices, setFoundIndices] = useState([]);
     const [currentFound, setCurrentFound] = useState();
 
+    const onReplacementDone = (updatedSource) => {
+        dispatch(setSubtitles(updatedSource, C.SUBTITLES));
+      };
+
     useEffect(() => {
         setSubtitlesData(sourceData);
     }, [sourceData, subtitleDataKey])
 
     const resetComponentValue = () => {
-        // setSubtitlesData();
         setFindValue("");
         setReplaceValue("");
         setFoundIndices([]);
@@ -50,7 +57,7 @@ const FindAndReplace = (props) => {
     }
 
     const onFindClick = () => {
-        const textToFind = findValue.toLowerCase()
+        const textToFind = findValue.toLowerCase().trim()
         const indexListInDataOfTextOccurence = [];
         subtitlesData.map((item, index) => {
             if (item[subtitleDataKey].toLowerCase().includes(textToFind)) {
@@ -133,7 +140,8 @@ const FindAndReplace = (props) => {
                 onClose={handleCloseModel}
                 aria-labelledby="responsive-dialog-title"
                 maxWidth={"lg"}
-            >
+                PaperProps={{ style: { borderRadius: "10px" } }}
+                >
                 <Grid
                     display="flex"
                     justifyContent={"space-between"}

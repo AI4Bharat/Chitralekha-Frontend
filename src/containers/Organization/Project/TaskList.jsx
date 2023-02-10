@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { roles } from "../../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -14,33 +14,31 @@ import {
   ThemeProvider,
   Box,
   Grid,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Divider,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
   Tooltip,
   IconButton,
   Button,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../../common/Button";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import Search from "../../../common/Search";
+import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
+import ViewTaskDialog from "../../../common/ViewTaskDialog";
+import Loader from "../../../common/Spinner";
+import PreviewDialog from "../../../common/PreviewDialog";
+import UserMappedByRole from "../../../utils/UserMappedByRole";
+import FilterList from "../../../common/FilterList";
+import C from "../../../redux/constants";
+import DeleteDialog from "../../../common/DeleteDialog";
+import ExportDialog from "../../../common/ExportDialog";
+
+//Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PreviewIcon from "@mui/icons-material/Preview";
-import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../../common/ViewTaskDialog";
-import Loader from "../../../common/Spinner";
-import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
-import PreviewDialog from "../../../common/PreviewDialog";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -55,16 +53,19 @@ import CompareTranscriptionSource from "../../../redux/actions/api/Project/Compa
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
 import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
 import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
-import DeleteDialog from "../../../common/DeleteDialog";
-
-const Transcription = ["srt", "vtt", "txt", "ytt"];
-const Translation = ["srt", "vtt", "txt"];
+import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptExportTypes";
+import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
+import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
+import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
+import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
+import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -88,30 +89,89 @@ const TaskList = () => {
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
-   const [Previewdata, setPreviewdata] = useState("");
+  const [Previewdata, setPreviewdata] = useState("");
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const [deleteResponse, setDeleteResponse] = useState([]);
+  const [task_type, setTask_type] = useState();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedFilters, setsSelectedFilters] = useState({
+    status: [],
+    taskType: [],
+    SrcLanguage: [],
+    TgtLanguage: [],
+  });
+  const [filterData, setfilterData] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterTaskType, setFilterTaskType] = useState(" ");
+  const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
+  const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
+  const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
 
+  const popoverOpen = Boolean(anchorEl);
+  const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const orgId = userData?.organization?.id;
+
+  const transcriptExportTypes = useSelector(
+    (state) => state.getTranscriptExportTypes.data.export_types
+  );
+  const translationExportTypes = useSelector(
+    (state) => state.getTranslationExportTypes.data.export_types
+  );
 
   const FetchTaskList = () => {
     const apiObj = new FetchTaskListAPI(projectId);
     dispatch(APITransport(apiObj));
   };
+  useEffect(() => {
+    setLoading(true);
+    const langObj = new FetchSupportedLanguagesAPI();
+    dispatch(APITransport(langObj));
+
+    return () => {
+      dispatch({ type: C.CLEAR_PROJECT_TASK_LIST, payload: [] });
+    };
+  }, []);
+
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
+
+  useEffect(() => {
+    const statusData = selectedFilters?.status?.map((el) => el);
+    setFilterStatus(statusData.toString());
+
+    const taskTypeData = selectedFilters?.taskType?.map((el) => el);
+    setFilterTaskType(taskTypeData.toString());
+  }, [selectedFilters.status, selectedFilters?.taskType]);
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
+
+    const transcriptExportObj = new FetchTranscriptExportTypesAPI();
+    dispatch(APITransport(transcriptExportObj));
+
+    const translationExportObj = new FetchTranslationExportTypesAPI();
+    dispatch(APITransport(translationExportObj));
+
     FetchTaskList();
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
-  // const PreviewTask = useSelector((state) => state.getPreviewTask.data);
 
+  useEffect(() => {
+    if (taskList?.tasks_list) {
+      setLoading(false);
+    }
+  }, [taskList]);
 
-
+  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
+    setAnchorEl(null);
   };
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -122,7 +182,13 @@ const TaskList = () => {
     setOpen(true);
     setTaskdata(id);
     setTasktype(tasttype);
+    setIsBulkTaskDownload(false);
   };
+
+  const handleShowFilter = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   const handleok = async () => {
     const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
     //dispatch(APITransport(apiObj));
@@ -134,7 +200,9 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
-      const task = taskList.filter((task) => task.id === taskdata)[0];
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === taskdata
+      )[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
@@ -177,11 +245,26 @@ const TaskList = () => {
     });
     const resp = await res.blob();
     if (res.ok) {
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === taskdata
+      )[0];
       const newBlob = new Blob([resp]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+      // link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${exportTranslation}`
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -240,14 +323,40 @@ const TaskList = () => {
     });
   };
 
-  const handledeletetask = async (id) => {
-    setOpenDialog(true);
+  const handledeletetask = async (id, flag) => {
     setDeleteTaskid(id);
+    setLoading(true);
+    setIsBulkTaskDelete(false);
+
+    const apiObj = new DeleteTaskAPI(id, flag);
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "DELETE",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      setOpenDialog(false);
+      setLoading(false);
+      FetchTaskList();
+    } else {
+      setOpenDialog(true);
+      setDeleteMsg(resp.message);
+      setDeleteResponse(resp.response);
+      setLoading(false);
+    }
   };
 
-  const handlePreviewTask = async (id,Task_type,Targetlanguage) => {
+  const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
+    setPreviewdata({});
     setOpenPreviewDialog(true);
-    const taskObj = new FetchpreviewTaskAPI(id,Task_type,Targetlanguage);
+    setTask_type(Task_type);
+    const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
     //dispatch(APITransport(taskObj));
     const res = await fetch(taskObj.apiEndPoint(), {
       method: "GET",
@@ -268,48 +377,42 @@ const TaskList = () => {
     }
   };
 
-  const handleokDialog = async () => {
-    setLoading(true);
-    const apiObj = new DeleteTaskAPI(deleteTaskid);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
+  const generateTranslationCall = async (id, taskStatus) => {
+    if (taskStatus === "SELECTED_SOURCE") {
+      const apiObj = new GenerateTranslationOutputAPI(id);
+
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
       });
-      setLoading(false);
-      setOpenDialog(false);
-      FetchTaskList();
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        navigate(`/task/${id}/translate`);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
     } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
+      navigate(`/task/${id}/translate`);
     }
   };
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "SELECTED_SOURCE" &&
-      tableData.rowData[1] !== "TRANSCRIPTION_REVIEW" &&
-      tableData.rowData[1] !== "TRANSLATION_REVIEW" && (
+      tableData.rowData[16]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <PreviewIcon />
@@ -321,15 +424,13 @@ const TaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[9] === "COMPLETE" && (
+      tableData.rowData[16]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -341,18 +442,10 @@ const TaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      (((tableData.rowData[9] === "SELECTED_SOURCE" ||
-        tableData.rowData[9] === "INPROGRESS") &&
-        (tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-          tableData.rowData[1] === "TRANSLATION_EDIT")) ||
-        (tableData.rowData[9] !== "COMPLETE" &&
-          (tableData.rowData[1] === "TRANSCRIPTION_REVIEW" ||
-            tableData.rowData[1] === "TRANSLATION_REVIEW"))) && (
+      tableData.rowData[16]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={
-              !tableData.rowData[11]
-            }
+            disabled={!tableData.rowData[11]}
             onClick={() => {
               if (
                 tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
@@ -360,7 +453,10 @@ const TaskList = () => {
               ) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
               } else {
-                navigate(`/task/${tableData.rowData[0]}/translate`);
+                generateTranslationCall(
+                  tableData.rowData[0],
+                  tableData.rowData[17]
+                );
               }
             }}
             color="primary"
@@ -374,50 +470,138 @@ const TaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      <Tooltip title="Delete">
-        <IconButton
-          onClick={() => handledeletetask(tableData.rowData[0])}
-          disabled={
-            userData.role !== "PROJECT_MANAGER" ? !tableData.rowData[11] : false
-          }
-          color="error"
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>
+      tableData.rowData[16]?.Delete && (
+        <Tooltip title="Delete">
+          <IconButton
+            onClick={() => handledeletetask(tableData.rowData[0], false)}
+            color="error"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
-  const renderEditTaskButton = (tableData) => {
+  const renderUpdateTaskButton = (tableData) => {
     return (
-      <Tooltip title="Edit Task Details">
-        <IconButton
-          onClick={() => {
-            setSelectedTaskId(tableData.rowData[0]);
-            setOpenEditTaskDialog(true);
-            setIsBulk(false);
-          }}
-        >
-          <AppRegistrationIcon />
-        </IconButton>
-      </Tooltip>
+      tableData.rowData[16]?.Update && (
+        <Tooltip title="Edit Task Details">
+          <IconButton
+            color="primary"
+            onClick={() => {
+              setSelectedTaskId(tableData.rowData[0]);
+              setOpenEditTaskDialog(true);
+              setIsBulk(false);
+            }}
+          >
+            <AppRegistrationIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[9] === "COMPLETE" && (
-      <Tooltip title="Preview">
-        <IconButton onClick={() => handlePreviewTask(tableData.rowData[11],tableData.rowData[1],tableData.rowData[7])}>
-          <VisibilityIcon />
-        </IconButton>
-      </Tooltip>)
+      tableData.rowData[16]?.Preview && (
+        <Tooltip title="Preview">
+          <IconButton
+            color="primary"
+            onClick={() =>
+              handlePreviewTask(
+                tableData.rowData[14],
+                tableData.rowData[1],
+                tableData.rowData[7]
+              )
+            }
+          >
+            <VisibilityIcon />
+          </IconButton>
+        </Tooltip>
+      )
     );
   };
 
-  const pageSearch = () => {
-    return taskList.filter((el) => {
-      if (SearchProject == "") {
+  useEffect(() => {
+    setfilterData(taskList.tasks_list);
+  }, [taskList.tasks_list, SearchProject]);
+
+  const FilterData = () => {
+    let statusFilter = [];
+    let filterResult = [];
+    let lngResult = [];
+    let TaskTypefilter = [];
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("status") &&
+      selectedFilters.status.length > 0
+    ) {
+      statusFilter = taskList.tasks_list.filter((value) => {
+        if (selectedFilters.status.includes(value.status_label)) {
+          return value;
+        }
+      });
+    } else {
+      statusFilter = taskList.tasks_list;
+    }
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("taskType") &&
+      selectedFilters.taskType.length > 0
+    ) {
+      TaskTypefilter = statusFilter.filter((value) => {
+        if (selectedFilters.taskType.includes(value.task_type_label)) {
+          return value;
+        }
+      });
+    } else {
+      TaskTypefilter = statusFilter;
+    }
+
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("SrcLanguage") &&
+      selectedFilters.SrcLanguage.length > 0
+    ) {
+      lngResult = TaskTypefilter.filter((value) => {
+        if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
+          return value;
+        }
+      });
+    } else {
+      lngResult = TaskTypefilter;
+    }
+    if (
+      selectedFilters &&
+      selectedFilters.hasOwnProperty("TgtLanguage") &&
+      selectedFilters.TgtLanguage.length > 0
+    ) {
+      filterResult = lngResult.filter((value) => {
+        if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
+          return value;
+        }
+      });
+    } else {
+      filterResult = lngResult;
+    }
+    taskList.filteredData = filterResult;
+
+    setSelectedBulkTaskId("");
+    setRows([]);
+    setShowEditTaskBtn(false);
+
+    setfilterData(filterResult);
+    return taskList.tasks_list;
+  };
+
+  useMemo(() => {
+    FilterData();
+  }, [filterStatus, filterTaskType, selectedFilters, SearchProject]);
+
+  useEffect(() => {
+    const pageSearchData = filterData?.filter((el) => {
+      if (SearchProject === "") {
         return el;
       } else if (
         el.id.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
@@ -432,24 +616,31 @@ const TaskList = () => {
       ) {
         return el;
       } else if (
-        el.src_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.src_language_label
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
-        el.target_language?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.target_language_label
+          ?.toLowerCase()
+          .includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
-        el.status?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       }
     });
-  };
+    setfilterData(pageSearchData);
+  }, [SearchProject]);
 
   const result =
-    taskList && taskList.length > 0
-      ? pageSearch().map((item, i) => {
+    taskList.tasks_list && taskList.tasks_list.length > 0
+      ? filterData?.map((item, i) => {
+          const status =
+            item.status_label && UserMappedByRole(item.status_label)?.element;
           return [
             item.id,
             item.task_type,
@@ -460,14 +651,19 @@ const TaskList = () => {
             item.src_language_label,
             item.target_language,
             item.target_language_label,
-            item.status,
+            status ? status : item.status_label,
             item.user,
-            item.video,
             item.is_active,
+            `${item.user?.first_name} ${item.user?.last_name}`,
+            item.project_name,
+            item.video,
+            item.description,
+            item.buttons,
+            item.status,
           ];
         })
       : [];
-console.log(userData.role,'userData.role');
+
   const columns = [
     {
       name: "id",
@@ -488,14 +684,15 @@ console.log(userData.role,'userData.role');
       },
     },
     {
-      name: "task_type_label",
+      name: "task_type",
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
-      name: "task_type",
+      name: "task_type_label",
       label: "Task Type",
       options: {
         filter: false,
@@ -514,10 +711,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -546,10 +740,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -565,6 +756,7 @@ console.log(userData.role,'userData.role');
         filter: false,
         sort: false,
         align: "center",
+        display: false,
         setCellHeaderProps: () => ({
           style: {
             height: "30px",
@@ -578,10 +770,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -591,14 +780,15 @@ console.log(userData.role,'userData.role');
       },
     },
     {
-      name: "src_language_label",
+      name: "src_language",
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
-      name: "src_language",
+      name: "src_language_label",
       label: "Source Language",
       options: {
         filter: false,
@@ -617,10 +807,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -630,14 +817,15 @@ console.log(userData.role,'userData.role');
       },
     },
     {
-      name: "target_language_label",
+      name: "target_language",
       label: "",
       options: {
         display: "excluded",
+        filter: true,
       },
     },
     {
-      name: "target_language",
+      name: "target_language_label",
       label: "Target Language",
       options: {
         filter: false,
@@ -656,10 +844,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -669,10 +854,10 @@ console.log(userData.role,'userData.role');
       },
     },
     {
-      name: "status",
+      name: "status_label",
       label: "Status",
       options: {
-        filter: false,
+        filter: true,
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
@@ -688,10 +873,7 @@ console.log(userData.role,'userData.role');
           return (
             <Box
               style={{
-                color:
-                  tableMeta.rowData[11]
-                    ? ""
-                    : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -715,6 +897,102 @@ console.log(userData.role,'userData.role');
       },
     },
     {
+      name: "username",
+      label: "Assignee",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[11] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "project_name",
+      label: "Project Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        display: "excluded",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[11] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "buttons",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: "exclude",
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -733,50 +1011,208 @@ console.log(userData.role,'userData.role');
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {userData.role === "PROJECT_MANAGER" &&
-                renderEditTaskButton(tableMeta)}
+              {renderUpdateTaskButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderViewButton(tableMeta)}
-              {/* If task is assigned to project manager himself then show him the edit btn */}
-              {userData.role === "PROJECT_MANAGER" &&
-                userData.id === tableMeta.rowData[10].id &&
-                renderEditButton(tableMeta)}
+              {renderViewButton(tableMeta)}
 
-              {roles.filter((role) => role.value === userData?.role)[0]
-                ?.taskAction && renderEditButton(tableMeta)}
+              {renderEditButton(tableMeta)}
 
               {renderExportButton(tableMeta)}
+
               {renderPreviewButton(tableMeta)}
-              {userData.role === "PROJECT_MANAGER" &&
-                renderDeleteButton(tableMeta)}
-              
+
+              {renderDeleteButton(tableMeta)}
             </Box>
           );
         },
       },
     },
+    {
+      name: "status",
+      label: "",
+      options: {
+        display: "excluded",
+        viewColumns: false,
+      },
+    },
   ];
 
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = taskList.filter((_item, index) => {
+    const temp = filterData.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
 
+    const taskIds = temp.map((item) => item.id);
+    let temp3 = taskIds.join();
+
+    setSelectedBulkTaskId(temp3);
     setCurrentSelectedTask(temp);
     setRows(temp2);
     setShowEditTaskBtn(!!temp.length);
   };
 
+  const handleBulkDelete = async (taskIds, flag) => {
+    setLoading(true);
+    setIsBulkTaskDelete(true);
+
+    const apiObj = new DeleteBulkTaskAPI(flag, taskIds);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "DELETE",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+      setOpenDialog(false);
+      setLoading(false);
+      FetchTaskList();
+    } else {
+      setDeleteTaskid(resp.task_ids);
+      setOpenDialog(true);
+      setDeleteMsg(resp.message);
+      setDeleteResponse(resp.error_report);
+      setLoading(false);
+    }
+  };
+
+  const handleBulkTaskDownload = async () => {
+    setOpen(false);
+
+    const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    if (res.ok) {
+      const resp = await res.blob();
+      const newBlob = new Blob([resp], { type: "application/zip" });
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`
+      );
+
+      document.body.appendChild(link);
+
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setLoading(false);
+    } else {
+      const resp = await res.json();
+
+      setLoading(false);
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
+  const toolBarActions = [
+    {
+      title: "Bulk Task Update",
+      icon: <AppRegistrationIcon />,
+      onClick: () => {
+        setOpenEditTaskDialog(true);
+        setIsBulk(true);
+      },
+    },
+    {
+      title: "Bulk Task Delete",
+      icon: <DeleteIcon />,
+      onClick: () => {
+        const taskIds = currentSelectedTasks.map((item) => item.id);
+        handleBulkDelete(taskIds, false);
+      },
+      style: { backgroundColor: "red" },
+    },
+    {
+      title: "Bulk Task Dowload",
+      icon: <FileDownloadIcon />,
+      onClick: () => {
+        setOpen(true);
+        setTasktype("TRANSLATION_EDIT");
+        setIsBulkTaskDownload(true);
+      },
+      style: { marginRight: "auto" },
+    },
+  ];
+
+  const renderToolBar = () => {
+    return (
+      <>
+        <Button style={{ minWidth: "25px" }} onClick={handleShowFilter}>
+          <Tooltip title={"Filter Table"}>
+            <FilterListIcon sx={{ color: "#515A5A" }} />
+          </Tooltip>
+        </Button>
+
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          className={classes.searchStyle}
+        >
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn &&
+            toolBarActions.map((item) => {
+              return (
+                <Tooltip title={item.title} placement="bottom">
+                  <IconButton
+                    className={classes.createTaskBtn}
+                    onClick={item.onClick}
+                    style={item.style}
+                  >
+                    {item.icon}
+                  </IconButton>
+                </Tooltip>
+              );
+            })}
+
+          {/* <Search /> */}
+        </Box>
+      </>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No tasks assigned to you",
+        noMatch: loading ? <Loader /> : "No tasks assigned to you",
       },
       toolbar: {
         search: "Search",
@@ -788,7 +1224,7 @@ console.log(userData.role,'userData.role');
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
@@ -797,10 +1233,11 @@ console.log(userData.role,'userData.role');
       ?.showSelectCheckbox
       ? "multiple"
       : "none",
-    search: false,
+    search: true,
     jumpToPage: true,
     selectToolbarPlacement: "none",
     rowsSelected: rows,
+    customToolbar: renderToolBar,
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
     },
@@ -817,90 +1254,6 @@ console.log(userData.role,'userData.role');
         variant={snackbar.variant}
         message={snackbar.message}
       />
-    );
-  };
-
-  const renderDialog = () => {
-    return (
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-            align="center"
-            sx={{ mb: 2, color: "black", fontSize: "25px" }}
-          >
-            Export Subtitle
-          </DialogContentText>
-          <Divider />
-
-          <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
-            {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW"
-              ? "Transcription"
-              : "Translation"}
-          </DialogContentText>
-          {tasktype === "TRANSCRIPTION_EDIT" ||
-          tasktype === "TRANSCRIPTION_REVIEW" ? (
-            <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
-              <FormControl>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                >
-                  {Transcription?.map((item, index) => (
-                    <FormControlLabel
-                      value={item}
-                      control={<Radio />}
-                      checked={exportTranscription === item}
-                      label={item}
-                      onClick={handleClickRadioButton}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </DialogActions>
-          ) : (
-            <DialogActions sx={{ mr: 17, mb: 1, mt: 1 }}>
-              <FormControl>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                >
-                  {Translation?.map((item, index) => (
-                    <FormControlLabel
-                      value={item}
-                      control={<Radio />}
-                      checked={exportTranslation === item}
-                      label={item}
-                      onClick={handleClickRadioButtonTranslation}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </DialogActions>
-          )}
-          <DialogActions>
-            <CustomButton onClick={handleClose} label="Cancel" />
-            {tasktype === "TRANSCRIPTION_EDIT" ||
-            tasktype === "TRANSCRIPTION_REVIEW" ? (
-              <CustomButton onClick={handleok} label="Export" autoFocus />
-            ) : (
-              <CustomButton
-                onClick={handleokTranslation}
-                label="Export"
-                autoFocus
-              />
-            )}
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
     );
   };
 
@@ -936,6 +1289,7 @@ console.log(userData.role,'userData.role');
         message: resp?.message,
         variant: "success",
       });
+      FetchTaskList();
       setLoading(false);
       setOpenEditTaskDialog(false);
     } else {
@@ -951,27 +1305,6 @@ console.log(userData.role,'userData.role');
 
   return (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        {roles.filter((role) => role.value === userData?.role)[0]
-          ?.permittedToCreateTask &&
-          showEditTaskBtn && (
-            <Button
-              variant="contained"
-              className={classes.createTaskBtn}
-              onClick={() => {
-                setOpenEditTaskDialog(true);
-                setIsBulk(true);
-              }}
-            >
-              Edit Tasks
-            </Button>
-          )}
-
-        <Box sx={{ marginLeft: "auto" }}>
-          <Search />
-        </Box>
-      </Box>
-
       <Grid>{renderSnackBar()}</Grid>
 
       <ThemeProvider theme={tableTheme}>
@@ -989,22 +1322,40 @@ console.log(userData.role,'userData.role');
               getTranscriptionSourceComparison(id, source, isSubmitCall);
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
-          // submitHandler={({id, source}) => {
-
-          // }}
           id={currentTaskDetails[0]}
         />
       )}
-      {renderDialog()}
+
+      {open && (
+        <ExportDialog
+          open={open}
+          handleClose={handleClose}
+          taskType={tasktype}
+          handleTranscriptRadioButton={handleClickRadioButton}
+          handleTranslationRadioButton={handleClickRadioButtonTranslation}
+          handleTranscriptExport={handleok}
+          handleTranslationExport={handleokTranslation}
+          exportTranscription={exportTranscription}
+          exportTranslation={exportTranslation}
+          transcriptionOptions={transcriptExportTypes}
+          translationOptions={translationExportTypes}
+          isBulkTaskDownload={isBulkTaskDownload}
+          handleBulkTaskDownload={handleBulkTaskDownload}
+        />
+      )}
 
       {openDialog && (
         <DeleteDialog
           openDialog={openDialog}
           handleClose={() => handleCloseDialog()}
-          submit={() => handleokDialog()}
+          submit={() => {
+            isBulkTaskDelete
+              ? handleBulkDelete(deleteTaskid, true)
+              : handledeletetask(deleteTaskid, true);
+          }}
           loading={loading}
-          message={`Are you sure, you want to delete this task? The associated
-          transcript/translation will be deleted.`}
+          message={deleteMsg}
+          deleteResponse={deleteResponse}
         />
       )}
 
@@ -1025,7 +1376,18 @@ console.log(userData.role,'userData.role');
           openPreviewDialog={openPreviewDialog}
           handleClose={() => handleCloseDialog()}
           data={Previewdata}
-         
+          task_type={task_type}
+        />
+      )}
+      {popoverOpen && (
+        <FilterList
+          id={filterId}
+          open={popoverOpen}
+          anchorEl={anchorEl}
+          handleClose={handleClose}
+          updateFilters={setsSelectedFilters}
+          currentFilters={selectedFilters}
+          taskList={taskList}
         />
       )}
     </>

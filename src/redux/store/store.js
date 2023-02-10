@@ -5,6 +5,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { persistCombineReducers } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import combineReducers from "../reducers";
+import C from "../constants";
 
 const middlewares = [];
 const config = {
@@ -14,7 +15,7 @@ const config = {
 
 const appReducer = persistCombineReducers(config, combineReducers);
 const rootReducer = (state, action) => {
-  if (action.type === "LOGOUT") {
+  if (action.type === C.LOGOUT) {
     state = undefined;
   }
 

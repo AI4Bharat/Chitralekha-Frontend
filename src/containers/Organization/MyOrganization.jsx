@@ -36,6 +36,7 @@ import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOr
 import CustomizedSnackbars from "../../common/Snackbar";
 import Loader from "../../common/Spinner";
 import OrganizationSettings from "./OrganizationSettings";
+import OrganizationReport from "./OrganizationReport";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -220,7 +221,13 @@ const MyOrganization = () => {
             aria-label="basic tabs example"
           >
             <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.canAddMembers && (
+            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />)}
+
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.orgSettingVisible && (  <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />)}
 
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.orgSettingVisible && (
@@ -284,10 +291,26 @@ const MyOrganization = () => {
             </div>
           </Box>
         </TabPanel>
-
         <TabPanel
           value={value}
           index={2}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <OrganizationReport  />
+            </div>
+          </Box>
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <OrganizationSettings />

@@ -91,6 +91,7 @@ const CreateTaskDialog = ({
       video_ids: Array.isArray(videoDetails)
         ? videoDetails.map((item) => item.id)
         : [videoDetails.id],
+      is_single_task: !isBulk,
     };
     createTaskHandler(obj);
   };
@@ -101,15 +102,13 @@ const CreateTaskDialog = ({
     if (!isBulk) {
       setShowAllowedTaskList(true);
 
-      if (event.target.value === "TRANSCRIPTION") {
-        const allowedTaskObj = new FetchAllowedTasksAPI(
-          Array.isArray(videoDetails)
-            ? videoDetails.map((item) => item.id)
-            : videoDetails.id,
-          event.target.value
-        );
-        dispatch(APITransport(allowedTaskObj));
-      }
+      const allowedTaskObj = new FetchAllowedTasksAPI(
+        Array.isArray(videoDetails)
+          ? videoDetails.map((item) => item.id)
+          : videoDetails.id,
+        event.target.value
+      );
+      dispatch(APITransport(allowedTaskObj));
     }
   };
 
@@ -145,7 +144,19 @@ const CreateTaskDialog = ({
       />
     );
   };
-console.log(apiStatus.progress,'apiStatus.progress');
+
+  const disableBtn = () => {
+    if (!taskType || !allowedTaskType) {
+      return true;
+    }
+
+    if (taskType.includes("TRANSLATION") && language.length <= 0) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -153,6 +164,7 @@ console.log(apiStatus.progress,'apiStatus.progress');
       onClose={handleUserDialogClose}
       close
       maxWidth={"md"}
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4">Create New Task</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
@@ -189,7 +201,8 @@ console.log(apiStatus.progress,'apiStatus.progress');
             </FormControl>
           </Box>
 
-          {taskType.includes("TRANSLATION") && (
+          {(taskType.includes("TRANSLATION") ||
+            taskType.includes("VOICEOVER")) && (
             <Box width={"100%"} sx={{ mt: 3 }}>
               <FormControl fullWidth>
                 <InputLabel id="select-lang">
@@ -254,7 +267,7 @@ console.log(apiStatus.progress,'apiStatus.progress');
               >
                 {projectMembers.map((item, index) => (
                   <MenuItem key={index} value={item}>
-                    {item.username}
+                    {`${item.first_name} ${item.last_name} (${item.email})`}
                   </MenuItem>
                 ))}
               </Select>
@@ -313,11 +326,11 @@ console.log(apiStatus.progress,'apiStatus.progress');
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={!taskType}
+          disabled={disableBtn()}
           onClick={() => submitHandler()}
         >
           Create Task{" "}
-          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary"/>}
+          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
         </Button>
       </DialogActions>
     </Dialog>

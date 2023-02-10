@@ -15,6 +15,7 @@ import {
   DialogContentText,
   Tooltip,
   IconButton,
+  Box,
 } from "@mui/material";
 import CustomButton from "../../common/Button";
 import MUIDataTable from "mui-datatables";
@@ -26,10 +27,11 @@ import Search from "../../common/Search";
 import moment from "moment/moment";
 import Loader from "../../common/Spinner";
 import DeleteDialog from "../../common/DeleteDialog";
+import DatasetStyle from "../../styles/Dataset";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
-
+  const classes = DatasetStyle();
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -196,6 +198,16 @@ const ProjectList = ({ data, removeProjectList }) => {
       },
     },
   ];
+  const renderToolBar = () => {
+    return (
+      <>
+      {/* <Box className={classes.searchStyle}>
+        <Search />
+      </Box> */}
+      </>
+      
+    );
+  };
 
   const options = {
     textLabels: {
@@ -212,14 +224,15 @@ const ProjectList = ({ data, removeProjectList }) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
     selectableRows: "none",
-    search: false,
+    search: true,
     jumpToPage: true,
+    customToolbar: renderToolBar,
   };
 
   const renderSnackBar = () => {
@@ -238,7 +251,6 @@ const ProjectList = ({ data, removeProjectList }) => {
 
   return (
     <>
-      <Search />
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>

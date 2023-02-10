@@ -1,146 +1,95 @@
 // TranslationRightPanel
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
-import {
-  Button,
-  CardContent,
-  Grid,
-  Typography,
-  Switch,
-  Tooltip,
-  IconButton,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { CardContent, Grid } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import ProjectStyle from "../../../styles/ProjectStyle";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
-import FindAndReplace from "../../../common/FindAndReplace";
 import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
-import { getUpdatedTime } from "../../../utils/utils";
 import TimeBoxes from "../../../common/TimeBoxes";
-import SplitscreenIcon from "@mui/icons-material/Splitscreen";
-import AddIcon from "@mui/icons-material/Add";
-import MergeIcon from "@mui/icons-material/Merge";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import Sub from "../../../utils/Sub";
-import DT from "duration-time-conversion";
-import FormatSizeIcon from "@mui/icons-material/FormatSize";
-import SaveIcon from "@mui/icons-material/Save";
 import ConfirmDialog from "../../../common/ConfirmDialog";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import CheckIcon from "@mui/icons-material/Check";
+import {
+  addSubtitleBox,
+  onMerge,
+  onSubtitleDelete,
+  timeChange,
+  onUndoAction,
+  onRedoAction,
+} from "../../../utils/subtitleUtils";
+import ButtonComponent from "./components/ButtonComponent";
+import { memo } from "react";
+import SettingsButtonComponent from "./components/SettingsButtonComponent";
+import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
 const TranslationRightPanel = ({ currentIndex, player }) => {
   const { taskId } = useParams();
-  const classes = ProjectStyle();
+  const classes = VideoLandingStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
-  const [showPopOver, setShowPopOver] = useState(false);
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
-  const [selectionStart, setSelectionStart] = useState();
-  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
-    useState();
   const [enableTransliteration, setTransliteration] = useState(true);
-  const [anchorEle, setAnchorEle] = useState(null);
-  const [anchorPos, setAnchorPos] = useState({
-    positionX: 0,
-    positionY: 0,
-  });
+  const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [anchorElFont, setAnchorElFont] = useState(null);
   const [fontSize, setFontSize] = useState("large");
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
 
-  const newSub = useCallback((item) => new Sub(item), []);
+  const onDelete = useCallback((index) => {
+    const data = subtitles[index];
+    const sub = onSubtitleDelete(index); 
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    setUndoStack([...undoStack, {
+      type: "delete",
+      index: index,
+      data: data,
+    }]);
+    setRedoStack([]);
+  }, [undoStack, subtitles]);
 
-  const formatSub = useCallback(
-    (sub) => {
-      if (Array.isArray(sub)) {
-        return sub.map((item) => newSub(item));
-      }
-      return newSub(sub);
-    },
-    [newSub]
-  );
-
-  const hasSub = useCallback((sub) => subtitles.indexOf(sub), [subtitles]);
-
-  const copySubs = useCallback(
-    () => formatSub(subtitles),
-    [subtitles, formatSub]
-  );
-
-  const onDelete = (index) => {
-    const copySub = copySubs();
-    copySub.splice(index, 1);
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
-  };
-
-  const onMergeClick = (item, index) => {
-    const existingsourceData = copySubs();
-
-    existingsourceData.splice(
-      index,
-      2,
-      newSub({
-        start_time: existingsourceData[index].start_time,
-        end_time: existingsourceData[index + 1].end_time,
-        text: `${existingsourceData[index].text} ${
-          existingsourceData[index + 1].text
-        }`,
-        target_text: `${existingsourceData[index].target_text} ${
-          existingsourceData[index + 1].target_text
-        }`,
-      })
-    );
-
-    dispatch(setSubtitles(existingsourceData, C.SUBTITLES));
-    setSourceText(existingsourceData);
-    saveTranscriptHandler(false, true, existingsourceData);
-  };
-
-  const onMouseUp = (e, blockIdx) => {
-    if (e.target.selectionStart < e.target.value.length) {
-      e.preventDefault();
-      setAnchorPos({
-        positionX: e.clientX,
-        positionY: e.clientY,
-      });
-      setShowPopOver(true);
-      setAnchorEle(e.currentTarget);
-      setCurrentIndexToSplitTextBlock(blockIdx);
-      setSelectionStart(e.target.selectionStart);
-    }
-  };
+  const onMergeClick = useCallback((index) => {
+    const selectionStart = subtitles[index].text.length;
+    const targetSelectionStart = subtitles[index].target_text.length;
+    const sub = onMerge(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
+    setUndoStack([...undoStack, {
+      type: "merge",
+      index: index,
+      selectionStart: selectionStart,
+      targetSelectionStart: targetSelectionStart,
+    }]);
+    setRedoStack([]);
+  }, [undoStack, subtitles]);
 
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-  const onReplacementDone = (updatedSource) => {
-    setSourceText(updatedSource);
-    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
-    saveTranscriptHandler(false, true);
-  };
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById(
+      "subtitleContainerTranslation"
+    );
+    subtitleScrollEle
+      .querySelector(`#sub_${currentIndex}`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentIndex]);
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
@@ -156,7 +105,6 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    setSourceText(arr);
     saveTranscriptHandler(false, false);
   };
 
@@ -223,250 +171,82 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
     );
   };
 
-  const onSplitClick = () => {
-    const copySub = [...sourceText];
+  const handleTimeChange = useCallback((value, index, type, time) => {
+    const sub = timeChange(value, index, type, time);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, []);
 
-    const targetTextBlock = sourceText[currentIndexToSplitTextBlock];
-    const index = hasSub(subtitles[currentIndexToSplitTextBlock]);
+  const addNewSubtitleBox = useCallback((index) => {
+    const sub = addSubtitleBox(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    setUndoStack([...undoStack, {
+      type: "add",
+      index: index,
+    }]);
+    setRedoStack([]);
+  }, [undoStack]);
 
-    const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
-    const text2 = targetTextBlock.text.slice(selectionStart).trim();
-
-    if (!text1 || !text2) return;
-
-    const splitDuration = (
-      targetTextBlock.duration *
-      (selectionStart / targetTextBlock.text.length)
-    ).toFixed(3);
-
-    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-      return;
-
-    copySub.splice(currentIndexToSplitTextBlock, 1);
-    const middleTime = DT.d2t(
-      targetTextBlock.startTime + parseFloat(splitDuration)
-    );
-
-    copySub.splice(
-      index,
-      0,
-      newSub({
-        start_time: subtitles[currentIndexToSplitTextBlock].start_time,
-        end_time: middleTime,
-        text: text1,
-      })
-    );
-
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: middleTime,
-        end_time: subtitles[currentIndexToSplitTextBlock].end_time,
-        text: text2,
-      })
-    );
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
-    saveTranscriptHandler(false, true, copySub);
-  };
-
-  const handleTimeChange = (value, index, type, time) => {
-    const copySub = [...sourceText];
-
-    if (type === "startTime") {
-      copySub[index].start_time = getUpdatedTime(
-        value,
-        time,
-        copySub[index].start_time
-      );
-    } else {
-      copySub[index].end_time = getUpdatedTime(
-        value,
-        time,
-        copySub[index].start_time
-      );
+  const onUndo = useCallback(() => {
+    if (undoStack.length > 0) {
+      const lastAction = undoStack[undoStack.length - 1];
+      const sub = onUndoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setUndoStack(undoStack.slice(0, undoStack.length - 1));
+      setRedoStack([...redoStack, lastAction]);
     }
+  }, [undoStack, redoStack]);
 
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
+  const onRedo = useCallback(() => {
+    if (redoStack.length > 0) {
+      const lastAction = redoStack[redoStack.length - 1];
+      const sub = onRedoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setRedoStack(redoStack.slice(0, redoStack.length - 1));
+      setUndoStack([...undoStack, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const sourceLength = (index) => {
+    if (sourceText[index]?.text.trim() !== "")
+      return sourceText[index]?.text.trim().split(" ").length;
+    return 0;
   };
 
-  const addNewSubtitleBox = (index) => {
-    const copySub = copySubs();
-
-    copySub.splice(
-      index + 1,
-      0,
-      newSub({
-        start_time: copySub[index].end_time,
-        end_time:
-          index < sourceText.length - 1
-            ? copySub[index + 1].start_time
-            : copySub[index].end_time,
-        text: "SUB_TEXT",
-        target_text: "SUB_TEXT",
-      })
-    );
-
-    dispatch(setSubtitles(copySub, C.SUBTITLES));
-    setSourceText(copySub);
+  const targetLength = (index) => {
+    if (sourceText[index]?.target_text.trim() !== "")
+      return sourceText[index]?.target_text.trim().split(" ").length;
+    return 0;
   };
-
-  const fontMenu = [
-    {
-      label: "small",
-      size: "small",
-    },
-    {
-      label: "Normal",
-      size: "large",
-    },
-    {
-      label: "Large",
-      size: "x-large",
-    },
-    {
-      size: "xx-large",
-      label: "Huge",
-    },
-  ];
 
   return (
     <>
       {renderSnackBar()}
-      <Box
-        sx={{
-          display: "flex",
-          border: fullscreen ? "" : "1px solid #eaeaea",
-        }}
-        //   width="25%"
-        flexDirection="column"
-      >
-        <Grid
-          display={"flex"}
-          direction={"row"}
-          flexWrap={"wrap"}
-          margin={"23.5px 0"}
-          justifyContent="center"
-        >
-          <Grid display={"flex"} alignItems={"center"}>
-            <Typography>Transliteration</Typography>
-            <Switch
-              checked={enableTransliteration}
-              onChange={() => setTransliteration(!enableTransliteration)}
-            />
-          </Grid>
 
-          <Tooltip title="Font Size" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={(event) => setAnchorElFont(event.currentTarget)}
-            >
-              <FormatSizeIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            sx={{ mt: "45px" }}
-            anchorEl={anchorElFont}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            open={Boolean(anchorElFont)}
-            onClose={() => setAnchorElFont(null)}
-          >
-            {fontMenu.map((item, index) => (
-              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
-                <CheckIcon
-                  style={{
-                    visibility: fontSize === item.size ? "" : "hidden",
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  textAlign="center"
-                  sx={{ fontSize: item.size, marginLeft: "10px" }}
-                >
-                  {item.label}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-
-          <FindAndReplace
-            sourceData={sourceText}
-            subtitleDataKey={"target_text"}
-            onReplacementDone={onReplacementDone}
+      <Box className={classes.rightPanelParentBox}>
+        <Grid className={classes.rightPanelParentGrid}>
+          <SettingsButtonComponent
+            setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
-            transliterationLang={taskData?.target_language}
+            setRTL_Typing={setRTL_Typing}
+            enableRTL_Typing={enableRTL_Typing}
+            setFontSize={setFontSize}
+            fontSize={fontSize}
+            saveTranscriptHandler={saveTranscriptHandler}
+            setOpenConfirmDialog={setOpenConfirmDialog}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            undoStack={undoStack}
+            redoStack={redoStack}
           />
-
-          <Tooltip title="Save" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                marginX: "5px",
-                color: "#fff",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={() => saveTranscriptHandler(false, true)}
-            >
-              <SaveIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Complete" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={() => setOpenConfirmDialog(true)}
-            >
-              <VerifiedIcon />
-            </IconButton>
-          </Tooltip>
         </Grid>
+
         <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            borderTop: "1px solid #eaeaea",
-            overflowY: "scroll",
-            overflowX: "hidden",
-            height: window.innerHeight * 0.667,
-            backgroundColor: "black",
-            // color: "white",
-            marginTop: "5px",
-          }}
-          className={"subTitleContainer"}
+          className={classes.subTitleContainer}
+          id={"subtitleContainerTranslation"}
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <Box id={`sub_${index}`}>
                 <Box
                   display="flex"
                   paddingTop="16px"
@@ -479,81 +259,13 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     type={"startTime"}
                   />
 
-                  {/* <Tooltip title="Split Subtitle" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        marginRight: "10px",
-                        color: "#fff",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                        "&:disabled": {
-                          background: "grey",
-                        },
-                      }}
-                      onClick={onSplitClick}
-                      disabled={!showPopOver}
-                    >
-                      <SplitscreenIcon />
-                    </IconButton>
-                  </Tooltip> */}
-
-                  {index < sourceText.length - 1 && (
-                    <Tooltip title="Merge Next" placement="bottom">
-                      <IconButton
-                        sx={{
-                          backgroundColor: "#0083e2",
-                          borderRadius: "50%",
-                          marginRight: "10px",
-                          color: "#fff",
-                          transform: "rotate(180deg)",
-                          "&:hover": {
-                            backgroundColor: "#271e4f",
-                          },
-                        }}
-                        onClick={() => onMergeClick(item, index)}
-                      >
-                        <MergeIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-
-                  <Tooltip title="Delete" placement="bottom">
-                    <IconButton
-                      color="error"
-                      sx={{
-                        backgroundColor: "red",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => onDelete(index)}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Add Subtitle Box" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => addNewSubtitleBox(index)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <ButtonComponent
+                    index={index}
+                    lastItem={index < sourceText.length - 1}
+                    onMergeClick={onMergeClick}
+                    onDelete={onDelete}
+                    addNewSubtitleBox={addNewSubtitleBox}
+                  />
 
                   <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -574,80 +286,112 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
                     }
                   }}
                 >
-                  <textarea
-                    rows={4}
-                    className={`${classes.textAreaTransliteration} ${
-                      currentIndex === index ? classes.boxHighlight : ""
-                    }`}
-                    style={{ fontSize: fontSize, height: "100px" }}
-                    value={item.text}
-                    onMouseUp={(e) => onMouseUp(e, index)}
-                    onBlur={() =>
-                      setTimeout(() => {
-                        setShowPopOver(false);
-                      }, 200)
-                    }
-                    onChange={(event) => {
-                      changeTranscriptHandler(
-                        event.target.value,
-                        index,
-                        "transcript"
-                      );
-                    }}
-                  />
-                  {enableTransliteration ? (
-                    <IndicTransliterate
-                      lang={taskData?.target_language}
-                      value={item.target_text}
-                      // onChangeText={(text, index) => {}}
-                      onChangeText={(text) => {
-                        changeTranscriptHandler(text, index, "transaltion");
-                      }}
-                      onFocus={(e) => onMouseUp(e, index)}
-                      containerStyles={{
-                        width: "100%",
-                      }}
-                      style={{ fontSize: fontSize, height: "100px" }}
-                      renderComponent={(props) => (
-                        <textarea
-                          className={`${classes.textAreaTransliteration} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
-                          rows={4}
-                          onBlur={() =>
-                            setTimeout(() => {
-                              setShowPopOver(false);
-                            }, 200)
-                          }
-                          {...props}
-                        />
-                      )}
-                    />
-                  ) : (
+                  <div className={classes.relative} style={{ width: "100%" }}>
                     <textarea
                       rows={4}
                       className={`${classes.textAreaTransliteration} ${
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
+                      dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
+                      value={item.text}
                       onChange={(event) => {
                         changeTranscriptHandler(
                           event.target.value,
                           index,
-                          "transaltion"
+                          "transcript"
                         );
                       }}
-                      onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() =>
-                        setTimeout(() => {
-                          setShowPopOver(false);
-                        }, 200)
-                      }
-                      value={item.target_text}
                     />
+                    <span
+                      className={classes.wordCount}
+                      style={{
+                        color:
+                          Math.abs(sourceLength(index) - targetLength(index)) >=
+                          3
+                            ? "red"
+                            : "green",
+                        left: "25px",
+                      }}
+                    >
+                      {sourceLength(index)}
+                    </span>
+                  </div>
+
+                  {enableTransliteration ? (
+                    <IndicTransliterate
+                      lang={taskData?.target_language}
+                      value={item.target_text}
+                      onChangeText={(text) => {
+                        changeTranscriptHandler(text, index, "transaltion");
+                      }}
+                      containerStyles={{
+                        width: "100%",
+                      }}
+                      style={{ fontSize: fontSize, height: "100px" }}
+                      renderComponent={(props) => (
+                        <div className={classes.relative}>
+                          <textarea
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                            dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            rows={4}
+                            {...props}
+                          />
+                          <span
+                            className={classes.wordCount}
+                            style={{
+                              color:
+                                Math.abs(
+                                  sourceLength(index) - targetLength(index)
+                                ) >= 3
+                                  ? "red"
+                                  : "green",
+                              right: "25px",
+                            }}
+                          >
+                            {targetLength(index)}
+                          </span>
+                        </div>
+                      )}
+                    />
+                  ) : (
+                    <div className={classes.relative} style={{ width: "100%" }}>
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{ fontSize: fontSize, height: "100px" }}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transaltion"
+                          );
+                        }}
+                        value={item.target_text}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          right: "25px",
+                        }}
+                      >
+                        {targetLength(index)}
+                      </span>
+                    </div>
                   )}
                 </CardContent>
-              </>
+              </Box>
             );
           })}
         </Box>
@@ -666,4 +410,4 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   );
 };
 
-export default TranslationRightPanel;
+export default memo(TranslationRightPanel);

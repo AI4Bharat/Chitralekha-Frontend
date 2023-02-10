@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { roles } from "../../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
+import DatasetStyle from "../../../styles/Dataset";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -25,6 +25,7 @@ import DeleteDialog from "../../../common/DeleteDialog";
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = DatasetStyle();
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -41,6 +42,8 @@ const ProjectMemberDetails = () => {
 
   const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const projectDetails = useSelector((state) => state.getProjectDetails.data);
 
   const removeProjectMember = async (id) => {
     setLoading(true);
@@ -87,7 +90,11 @@ const ProjectMemberDetails = () => {
       if (SearchProject == "") {
         return el;
       } else if (
-        el.username?.toLowerCase().includes(SearchProject?.toLowerCase())
+        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
+      ) {
+        return el;
+      } else if (
+        el.last_name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
       } else if (
@@ -106,7 +113,6 @@ const ProjectMemberDetails = () => {
       ? pageSearch().map((item, i) => {
           return [
             `${item.first_name} ${item.last_name}`,
-            item.username,
             item.email,
             item.role,
             // item.availability_status,
@@ -123,16 +129,21 @@ const ProjectMemberDetails = () => {
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Delete">
-                <IconButton
-                  onClick={() => {
-                    setMemberId(item.id);
-                    setOpenDeleteDialog(true);
-                  }}
-                >
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip>
+              {(projectDetails?.managers?.some(
+                (item) => item.id === userData.id
+              ) ||
+                userData.role === "ORG_OWNER") && (
+                <Tooltip title="Delete">
+                  <IconButton
+                    onClick={() => {
+                      setMemberId(item.id);
+                      setOpenDeleteDialog(true);
+                    }}
+                  >
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>,
           ];
         })
@@ -145,24 +156,6 @@ const ProjectMemberDetails = () => {
     {
       name: "name",
       label: "Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-            textAlign: "center",
-          },
-        }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
-      },
-    },
-    {
-      name: "username",
-      label: "Username",
       options: {
         filter: false,
         sort: false,
@@ -237,6 +230,14 @@ const ProjectMemberDetails = () => {
     },
   ];
 
+  const renderToolBar = () => {
+    return (
+      <Box className={classes.searchStyle}>
+        <Search />
+      </Box>
+    );
+  };
+
   const options = {
     textLabels: {
       body: {
@@ -256,14 +257,15 @@ const ProjectMemberDetails = () => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-    download: false,
+    download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
     filter: false,
     viewColumns: true,
     selectableRows: "none",
-    search: false,
+    search: true,
     jumpToPage: true,
+    // customToolbar: renderToolBar,
   };
 
   const renderSnackBar = () => {
@@ -282,7 +284,6 @@ const ProjectMemberDetails = () => {
 
   return (
     <>
-      <Search />
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>

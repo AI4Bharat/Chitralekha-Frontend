@@ -15,10 +15,11 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
+import C from "../redux/constants";
 
 const Header = () => {
   const classes = headerStyle();
@@ -109,6 +110,7 @@ const Header = () => {
       onClick: () => {
         handleCloseUserMenu();
         localStorage.clear();
+        dispatch({ type: C.LOGOUT });
         navigate("/");
       },
     },
@@ -132,7 +134,12 @@ const Header = () => {
         >
           <Container maxWidth="xl">
             <Toolbar disableGutters className={classes.toolbar}>
-              <Box display="flex" alignItems="center">
+              <Box
+                display="flex"
+                alignItems="center"
+                onClick={() => navigate("/")}
+                style={{cursor: "pointer"}}
+              >
                 <img
                   src={"Chitralekha_Logo_Transparent.png"}
                   alt="ai4bharat"
@@ -153,7 +160,7 @@ const Header = () => {
                 sm={12}
                 md={7}
               >
-                {userData?.role !== "ADMIN" && (
+                {userData?.role !== "ADMIN" && (<>
                   <Typography variant="body1">
                     <NavLink
                       to={`/my-organization/${userData?.organization?.id}`}
@@ -167,7 +174,20 @@ const Header = () => {
                       Organizations
                     </NavLink>
                   </Typography>
-                )}
+                  <Typography variant="body1">
+                  <NavLink
+                    to={`/task-list`}
+                    className={({ isActive }) =>
+                      isActive
+                        ? `${classes.highlightedMenu} task-list`
+                        : `${classes.headerMenu} task-list`
+                    }
+                    activeClassName={classes.highlightedMenu}
+                  >
+                    Tasks
+                  </NavLink>
+                </Typography>
+                </>)}
                 {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"

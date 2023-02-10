@@ -11,6 +11,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         data: action.payload,
       };
+    case C.CLEAR_PROJECT_TASK_LIST:
+      return {
+        ...state,
+        data: []
+      };
 
     default:
       return {

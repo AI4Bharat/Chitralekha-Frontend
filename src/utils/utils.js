@@ -73,6 +73,11 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Transcript Reviewer",
@@ -86,6 +91,12 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
+    organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Translation editor",
@@ -99,6 +110,10 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    ProjectReport:false,
+    organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Translation Reviewer",
@@ -112,6 +127,11 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Universal Editor",
@@ -124,6 +144,11 @@ export const roles = [
     taskAction: true,
     projectSettingVisible: false,
     showSelectCheckbox: false,
+    canEditTask: false,
+    canDeleteTask: false,
+    ProjectReport:false,
+    organizationReport:false,
+    canAddMembers: false,
   },
   {
     label: "Project Manager",
@@ -137,6 +162,11 @@ export const roles = [
     orgSettingVisible: false,
     projectSettingVisible: true,
     showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
+    ProjectReport:true,
+    organizationReport:false,
+    canAddMembers: true,
   },
   {
     label: "Organization Owner",
@@ -150,6 +180,11 @@ export const roles = [
     orgSettingVisible: true,
     projectSettingVisible: true,
     showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
+    ProjectReport:true,
+    organizationReport:true,
+    canAddMembers: true,
   },
 ];
 
@@ -456,7 +491,6 @@ export const getUpdatedTime = (value, type, time) => {
   const [ss, SSS] = sec.split(".");
 
   let newValue = "";
-  console.log(value, "iipipipip");
   if (type === "hours") {
     if (value < 0) {
       newValue = "00";
@@ -563,3 +597,9 @@ export const MenuProps = {
     },
   },
 };
+
+export function snakeToTitleCase(str) {
+  return str.split("_").map((word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(" ");
+}

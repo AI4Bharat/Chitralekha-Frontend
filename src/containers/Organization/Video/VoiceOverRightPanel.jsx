@@ -77,7 +77,7 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
   const [url, setUrl] = useState(new Array());
   const [recordAudio, setRecordAudio] = useState(new Array());
   const newSub = useCallback((item) => new Sub(item), []);
-
+console.log('inside voiceover');
   useEffect(() => {
     if (!!sourceText) {
       const recorderArray = sourceText.map(() => "stop");

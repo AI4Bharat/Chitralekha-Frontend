@@ -68,6 +68,7 @@ const AddProjectMembers = ({
       close
       maxWidth={"md"}
       fullWidth
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4">{title}</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>

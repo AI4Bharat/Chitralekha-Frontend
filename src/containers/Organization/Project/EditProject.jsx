@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -29,6 +29,7 @@ import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTr
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import ProjectStyle from "../../../styles/ProjectStyle";
 import { MenuProps } from "../../../utils/utils";
+import ColorArray from "../../../utils/getColors";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -45,6 +46,7 @@ const EditProject = () => {
     (state) => state.getTranslationTypes.data
   );
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -62,7 +64,11 @@ const EditProject = () => {
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
-  const [priority, setPriority] = useState({});
+  const [priority, setPriority] = useState({
+    label: null,
+    value: null,
+  });
+  const [taskDescription, setTaskDescription] = useState("");
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -109,6 +115,7 @@ const EditProject = () => {
 
   useEffect(() => {
     if (projectInfo && projectInfo.managers) {
+      setTaskDescription(projectInfo.default_description);
       setProjectDetails(projectInfo);
       setManagers(projectInfo?.managers);
       setTranscriptSourceType(projectInfo?.default_transcript_type);
@@ -127,6 +134,7 @@ const EditProject = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
+
     const updateProjectReqBody = {
       title: projectDetails.title,
       description: projectDetails.description,
@@ -138,6 +146,7 @@ const EditProject = () => {
       default_translation_type: translationSourceType,
       default_task_eta: date,
       default_task_priority: priority.value,
+      default_task_description: taskDescription,
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
@@ -192,6 +201,7 @@ const EditProject = () => {
       default_target_languages: projectInfo.default_target_languages,
       default_priority: projectInfo.default_priority,
       default_eta: projectInfo.default_eta,
+      default_task_description: projectInfo.default_description,
     };
 
     const newObj = {
@@ -204,6 +214,7 @@ const EditProject = () => {
       default_target_languages: translationLanguage.map((item) => item.value),
       default_priority: priority?.value,
       default_eta: date,
+      default_task_description: taskDescription,
     };
 
     if (JSON.stringify(oldObj) === JSON.stringify(newObj)) {
@@ -214,6 +225,53 @@ const EditProject = () => {
   };
 
   defaultTask.sort((a, b) => a.id - b.id);
+
+  const getDisableOption = useCallback(
+    (data) => {
+      if (data.value === "TRANSCRIPTION_EDIT") {
+        return false;
+      }
+
+      if (
+        data.value === "TRANSCRIPTION_REVIEW" ||
+        data.value === "TRANSLATION_EDIT"
+      ) {
+        if (defaultTask.some((item) => item.value === "TRANSCRIPTION_EDIT")) {
+          return false;
+        }
+        return true;
+      }
+
+      if (data.value === "TRANSLATION_REVIEW") {
+        if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
+          return false;
+        }
+        return true;
+      }
+    },
+    [defaultTask]
+  );
+
+  const defaultTaskHandler = (task) => {
+    const isTranscriptionEdit = task.findIndex(
+      (item) => item.value === "TRANSCRIPTION_EDIT"
+    );
+
+    if (isTranscriptionEdit === -1) {
+      setDefaultTask([]);
+    } else {
+      const isTranslationEdit = task.findIndex(
+        (item) => item.value === "TRANSLATION_EDIT"
+      );
+
+      if (isTranslationEdit === -1) {
+        const temp = task.filter((item) => item.value !== "TRANSLATION_REVIEW");
+        setDefaultTask(temp);
+      } else {
+        setDefaultTask(task);
+      }
+    }
+  };
 
   return (
     <>
@@ -248,6 +306,13 @@ const EditProject = () => {
                 value={projectDetails?.title}
                 onChange={handleFieldChange}
                 InputLabelProps={{ shrink: true }}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
               />
             </Grid>
 
@@ -262,6 +327,13 @@ const EditProject = () => {
                   label="Manager"
                   onChange={(e) => setManagers(e.target.value)}
                   MenuProps={MenuProps}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -303,6 +375,13 @@ const EditProject = () => {
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
                   }
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                 >
                   {transcriptTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -327,6 +406,13 @@ const EditProject = () => {
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
                   }
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                 >
                   {translationTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -346,7 +432,14 @@ const EditProject = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => setDefaultTask(event.target.value)}
+                  onChange={(event) => defaultTaskHandler(event.target.value)}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   MenuProps={MenuProps}
                   renderValue={(selected) => {
                     selected.sort((a, b) => a.id - b.id);
@@ -360,7 +453,11 @@ const EditProject = () => {
                   }}
                 >
                   {bulkTaskTypes.map((item, index) => (
-                    <MenuItem key={index} value={item}>
+                    <MenuItem
+                      key={index}
+                      value={item}
+                      disabled={getDisableOption(item)}
+                    >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
                     </MenuItem>
@@ -381,6 +478,13 @@ const EditProject = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -405,10 +509,17 @@ const EditProject = () => {
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <DatePicker
-                label="Default ETA"
+                label="Default Task ETA"
                 inputFormat="DD/MM/YYYY"
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
                 renderInput={(params) => <TextField {...params} />}
                 className={classes.datePicker}
               />
@@ -416,19 +527,30 @@ const EditProject = () => {
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
-                <InputLabel id="select-priority">Select Priority</InputLabel>
+                <InputLabel id="select-priority">
+                  Select Task Priority
+                </InputLabel>
                 <Select
                   fullWidth
                   labelId="select-priority"
-                  label="Select Priority"
+                  label="Select Task Priority"
                   value={priority}
                   onChange={(event) => setPriority(event.target.value)}
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        <Chip key={selected.value} label={selected.label} />
+                        {selected.value && (
+                          <Chip key={selected.value} label={selected.label} />
+                        )}
                       </Box>
                     );
                   }}
@@ -448,11 +570,39 @@ const EditProject = () => {
                 fullWidth
                 multiline
                 rows={3}
-                label="Description"
+                label="Project Description"
                 name="description"
                 value={projectDetails?.description}
                 onChange={handleFieldChange}
                 InputLabelProps={{ shrink: true }}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
+              />
+            </Grid>
+
+            <Grid container direction="row" padding="32px 0 0 32px">
+              <TextField
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={3}
+                label="Default Task Description"
+                name="default_description"
+                value={taskDescription}
+                onChange={(event) => setTaskDescription(event.target.value)}
+                InputLabelProps={{ shrink: true }}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
               />
             </Grid>
 
@@ -476,7 +626,12 @@ const EditProject = () => {
                   {defaultTask.map((item, index) => {
                     return (
                       <>
-                        <Box className={classes.taskBox}>{item.label}</Box>
+                        <Card
+                          className={classes.taskBox}
+                          style={{ backgroundColor: ColorArray[index]?.colors }}
+                        >
+                          {item.label}
+                        </Card>
                         {defaultTask.length > 1 &&
                           index + 1 < defaultTask.length && (
                             <div className={classes.arrow}></div>

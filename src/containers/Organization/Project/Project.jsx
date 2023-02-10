@@ -40,6 +40,8 @@ import { roles } from "../../../utils/utils";
 import ProjectDescription from "./ProjectDescription";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import Loader from "../../../common/Spinner";
+import ProjectReport from "./ProjectReport";
+import C from "../../../redux/constants";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -78,17 +80,36 @@ const Project = () => {
     dispatch(APITransport(userObj));
   };
 
-  useEffect(() => {
-    getProjectMembers();
-  }, []);
-
   const GetManagerName = () => {
     const apiObj = new FetchManagerNameAPI();
     dispatch(APITransport(apiObj));
   };
 
+  const getProjectnDetails = () => {
+    const apiObj = new FetchProjectDetailsAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  const getProjectVideoList = () => {
+    const apiObj = new FetchVideoListAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  const getOrganizatioUsersList = () => {
+    const userObj = new FetchOrganizatioUsersAPI(orgId);
+    dispatch(APITransport(userObj));
+  };
+
   useEffect(() => {
+    getProjectMembers();
     GetManagerName();
+    getProjectnDetails();
+    getProjectVideoList();
+    getOrganizatioUsersList();
+
+    return () => {
+      dispatch({ type: C.CLEAR_PROJECT_VIDEOS, payload: [] });
+    };
   }, []);
 
   const [value, setValue] = useState(0);
@@ -108,6 +129,7 @@ const Project = () => {
     { name: "CreatedAt", value: null },
     { name: "UserName", value: null },
   ]);
+  const [videoDescription, setVideoDescription] = useState("");
 
   useEffect(() => {
     setProjectData([
@@ -128,32 +150,8 @@ const Project = () => {
 
   useEffect(() => {
     SetProjectDetails(projectInfo);
-  }, [projectInfo]);
-
-  useEffect(() => {
     setVideoList(projectvideoList);
-  }, [projectvideoList]);
-
-  const getProjectnDetails = () => {
-    const apiObj = new FetchProjectDetailsAPI(projectId);
-    dispatch(APITransport(apiObj));
-  };
-
-  const getProjectVideoList = () => {
-    const apiObj = new FetchVideoListAPI(projectId);
-    dispatch(APITransport(apiObj));
-  };
-
-  const getOrganizatioUsersList = () => {
-    const userObj = new FetchOrganizatioUsersAPI(orgId);
-    dispatch(APITransport(userObj));
-  };
-
-  useEffect(() => {
-    getProjectnDetails();
-    getProjectVideoList();
-    getOrganizatioUsersList();
-  }, []);
+  }, [projectInfo, projectvideoList]);
 
   const addNewMemberHandler = async () => {
     const selectedMemberIdArr = addmembers.map((el, i) => {
@@ -180,22 +178,30 @@ const Project = () => {
     } else {
       setSnackbarInfo({
         open: true,
-        message: resp?.error,
+        message: resp?.message,
         variant: "error",
       });
     }
   };
 
   const addNewVideoHandler = async () => {
-    const apiObj = new CreateNewVideoAPI(videoLink, isAudio, projectId, lang);
-    dispatch(APITransport(apiObj));
-    setVideoLink("");
-    setIsAudio(false);
+    const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
+    const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
+    const create = true;
+    setSnackbarInfo({
+      open: true,
+      message: "Your request is being processed.",
+      variant: "info",
+    });
+
+    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc,create);
+
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
     });
+
     const resp = await res.json();
 
     if (res.ok) {
@@ -204,8 +210,6 @@ const Project = () => {
         message: "Video added successfully",
         variant: "success",
       });
-      setCreateVideoDialog(false);
-      getProjectVideoList();
     } else {
       setSnackbarInfo({
         open: true,
@@ -213,6 +217,10 @@ const Project = () => {
         variant: "error",
       });
     }
+
+    setCreateVideoDialog(false);
+    getProjectVideoList();
+    setIsAudio(false);
   };
 
   const renderSnackBar = () => {
@@ -250,30 +258,26 @@ const Project = () => {
             <Typography variant="h4" className={classes.mainTitle}>
               {projectDetails.title}
             </Typography>
-
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.projectSettingVisible && (
-              <IconButton
-                onClick={() =>
-                  navigate(
-                    `/my-organization/${orgId}/project/${projectId}/edit-project`
-                  )
-                }
-                style={{
-                  padding: "0",
-                }}
-              >
-                <Tooltip title="Settings">
-                  <SettingsOutlinedIcon
-                    color="primary"
-                    style={{
-                      color: "#f1f1f1",
-                      fontSize: "2.25rem",
-                    }}
-                  />
-                </Tooltip>
-              </IconButton>
-            )}
+            <IconButton
+              onClick={() =>
+                navigate(
+                  `/my-organization/${orgId}/project/${projectId}/edit-project`
+                )
+              }
+              style={{
+                padding: "0",
+              }}
+            >
+              <Tooltip title="Settings">
+                <SettingsOutlinedIcon
+                  color="primary"
+                  style={{
+                    color: "#f1f1f1",
+                    fontSize: "2.25rem",
+                  }}
+                />
+              </Tooltip>
+            </IconButton>
           </Card>
         </Grid>
 
@@ -327,6 +331,10 @@ const Project = () => {
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.ProjectReport && (
+              <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
           </Tabs>
         </Box>
 
@@ -386,8 +394,8 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.permittedToAddMembersInProject && (
+            {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
+              userData.role === "ORG_OWNER") && (
               <Button
                 className={classes.projectButton}
                 label={"Add Project Members"}
@@ -396,6 +404,22 @@ const Project = () => {
             )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
+            </div>
+          </Box>
+        </TabPanel>
+        <TabPanel
+          value={value}
+          index={3}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <ProjectReport />
             </div>
           </Box>
         </TabPanel>
@@ -412,6 +436,8 @@ const Project = () => {
           addBtnClickHandler={addNewVideoHandler}
           lang={lang}
           setLang={setLang}
+          videoDescription={videoDescription}
+          setVideoDescription={setVideoDescription}
         />
       )}
       <AddProjectMembers
