@@ -25,7 +25,7 @@ import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
-const RightPanel = ({ currentIndex, player }) => {
+const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -35,6 +35,7 @@ const RightPanel = ({ currentIndex, player }) => {
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
+  const player = useSelector(state => state.commonReducer.player);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({

@@ -1,19 +1,15 @@
-import React, {
-  createRef,
-  memo,
-  useCallback,
-  useEffect,
-} from "react";
-import { useSelector } from "react-redux";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import React, { createRef, memo, useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setPlayer } from "../../../../redux/actions/Common";
+// import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 
 const VideoPanel = memo(
   ({
-    setPlayer,
     setCurrentTime,
     setPlaying,
   }) => {
-    const classes = VideoLandingStyle();
+    // const classes = VideoLandingStyle();
+    const dispatch = useDispatch();
     const $video = createRef();
 
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
@@ -31,7 +27,7 @@ const VideoPanel = memo(
     };
 
     useEffect(() => {
-      setPlayer($video.current);
+      dispatch(setPlayer($video.current));
       (function loop() {
         window.requestAnimationFrame(() => {
           if ($video.current) {

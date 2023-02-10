@@ -47,7 +47,7 @@ let lastDiffX = 0;
 let isDroging = false;
 
 export default memo(
-  function ({ player, render, currentTime }) {
+  function ({ render, currentTime }) {
     const { taskId } = useParams();
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
@@ -57,6 +57,7 @@ export default memo(
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
+    const player = useSelector(state => state.commonReducer.player);
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
