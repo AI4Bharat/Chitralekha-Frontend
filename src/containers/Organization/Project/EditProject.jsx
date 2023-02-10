@@ -252,6 +252,27 @@ const EditProject = () => {
     [defaultTask]
   );
 
+  const defaultTaskHandler = (task) => {
+    const isTranscriptionEdit = task.findIndex(
+      (item) => item.value === "TRANSCRIPTION_EDIT"
+    );
+
+    if (isTranscriptionEdit === -1) {
+      setDefaultTask([]);
+    } else {
+      const isTranslationEdit = task.findIndex(
+        (item) => item.value === "TRANSLATION_EDIT"
+      );
+
+      if (isTranslationEdit === -1) {
+        const temp = task.filter((item) => item.value !== "TRANSLATION_REVIEW");
+        setDefaultTask(temp);
+      } else {
+        setDefaultTask(task);
+      }
+    }
+  };
+
   return (
     <>
       <Grid
@@ -411,7 +432,7 @@ const EditProject = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => setDefaultTask(event.target.value)}
+                  onChange={(event) => defaultTaskHandler(event.target.value)}
                   disabled={
                     !(
                       projectDetails?.managers?.some(
