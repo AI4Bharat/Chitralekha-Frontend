@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import RightPanel from "./RightPanel";
@@ -33,7 +33,7 @@ const VideoLanding = () => {
   const { taskId } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
-
+console.log("videoLanding");
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [snackbar, setSnackbarInfo] = useState({
@@ -295,4 +295,4 @@ const VideoLanding = () => {
   );
 };
 
-export default VideoLanding;
+export default memo(VideoLanding);

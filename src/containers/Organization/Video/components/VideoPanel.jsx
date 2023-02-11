@@ -1,14 +1,11 @@
 import React, { createRef, memo, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPlayer } from "../../../../redux/actions/Common";
-// import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 
 const VideoPanel = memo(
-  ({
-    setCurrentTime,
-    setPlaying,
-  }) => {
-    // const classes = VideoLandingStyle();
+  ({ setCurrentTime, setPlaying }) => {
+    const classes = VideoLandingStyle();
     const dispatch = useDispatch();
     const $video = createRef();
 
@@ -50,24 +47,25 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <video
-        onClick={onClick}
-        src={
-          videoDetails?.video?.audio_only
-            ? videoDetails?.direct_audio_url
-            : videoDetails?.direct_video_url
-        }
-        style={{
-          cursor: "pointer",
-          width: videoDetails?.video?.audio_only ? "20%" : "",
-          width: videoDetails?.video?.audio_only ? "20%" : "",
-          margin:
-            videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
-        }}
-        poster={videoDetails?.video?.audio_only && "playpause.png"}
-        ref={$video}
-        // className={classes.videoPlayer}
-      />
+      <div className={classes.videoPlayerParent}>
+        <video
+          onClick={onClick}
+          src={
+            videoDetails?.video?.audio_only
+              ? videoDetails?.direct_audio_url
+              : videoDetails?.direct_video_url
+          }
+          style={{
+            width: videoDetails?.video?.audio_only ? "20%" : "",
+            width: videoDetails?.video?.audio_only ? "20%" : "",
+            margin:
+              videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
+          }}
+          poster={videoDetails?.video?.audio_only && "playpause.png"}
+          ref={$video}
+          className={classes.videoPlayer}
+        />
+      </div>
     );
   },
   () => true
