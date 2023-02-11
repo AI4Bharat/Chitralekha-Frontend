@@ -1,5 +1,6 @@
 import Sub from "./Sub";
 import DT from "duration-time-conversion";
+import { useCallback } from "react";
 
 export function authenticateUser() {
   const access_token = localStorage.getItem("token");
@@ -603,3 +604,62 @@ export function snakeToTitleCase(str) {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }).join(" ");
 }
+
+export const getDisableOption = (data, defaultTask) => {
+  if (data.value === "TRANSCRIPTION_EDIT") {
+    return false;
+  }
+
+  if (
+    data.value === "TRANSCRIPTION_REVIEW" ||
+    data.value === "TRANSLATION_EDIT"
+  ) {
+    if (defaultTask.some((item) => item.value === "TRANSCRIPTION_EDIT")) {
+      return false;
+    }
+    return true;
+  }
+
+  if (data.value === "TRANSLATION_REVIEW") {
+    if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
+      return false;
+    }
+    return true;
+  }
+};
+
+export const defaultTaskHandler = (task) => {
+  let dTask = [];
+  let lang = [];
+
+  const isTranscriptionEdit = task.findIndex(
+    (item) => item.value === "TRANSCRIPTION_EDIT"
+  );
+
+  if (isTranscriptionEdit === -1) {
+    dTask = [];
+    lang = [];
+  } else {
+    const isTranslationEdit = task.findIndex(
+      (item) => item.value === "TRANSLATION_EDIT"
+    );
+
+    if (isTranslationEdit === -1) {
+      const temp = task.filter((item) => item.value !== "TRANSLATION_REVIEW");
+      dTask = [...temp]
+      lang = [];
+    } else {
+      dTask = [...task]
+    }
+  }
+
+  return { dTask, lang }
+};
+
+export const diableTargetLang = (defaultTask) => {
+  const temp = defaultTask.find((item) => item.value.includes("TRANSLATION"));
+  if (temp) {
+    return false;
+  }
+  return true;
+};

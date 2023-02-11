@@ -12,7 +12,7 @@ import {
   Chip,
   Checkbox,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -24,7 +24,12 @@ import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSup
 import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTranscriptTypes";
 import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import { MenuProps } from "../../utils/utils";
+import {
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "../../utils/utils";
 
 const OrganizationSettings = () => {
   const { id } = useParams();
@@ -183,6 +188,12 @@ const OrganizationSettings = () => {
     return true;
   };
 
+  const handleDefaultTask = (task) => {
+    const { dTask, lang } = defaultTaskHandler(task);
+    setDefaultTask(dTask);
+    setTranslationLanguage(lang);
+  };
+
   return (
     <>
       <Grid
@@ -245,7 +256,7 @@ const OrganizationSettings = () => {
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
                   }
-                  sx={{textAlign: "left"}}
+                  sx={{ textAlign: "left" }}
                 >
                   {transcriptTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -270,7 +281,7 @@ const OrganizationSettings = () => {
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
                   }
-                  sx={{textAlign: "left"}}
+                  sx={{ textAlign: "left" }}
                 >
                   {translationTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -290,7 +301,7 @@ const OrganizationSettings = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => setDefaultTask(event.target.value)}
+                  onChange={(event) => handleDefaultTask(event.target.value)}
                   MenuProps={MenuProps}
                   renderValue={(selected) => {
                     selected.sort((a, b) => a.id - b.id);
@@ -304,7 +315,11 @@ const OrganizationSettings = () => {
                   }}
                 >
                   {bulkTaskTypes.map((item, index) => (
-                    <MenuItem key={index} value={item}>
+                    <MenuItem
+                      key={index}
+                      value={item}
+                      disabled={getDisableOption(item, defaultTask)}
+                    >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
                     </MenuItem>
@@ -325,6 +340,7 @@ const OrganizationSettings = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
+                  disabled={diableTargetLang(defaultTask)}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
