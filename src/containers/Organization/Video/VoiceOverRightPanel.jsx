@@ -40,10 +40,14 @@ import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
 import AudioReactRecorder, { RecordState } from "audio-react-recorder";
 import StopIcon from "@mui/icons-material/Stop";
+import SettingsButtonComponent from "./components/SettingsButtonComponent";
+import ButtonComponent from "./components/ButtonComponent";
+import { onRedoAction, onUndoAction } from "../../../utils/subtitleUtils";
+import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
-const VoiceOverRightPanel = ({ currentIndex, player }) => {
+const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
-  const classes = ProjectStyle();
+  const classes = VideoLandingStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -52,6 +56,7 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
+  const player = useSelector(state => state.commonReducer.player);
 
   const [showPopOver, setShowPopOver] = useState(false);
   const [sourceText, setSourceText] = useState([]);
@@ -76,6 +81,10 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
   const [data, setData] = useState(new Array());
   const [url, setUrl] = useState(new Array());
   const [recordAudio, setRecordAudio] = useState(new Array());
+  const [enableRTL_Typing, setRTL_Typing] = useState(false);
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
+
   const newSub = useCallback((item) => new Sub(item), []);
 
   useEffect(() => {
@@ -222,6 +231,26 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
       });
     }
   };
+
+  const onUndo = useCallback(() => {
+    if (undoStack.length > 0) {
+      const lastAction = undoStack[undoStack.length - 1];
+      const sub = onUndoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setUndoStack(undoStack.slice(0, undoStack.length - 1));
+      setRedoStack([...redoStack, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const onRedo = useCallback(() => {
+    if (redoStack.length > 0) {
+      const lastAction = redoStack[redoStack.length - 1];
+      const sub = onRedoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setRedoStack(redoStack.slice(0, redoStack.length - 1));
+      setUndoStack([...undoStack, lastAction]);
+    }
+  }, [undoStack, redoStack]);
 
   const renderSnackBar = () => {
     return (
@@ -370,138 +399,43 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
     updateRecorderState(RecordState.STOP, index);
   };
 
-  console.log(data);
+  const sourceLength = (index) => {
+    if (sourceText[index]?.text.trim() !== "")
+      return sourceText[index]?.text.trim().split(" ").length;
+    return 0;
+  };
+
+  const targetLength = (index) => {
+    if (sourceText[index]?.target_text.trim() !== "")
+      return sourceText[index]?.target_text.trim().split(" ").length;
+    return 0;
+  };
 
   return (
     <>
       {renderSnackBar()}
-      <Box
-        sx={{
-          display: "flex",
-          border: fullscreen ? "" : "1px solid #eaeaea",
-        }}
-        //   width="25%"
-        flexDirection="column"
-      >
-        <Grid
-          display={"flex"}
-          direction={"row"}
-          flexWrap={"wrap"}
-          margin={"23.5px 0"}
-          justifyContent="center"
-        >
-          <Grid display={"flex"} alignItems={"center"}>
-            <Typography>Transliteration</Typography>
-            <Switch
-              checked={enableTransliteration}
-              onChange={() => setTransliteration(!enableTransliteration)}
-            />
-          </Grid>
 
-          <Tooltip title="Font Size" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={(event) => setAnchorElFont(event.currentTarget)}
-            >
-              <FormatSizeIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            sx={{ mt: "45px" }}
-            anchorEl={anchorElFont}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            open={Boolean(anchorElFont)}
-            onClose={() => setAnchorElFont(null)}
-          >
-            {fontMenu.map((item, index) => (
-              <MenuItem key={index} onClick={() => setFontSize(item.size)}>
-                <CheckIcon
-                  style={{
-                    visibility: fontSize === item.size ? "" : "hidden",
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  textAlign="center"
-                  sx={{ fontSize: item.size, marginLeft: "10px" }}
-                >
-                  {item.label}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-
-          <FindAndReplace
-            sourceData={sourceText}
-            subtitleDataKey={"target_text"}
-            onReplacementDone={onReplacementDone}
+      <Box className={classes.rightPanelParentBox}>
+        <Grid className={classes.rightPanelParentGrid}>
+          <SettingsButtonComponent
+            setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
-            transliterationLang={taskData?.target_language}
+            setRTL_Typing={setRTL_Typing}
+            enableRTL_Typing={enableRTL_Typing}
+            setFontSize={setFontSize}
+            fontSize={fontSize}
+            saveTranscriptHandler={saveTranscriptHandler}
+            setOpenConfirmDialog={setOpenConfirmDialog}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            undoStack={undoStack}
+            redoStack={redoStack}
           />
-
-          <Tooltip title="Save" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                marginX: "5px",
-                color: "#fff",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={() => saveTranscriptHandler(false, true)}
-            >
-              <SaveIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Complete" placement="bottom">
-            <IconButton
-              sx={{
-                backgroundColor: "#2C2799",
-                borderRadius: "50%",
-                color: "#fff",
-                marginX: "5px",
-                "&:hover": {
-                  backgroundColor: "#271e4f",
-                },
-              }}
-              onClick={() => setOpenConfirmDialog(true)}
-            >
-              <VerifiedIcon />
-            </IconButton>
-          </Tooltip>
         </Grid>
+
         <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            borderTop: "1px solid #eaeaea",
-            overflowY: "scroll",
-            overflowX: "hidden",
-            height: window.innerHeight * 0.667,
-            backgroundColor: "black",
-            // color: "white",
-            marginTop: "5px",
-          }}
-          className={"subTitleContainer"}
+          className={classes.subTitleContainer}
+          id={"subtitleContainerTranslation"}
         >
           {sourceText?.map((item, index) => {
             return (
@@ -511,95 +445,27 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                   paddingTop="16px"
                   sx={{ paddingX: "20px", justifyContent: "space-around" }}
                 >
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  /> */}
+                  />
 
-                  {/* <Tooltip title="Split Subtitle" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        marginRight: "10px",
-                        color: "#fff",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                        "&:disabled": {
-                          background: "grey",
-                        },
-                      }}
-                      onClick={onSplitClick}
-                      disabled={!showPopOver}
-                    >
-                      <SplitscreenIcon />
-                    </IconButton>
-                  </Tooltip> */}
+                  <ButtonComponent
+                    index={index}
+                    lastItem={index < sourceText.length - 1}
+                    onMergeClick={onMergeClick}
+                    onDelete={onDelete}
+                    addNewSubtitleBox={addNewSubtitleBox}
+                  />
 
-                  {/* {index < sourceText.length - 1 && (
-                    <Tooltip title="Merge Next" placement="bottom">
-                      <IconButton
-                        sx={{
-                          backgroundColor: "#0083e2",
-                          borderRadius: "50%",
-                          marginRight: "10px",
-                          color: "#fff",
-                          transform: "rotate(180deg)",
-                          "&:hover": {
-                            backgroundColor: "#271e4f",
-                          },
-                        }}
-                        onClick={() => onMergeClick(item, index)}
-                      >
-                        <MergeIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )} */}
-
-                  {/* <Tooltip title="Delete" placement="bottom">
-                    <IconButton
-                      color="error"
-                      sx={{
-                        backgroundColor: "red",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => onDelete(index)}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </Tooltip> */}
-
-                  {/* <Tooltip title="Add Subtitle Box" placement="bottom">
-                    <IconButton
-                      sx={{
-                        backgroundColor: "#0083e2",
-                        borderRadius: "50%",
-                        color: "#fff",
-                        marginRight: "10px",
-                        "&:hover": {
-                          backgroundColor: "#271e4f",
-                        },
-                      }}
-                      onClick={() => addNewSubtitleBox(index)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip> */}
-
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  /> */}
+                  />
                 </Box>
 
                 <CardContent
@@ -613,76 +479,83 @@ const VoiceOverRightPanel = ({ currentIndex, player }) => {
                     }
                   }}
                 >
-                  <Grid container spacing={2} style={{ alignItems: "center" }}>
-                    <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                      <textarea
-                        rows={4}
-                        className={`${classes.textAreaTransliteration} ${
-                          currentIndex === index ? classes.boxHighlight : ""
-                        }`}
-                        style={{ fontSize: fontSize, height: "100px" }}
-                        value={item.text}
-                        onMouseUp={(e) => onMouseUp(e, index)}
-                        onBlur={() =>
-                          setTimeout(() => {
-                            setShowPopOver(false);
-                          }, 200)
-                        }
-                        onChange={(event) => {
-                          changeTranscriptHandler(
-                            event.target.value,
-                            index,
-                            "transcript"
-                          );
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                      <Grid
-                        container
-                        spacing={2}
-                        style={{ justifyContent: "center" }}
-                      >
-                        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                          {recordAudio[index] == "stop" ||
-                          recordAudio[index] == "" ? (
-                            <IconButton
-                              onClick={() => handleStartRecording(index)}
-                            >
-                              <MicIcon color="secondary" fontSize="large" />
-                            </IconButton>
-                          ) : (
-                            <IconButton
-                              onClick={() => handleStopRecording(index)}
-                            >
-                              <StopIcon color="secondary" fontSize="large" />
-                            </IconButton>
-                          )}
-                          <div style={{ display: "none" }}>
-                            <AudioReactRecorder
-                              state={recordAudio[index]}
-                              onStop={(data) => onStopRecording(data, index)}
-                              style={{ display: "none" }}
-                            />
-                          </div>
-                          {recordAudio[index] == "stop" ? (
-                            <div>
-                              <audio src={data[index]} controls />
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                          <Typography color="secondary" variant="h3">
-                            or
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <IconButton>
-                            <UploadIcon color="secondary" fontSize="large" />
+                  <div className={classes.relative} style={{ width: "100%" }}>
+                    <textarea
+                      rows={4}
+                      className={`${classes.textAreaTransliteration} ${
+                        currentIndex === index ? classes.boxHighlight : ""
+                      }`}
+                      dir={enableRTL_Typing ? "rtl" : "ltr"}
+                      style={{ fontSize: fontSize, height: "100px" }}
+                      value={item.text}
+                      onChange={(event) => {
+                        changeTranscriptHandler(
+                          event.target.value,
+                          index,
+                          "transcript"
+                        );
+                      }}
+                    />
+                    <span
+                      className={classes.wordCount}
+                      style={{
+                        color:
+                          Math.abs(sourceLength(index) - targetLength(index)) >=
+                          3
+                            ? "red"
+                            : "green",
+                        left: "25px",
+                      }}
+                    >
+                      {sourceLength(index)}
+                    </span>
+                  </div>
+
+                  <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Grid
+                      container
+                      spacing={2}
+                      style={{ justifyContent: "center" }}
+                    >
+                      <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                        {recordAudio[index] == "stop" ||
+                        recordAudio[index] == "" ? (
+                          <IconButton
+                            onClick={() => handleStartRecording(index)}
+                          >
+                            <MicIcon color="secondary" fontSize="large" />
                           </IconButton>
-                        </Grid>
+                        ) : (
+                          <IconButton
+                            onClick={() => handleStopRecording(index)}
+                          >
+                            <StopIcon color="secondary" fontSize="large" />
+                          </IconButton>
+                        )}
+                        <div style={{ display: "none" }}>
+                          <AudioReactRecorder
+                            state={recordAudio[index]}
+                            onStop={(data) => onStopRecording(data, index)}
+                            style={{ display: "none" }}
+                          />
+                        </div>
+                        {recordAudio[index] == "stop" ? (
+                          <div>
+                            <audio src={data[index]} controls />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                        <Typography color="secondary" variant="h3">
+                          or
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <IconButton>
+                          <UploadIcon color="secondary" fontSize="large" />
+                        </IconButton>
                       </Grid>
                     </Grid>
                   </Grid>

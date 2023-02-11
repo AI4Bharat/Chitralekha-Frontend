@@ -20,7 +20,7 @@ const findIndex = (subs, startTime) => {
 };
 
 export default React.memo(
-  function Component({ render, newSub, player, playing }) {
+  function Component({ render, newSub, playing }) {
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
@@ -30,6 +30,7 @@ export default React.memo(
     const gridGap = document.body.clientWidth / render.gridNum;
 
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
+    const player = useSelector(state => state.commonReducer.player);
 
     const getEventTime = useCallback(
       (event) => {

@@ -44,9 +44,9 @@ const VideoLandingStyle = makeStyles({
     zIndex: "20",
     left: "0",
     right: "0",
-    bottom: "18%",
+    bottom: "7%",
     width: "94%",
-    padding: "0 30px",
+    padding: "0 22px",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -91,7 +91,7 @@ const VideoLandingStyle = makeStyles({
 
   fullscreenVideoBtn: {
     position: "absolute",
-    bottom: "12%",
+    bottom: "1%",
     right: "3%",
     zIndex: "999",
     borderRadius: "4px",
@@ -496,6 +496,18 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+  },
+
+  videoPlayerParent: {
+    boxSizing: "border-box",
+    height: "calc(100vh - 310px)",
+  },
+
+  videoPlayer: {
+    cursor: "pointer",
+    width: "100%",
+    objectFit: "fill",
+    maxHeight: "100%",
   },
 });
 
