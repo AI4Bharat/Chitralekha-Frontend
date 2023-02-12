@@ -80,11 +80,20 @@ const RightPanel = ({ currentIndex }) => {
   const onMergeClick = useCallback((index) => {
     const selectionStart = subtitles[index].text.length;
     const sub = onMerge(index);
+    const timings = [{
+      start: subtitles[index].start_time,
+      end: subtitles[index].end_time,
+    },
+    {
+      start: subtitles[index + 1]?.start_time,
+      end: subtitles[index + 1]?.end_time,
+    }]
     dispatch(setSubtitles(sub, C.SUBTITLES));
     setUndoStack([...undoStack, {
       type: "merge",
       index: index,
       selectionStart: selectionStart,
+      timings: timings
     }]);
     setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
@@ -106,6 +115,14 @@ const RightPanel = ({ currentIndex }) => {
       type: "split",
       index: currentIndexToSplitTextBlock,
       selectionStart: selectionStart,
+      timings: [{
+        start: sub[currentIndexToSplitTextBlock].start_time,
+        end: sub[currentIndexToSplitTextBlock].end_time,
+      },
+      {
+        start: sub[currentIndexToSplitTextBlock + 1]?.start_time,
+        end: sub[currentIndexToSplitTextBlock + 1]?.end_time,
+      }]
     }]);
     setRedoStack([]);
     saveTranscriptHandler(false, true, sub);

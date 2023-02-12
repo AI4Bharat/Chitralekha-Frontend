@@ -67,6 +67,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const onMergeClick = useCallback((index) => {
     const selectionStart = subtitles[index].text.length;
     const targetSelectionStart = subtitles[index].target_text.length;
+    const timings = [{
+      start: subtitles[index].start_time,
+      end: subtitles[index].end_time,
+    },
+    {
+      start: subtitles[index + 1]?.start_time,
+      end: subtitles[index + 1]?.end_time,
+    }]
     const sub = onMerge(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, true, sub);
@@ -75,6 +83,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       index: index,
       selectionStart: selectionStart,
       targetSelectionStart: targetSelectionStart,
+      timings: timings
     }]);
     setRedoStack([]);
   }, [undoStack, subtitles]);
