@@ -6,6 +6,10 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { memo } from "react";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import MicIcon from "@mui/icons-material/MicOutlined";
+import UploadIcon from "@mui/icons-material/UploadOutlined";
+import StopIcon from "@mui/icons-material/Stop";
+import { useSelector } from "react-redux";
 
 const ButtonComponent = ({
   index,
@@ -16,9 +20,14 @@ const ButtonComponent = ({
   onSplitClick,
   showPopOver,
   showSplit,
+  handleStartRecording,
+  handleStopRecording,
+  recordAudio,
 }) => {
   const classes = VideoLandingStyle();
+  const taskData = useSelector((state) => state.getTaskDetails.data);
 
+  console.log(taskData);
   return (
     <>
       {showSplit && (
@@ -63,6 +72,35 @@ const ButtonComponent = ({
           <AddIcon />
         </IconButton>
       </Tooltip>
+
+      {taskData.task_type.includes("VOICEOVER") &&
+        (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (
+          <Tooltip title="Record Audio" placement="bottom">
+            <IconButton
+              className={classes.optionIconBtn}
+              onClick={() => handleStartRecording(index)}
+            >
+              <MicIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Stop Recording" placement="bottom">
+            <IconButton
+              className={classes.optionIconBtn}
+              onClick={() => handleStopRecording(index)}
+            >
+              <StopIcon />
+            </IconButton>
+          </Tooltip>
+        ))}
+
+      {taskData.task_type.includes("VOICEOVER") && (
+        <Tooltip title="Upload Audio" placement="bottom">
+          <IconButton className={classes.optionIconBtn} onClick={() => {}}>
+            <UploadIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </>
   );
 };
