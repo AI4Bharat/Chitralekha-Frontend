@@ -28,7 +28,12 @@ import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTra
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import ProjectStyle from "../../../styles/ProjectStyle";
-import { MenuProps } from "../../../utils/utils";
+import {
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "../../../utils/utils";
 import ColorArray from "../../../utils/getColors";
 
 const EditProject = () => {
@@ -226,51 +231,10 @@ const EditProject = () => {
 
   defaultTask.sort((a, b) => a.id - b.id);
 
-  const getDisableOption = useCallback(
-    (data) => {
-      if (data.value === "TRANSCRIPTION_EDIT") {
-        return false;
-      }
-
-      if (
-        data.value === "TRANSCRIPTION_REVIEW" ||
-        data.value === "TRANSLATION_EDIT"
-      ) {
-        if (defaultTask.some((item) => item.value === "TRANSCRIPTION_EDIT")) {
-          return false;
-        }
-        return true;
-      }
-
-      if (data.value === "TRANSLATION_REVIEW") {
-        if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
-          return false;
-        }
-        return true;
-      }
-    },
-    [defaultTask]
-  );
-
-  const defaultTaskHandler = (task) => {
-    const isTranscriptionEdit = task.findIndex(
-      (item) => item.value === "TRANSCRIPTION_EDIT"
-    );
-
-    if (isTranscriptionEdit === -1) {
-      setDefaultTask([]);
-    } else {
-      const isTranslationEdit = task.findIndex(
-        (item) => item.value === "TRANSLATION_EDIT"
-      );
-
-      if (isTranslationEdit === -1) {
-        const temp = task.filter((item) => item.value !== "TRANSLATION_REVIEW");
-        setDefaultTask(temp);
-      } else {
-        setDefaultTask(task);
-      }
-    }
+  const handleDefaultTask = (task) => {
+    const { dTask, lang } = defaultTaskHandler(task);
+    setDefaultTask(dTask);
+    setTranslationLanguage(lang);
   };
 
   return (
@@ -432,7 +396,7 @@ const EditProject = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => defaultTaskHandler(event.target.value)}
+                  onChange={(event) => handleDefaultTask(event.target.value)}
                   disabled={
                     !(
                       projectDetails?.managers?.some(
@@ -456,7 +420,7 @@ const EditProject = () => {
                     <MenuItem
                       key={index}
                       value={item}
-                      disabled={getDisableOption(item)}
+                      disabled={getDisableOption(item, defaultTask)}
                     >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
@@ -478,13 +442,7 @@ const EditProject = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
-                  disabled={
-                    !(
-                      projectDetails?.managers?.some(
-                        (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
-                    )
-                  }
+                  disabled={diableTargetLang(defaultTask)}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
