@@ -29,6 +29,9 @@ const ButtonComponent = ({
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
 
   return (
     <>
@@ -79,16 +82,18 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {taskData.task_type.includes("VOICEOVER") && showChangeBtn && (
-        <Tooltip title="Get Updated Audio" placement="bottom">
-          <IconButton
-            className={classes.optionIconBtn}
-            onClick={() => saveTranscriptHandler(false, true)}
-          >
-            <TaskAltIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      {taskData.task_type.includes("VOICEOVER") &&
+        transcriptPayload.source_type === "MACHINE_GENERATED" &&
+        showChangeBtn && (
+          <Tooltip title="Get Updated Audio" placement="bottom">
+            <IconButton
+              className={classes.optionIconBtn}
+              onClick={() => saveTranscriptHandler(false, true)}
+            >
+              <TaskAltIcon />
+            </IconButton>
+          </Tooltip>
+        )}
 
       {taskData.task_type.includes("VOICEOVER") &&
         (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (
