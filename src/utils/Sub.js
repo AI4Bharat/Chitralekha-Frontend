@@ -8,6 +8,7 @@ export default class Sub {
         this.text = obj.text;
         this.target_text = obj.target_text;
         this.audio = obj.audio;
+        this.txt_changed = obj.txt_changed ?? false;
     }
 
     get check() {

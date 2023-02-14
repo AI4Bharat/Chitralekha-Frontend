@@ -10,6 +10,7 @@ import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
 import StopIcon from "@mui/icons-material/Stop";
 import { useSelector } from "react-redux";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 const ButtonComponent = ({
   index,
@@ -23,6 +24,8 @@ const ButtonComponent = ({
   handleStartRecording,
   handleStopRecording,
   recordAudio,
+  showChangeBtn,
+  saveTranscriptHandler,
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -72,6 +75,17 @@ const ButtonComponent = ({
             onClick={() => addNewSubtitleBox(index)}
           >
             <AddIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {taskData.task_type.includes("VOICEOVER") && showChangeBtn && (
+        <Tooltip title="Get Updated Audio" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={() => saveTranscriptHandler(false, true)}
+          >
+            <TaskAltIcon />
           </IconButton>
         </Tooltip>
       )}
