@@ -447,16 +447,15 @@ const TaskList = () => {
           <IconButton
             disabled={!tableData.rowData[11]}
             onClick={() => {
-              if (
-                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-              ) {
+              if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
-              } else {
+              } else if(tableData.rowData[1].includes("TRANSLATION")) {
                 generateTranslationCall(
                   tableData.rowData[0],
                   tableData.rowData[17]
                 );
+              } else {
+                navigate(`/task/${tableData.rowData[0]}/voiceover`);
               }
             }}
             color="primary"

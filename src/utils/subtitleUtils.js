@@ -312,3 +312,29 @@ export const onRedoAction = (lastAction) => {
   }
   return subtitles;
 };
+
+export const setAudioContent = (index, audio) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = copySubs(subtitles);
+
+  copySub[index].audio = { audioContent: audio };
+
+  return copySub;
+};
+
+export const base64toBlob = (base64) => {
+  const byteCharacters = atob(base64);
+
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+
+  const blob = new Blob([byteArray], { type: "audio/wav" });
+  const blobUrl = URL.createObjectURL(blob);
+
+  return blobUrl;
+}

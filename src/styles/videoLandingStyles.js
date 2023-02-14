@@ -509,6 +509,14 @@ const VideoLandingStyle = makeStyles({
     objectFit: "fill",
     maxHeight: "100%",
   },
+
+  recorder: {
+    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    width: "100%",
+  },
 });
 
 export default VideoLandingStyle;

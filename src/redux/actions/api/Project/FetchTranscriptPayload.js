@@ -7,7 +7,11 @@ export default class FetchTranscriptPayloadAPI extends API {
     super("GET", timeout, false);
     this.type = C.GET_TRANSCRIPT_PAYLOAD;
     this.id = id;
-    this.payloadEndpoint = (taskType === "TRANSCRIPTION_EDIT" || taskType === "TRANSCRIPTION_REVIEW") ? ENDPOINTS.transcript : ENDPOINTS.translation
+    this.payloadEndpoint = taskType.includes("TRANSCRIPTION")
+      ? ENDPOINTS.transcript
+      : taskType.includes("TRANSLATION")
+      ? ENDPOINTS.translation
+      : ENDPOINTS.voiceover;
     this.endpoint = `${super.apiEndPointAuto()}${
       this.payloadEndpoint
     }get_payload/?task_id=${id}`;

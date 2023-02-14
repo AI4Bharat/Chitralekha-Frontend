@@ -10,6 +10,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import RightPanel from "./RightPanel";
+import VoiceOverRightPanel from "./VoiceOverRightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./components/VideoPanel";
 import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
@@ -33,7 +34,6 @@ const VideoLanding = () => {
   const { taskId } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
-console.log("videoLanding");
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [snackbar, setSnackbarInfo] = useState({
@@ -266,8 +266,10 @@ console.log("videoLanding");
         <Grid md={4} xs={12} sx={{ width: "100%" }}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
             <RightPanel currentIndex={currentIndex} />
-          ) : (
+          ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
             <TranslationRightPanel currentIndex={currentIndex} />
+          ) : (
+            <VoiceOverRightPanel currentIndex={currentIndex} />
           )}
         </Grid>
       </Grid>
