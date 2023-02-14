@@ -27,6 +27,9 @@ const VideoLandingStyle = makeStyles({
     textAlign: "center",
     margin: "32px",
     width: "90%",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden"
   },
 
   settingsIconBtn: {
@@ -516,6 +519,8 @@ const VideoLandingStyle = makeStyles({
     flexWrap: "wrap",
     alignItems: "center",
     width: "100%",
+    justifyContent: "center",
+    height: "100%"
   },
 });
 

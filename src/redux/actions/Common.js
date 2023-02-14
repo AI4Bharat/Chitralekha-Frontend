@@ -27,3 +27,10 @@ export const setPlayer = (data) => {
     payload: data,
   };
 };
+
+export const setSubtitlesForCheck = (data) => {
+  return {
+    type: C.SUBTITLES_FOR_CHECK,
+    payload: data,
+  };
+};

@@ -26,6 +26,8 @@ import {
   timeChange,
 } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -33,11 +35,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const theme = useTheme();
+  const xl = useMediaQuery(theme.breakpoints.up("xl"));
+
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
+  const subtitlesForCheck = useSelector(
+    (state) => state.commonReducer.subtitlesForCheck
+  );
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -54,6 +62,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [textChangeBtn, setTextChangeBtn] = useState([]);
 
   const onDelete = useCallback(
     (index) => {
@@ -95,6 +104,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   );
 
   useEffect(() => {
+    setTextChangeBtn(subtitlesForCheck?.map(() => false));
+  }, [subtitlesForCheck]);
+
+  useEffect(() => {
     let updatedArray = [];
 
     if (!!subtitles) {
@@ -126,19 +139,28 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
+    const temp = [...textChangeBtn];
 
-    arr.forEach((element, i) => {
+    subtitlesForCheck.forEach((item, i) => {
       if (index === i) {
-        if (type === "transaltion") {
-          element.target_text = text;
+        if (item.text === text) {
+          temp[index] = false;
         } else {
-          element.text = text;
+          temp[index] = true;
         }
       }
     });
 
+    arr.forEach((element, i) => {
+      if (index === i) {
+        element.text = text;
+        element.txt_changed = temp[index];
+      }
+    });
+
+    setTextChangeBtn(temp);
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false);
+    // saveTranscriptHandler(false, false);
   };
 
   const saveTranscriptHandler = async (isFinal, isAutosave) => {
@@ -337,6 +359,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     handleStartRecording={handleStartRecording}
                     handleStopRecording={handleStopRecording}
                     recordAudio={recordAudio}
+                    showChangeBtn={textChangeBtn[index]}
+                    saveTranscriptHandler={saveTranscriptHandler}
                   />
 
                   <TimeBoxes
@@ -358,48 +382,71 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  <div className={classes.relative} style={{ width: "100%" }}>
-                    <textarea
-                      rows={4}
-                      className={`${classes.textAreaTransliteration} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
-                      dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      style={{ fontSize: fontSize, height: "100px" }}
-                      value={item.text}
-                      onChange={(event) => {
-                        changeTranscriptHandler(
-                          event.target.value,
-                          index,
-                          "transcript"
-                        );
-                      }}
-                    />
-                    <span
-                      className={classes.wordCount}
-                      style={{ left: "25px" }}
-                    >
-                      {sourceLength(index)}
-                    </span>
-                  </div>
-
-                  <div className={classes.recorder}>
-                    <div style={{ display: "none" }}>
-                      <AudioReactRecorder
-                        state={recordAudio[index]}
-                        onStop={(data) => onStopRecording(data, index)}
-                      />
-                    </div>
-                    {recordAudio[index] == "stop" ? (
-                      <div>
-                        <audio src={data[index]} controls />
+                  <Grid container>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
+                      <div
+                        className={classes.relative}
+                        style={{ width: "100%" }}
+                      >
+                        <textarea
+                          rows={4}
+                          className={`${classes.textAreaTransliteration} ${
+                            currentIndex === index ? classes.boxHighlight : ""
+                          }`}
+                          dir={enableRTL_Typing ? "rtl" : "ltr"}
+                          style={{
+                            fontSize: fontSize,
+                            height: "100px",
+                            margin: "15px 0 25px 0",
+                            width: "89%",
+                            ...(xl && {
+                              width: "80%",
+                              margin: "15px 0",
+                            }),
+                          }}
+                          value={item.text}
+                          onChange={(event) => {
+                            changeTranscriptHandler(
+                              event.target.value,
+                              index,
+                              "voiceover"
+                            );
+                          }}
+                        />
+                        <span
+                          className={classes.wordCount}
+                          style={{
+                            left: "25px",
+                            ...(!xl && {
+                              left: "10px",
+                              bottom: "5px",
+                            }),
+                          }}
+                        >
+                          {sourceLength(index)}
+                        </span>
                       </div>
-                    ) : (
-                      <div style={{ color: "#fff", margin: "auto" }}>
-                        Recording Audio....
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
+                      <div className={classes.recorder}>
+                        <div style={{ display: "none" }}>
+                          <AudioReactRecorder
+                            state={recordAudio[index]}
+                            onStop={(data) => onStopRecording(data, index)}
+                          />
+                        </div>
+                        {recordAudio[index] == "stop" ? (
+                          <div>
+                            <audio src={data[index]} controls />
+                          </div>
+                        ) : (
+                          <div style={{ color: "#fff", margin: "18px auto" }}>
+                            Recording Audio....
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </>
             );

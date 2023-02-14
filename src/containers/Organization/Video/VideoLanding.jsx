@@ -23,12 +23,17 @@ import Sub from "../../../utils/Sub";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import { Box } from "@mui/system";
-import { FullScreen, setSubtitles } from "../../../redux/actions/Common";
+import {
+  FullScreen,
+  setSubtitles,
+  setSubtitlesForCheck,
+} from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
 import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
+import { cloneDeep } from "lodash";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -89,6 +94,8 @@ const VideoLanding = () => {
       (item) => new Sub(item)
     );
 
+    const newSub = cloneDeep(sub);
+    dispatch(setSubtitlesForCheck(newSub));
     dispatch(setSubtitles(sub, C.SUBTITLES));
   }, [transcriptPayload?.payload?.payload]);
 
@@ -228,7 +235,8 @@ const VideoLanding = () => {
                       : classes.lightMode
                   }`}
                   value={
-                    taskDetails?.task_type?.includes("TRANSCRIPTION")
+                    taskDetails.task_type.includes("TRANSCRIPTION") ||
+                    taskDetails.task_type.includes("VOICEOVER")
                       ? currentSubs.text
                       : currentSubs.target_text
                   }

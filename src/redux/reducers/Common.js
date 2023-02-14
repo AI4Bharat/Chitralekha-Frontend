@@ -5,7 +5,8 @@ const initialState = {
   fullscreenVideo: false,
   subtitles: [],
   player: null,
-  videoDetails: []
+  videoDetails: [],
+  subtitlesForCheck: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -31,6 +32,12 @@ const reducer = (state = initialState, action) => {
     case C.PLAYER: {
       let result = state;
       result.player = action.payload;
+      return result;
+    }
+
+    case C.SUBTITLES_FOR_CHECK: {
+      let result = {...state};
+      result.subtitlesForCheck = action.payload;
       return result;
     }
 
