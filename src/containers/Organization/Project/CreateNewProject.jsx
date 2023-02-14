@@ -79,6 +79,8 @@ const CreatenewProject = () => {
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [voiceOverSourceType, setVoiceOverSourceType] =
+    useState("MACHINE_GENERATED");
 
   const disableBtn = () => {
     if (!title || managerUsername.length <= 0) {
@@ -145,13 +147,6 @@ const CreatenewProject = () => {
     }
   }, [organizationDetails]);
 
-  const handeleselectManager = (event, item) => {
-    const {
-      target: { value },
-    } = event;
-    setManagerUsername(typeof value === "string" ? value.split(",") : value);
-  };
-
   const handleCreateProject = async () => {
     setLoading(true);
     const newPrjectReqBody = {
@@ -161,6 +156,7 @@ const CreatenewProject = () => {
       managers_id: managerUsername.map((item) => item.id),
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
+      default_voiceover_type: voiceOverSourceType,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
     };
@@ -296,6 +292,26 @@ const CreatenewProject = () => {
               id="translation-source-type"
               value={translationSourceType}
               onChange={(event) => setTranslationSourceType(event.target.value)}
+              MenuProps={MenuProps}
+            >
+              {translationTypes.map((item, index) => (
+                <MenuItem key={index} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required">
+            Select Voiceover Source
+          </Typography>
+          <FormControl fullWidth>
+            <Select
+              id="Voiceover-source-type"
+              value={voiceOverSourceType}
+              onChange={(event) => setVoiceOverSourceType(event.target.value)}
               MenuProps={MenuProps}
             >
               {translationTypes.map((item, index) => (

@@ -73,6 +73,8 @@ const CreateNewOrg = () => {
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [voiceOverSourceType, setVoiceOverSourceType] =
+    useState("MACHINE_GENERATED");
 
   const disableBtn = () => {
     if (!title || !owner) {
@@ -116,6 +118,7 @@ const CreateNewOrg = () => {
       default_translation_type: translationSourceType,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
+      default_voiceover_type: voiceOverSourceType,
     };
 
     const apiObj = new CreateNewOrganizationAPI(reqBody);
@@ -241,6 +244,26 @@ const CreateNewOrg = () => {
               id="translation-source-type"
               value={translationSourceType}
               onChange={(event) => setTranslationSourceType(event.target.value)}
+              MenuProps={MenuProps}
+            >
+              {translationTypes.map((item, index) => (
+                <MenuItem key={index} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required">
+            Select Voiceover Source
+          </Typography>
+          <FormControl fullWidth>
+            <Select
+              id="Voiceover-source-type"
+              value={voiceOverSourceType}
+              onChange={(event) => setVoiceOverSourceType(event.target.value)}
               MenuProps={MenuProps}
             >
               {translationTypes.map((item, index) => (
