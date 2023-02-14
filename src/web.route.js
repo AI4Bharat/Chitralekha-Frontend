@@ -125,6 +125,13 @@ const RootRouter = () => {
         />
 
         <Route
+          path="/task/:taskId/voiceover"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
           path="/admin"
           element={ProtectedRouteWrapper(<Layout component={<DashBoard />} />)}
         />

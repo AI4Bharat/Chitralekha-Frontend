@@ -27,10 +27,9 @@ const ButtonComponent = ({
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
 
-  console.log(taskData);
   return (
     <>
-      {showSplit && (
+      {!taskData.task_type.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
@@ -42,7 +41,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {lastItem && (
+      {!taskData.task_type.includes("VOICEOVER") && lastItem && (
         <Tooltip title="Merge Next" placement="bottom">
           <IconButton
             sx={{ transform: "rotate(180deg)" }}
@@ -54,24 +53,28 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      <Tooltip title="Delete" placement="bottom">
-        <IconButton
-          className={classes.optionIconBtn}
-          style={{ backgroundColor: "red" }}
-          onClick={() => onDelete(index)}
-        >
-          <DeleteOutlineIcon />
-        </IconButton>
-      </Tooltip>
+      {!taskData.task_type.includes("VOICEOVER") && (
+        <Tooltip title="Delete" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            style={{ backgroundColor: "red" }}
+            onClick={() => onDelete(index)}
+          >
+            <DeleteOutlineIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
-      <Tooltip title="Add Subtitle Box" placement="bottom">
-        <IconButton
-          className={classes.optionIconBtn}
-          onClick={() => addNewSubtitleBox(index)}
-        >
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
+      {!taskData.task_type.includes("VOICEOVER") && (
+        <Tooltip title="Add Subtitle Box" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={() => addNewSubtitleBox(index)}
+          >
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
       {taskData.task_type.includes("VOICEOVER") &&
         (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (

@@ -431,13 +431,12 @@ const OrgLevelTaskList = () => {
           <IconButton
             disabled={!tableData.rowData[11]}
             onClick={() => {
-              if (
-                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-              ) {
+              if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
-              } else {
+              } else if (tableData.rowData[1].includes("TRANSLATION")) {
                 navigate(`/task/${tableData.rowData[0]}/translate`);
+              } else {
+                navigate(`/task/${tableData.rowData[0]}/voiceover`);
               }
             }}
             color="primary"

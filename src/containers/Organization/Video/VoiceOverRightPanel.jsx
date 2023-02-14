@@ -17,10 +17,12 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import {
   addSubtitleBox,
+  base64toBlob,
   onMerge,
   onRedoAction,
   onSubtitleDelete,
   onUndoAction,
+  setAudioContent,
   timeChange,
 } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
@@ -52,14 +54,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-
-  useEffect(() => {
-    if (!!sourceText) {
-      const recorderArray = sourceText.map(() => "stop");
-      setRecordAudio(recorderArray);
-      setData(new Array(recorderArray.length));
-    }
-  }, [sourceText]);
 
   const onDelete = useCallback(
     (index) => {
@@ -99,7 +93,25 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     },
     [undoStack, subtitles]
   );
+
   useEffect(() => {
+    let updatedArray = [];
+
+    if (!!subtitles) {
+      const recorderArray = subtitles.map(() => "stop");
+      setRecordAudio(recorderArray);
+      setData(new Array(recorderArray.length));
+    }
+
+    subtitles?.forEach((item, index) => {
+      if (item.audio && item.audio.hasOwnProperty("audioContent")) {
+        const blobUrl = base64toBlob(item.audio.audioContent);
+        item.blobUrl = blobUrl;
+        updatedArray[index] = blobUrl;
+      }
+    });
+
+    setData(updatedArray);
     setSourceText(subtitles);
   }, [subtitles]);
 
@@ -247,6 +259,19 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     if (data && data.hasOwnProperty("url")) {
       const updatedArray = Object.assign([], data);
       updatedArray[index] = data.url;
+
+      const reader = new FileReader();
+
+      let base64data;
+      reader.readAsDataURL(data.blob);
+      reader.onloadend = function () {
+        base64data = reader.result;
+        const encode = base64data.replace("data:audio/wav;base64,", "");
+        updatedArray.audioContent = encode;
+        const updatedSourceText = setAudioContent(index, encode);
+        dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
+      };
+
       setData(updatedArray);
       updateRecorderState(RecordState.STOP, index);
     }
@@ -365,9 +390,13 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                         onStop={(data) => onStopRecording(data, index)}
                       />
                     </div>
-                    {recordAudio[index] == "stop" && (
+                    {recordAudio[index] == "stop" ? (
                       <div>
                         <audio src={data[index]} controls />
+                      </div>
+                    ) : (
+                      <div style={{ color: "#fff", margin: "auto" }}>
+                        Recording Audio....
                       </div>
                     )}
                   </div>

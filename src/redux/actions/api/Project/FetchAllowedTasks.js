@@ -4,13 +4,12 @@ import C from "../../../constants";
 
 export default class FetchAllowedTasksAPI extends API {
   constructor(videoId, taskType,language, timeout = 2000) {
-    console.log(taskType,"taskType")
     super("GET", timeout, false);
     this.type = C.GET_ALLOWED_TASK;
     this.videoId = videoId;
     this.taskType = taskType;
     this.language = language;
-    this.queryStr = taskType === "TRANSLATION" ? `&target_language=${language}`:""
+    this.queryStr = taskType === "TRANSLATION" || taskType === "VOICEOVER" ? `&target_language=${language}`:""
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}get_allowed_task/?video_id=${videoId}&type=${taskType}${this.queryStr}`;
   }
 

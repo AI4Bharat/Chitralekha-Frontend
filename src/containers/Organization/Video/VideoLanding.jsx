@@ -34,7 +34,7 @@ const VideoLanding = () => {
   const { taskId } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
-  console.log("videoLanding");
+
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [snackbar, setSnackbarInfo] = useState({
