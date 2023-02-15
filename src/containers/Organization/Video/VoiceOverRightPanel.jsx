@@ -167,7 +167,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     arr.forEach((element, i) => {
       if (index === i) {
         element.text = text;
-        element.txt_changed = temp[index];
+        element.text_changed = temp[index];
       }
     });
 
