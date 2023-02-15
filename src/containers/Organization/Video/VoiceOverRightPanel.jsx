@@ -2,7 +2,13 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid, IconButton, Pagination } from "@mui/material";
+import {
+  CardContent,
+  Grid,
+  IconButton,
+  Pagination,
+  Typography,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
@@ -37,9 +43,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const theme = useTheme();
-  const xl = useMediaQuery(theme.breakpoints.up("xl"));
-
+  const xl = useMediaQuery('(min-width:1600px)');
+  
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -260,11 +265,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
-
   const addNewSubtitleBox = useCallback(
     (index) => {
       const sub = addSubtitleBox(index);
@@ -358,14 +358,11 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                 <Box
                   display="flex"
                   paddingTop="16px"
-                  sx={{ paddingX: "20px", justifyContent: "space-around" }}
+                  sx={{ paddingX: "20px", justifyContent: "space-between" }}
                 >
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.start_time}
-                    index={index}
-                    type={"startTime"}
-                  />
+                  <Typography variant="body1" className={classes.durationBox}>
+                    Duration: {item.time_difference} ms
+                  </Typography>
 
                   <ButtonComponent
                     index={index}
@@ -378,13 +375,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     recordAudio={recordAudio}
                     showChangeBtn={textChangeBtn[index]}
                     saveTranscriptHandler={saveTranscriptHandler}
-                  />
-
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.end_time}
-                    index={index}
-                    type={"endTime"}
                   />
                 </Box>
 
@@ -470,7 +460,14 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           })}
         </Box>
 
-        <Box className={classes.paginationBox}>
+        <Box
+          className={classes.paginationBox}
+          style={{
+            ...(!xl && {
+              bottom: "5%",
+            }),
+          }}
+        >
           <Pagination
             count={totalPages}
             page={currentPage}

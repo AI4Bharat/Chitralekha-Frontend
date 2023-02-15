@@ -530,21 +530,28 @@ const VideoLandingStyle = makeStyles({
     width: "100%",
     color: "#fff",
     textAlign: "center",
-    display:"flex",
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding:"10px"
+    padding: "10px",
   },
 
   paginationItems: {
-    "& .MuiPaginationItem-root" : {
+    "& .MuiPaginationItem-root": {
       color: "#fff",
       borderColor: "#eaeaea",
     },
 
     "& .Mui-selected": {
       backgroundColor: "#0083e2",
-    }
+    },
+  },
+
+  durationBox: {
+    backgroundColor: "#616A6B",
+    color: "#fff",
+    padding: "5px 10px",
+    borderRadius: "5px",
   },
 });
 
