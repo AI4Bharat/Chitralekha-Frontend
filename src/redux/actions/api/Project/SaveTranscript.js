@@ -7,7 +7,11 @@ export default class SaveTranscriptAPI extends API {
     super("POST", timeout, false);
     this.type = C.SAVE_TRANSCRIPT;
     this.payload = payload;
-    this.payloadEndpoint = (taskType === "TRANSCRIPTION_EDIT" || taskType === "TRANSCRIPTION_REVIEW") ? ENDPOINTS.transcript : ENDPOINTS.translation
+    this.payloadEndpoint = taskType.includes("TRANSCRIPTION")
+      ? ENDPOINTS.transcript
+      : taskType.includes("TRANSLATION")
+      ? ENDPOINTS.translation
+      : ENDPOINTS.voiceover;
     this.endpoint = `${super.apiEndPointAuto()}${
       this.payloadEndpoint
     }save/`;

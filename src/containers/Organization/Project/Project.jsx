@@ -107,9 +107,9 @@ const Project = () => {
     getProjectVideoList();
     getOrganizatioUsersList();
 
-    return ()=> {
-      dispatch({type: C.CLEAR_PROJECT_VIDEOS, payload: []})
-    }
+    return () => {
+      dispatch({ type: C.CLEAR_PROJECT_VIDEOS, payload: [] });
+    };
   }, []);
 
   const [value, setValue] = useState(0);
@@ -187,24 +187,21 @@ const Project = () => {
   const addNewVideoHandler = async () => {
     const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
     const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
-
-    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc);
-    dispatch(APITransport(apiObj));
-    setIsAudio(false);
-    setCreateVideoDialog(false);
+    const create = true;
     setSnackbarInfo({
-
       open: true,
       message: "Your request is being processed.",
       variant: "info",
     });
 
-  setTimeout(() => navigate(`/my-organization/${orgId}/project/${projectId}`), 6000);
+    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc,create);
+
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
     });
+
     const resp = await res.json();
 
     if (res.ok) {
@@ -213,8 +210,6 @@ const Project = () => {
         message: "Video added successfully",
         variant: "success",
       });
-      setCreateVideoDialog(false);
-      getProjectVideoList();
     } else {
       setSnackbarInfo({
         open: true,
@@ -222,6 +217,10 @@ const Project = () => {
         variant: "error",
       });
     }
+
+    setCreateVideoDialog(false);
+    getProjectVideoList();
+    setIsAudio(false);
   };
 
   const renderSnackBar = () => {

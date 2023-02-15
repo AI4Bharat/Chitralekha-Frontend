@@ -12,7 +12,8 @@ const VideoName = ({
   setFontSize,
   darkAndLightMode,
   setDarkAndLightMode,
-  player,
+  subtitlePlacement,
+  setSubtitlePlacement,
 }) => {
   const classes = VideoLandingStyle();
 
@@ -54,8 +55,9 @@ const VideoName = ({
         fontSize={fontSize}
         darkAndLightMode={darkAndLightMode}
         setDarkAndLightMode={setDarkAndLightMode}
-        player={player}
         contianer={document.getElementById("video")}
+        subtitlePlacement={subtitlePlacement}
+        setSubtitlePlacement={setSubtitlePlacement}
       />
     </Box>
   );

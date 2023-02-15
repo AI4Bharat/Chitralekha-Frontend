@@ -2,19 +2,14 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchTranscriptPayloadAPI extends API {
-  constructor(id, taskType, timeout = 2000) {
+export default class BulkTaskExportAPI extends API {
+  constructor(exportType, taskId, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_TRANSCRIPT_PAYLOAD;
-    this.id = id;
-    this.payloadEndpoint = taskType.includes("TRANSCRIPTION")
-      ? ENDPOINTS.transcript
-      : taskType.includes("TRANSLATION")
-      ? ENDPOINTS.translation
-      : ENDPOINTS.voiceover;
+    this.taskId = taskId;
+    this.exportType = exportType;
     this.endpoint = `${super.apiEndPointAuto()}${
-      this.payloadEndpoint
-    }get_payload/?task_id=${id}`;
+      ENDPOINTS.task
+    }download_tasks/?task_ids=${taskId}&export_type=${exportType}`;
   }
 
   processResponse(res) {

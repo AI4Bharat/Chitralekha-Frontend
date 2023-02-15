@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -28,7 +28,12 @@ import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTra
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import ProjectStyle from "../../../styles/ProjectStyle";
-import { MenuProps } from "../../../utils/utils";
+import {
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "../../../utils/utils";
 import ColorArray from "../../../utils/getColors";
 
 const EditProject = () => {
@@ -61,10 +66,15 @@ const EditProject = () => {
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [transcriptSourceType, setTranscriptSourceType] = useState("");
   const [translationSourceType, setTranslationSourceType] = useState("");
+  const [voiceOverSourceType, setVoiceOverSourceType] = useState("");
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
-  const [priority, setPriority] = useState({});
+  const [priority, setPriority] = useState({
+    label: null,
+    value: null,
+  });
+  const [taskDescription, setTaskDescription] = useState("");
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -111,10 +121,12 @@ const EditProject = () => {
 
   useEffect(() => {
     if (projectInfo && projectInfo.managers) {
+      setTaskDescription(projectInfo.default_description);
       setProjectDetails(projectInfo);
       setManagers(projectInfo?.managers);
       setTranscriptSourceType(projectInfo?.default_transcript_type);
       setTranslationSourceType(projectInfo?.default_translation_type);
+      setVoiceOverSourceType(projectInfo?.default_voiceover_type);
       setDate(projectInfo?.default_eta);
     }
   }, [projectInfo]);
@@ -129,6 +141,7 @@ const EditProject = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
+
     const updateProjectReqBody = {
       title: projectDetails.title,
       description: projectDetails.description,
@@ -140,6 +153,8 @@ const EditProject = () => {
       default_translation_type: translationSourceType,
       default_task_eta: date,
       default_task_priority: priority.value,
+      default_task_description: taskDescription,
+      default_voiceover_type: voiceOverSourceType,
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
@@ -189,11 +204,13 @@ const EditProject = () => {
       managers: projectInfo.managers,
       default_transcript_type: projectInfo.default_transcript_type,
       default_translation_type: projectInfo.default_translation_type,
+      default_voiceover_type: projectInfo.default_voiceover_type,
       description: projectInfo.description,
       default_task_types: projectInfo.default_task_types,
       default_target_languages: projectInfo.default_target_languages,
       default_priority: projectInfo.default_priority,
       default_eta: projectInfo.default_eta,
+      default_task_description: projectInfo.default_description,
     };
 
     const newObj = {
@@ -201,11 +218,13 @@ const EditProject = () => {
       managers: managers,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
+      default_voiceover_type: voiceOverSourceType,
       description: projectDetails.description,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
       default_priority: priority?.value,
       default_eta: date,
+      default_task_description: taskDescription,
     };
 
     if (JSON.stringify(oldObj) === JSON.stringify(newObj)) {
@@ -216,6 +235,12 @@ const EditProject = () => {
   };
 
   defaultTask.sort((a, b) => a.id - b.id);
+
+  const handleDefaultTask = (task) => {
+    const { dTask, lang } = defaultTaskHandler(task);
+    setDefaultTask(dTask);
+    setTranslationLanguage(lang);
+  };
 
   return (
     <>
@@ -250,8 +275,13 @@ const EditProject = () => {
                 value={projectDetails?.title}
                 onChange={handleFieldChange}
                 InputLabelProps={{ shrink: true }}
-                disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                  userData.role === "ORG_OWNER")}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
               />
             </Grid>
 
@@ -266,8 +296,13 @@ const EditProject = () => {
                   label="Manager"
                   onChange={(e) => setManagers(e.target.value)}
                   MenuProps={MenuProps}
-                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                    userData.role === "ORG_OWNER")}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -298,19 +333,24 @@ const EditProject = () => {
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
                 <InputLabel id="transcription-source-type">
-                  Transcription Source
+                  Default Transcription Source
                 </InputLabel>
                 <Select
                   labelId="transcription-source-type"
                   id="transcription-source-type_select"
                   value={transcriptSourceType}
-                  label="Transcription Source"
+                  label="Default Transcription Source"
                   MenuProps={MenuProps}
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
                   }
-                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                    userData.role === "ORG_OWNER")}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                 >
                   {transcriptTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -324,19 +364,55 @@ const EditProject = () => {
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
                 <InputLabel id="translation-source-type">
-                  Translation Source
+                  Default Translation Source
                 </InputLabel>
                 <Select
                   labelId="translation-source-type"
                   id="translation-source-type_select"
                   value={translationSourceType}
-                  label="Translation Source"
+                  label="Default Translation Source"
                   MenuProps={MenuProps}
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
                   }
-                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                    userData.role === "ORG_OWNER")}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
+                >
+                  {translationTypes.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <FormControl fullWidth>
+                <InputLabel id="Voiceover-source-type">
+                  Default Voiceover Source
+                </InputLabel>
+                <Select
+                  labelId="Voiceover-source-type"
+                  id="Voiceover-source-type_select"
+                  value={voiceOverSourceType}
+                  label="Default Voiceover Source"
+                  MenuProps={MenuProps}
+                  onChange={(event) =>
+                    setVoiceOverSourceType(event.target.value)
+                  }
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                 >
                   {translationTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -356,9 +432,14 @@ const EditProject = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => setDefaultTask(event.target.value)}
-                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                    userData.role === "ORG_OWNER")}
+                  onChange={(event) => handleDefaultTask(event.target.value)}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   MenuProps={MenuProps}
                   renderValue={(selected) => {
                     selected.sort((a, b) => a.id - b.id);
@@ -372,7 +453,11 @@ const EditProject = () => {
                   }}
                 >
                   {bulkTaskTypes.map((item, index) => (
-                    <MenuItem key={index} value={item}>
+                    <MenuItem
+                      key={index}
+                      value={item}
+                      disabled={getDisableOption(item, defaultTask)}
+                    >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
                     </MenuItem>
@@ -393,8 +478,7 @@ const EditProject = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
-                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                    userData.role === "ORG_OWNER")}
+                  disabled={diableTargetLang(defaultTask)}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -419,12 +503,17 @@ const EditProject = () => {
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <DatePicker
-                label="Default ETA"
+                label="Default Task ETA"
                 inputFormat="DD/MM/YYYY"
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
-                disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                  userData.role === "ORG_OWNER")}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
                 renderInput={(params) => <TextField {...params} />}
                 className={classes.datePicker}
               />
@@ -432,22 +521,30 @@ const EditProject = () => {
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
-                <InputLabel id="select-priority">Select Priority</InputLabel>
+                <InputLabel id="select-priority">
+                  Select Task Priority
+                </InputLabel>
                 <Select
                   fullWidth
                   labelId="select-priority"
-                  label="Select Priority"
+                  label="Select Task Priority"
                   value={priority}
                   onChange={(event) => setPriority(event.target.value)}
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
-                  disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                    userData.role === "ORG_OWNER")}
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {projectInfo.default_priority && 
-                        <Chip key={selected.value} label={selected.label} />}
+                        {selected.value && (
+                          <Chip key={selected.value} label={selected.label} />
+                        )}
                       </Box>
                     );
                   }}
@@ -467,13 +564,39 @@ const EditProject = () => {
                 fullWidth
                 multiline
                 rows={3}
-                label="Description"
+                label="Project Description"
                 name="description"
                 value={projectDetails?.description}
                 onChange={handleFieldChange}
                 InputLabelProps={{ shrink: true }}
-                disabled={!(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-                  userData.role === "ORG_OWNER")}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
+              />
+            </Grid>
+
+            <Grid container direction="row" padding="32px 0 0 32px">
+              <TextField
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={3}
+                label="Default Task Description"
+                name="default_description"
+                value={taskDescription}
+                onChange={(event) => setTaskDescription(event.target.value)}
+                InputLabelProps={{ shrink: true }}
+                disabled={
+                  !(
+                    projectDetails?.managers?.some(
+                      (item) => item.id === userData.id
+                    ) || userData.role === "ORG_OWNER"
+                  )
+                }
               />
             </Grid>
 
@@ -497,7 +620,12 @@ const EditProject = () => {
                   {defaultTask.map((item, index) => {
                     return (
                       <>
-                        <Card className={classes.taskBox} style={{ backgroundColor: ColorArray[index]?.colors,}}>{item.label}</Card>
+                        <Card
+                          className={classes.taskBox}
+                          style={{ backgroundColor: ColorArray[index]?.colors }}
+                        >
+                          {item.label}
+                        </Card>
                         {defaultTask.length > 1 &&
                           index + 1 < defaultTask.length && (
                             <div className={classes.arrow}></div>

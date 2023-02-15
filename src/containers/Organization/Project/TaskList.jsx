@@ -27,7 +27,7 @@ import Loader from "../../../common/Spinner";
 import PreviewDialog from "../../../common/PreviewDialog";
 import UserMappedByRole from "../../../utils/UserMappedByRole";
 import FilterList from "../../../common/FilterList";
-import C from "../../../redux/constants"
+import C from "../../../redux/constants";
 import DeleteDialog from "../../../common/DeleteDialog";
 import ExportDialog from "../../../common/ExportDialog";
 
@@ -57,6 +57,8 @@ import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/Fe
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
+import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
+import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -102,6 +104,8 @@ const TaskList = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTaskType, setFilterTaskType] = useState(" ");
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
+  const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
+  const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -117,17 +121,17 @@ const TaskList = () => {
   );
 
   const FetchTaskList = () => {
-      const apiObj = new FetchTaskListAPI(projectId);
-      dispatch(APITransport(apiObj));
+    const apiObj = new FetchTaskListAPI(projectId);
+    dispatch(APITransport(apiObj));
   };
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
 
     return () => {
-      dispatch({type: C.CLEAR_PROJECT_TASK_LIST, payload: []})
-    }
+      dispatch({ type: C.CLEAR_PROJECT_TASK_LIST, payload: [] });
+    };
   }, []);
 
   const supportedLanguages = useSelector(
@@ -151,20 +155,18 @@ const TaskList = () => {
 
     const translationExportObj = new FetchTranslationExportTypesAPI();
     dispatch(APITransport(translationExportObj));
-    
+
     FetchTaskList();
   }, []);
 
-
-
   const taskList = useSelector((state) => state.getTaskList.data);
   const SearchProject = useSelector((state) => state.searchList.data);
-  
-  useEffect(()=>{
-    if(taskList?.tasks_list){
-      setLoading(false)
+
+  useEffect(() => {
+    if (taskList?.tasks_list) {
+      setLoading(false);
     }
-  }, [taskList])
+  }, [taskList]);
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
@@ -180,6 +182,7 @@ const TaskList = () => {
     setOpen(true);
     setTaskdata(id);
     setTasktype(tasttype);
+    setIsBulkTaskDownload(false);
   };
 
   const handleShowFilter = (event) => {
@@ -374,9 +377,35 @@ const TaskList = () => {
     }
   };
 
+  const generateTranslationCall = async (id, taskStatus) => {
+    if (taskStatus === "SELECTED_SOURCE") {
+      const apiObj = new GenerateTranslationOutputAPI(id);
+
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        navigate(`/task/${id}/translate`);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } else {
+      navigate(`/task/${id}/translate`);
+    }
+  };
+
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[15]?.View && (
+      tableData.rowData[16]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
@@ -395,7 +424,7 @@ const TaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Export && (
+      tableData.rowData[16]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
@@ -413,18 +442,20 @@ const TaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Edit && (
+      tableData.rowData[16]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
             disabled={!tableData.rowData[11]}
             onClick={() => {
-              if (
-                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-              ) {
+              if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
+              } else if(tableData.rowData[1].includes("TRANSLATION")) {
+                generateTranslationCall(
+                  tableData.rowData[0],
+                  tableData.rowData[17]
+                );
               } else {
-                navigate(`/task/${tableData.rowData[0]}/translate`);
+                navigate(`/task/${tableData.rowData[0]}/voiceover`);
               }
             }}
             color="primary"
@@ -438,7 +469,7 @@ const TaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Delete && (
+      tableData.rowData[16]?.Delete && (
         <Tooltip title="Delete">
           <IconButton
             onClick={() => handledeletetask(tableData.rowData[0], false)}
@@ -453,7 +484,7 @@ const TaskList = () => {
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Update && (
+      tableData.rowData[16]?.Update && (
         <Tooltip title="Edit Task Details">
           <IconButton
             color="primary"
@@ -472,7 +503,7 @@ const TaskList = () => {
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[15]?.Preview && (
+      tableData.rowData[16]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
             color="primary"
@@ -554,6 +585,11 @@ const TaskList = () => {
       filterResult = lngResult;
     }
     taskList.filteredData = filterResult;
+
+    setSelectedBulkTaskId("");
+    setRows([]);
+    setShowEditTaskBtn(false);
+
     setfilterData(filterResult);
     return taskList.tasks_list;
   };
@@ -620,7 +656,9 @@ const TaskList = () => {
             `${item.user?.first_name} ${item.user?.last_name}`,
             item.project_name,
             item.video,
+            item.description,
             item.buttons,
+            item.status,
           ];
         })
       : [];
@@ -924,6 +962,36 @@ const TaskList = () => {
       },
     },
     {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: "exclude",
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+            textAlign: "center",
+          },
+        }),
+        setCellProps: () => ({ style: { textAlign: "center" } }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
       name: "Action",
       label: "Actions",
       options: {
@@ -958,18 +1026,30 @@ const TaskList = () => {
         },
       },
     },
+    {
+      name: "status",
+      label: "",
+      options: {
+        display: "excluded",
+        viewColumns: false,
+      },
+    },
   ];
 
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = taskList.tasks_list.filter((_item, index) => {
+    const temp = filterData.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
 
+    const taskIds = temp.map((item) => item.id);
+    let temp3 = taskIds.join();
+
+    setSelectedBulkTaskId(temp3);
     setCurrentSelectedTask(temp);
     setRows(temp2);
     setShowEditTaskBtn(!!temp.length);
@@ -1007,6 +1087,59 @@ const TaskList = () => {
     }
   };
 
+  const handleBulkTaskDownload = async () => {
+    setOpen(false);
+
+    const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    if (res.ok) {
+      const resp = await res.blob();
+      const newBlob = new Blob([resp], { type: "application/zip" });
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`
+      );
+
+      document.body.appendChild(link);
+
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setLoading(false);
+    } else {
+      const resp = await res.json();
+
+      setLoading(false);
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
   const toolBarActions = [
     {
       title: "Bulk Task Update",
@@ -1023,14 +1156,18 @@ const TaskList = () => {
         const taskIds = currentSelectedTasks.map((item) => item.id);
         handleBulkDelete(taskIds, false);
       },
-      style: { backgroundColor: "red", marginRight: "auto" },
+      style: { backgroundColor: "red" },
     },
-    // {
-    //   title: "Bulk Task Dowload",
-    //   icon: <FileDownloadIcon />,
-    //   onClick: () => {},
-    //   style: { marginRight: "auto" },
-    // },
+    {
+      title: "Bulk Task Dowload",
+      icon: <FileDownloadIcon />,
+      onClick: () => {
+        setOpen(true);
+        setTasktype("TRANSLATION_EDIT");
+        setIsBulkTaskDownload(true);
+      },
+      style: { marginRight: "auto" },
+    },
   ];
 
   const renderToolBar = () => {
@@ -1201,6 +1338,8 @@ const TaskList = () => {
           exportTranslation={exportTranslation}
           transcriptionOptions={transcriptExportTypes}
           translationOptions={translationExportTypes}
+          isBulkTaskDownload={isBulkTaskDownload}
+          handleBulkTaskDownload={handleBulkTaskDownload}
         />
       )}
 

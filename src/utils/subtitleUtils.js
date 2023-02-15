@@ -129,7 +129,7 @@ export const onSubtitleDelete = (index) => {
   return copySub;
 };
 
-export const onSplit = (currentIndex, selectionStart) => {
+export const onSplit = (currentIndex, selectionStart,  timings = null, targetSelectionStart = null) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = copySubs(subtitles);
 
@@ -138,30 +138,36 @@ export const onSplit = (currentIndex, selectionStart) => {
 
   const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
   const text2 = targetTextBlock.text.slice(selectionStart).trim();
+  const targetText1 = targetSelectionStart ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim() : null;
+  const targetText2 = targetSelectionStart ? targetTextBlock.target_text.slice(targetSelectionStart).trim() : null;
 
-  if (!text1 || !text2) return;
-
-  const splitDuration = (
-    targetTextBlock.duration *
-    (selectionStart / targetTextBlock.text.length)
-  ).toFixed(3);
-
-  if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-    return;
+  if ((!text1 || !text2) || (targetSelectionStart && (!targetText1 || !targetText2))) return;
 
   copySub.splice(currentIndex, 1);
+  let middleTime = null;
 
-  const middleTime = DT.d2t(
-    targetTextBlock.startTime + parseFloat(splitDuration)
-  );
+  if (!timings) {
+    const splitDuration = (
+      targetTextBlock.duration *
+      (selectionStart / targetTextBlock.text.length)
+    ).toFixed(3);
+  
+    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
+      return;
+  
+    middleTime = DT.d2t(
+      targetTextBlock.startTime + parseFloat(splitDuration)
+    );
+  }
 
   copySub.splice(
     index,
     0,
     newSub({
-      start_time: subtitles[currentIndex].start_time,
-      end_time: middleTime,
+      start_time: middleTime ? subtitles[currentIndex].start_time : timings[0].start,
+      end_time: middleTime ??  timings[0].end,
       text: text1,
+      ...(targetSelectionStart && { target_text: targetText1 })
     })
   );
 
@@ -169,9 +175,10 @@ export const onSplit = (currentIndex, selectionStart) => {
     index + 1,
     0,
     newSub({
-      start_time: middleTime,
-      end_time: subtitles[currentIndex].end_time,
+      start_time: middleTime ?? timings[1].start ?? timings[0].end,
+      end_time: middleTime || !timings[1].end ? subtitles[currentIndex].end_time :  timings[1].end,
       text: text2,
+      ...(targetSelectionStart && { target_text: targetText2 })
     })
   );
 
@@ -247,3 +254,87 @@ export const playbackSpeed = [
     speed: 2,
   },
 ];
+
+export const placementMenu = [
+  { label: "Top", mode: "top" },
+  { label: "Bottom", mode: "bottom" },
+];
+
+export const onUndoAction = (lastAction) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  if (lastAction.type === "merge") {
+    console.log(lastAction, "lastAction");
+    return (
+      onSplit(
+        lastAction.index,
+        lastAction.selectionStart >= subtitles[lastAction.index].text.length
+          ? subtitles[lastAction.index].text.length / 2
+          : lastAction.selectionStart,
+        lastAction.timings,
+        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+          ? subtitles[lastAction.index].target_text.length / 2
+          : lastAction.targetSelectionStart
+      ) ?? subtitles
+    );
+  } else if (lastAction.type === "split") {
+    return onMerge(lastAction.index) ?? subtitles;
+  } else if (lastAction.type === "delete") {
+    const copySub = copySubs(subtitles);
+    copySub.splice(lastAction.index, 0, lastAction.data);
+    return copySub;
+  } else if (lastAction.type === "add") {
+    return onSubtitleDelete(lastAction.index+1);
+  }
+  return subtitles;
+};
+
+export const onRedoAction = (lastAction) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  if (lastAction.type === "merge") {
+    return onMerge(lastAction.index) ?? subtitles;
+  } else if (lastAction.type === "split") {
+    return (
+      onSplit(
+        lastAction.index,
+        lastAction.selectionStart >= subtitles[lastAction.index].text.length
+          ? subtitles[lastAction.index].text.length / 2
+          : lastAction.selectionStart,
+        lastAction.timings,
+        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+          ? subtitles[lastAction.index].target_text.length / 2
+          : lastAction.targetSelectionStart
+      ) ?? subtitles
+    );
+  } else if (lastAction.type === "delete") {
+    return onSubtitleDelete(lastAction.index);
+  } else if (lastAction.type === "add") {
+    return addSubtitleBox(lastAction.index);
+  }
+  return subtitles;
+};
+
+export const setAudioContent = (index, audio) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = copySubs(subtitles);
+
+  copySub[index].audio = { audioContent: audio };
+
+  return copySub;
+};
+
+export const base64toBlob = (base64) => {
+  const byteCharacters = atob(base64);
+
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+
+  const blob = new Blob([byteArray], { type: "audio/wav" });
+  const blobUrl = URL.createObjectURL(blob);
+
+  return blobUrl;
+}

@@ -139,11 +139,18 @@ const VideoList = ({ data, removeVideo }) => {
       const link = document.createElement("a");
       link.href = blobUrl;
 
+      const date = new Date();
+      const YYYYMMDD = date
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("");
+
+      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
       link.setAttribute(
         "download",
-        `Chitralekha_Video_${videoName}_${moment().format(
-          "DDMMYYYY"
-        )}_${moment().format("HHMMSS")}.zip`
+        `Chitralekha_Video_${videoName}_${YYYYMMDD}_${HHMMSS}.zip`
       );
 
       document.body.appendChild(link);
@@ -417,7 +424,7 @@ const VideoList = ({ data, removeVideo }) => {
 
     let temp2 = [];
     allRow.forEach((element) => {
-      temp2.push(element.index);
+      temp2.push(element.dataIndex);
     });
 
     setRows(temp2);

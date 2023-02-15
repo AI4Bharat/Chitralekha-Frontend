@@ -102,15 +102,13 @@ const CreateTaskDialog = ({
     if (!isBulk) {
       setShowAllowedTaskList(true);
 
-      if (event.target.value === "TRANSCRIPTION") {
-        const allowedTaskObj = new FetchAllowedTasksAPI(
-          Array.isArray(videoDetails)
-            ? videoDetails.map((item) => item.id)
-            : videoDetails.id,
-          event.target.value
-        );
-        dispatch(APITransport(allowedTaskObj));
-      }
+      const allowedTaskObj = new FetchAllowedTasksAPI(
+        Array.isArray(videoDetails)
+          ? videoDetails.map((item) => item.id)
+          : videoDetails.id,
+        event.target.value
+      );
+      dispatch(APITransport(allowedTaskObj));
     }
   };
 
@@ -145,6 +143,18 @@ const CreateTaskDialog = ({
         message={snackbar.message}
       />
     );
+  };
+
+  const disableBtn = () => {
+    if (!taskType || !allowedTaskType) {
+      return true;
+    }
+
+    if (taskType.includes("TRANSLATION") && language.length <= 0) {
+      return true;
+    }
+
+    return false;
   };
 
   return (
@@ -191,7 +201,8 @@ const CreateTaskDialog = ({
             </FormControl>
           </Box>
 
-          {taskType.includes("TRANSLATION") && (
+          {(taskType.includes("TRANSLATION") ||
+            taskType.includes("VOICEOVER")) && (
             <Box width={"100%"} sx={{ mt: 3 }}>
               <FormControl fullWidth>
                 <InputLabel id="select-lang">
@@ -315,7 +326,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={!taskType}
+          disabled={disableBtn()}
           onClick={() => submitHandler()}
         >
           Create Task{" "}

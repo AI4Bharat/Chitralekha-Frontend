@@ -1,35 +1,28 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
-import C from "../../../constants";
 
-export default class FetchTranscriptPayloadAPI extends API {
-  constructor(id, taskType, timeout = 2000) {
-    super("GET", timeout, false);
-    this.type = C.GET_TRANSCRIPT_PAYLOAD;
+export default class GenerateTranslationOutputAPI extends API {
+  constructor(id, timeout = 2000) {
+    super("POST", timeout, false);
     this.id = id;
-    this.payloadEndpoint = taskType.includes("TRANSCRIPTION")
-      ? ENDPOINTS.transcript
-      : taskType.includes("TRANSLATION")
-      ? ENDPOINTS.translation
-      : ENDPOINTS.voiceover;
     this.endpoint = `${super.apiEndPointAuto()}${
-      this.payloadEndpoint
-    }get_payload/?task_id=${id}`;
+      ENDPOINTS.translation
+    }generate_translation_output/`;
   }
-
   processResponse(res) {
     super.processResponse(res);
     if (res) {
       this.report = res;
     }
   }
-
   apiEndPoint() {
     return this.endpoint;
   }
-
-  getBody() {}
-
+  getBody() {
+    return {
+      task_id: this.id,
+    };
+  }
   getHeaders() {
     this.headers = {
       headers: {
@@ -39,7 +32,6 @@ export default class FetchTranscriptPayloadAPI extends API {
     };
     return this.headers;
   }
-
   getPayload() {
     return this.report;
   }

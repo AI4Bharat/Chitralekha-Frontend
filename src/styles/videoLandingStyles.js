@@ -15,6 +15,7 @@ const VideoLandingStyle = makeStyles({
     margin: "auto",
     display: "flex",
     flexDirection: "column",
+    position: "relative",
   },
 
   videoNameBox: {
@@ -26,6 +27,9 @@ const VideoLandingStyle = makeStyles({
     textAlign: "center",
     margin: "32px",
     width: "90%",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden"
   },
 
   settingsIconBtn: {
@@ -39,17 +43,13 @@ const VideoLandingStyle = makeStyles({
   },
 
   subtitlePanel: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
     position: "absolute",
     zIndex: "20",
     left: "0",
     right: "0",
-    bottom: "23%",
-    width: "63%",
-    padding: "0 30px",
+    bottom: "7%",
+    width: "94%",
+    padding: "0 22px",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -94,8 +94,8 @@ const VideoLandingStyle = makeStyles({
 
   fullscreenVideoBtn: {
     position: "absolute",
-    bottom: "18%",
-    right: "35%",
+    bottom: "1%",
+    right: "3%",
     zIndex: "999",
     borderRadius: "4px",
     minWidth: "45px",
@@ -499,6 +499,28 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+  },
+
+  videoPlayerParent: {
+    boxSizing: "border-box",
+    height: "calc(100vh - 310px)",
+  },
+
+  videoPlayer: {
+    cursor: "pointer",
+    width: "100%",
+    objectFit: "fill",
+    maxHeight: "100%",
+  },
+
+  recorder: {
+    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "center",
+    height: "100%"
   },
 });
 
