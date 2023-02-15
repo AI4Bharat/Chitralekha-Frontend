@@ -43,8 +43,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const xl = useMediaQuery('(min-width:1600px)');
-  
+  const xl = useMediaQuery("(min-width:1800px)");
+
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -379,7 +379,12 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                 </Box>
 
                 <CardContent
-                  sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }}
+                  sx={{
+                    display: "flex",
+                    padding: "5px 0",
+                    borderBottom: 2,
+                    flexWrap: "wrap",
+                  }}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -389,71 +394,67 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  <Grid container>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
-                      <div
-                        className={classes.relative}
-                        style={{ width: "100%" }}
+                  <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
+                    <div className={classes.relative} style={{ width: "100%" }}>
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{
+                          fontSize: fontSize,
+                          height: "100px",
+                          margin: "15px 0 25px 0",
+                          width: "89%",
+                          ...(xl && {
+                            width: "80%",
+                            margin: "15px 0",
+                          }),
+                        }}
+                        value={item.text}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "voiceover"
+                          );
+                        }}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          left: "25px",
+                          ...(!xl && {
+                            left: "10px",
+                            bottom: "5px",
+                          }),
+                        }}
                       >
-                        <textarea
-                          rows={4}
-                          className={`${classes.textAreaTransliteration} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
-                          dir={enableRTL_Typing ? "rtl" : "ltr"}
-                          style={{
-                            fontSize: fontSize,
-                            height: "100px",
-                            margin: "15px 0 25px 0",
-                            width: "89%",
-                            ...(xl && {
-                              width: "80%",
-                              margin: "15px 0",
-                            }),
-                          }}
-                          value={item.text}
-                          onChange={(event) => {
-                            changeTranscriptHandler(
-                              event.target.value,
-                              index,
-                              "voiceover"
-                            );
-                          }}
+                        {sourceLength(index)}
+                      </span>
+                    </div>
+                  </Box>
+
+                  <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
+                    <div className={classes.recorder}>
+                      <div style={{ display: "none" }}>
+                        <AudioReactRecorder
+                          state={recordAudio[index]}
+                          onStop={(data) => onStopRecording(data, index)}
                         />
-                        <span
-                          className={classes.wordCount}
-                          style={{
-                            left: "25px",
-                            ...(!xl && {
-                              left: "10px",
-                              bottom: "5px",
-                            }),
-                          }}
-                        >
-                          {sourceLength(index)}
-                        </span>
                       </div>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
-                      <div className={classes.recorder}>
-                        <div style={{ display: "none" }}>
-                          <AudioReactRecorder
-                            state={recordAudio[index]}
-                            onStop={(data) => onStopRecording(data, index)}
-                          />
+                      {recordAudio[index] == "stop" ? (
+                        <div>
+                          <audio src={data[index]} controls />
                         </div>
-                        {recordAudio[index] == "stop" ? (
-                          <div>
-                            <audio src={data[index]} controls />
-                          </div>
-                        ) : (
-                          <div style={{ color: "#fff", margin: "18px auto" }}>
-                            Recording Audio....
-                          </div>
-                        )}
-                      </div>
-                    </Grid>
-                  </Grid>
+                      ) : (
+                        <div style={{ color: "#fff", margin: "18px auto" }}>
+                          Recording Audio....
+                        </div>
+                      )}
+                    </div>
+                  </Box>
                 </CardContent>
               </>
             );
