@@ -9,7 +9,12 @@ const localisation = {
   "label.assigntasks":" How to assign the tasks?",
   "label.editTranscription":"How to edit a Transcription?",
   "label.workflow":" What is a workflow? How to set default workflow at Organization and Project levels?",
-  "label.Popularhelpresources":"Popular help resources"
+  "label.Popularhelpresources":"Popular help resources",
+  "label.editTranslation":"How to edit a Translation?",
+  "label.visitthehelpforum":"Visit the help forum",
+  "label.needmorehelp":"Need more help?",
+  "label.askhelpcommunity":"Ask  the help Community",
+  "label.getanswerfromcommunity":"Get answers from community experts",
 
 };
 

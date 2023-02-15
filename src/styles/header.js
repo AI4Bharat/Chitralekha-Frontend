@@ -114,11 +114,29 @@ const headerStyle = makeStyles({
           padding: "7px 8px 2px 8px ",
           marginRight: "15px",
     },
+    mainHelpGridStyle:{
+        width: "560px",
+        padding:"15px 10px 0px 15px" 
+        
+    },
     HelpGridStyle:{
         display: "flex",
          marginTop: "20px",
          cursor: "pointer",
-    }
+         '&:hover': {
+            backgroundColor: "#EBEEEF"
+      
+          },
+    },
+    listStyle:{
+        marginTop:"10px"
+    },
+    spanStyle:{
+        fontFamily: "italic",
+        fontWeight:"bold",
+    },
+  
+
 })
 
 export default headerStyle;
