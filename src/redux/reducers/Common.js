@@ -7,6 +7,10 @@ const initialState = {
   player: null,
   videoDetails: [],
   subtitlesForCheck: [],
+  totalPages: 0,
+  currentPage: 1,
+  nextPage: "",
+  previousPage: "",
 };
 
 const reducer = (state = initialState, action) => {
@@ -38,6 +42,30 @@ const reducer = (state = initialState, action) => {
     case C.SUBTITLES_FOR_CHECK: {
       let result = {...state};
       result.subtitlesForCheck = action.payload;
+      return result;
+    }
+
+    case C.TOTAL_PAGES: {
+      let result = {...state};
+      result.totalPages = action.payload;
+      return result;
+    }
+
+    case C.CURRENT_PAGE: {
+      let result = {...state};
+      result.currentPage = action.payload;
+      return result;
+    }
+
+    case C.NEXT_PAGE: {
+      let result = {...state};
+      result.nextPage = action.payload;
+      return result;
+    }
+
+    case C.PREVIOUS_PAGE: {
+      let result = {...state};
+      result.previousPage = action.payload;
       return result;
     }
 

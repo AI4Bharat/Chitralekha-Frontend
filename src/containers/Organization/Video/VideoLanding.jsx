@@ -25,8 +25,12 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import { Box } from "@mui/system";
 import {
   FullScreen,
+  setCurrentPage,
+  setNextPage,
+  setPreviousPage,
   setSubtitles,
   setSubtitlesForCheck,
+  setTotalPages,
 } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import { FullScreenVideo } from "../../../redux/actions/Common";
@@ -95,6 +99,11 @@ const VideoLanding = () => {
     );
 
     const newSub = cloneDeep(sub);
+
+    dispatch(setCurrentPage(transcriptPayload?.current))
+    dispatch(setNextPage(transcriptPayload?.next));
+    dispatch(setPreviousPage(transcriptPayload?.previous));
+    dispatch(setTotalPages(transcriptPayload?.count));
     dispatch(setSubtitlesForCheck(newSub));
     dispatch(setSubtitles(sub, C.SUBTITLES));
   }, [transcriptPayload?.payload?.payload]);
