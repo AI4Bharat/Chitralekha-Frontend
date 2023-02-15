@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid } from "@mui/material";
+import { CardContent, Grid, IconButton, Pagination } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
@@ -28,6 +28,8 @@ import {
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -46,6 +48,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const subtitlesForCheck = useSelector(
     (state) => state.commonReducer.subtitlesForCheck
   );
+  const totalPages = useSelector((state) => state.commonReducer.totalPages);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -63,6 +67,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
+
+  const getPayloadAPI = (_event, value) => {
+    const payloadObj = new FetchTranscriptPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+      value
+    );
+    dispatch(APITransport(payloadObj));
+  };
 
   const onDelete = useCallback(
     (index) => {
@@ -169,6 +182,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       payload: {
         payload: sourceText,
       },
+      offset: currentPage,
     };
 
     if (isFinal) {
@@ -313,7 +327,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     <>
       {renderSnackBar()}
 
-      <Box className={classes.rightPanelParentBox}>
+      <Box
+        className={classes.rightPanelParentBox}
+        style={{ position: "relative" }}
+      >
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
@@ -451,6 +468,18 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
               </>
             );
           })}
+        </Box>
+
+        <Box className={classes.paginationBox}>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={getPayloadAPI}
+            className={classes.paginationItems}
+            color="primary"
+            shape="rounded"
+            variant="outlined"
+          />
         </Box>
 
         {openConfirmDialog && (
