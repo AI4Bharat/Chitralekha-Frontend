@@ -82,45 +82,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
-  const onDelete = useCallback(
-    (index) => {
-      const data = subtitles[index];
-      const sub = onSubtitleDelete(index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack([
-        ...undoStack,
-        {
-          type: "delete",
-          index: index,
-          data: data,
-        },
-      ]);
-      setRedoStack([]);
-    },
-    [undoStack, subtitles]
-  );
-
-  const onMergeClick = useCallback(
-    (index) => {
-      const selectionStart = subtitles[index].text.length;
-      const targetSelectionStart = subtitles[index].target_text.length;
-      const sub = onMerge(index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
-      setUndoStack([
-        ...undoStack,
-        {
-          type: "merge",
-          index: index,
-          selectionStart: selectionStart,
-          targetSelectionStart: targetSelectionStart,
-        },
-      ]);
-      setRedoStack([]);
-    },
-    [undoStack, subtitles]
-  );
-
   useEffect(() => {
     setTextChangeBtn(subtitlesForCheck?.map(() => false));
   }, [subtitlesForCheck]);
@@ -145,15 +106,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     setData(updatedArray);
     setSourceText(subtitles);
   }, [subtitles]);
-
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById(
-      "subtitleContainerTranslation"
-    );
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
@@ -194,13 +146,23 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       reqBody.final = true;
     }
 
+    if(isAutosave) {
+      setSnackbarInfo({
+        open: true,
+        message: "Saving...",
+        variant: "info",
+      });
+    }
+
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     const res = await fetch(obj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(obj.getBody()),
       headers: obj.getHeaders().headers,
     });
+
     const resp = await res.json();
+
     if (res.ok) {
       setLoading(false);
 
@@ -213,18 +175,21 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+
       if (isFinal) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-        }, 2000);
+        navigate(
+          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+        );
+      }
+
+      if (isAutosave) {
+        getPayloadAPI("", currentPage);
       }
     } else {
       setLoading(false);
 
       setSnackbarInfo({
-        open: isAutosave,
+        open: true,
         message: resp?.message,
         variant: "error",
       });
@@ -264,22 +229,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       />
     );
   };
-
-  const addNewSubtitleBox = useCallback(
-    (index) => {
-      const sub = addSubtitleBox(index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack([
-        ...undoStack,
-        {
-          type: "add",
-          index: index,
-        },
-      ]);
-      setRedoStack([]);
-    },
-    [undoStack]
-  );
 
   const handleStartRecording = (index) => {
     updateRecorderState(RecordState.START, index);
@@ -366,10 +315,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
                   <ButtonComponent
                     index={index}
-                    lastItem={index < sourceText.length - 1}
-                    onMergeClick={onMergeClick}
-                    onDelete={onDelete}
-                    addNewSubtitleBox={addNewSubtitleBox}
                     handleStartRecording={handleStartRecording}
                     handleStopRecording={handleStopRecording}
                     recordAudio={recordAudio}
