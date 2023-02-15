@@ -20,6 +20,7 @@ import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUse
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import C from "../redux/constants";
+import HelpDialog from "./HelpDialog"
 
 const Header = () => {
   const classes = headerStyle();
@@ -28,6 +29,8 @@ const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
+  const [openHelpDialog, setOpenHelpDialog] = useState(false);
+
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -50,9 +53,19 @@ const Header = () => {
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
+  
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const handleClickHelp = ()=>{
+    setAnchorElUser(null);
+    setOpenHelpDialog(true)
+    
+  }
+
+  const handleClose = () => {
+    setOpenHelpDialog(false);
   };
 
   const handleOpenSettingsMenu = (event) => {
@@ -73,10 +86,17 @@ const Header = () => {
 
   const HelpMenu = [
     {
-      name: "Help",
+      name: "Wiki",
       onClick: () => {
         handleCloseUserMenu();
         window.open("https://github.com/AI4Bharat/Chitralekha/wiki", "blank");
+      },
+    },
+    {
+      name: "Help",
+      onClick: () => {
+        handleClickHelp();
+       
       },
     },
   ];
@@ -117,6 +137,7 @@ const Header = () => {
   ];
 
   return (
+    <>
     <Box>
       {isMobile ? (
         <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
@@ -334,6 +355,13 @@ const Header = () => {
         </AppBar>
       )}
     </Box>
+    {openHelpDialog &&
+    <HelpDialog
+    openHelpDialog={openHelpDialog}
+    handleClose={() => handleClose()}
+    setOpenHelpDialog= {setOpenHelpDialog}
+    />}
+    </>
   );
 };
 export default Header;

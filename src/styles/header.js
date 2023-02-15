@@ -107,7 +107,36 @@ const headerStyle = makeStyles({
     icon: {
         color: "rgba(0, 0, 0, 0.54) !important",
         fontSize: "2.25rem !important",
-    }
+    },
+    ArticleIconStyle:{
+          // backgroundColor: "#D3E4F7",
+          borderRadius: "35px",
+          padding: "7px 8px 2px 8px ",
+          marginRight: "15px",
+    },
+    mainHelpGridStyle:{
+        width: "560px",
+        padding:"15px 10px 0px 15px" 
+        
+    },
+    HelpGridStyle:{
+        display: "flex",
+         marginTop: "20px",
+         cursor: "pointer",
+         '&:hover': {
+            backgroundColor: "#EBEEEF"
+      
+          },
+    },
+    listStyle:{
+        marginTop:"10px"
+    },
+    spanStyle:{
+        fontFamily: "italic",
+        fontWeight:"bold",
+    },
+  
+
 })
 
 export default headerStyle;
