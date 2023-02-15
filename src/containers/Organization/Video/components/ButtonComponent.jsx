@@ -96,6 +96,7 @@ const ButtonComponent = ({
         )}
 
       {taskData.task_type.includes("VOICEOVER") &&
+        !transcriptPayload.source_type === "MACHINE_GENERATED" &&
         (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (
           <Tooltip title="Record Audio" placement="bottom">
             <IconButton
@@ -116,13 +117,14 @@ const ButtonComponent = ({
           </Tooltip>
         ))}
 
-      {taskData.task_type.includes("VOICEOVER") && (
-        <Tooltip title="Upload Audio" placement="bottom">
-          <IconButton className={classes.optionIconBtn} onClick={() => {}}>
-            <UploadIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      {taskData.task_type.includes("VOICEOVER") &&
+        !transcriptPayload.source_type === "MACHINE_GENERATED" && (
+          <Tooltip title="Upload Audio" placement="bottom">
+            <IconButton className={classes.optionIconBtn} onClick={() => {}}>
+              <UploadIcon />
+            </IconButton>
+          </Tooltip>
+        )}
     </>
   );
 };
