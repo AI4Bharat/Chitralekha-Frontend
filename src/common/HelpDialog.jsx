@@ -187,7 +187,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
                   className={classes.HelpGridStyle}
                   onClick={handleVisithelpForum}
                 >
-                  <Typography variant="subtitle1" color="primary" sx={{ ml: 7, }}>
+                  <Typography variant="subtitle1" color="primary" sx={{ ml: 7,mt:0.5 }}>
                     {translate("label.visitthehelpforum")}
                   </Typography>
                   <div className={classes.ArticleIconStyle}>
@@ -265,7 +265,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
                   <li className={classes.listStyle}>
                     {" "}
                     On the task that you want to edit/review, click on the
-                    <span className={classes.spanStyle} >'Edit'</span>  icon.
+                    <span className={classes.spanStyle} > 'Edit'</span>  icon.
                   </li>
                   <li className={classes.listStyle}>
                     {" "}
@@ -321,11 +321,11 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
                     Login with the account associated with the Transcriptor
                     editor/reviewer role, based on the task type.
                   </li>
-                  <li className={classes.listStyle}> Go to the  <span className={classes.spanStyle} >'Tasks'</span>  tab</li>
+                  <li className={classes.listStyle}> Go to the  <span className={classes.spanStyle} > 'Tasks'</span>  tab</li>
                   <li className={classes.listStyle}>
                     {" "}
                     On the task that you want to edit/review, click on the
-                    <span className={classes.spanStyle} >'Edit'</span> icon.
+                    <span className={classes.spanStyle} > 'Edit'</span> icon.
                   </li>
                   <li className={classes.listStyle}>
                     {" "}
@@ -379,10 +379,10 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
                     Login with the account associated with the Translation
                     editor/reviewer role, based on the task type.
                   </li>
-                  <li className={classes.listStyle}>Go to the <span className={classes.spanStyle} >'Tasks'</span>  tab.</li>
+                  <li className={classes.listStyle}>Go to the <span className={classes.spanStyle} > 'Tasks'</span>  tab.</li>
                   <li className={classes.listStyle}>
                     On the task that you want to edit/review, click on the
-                    <span className={classes.spanStyle} >'Edit'</span>  icon.
+                    <span className={classes.spanStyle} > 'Edit'</span>  icon.
                   </li>
                   <li className={classes.listStyle}>
                     If there are any dependent tasks, it would be greyed out.
@@ -451,7 +451,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
                   <li>Click on the <span className={classes.spanStyle} >'Settings'</span>  tab</li>
                   <li>
                     {" "}
-                    On the <span className={classes.spanStyle} >'Default workflow'</span>  section, make the required
+                    On the <span className={classes.spanStyle}>'Default workflow'</span> section, make the required
                     changes.
                   </li>
                   <li> Once finalized, click on  <span className={classes.spanStyle} >'Update Organization'</span></li>
@@ -467,7 +467,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
                     Default Workflow.
                   </li>
                   <li>
-                    Click on the<span className={classes.spanStyle} >'Settings' </span> icon next to the project name.
+                    Click on the<span className={classes.spanStyle} > 'Settings' </span> icon next to the project name.
                   </li>
                   <li>
                     On the <span className={classes.spanStyle} >'Default workflow'</span> section, make the required
