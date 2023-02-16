@@ -2,7 +2,12 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid } from "@mui/material";
+import {
+  CardContent,
+  Grid,
+  Pagination,
+  Typography,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
@@ -10,24 +15,20 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
-import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import AudioReactRecorder, { RecordState } from "audio-react-recorder";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import {
-  addSubtitleBox,
   base64toBlob,
-  onMerge,
   onRedoAction,
-  onSubtitleDelete,
   onUndoAction,
   setAudioContent,
-  timeChange,
 } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -35,8 +36,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const theme = useTheme();
-  const xl = useMediaQuery(theme.breakpoints.up("xl"));
+  const xl = useMediaQuery("(min-width:1800px)");
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -46,6 +46,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const subtitlesForCheck = useSelector(
     (state) => state.commonReducer.subtitlesForCheck
   );
+  const totalPages = useSelector((state) => state.commonReducer.totalPages);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -64,44 +66,14 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
 
-  const onDelete = useCallback(
-    (index) => {
-      const data = subtitles[index];
-      const sub = onSubtitleDelete(index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack([
-        ...undoStack,
-        {
-          type: "delete",
-          index: index,
-          data: data,
-        },
-      ]);
-      setRedoStack([]);
-    },
-    [undoStack, subtitles]
-  );
-
-  const onMergeClick = useCallback(
-    (index) => {
-      const selectionStart = subtitles[index].text.length;
-      const targetSelectionStart = subtitles[index].target_text.length;
-      const sub = onMerge(index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
-      setUndoStack([
-        ...undoStack,
-        {
-          type: "merge",
-          index: index,
-          selectionStart: selectionStart,
-          targetSelectionStart: targetSelectionStart,
-        },
-      ]);
-      setRedoStack([]);
-    },
-    [undoStack, subtitles]
-  );
+  const getPayloadAPI = (_event, value) => {
+    const payloadObj = new FetchTranscriptPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+      value
+    );
+    dispatch(APITransport(payloadObj));
+  };
 
   useEffect(() => {
     setTextChangeBtn(subtitlesForCheck?.map(() => false));
@@ -128,15 +100,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById(
-      "subtitleContainerTranslation"
-    );
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
-
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
     const temp = [...textChangeBtn];
@@ -154,7 +117,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     arr.forEach((element, i) => {
       if (index === i) {
         element.text = text;
-        element.txt_changed = temp[index];
+        element.text_changed = temp[index];
       }
     });
 
@@ -169,10 +132,19 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       payload: {
         payload: sourceText,
       },
+      offset: currentPage,
     };
 
     if (isFinal) {
       reqBody.final = true;
+    }
+
+    if(isAutosave) {
+      setSnackbarInfo({
+        open: true,
+        message: "Saving...",
+        variant: "info",
+      });
     }
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
@@ -181,7 +153,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       body: JSON.stringify(obj.getBody()),
       headers: obj.getHeaders().headers,
     });
+
     const resp = await res.json();
+
     if (res.ok) {
       setLoading(false);
 
@@ -194,18 +168,21 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+
       if (isFinal) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-        }, 2000);
+        navigate(
+          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+        );
+      }
+
+      if (isAutosave) {
+        getPayloadAPI("", currentPage);
       }
     } else {
       setLoading(false);
 
       setSnackbarInfo({
-        open: isAutosave,
+        open: true,
         message: resp?.message,
         variant: "error",
       });
@@ -245,27 +222,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       />
     );
   };
-
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
-
-  const addNewSubtitleBox = useCallback(
-    (index) => {
-      const sub = addSubtitleBox(index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack([
-        ...undoStack,
-        {
-          type: "add",
-          index: index,
-        },
-      ]);
-      setRedoStack([]);
-    },
-    [undoStack]
-  );
 
   const handleStartRecording = (index) => {
     updateRecorderState(RecordState.START, index);
@@ -313,7 +269,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     <>
       {renderSnackBar()}
 
-      <Box className={classes.rightPanelParentBox}>
+      <Box
+        className={classes.rightPanelParentBox}
+        style={{ position: "relative" }}
+      >
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
@@ -340,39 +299,34 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
               <>
                 <Box
                   display="flex"
-                  paddingTop="16px"
-                  sx={{ paddingX: "20px", justifyContent: "space-around" }}
+                  paddingTop="25px"
+                  sx={{ paddingX: "20px", justifyContent: "space-between" }}
                 >
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.start_time}
-                    index={index}
-                    type={"startTime"}
-                  />
+                  <Typography variant="body1" className={classes.durationBox} marginRight={"5px"}>
+                    {item.id}
+                  </Typography>
+
+                  <Typography variant="body1" className={classes.durationBox}>
+                    Duration: {item.time_difference} seconds
+                  </Typography>
 
                   <ButtonComponent
                     index={index}
-                    lastItem={index < sourceText.length - 1}
-                    onMergeClick={onMergeClick}
-                    onDelete={onDelete}
-                    addNewSubtitleBox={addNewSubtitleBox}
                     handleStartRecording={handleStartRecording}
                     handleStopRecording={handleStopRecording}
                     recordAudio={recordAudio}
                     showChangeBtn={textChangeBtn[index]}
                     saveTranscriptHandler={saveTranscriptHandler}
                   />
-
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.end_time}
-                    index={index}
-                    type={"endTime"}
-                  />
                 </Box>
 
                 <CardContent
-                  sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }}
+                  sx={{
+                    display: "flex",
+                    padding: "5px 0",
+                    borderBottom: 2,
+                    flexWrap: "wrap",
+                  }}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -382,75 +336,90 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  <Grid container>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
-                      <div
-                        className={classes.relative}
-                        style={{ width: "100%" }}
+                  <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
+                    <div className={classes.relative} style={{ width: "100%" }}>
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{
+                          fontSize: fontSize,
+                          height: "100px",
+                          margin: "15px 0 25px 0",
+                          width: "89%",
+                          ...(xl && {
+                            width: "80%",
+                            margin: "15px 0",
+                          }),
+                        }}
+                        value={item.text}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "voiceover"
+                          );
+                        }}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          left: "25px",
+                          ...(!xl && {
+                            left: "10px",
+                            bottom: "5px",
+                          }),
+                        }}
                       >
-                        <textarea
-                          rows={4}
-                          className={`${classes.textAreaTransliteration} ${
-                            currentIndex === index ? classes.boxHighlight : ""
-                          }`}
-                          dir={enableRTL_Typing ? "rtl" : "ltr"}
-                          style={{
-                            fontSize: fontSize,
-                            height: "100px",
-                            margin: "15px 0 25px 0",
-                            width: "89%",
-                            ...(xl && {
-                              width: "80%",
-                              margin: "15px 0",
-                            }),
-                          }}
-                          value={item.text}
-                          onChange={(event) => {
-                            changeTranscriptHandler(
-                              event.target.value,
-                              index,
-                              "voiceover"
-                            );
-                          }}
+                        {sourceLength(index)}
+                      </span>
+                    </div>
+                  </Box>
+
+                  <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
+                    <div className={classes.recorder}>
+                      <div style={{ display: "none" }}>
+                        <AudioReactRecorder
+                          state={recordAudio[index]}
+                          onStop={(data) => onStopRecording(data, index)}
                         />
-                        <span
-                          className={classes.wordCount}
-                          style={{
-                            left: "25px",
-                            ...(!xl && {
-                              left: "10px",
-                              bottom: "5px",
-                            }),
-                          }}
-                        >
-                          {sourceLength(index)}
-                        </span>
                       </div>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
-                      <div className={classes.recorder}>
-                        <div style={{ display: "none" }}>
-                          <AudioReactRecorder
-                            state={recordAudio[index]}
-                            onStop={(data) => onStopRecording(data, index)}
-                          />
+                      {recordAudio[index] == "stop" ? (
+                        <div>
+                          <audio src={data[index]} controls />
                         </div>
-                        {recordAudio[index] == "stop" ? (
-                          <div>
-                            <audio src={data[index]} controls />
-                          </div>
-                        ) : (
-                          <div style={{ color: "#fff", margin: "18px auto" }}>
-                            Recording Audio....
-                          </div>
-                        )}
-                      </div>
-                    </Grid>
-                  </Grid>
+                      ) : (
+                        <div style={{ color: "#fff", margin: "18px auto" }}>
+                          Recording Audio....
+                        </div>
+                      )}
+                    </div>
+                  </Box>
                 </CardContent>
               </>
             );
           })}
+        </Box>
+
+        <Box
+          className={classes.paginationBox}
+          style={{
+            ...(!xl && {
+              bottom: "5%",
+            }),
+          }}
+        >
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={getPayloadAPI}
+            className={classes.paginationItems}
+            color="primary"
+            shape="rounded"
+            variant="outlined"
+          />
         </Box>
 
         {openConfirmDialog && (

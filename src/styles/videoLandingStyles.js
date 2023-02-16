@@ -29,7 +29,7 @@ const VideoLandingStyle = makeStyles({
     width: "90%",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    overflow: "hidden"
+    overflow: "hidden",
   },
 
   settingsIconBtn: {
@@ -520,7 +520,38 @@ const VideoLandingStyle = makeStyles({
     alignItems: "center",
     width: "100%",
     justifyContent: "center",
-    height: "100%"
+    height: "100%",
+  },
+
+  paginationBox: {
+    position: "absolute",
+    bottom: 0,
+    background: "black",
+    width: "100%",
+    color: "#fff",
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
+  },
+
+  paginationItems: {
+    "& .MuiPaginationItem-root": {
+      color: "#fff",
+      borderColor: "#eaeaea",
+    },
+
+    "& .Mui-selected": {
+      backgroundColor: "#0083e2",
+    },
+  },
+
+  durationBox: {
+    backgroundColor: "#616A6B",
+    color: "#fff",
+    padding: "5px 10px",
+    borderRadius: "5px",
   },
 });
 

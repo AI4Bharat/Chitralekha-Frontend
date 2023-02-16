@@ -34,3 +34,31 @@ export const setSubtitlesForCheck = (data) => {
     payload: data,
   };
 };
+
+export const setTotalPages = (data) => {
+  return {
+    type: C.TOTAL_PAGES,
+    payload: data,
+  };
+};
+
+export const setCurrentPage = (data) => {
+  return {
+    type: C.CURRENT_PAGE,
+    payload: data,
+  };
+};
+
+export const setNextPage = (data) => {
+  return {
+    type: C.NEXT_PAGE,
+    payload: data,
+  };
+};
+
+export const setPreviousPage = (data) => {
+  return {
+    type: C.PREVIOUS_PAGE,
+    payload: data,
+  };
+};
