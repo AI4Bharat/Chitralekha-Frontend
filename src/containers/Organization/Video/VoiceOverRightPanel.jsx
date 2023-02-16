@@ -1,10 +1,12 @@
 // Voice Over Right Panel
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import {
+  Button,
   CardContent,
   Grid,
+  IconButton,
   Pagination,
   Typography,
 } from "@mui/material";
@@ -29,6 +31,8 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import FastForwardIcon from "@mui/icons-material/FastForward";
+import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -37,6 +41,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const navigate = useNavigate();
 
   const xl = useMediaQuery("(min-width:1800px)");
+  const $audioRef = useRef([]);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -65,6 +70,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
+  const [audioPlaybackRate, setAudioPlaybackRate] = useState([]);
+  const [audioPlayer, setAudioPlayer] = useState([]);
+  const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
 
   const getPayloadAPI = (_event, value) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -76,7 +84,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   useEffect(() => {
+    setAudioPlayer($audioRef.current);
+  }, [$audioRef.current]);
+
+  useEffect(() => {
+    let temp = [];
+    subtitlesForCheck?.forEach(() => temp.push(1));
+
+    $audioRef.current = $audioRef.current.slice(0, subtitlesForCheck?.length);
+    setAudioPlaybackRate(temp);
     setTextChangeBtn(subtitlesForCheck?.map(() => false));
+    setSpeedChangeBtn(subtitlesForCheck?.map(() => false));
   }, [subtitlesForCheck]);
 
   useEffect(() => {
@@ -139,7 +157,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       reqBody.final = true;
     }
 
-    if(isAutosave) {
+    if (isAutosave) {
       setSnackbarInfo({
         open: true,
         message: "Saving...",
@@ -259,10 +277,33 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     updateRecorderState(RecordState.STOP, index);
   };
 
-  const sourceLength = (index) => {
-    if (sourceText[index]?.text.trim() !== "")
-      return sourceText[index]?.text.trim().split(" ").length;
-    return 0;
+  const playbackRateHandler = (rate, index) => {
+    if (rate <= 2.1) {
+      const arr = [...sourceText];
+      const speed = [...speedChangeBtn];
+
+      if (rate !== 1) {
+        speed[index] = true;
+      } else {
+        speed[index] = false;
+      }
+
+      arr.forEach((element, i) => {
+        if (index === i) {
+          element.audio_speed = Math.round(audioPlaybackRate[index] * 10) / 10;
+        }
+      });
+
+      const tempArr = [...audioPlayer];
+      tempArr[index].playbackRate = rate;
+
+      const temp = [...audioPlaybackRate];
+      temp[index] = rate;
+
+      setSpeedChangeBtn(speed);
+      setAudioPlayer(tempArr);
+      setAudioPlaybackRate(temp);
+    }
   };
 
   return (
@@ -302,12 +343,20 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                   paddingTop="25px"
                   sx={{ paddingX: "20px", justifyContent: "space-between" }}
                 >
-                  <Typography variant="body1" className={classes.durationBox} marginRight={"5px"}>
+                  <Typography
+                    variant="body1"
+                    className={classes.durationBox}
+                    marginRight={"5px"}
+                  >
                     {item.id}
                   </Typography>
 
-                  <Typography variant="body1" className={classes.durationBox}>
-                    Duration: {item.time_difference} seconds
+                  <Typography
+                    variant="body1"
+                    className={classes.durationBox}
+                    marginRight={"auto"}
+                  >
+                    Duration: {item.time_difference} sec
                   </Typography>
 
                   <ButtonComponent
@@ -317,6 +366,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     recordAudio={recordAudio}
                     showChangeBtn={textChangeBtn[index]}
                     saveTranscriptHandler={saveTranscriptHandler}
+                    showSpeedChangeBtn={speedChangeBtn[index]}
                   />
                 </Box>
 
@@ -363,18 +413,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                           );
                         }}
                       />
-                      <span
-                        className={classes.wordCount}
-                        style={{
-                          left: "25px",
-                          ...(!xl && {
-                            left: "10px",
-                            bottom: "5px",
-                          }),
-                        }}
-                      >
-                        {sourceLength(index)}
-                      </span>
                     </div>
                   </Box>
 
@@ -387,8 +425,52 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                         />
                       </div>
                       {recordAudio[index] == "stop" ? (
-                        <div>
-                          <audio src={data[index]} controls />
+                        <div
+                          className={classes.audioBox}
+                          style={!xl ? { alignItems: "center" } : {}}
+                        >
+                          <audio
+                            src={data[index]}
+                            controls
+                            ref={(element) =>
+                              ($audioRef.current[index] = element)
+                            }
+                          />
+
+                          <div
+                            className={classes.playbackRate}
+                            style={!xl ? { margin: "10px 0 0 0" } : {}}
+                          >
+                            <IconButton
+                              onClick={() =>
+                                audioPlaybackRate[index] >= 0.2 &&
+                                playbackRateHandler(
+                                  audioPlaybackRate[index] - 0.1,
+                                  index
+                                )
+                              }
+                              sx={{ color: " #fff" }}
+                            >
+                              <FastRewindIcon />
+                            </IconButton>
+
+                            <p style={{ margin: 0, color: " #fff" }}>
+                              {Math.round(audioPlaybackRate[index] * 10) / 10}x
+                            </p>
+
+                            <IconButton
+                              onClick={() =>
+                                audioPlaybackRate[index] <= 15.9 &&
+                                playbackRateHandler(
+                                  audioPlaybackRate[index] + 0.1,
+                                  index
+                                )
+                              }
+                              sx={{ color: " #fff" }}
+                            >
+                              <FastForwardIcon />
+                            </IconButton>
+                          </div>
                         </div>
                       ) : (
                         <div style={{ color: "#fff", margin: "18px auto" }}>

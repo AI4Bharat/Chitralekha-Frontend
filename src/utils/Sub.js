@@ -11,6 +11,7 @@ export default class Sub {
         this.text_changed = obj.text_changed ?? false;
         this.time_difference = obj.time_difference;
         this.id = obj.id;
+        this.audio_speed = obj.audio_speed;
     }
 
     get check() {

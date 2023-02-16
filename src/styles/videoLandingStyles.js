@@ -553,6 +553,24 @@ const VideoLandingStyle = makeStyles({
     padding: "5px 10px",
     borderRadius: "5px",
   },
+
+  audioBox: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    height: "100%",
+    justifyContent: "space-evenly",
+  },
+
+  playbackRate: {
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "#0083e2",
+    display: "flex",
+    alignItems: "center",
+    marginRight: "10%"
+  },
 });
 
 export default VideoLandingStyle;
