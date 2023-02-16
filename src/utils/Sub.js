@@ -10,6 +10,7 @@ export default class Sub {
         this.audio = obj.audio;
         this.text_changed = obj.text_changed ?? false;
         this.time_difference = obj.time_difference;
+        this.id = obj.id;
     }
 
     get check() {

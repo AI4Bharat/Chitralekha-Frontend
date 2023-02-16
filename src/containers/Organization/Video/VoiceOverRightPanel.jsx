@@ -5,7 +5,6 @@ import Box from "@mui/material/Box";
 import {
   CardContent,
   Grid,
-  IconButton,
   Pagination,
   Typography,
 } from "@mui/material";
@@ -16,23 +15,17 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
-import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import AudioReactRecorder, { RecordState } from "audio-react-recorder";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import {
-  addSubtitleBox,
   base64toBlob,
-  onMerge,
   onRedoAction,
-  onSubtitleDelete,
   onUndoAction,
   setAudioContent,
-  timeChange,
 } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
@@ -306,11 +299,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
               <>
                 <Box
                   display="flex"
-                  paddingTop="16px"
+                  paddingTop="25px"
                   sx={{ paddingX: "20px", justifyContent: "space-between" }}
                 >
+                  <Typography variant="body1" className={classes.durationBox} marginRight={"5px"}>
+                    {item.id}
+                  </Typography>
+
                   <Typography variant="body1" className={classes.durationBox}>
-                    Duration: {item.time_difference} ms
+                    Duration: {item.time_difference} seconds
                   </Typography>
 
                   <ButtonComponent
