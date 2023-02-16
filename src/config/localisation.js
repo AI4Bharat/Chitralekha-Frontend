@@ -11,7 +11,7 @@ const localisation = {
   "label.workflow":" What is a workflow? How to set default workflow at Organization and Project levels?",
   "label.Popularhelpresources":"Popular help resources",
   "label.editTranslation":"How to edit a Translation?",
-  "label.visitthehelpforum":"Visit the help forum",
+  "label.visitthehelpforum":"Visit the Wiki",
   "label.needmorehelp":"Need more help?",
   "label.askhelpcommunity":"Ask  the help Community",
   "label.getanswerfromcommunity":"Get answers from community experts",

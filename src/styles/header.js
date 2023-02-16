@@ -132,7 +132,7 @@ const headerStyle = makeStyles({
         marginTop:"10px"
     },
     spanStyle:{
-        fontFamily: "italic",
+       // fontFamily: "italic",
         fontWeight:"bold",
     },
   
