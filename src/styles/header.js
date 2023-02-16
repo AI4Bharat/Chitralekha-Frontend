@@ -116,7 +116,7 @@ const headerStyle = makeStyles({
     },
     mainHelpGridStyle:{
         width: "560px",
-        padding:"15px 10px 0px 15px" 
+        padding:"15px 15px 0px 30px" 
         
     },
     HelpGridStyle:{
