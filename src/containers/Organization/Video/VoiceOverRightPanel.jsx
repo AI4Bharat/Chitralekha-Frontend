@@ -7,7 +7,7 @@ import {
   CardContent,
   Grid,
   IconButton,
-  Pagination,
+  // Pagination,
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +33,7 @@ import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchT
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
+import Pagination from "./components/Pagination";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -493,7 +494,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             }),
           }}
         >
-          <Pagination
+          {/* <Pagination
             count={totalPages}
             page={currentPage}
             onChange={getPayloadAPI}
@@ -501,6 +502,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             color="primary"
             shape="rounded"
             variant="outlined"
+          /> */}
+
+          <Pagination
+            range={"1-3"}
+            rows={"5"}
+            previous={null}
+            next={"2"}
+            onClick={getPayloadAPI}
+            jumpTo={[1, 2, 3]}
           />
         </Box>
 
