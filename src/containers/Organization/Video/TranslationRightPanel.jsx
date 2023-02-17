@@ -256,7 +256,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`}>
+              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
                 <Box
                   display="flex"
                   paddingTop="16px"

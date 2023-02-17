@@ -337,7 +337,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <div style={{borderBottom: "1px solid grey"}}>
                 <Box
                   display="flex"
                   paddingTop="25px"
@@ -371,9 +371,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                 </Box>
 
                 <CardContent
-                  sx={{
+                  style={{
                     display: "flex",
                     padding: "5px 0",
+                    paddingBottom: "0",
                     borderBottom: 2,
                     flexWrap: "wrap",
                   }}
@@ -480,7 +481,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     </div>
                   </Box>
                 </CardContent>
-              </>
+              </div>
             );
           })}
         </Box>
