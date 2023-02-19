@@ -338,3 +338,17 @@ export const base64toBlob = (base64) => {
 
   return blobUrl;
 }
+
+export const getSubtitleRange = () => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
+  if (subtitles) {
+    if (subtitles.length === 3) {
+      return `${subtitles[0]?.id} - ${subtitles[2]?.id}`;
+    } else if (subtitles.length === 2) {
+      return `${subtitles[0]?.id} - ${subtitles[1]?.id}`;
+    } else {
+      return `${subtitles[0]?.id} - ${subtitles[0]?.id}`;
+    }
+  }
+};

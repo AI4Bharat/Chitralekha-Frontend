@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const Pagination = ({ range, rows, previous, next, onClick, jumpTo }) => {
   const [page, setPage] = useState(1);
-
+  
   return (
     <div
       style={{

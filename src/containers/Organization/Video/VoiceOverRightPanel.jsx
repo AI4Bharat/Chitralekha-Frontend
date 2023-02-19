@@ -23,6 +23,7 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import {
   base64toBlob,
+  getSubtitleRange,
   onRedoAction,
   onUndoAction,
   setAudioContent,
@@ -54,6 +55,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   );
   const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const next = useSelector((state) => state.commonReducer.nextPage);
+  const previous = useSelector((state) => state.commonReducer.previousPage);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -75,7 +78,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
 
-  const getPayloadAPI = (_event, value) => {
+  const getPayloadAPI = (value) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
@@ -280,7 +283,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   const handlePauseRecording = (index) => {
     updateRecorderState(RecordState.PAUSE, index);
-  }
+  };
 
   const playbackRateHandler = (rate, index) => {
     if (rate <= 2.1) {
@@ -342,7 +345,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <div style={{borderBottom: "1px solid grey"}}>
+              <div style={{ borderBottom: "1px solid grey" }}>
                 <Box
                   display="flex"
                   paddingTop="25px"
@@ -496,27 +499,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           className={classes.paginationBox}
           style={{
             ...(!xl && {
-              bottom: "5%",
+              bottom: "-11%",
             }),
           }}
         >
-          {/* <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={getPayloadAPI}
-            className={classes.paginationItems}
-            color="primary"
-            shape="rounded"
-            variant="outlined"
-          /> */}
-
           <Pagination
-            range={"1-3"}
-            rows={"5"}
-            previous={null}
-            next={"2"}
+            range={getSubtitleRange()}
+            rows={totalPages + 2}
+            previous={previous}
+            next={next}
             onClick={getPayloadAPI}
-            jumpTo={[1, 2, 3]}
+            jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
           />
         </Box>
 
