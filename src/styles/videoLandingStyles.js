@@ -420,11 +420,12 @@ const VideoLandingStyle = makeStyles({
     borderTop: "1px solid #eaeaea",
     overflowY: "scroll",
     overflowX: "hidden",
-    height: window.innerHeight * 0.667,
     backgroundColor: "black",
     marginTop: "5px",
     width: "100%",
     textAlign: "center",
+    boxSizing: "border-box",
+    height: "calc(100vh - 370px)",
   },
 
   topBox: {
@@ -525,8 +526,8 @@ const VideoLandingStyle = makeStyles({
 
   paginationBox: {
     position: "absolute",
-    bottom: 0,
-    background: "black",
+    bottom: "-9%",
+    background: "#fff",
     width: "100%",
     color: "#fff",
     textAlign: "center",
@@ -534,17 +535,7 @@ const VideoLandingStyle = makeStyles({
     justifyContent: "center",
     alignItems: "center",
     padding: "10px",
-  },
-
-  paginationItems: {
-    "& .MuiPaginationItem-root": {
-      color: "#fff",
-      borderColor: "#eaeaea",
-    },
-
-    "& .Mui-selected": {
-      backgroundColor: "#0083e2",
-    },
+    border: "1px solid #EAEAEA"
   },
 
   durationBox: {
