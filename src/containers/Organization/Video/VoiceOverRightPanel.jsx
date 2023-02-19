@@ -278,6 +278,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     updateRecorderState(RecordState.STOP, index);
   };
 
+  const handlePauseRecording = (index) => {
+    updateRecorderState(RecordState.PAUSE, index);
+  }
+
   const playbackRateHandler = (rate, index) => {
     if (rate <= 2.1) {
       const arr = [...sourceText];
@@ -338,7 +342,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <>
+              <div style={{borderBottom: "1px solid grey"}}>
                 <Box
                   display="flex"
                   paddingTop="25px"
@@ -368,13 +372,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     showChangeBtn={textChangeBtn[index]}
                     saveTranscriptHandler={saveTranscriptHandler}
                     showSpeedChangeBtn={speedChangeBtn[index]}
+                    handlePauseRecording={handlePauseRecording}
                   />
                 </Box>
 
                 <CardContent
-                  sx={{
+                  style={{
                     display: "flex",
                     padding: "5px 0",
+                    paddingBottom: "0",
                     borderBottom: 2,
                     flexWrap: "wrap",
                   }}
@@ -481,7 +487,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     </div>
                   </Box>
                 </CardContent>
-              </>
+              </div>
             );
           })}
         </Box>

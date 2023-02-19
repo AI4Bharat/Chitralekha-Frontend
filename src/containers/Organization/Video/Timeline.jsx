@@ -19,6 +19,7 @@ const WaveForm = memo(
   ({ setWaveform, setRender }) => {
     const classes = VideoLandingStyle();
     const $waveform = createRef();
+    
     const player = useSelector(state => state.commonReducer.player);
 
     useEffect(() => {
@@ -43,8 +44,11 @@ const WaveForm = memo(
 
       setWaveform(waveform);
       waveform.on("update", setRender);
-      waveform.load("/sample.mp3");
-    }, [player, $waveform, setWaveform, setRender]);
+
+      if(player.src !== "") {
+        waveform.load(encodeURIComponent(player.src.replace(/&amp;/g, "&")));
+      }
+    }, [player, $waveform, setWaveform, setRender, player.src]); 
 
     return <div className={classes.waveform} ref={$waveform} />;
   }
@@ -214,6 +218,7 @@ const Timeline = ({ currentTime, playing }) => {
   const classes = VideoLandingStyle();
 
   const player = useSelector(state => state.commonReducer.player);
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [waveform, setWaveform] = useState();
   const [render, setRender] = useState({
@@ -256,7 +261,7 @@ const Timeline = ({ currentTime, playing }) => {
 
   return (
     <Box className={classes.timeLineParent} ref={$footer}>
-      {player && (
+      {player && videoDetails.direct_video_url && (
         <>
           <Progress
             waveform={waveform}

@@ -286,7 +286,7 @@ const RightPanel = ({ currentIndex }) => {
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {sourceText?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`}>
+              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
                 <Box className={classes.topBox}>
                   <TimeBoxes
                     handleTimeChange={handleTimeChange}
