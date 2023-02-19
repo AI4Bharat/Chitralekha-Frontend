@@ -277,6 +277,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     updateRecorderState(RecordState.STOP, index);
   };
 
+  const handlePauseRecording = (index) => {
+    updateRecorderState(RecordState.PAUSE, index);
+  }
+
   const playbackRateHandler = (rate, index) => {
     if (rate <= 2.1) {
       const arr = [...sourceText];
@@ -367,6 +371,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     showChangeBtn={textChangeBtn[index]}
                     saveTranscriptHandler={saveTranscriptHandler}
                     showSpeedChangeBtn={speedChangeBtn[index]}
+                    handlePauseRecording={handlePauseRecording}
                   />
                 </Box>
 

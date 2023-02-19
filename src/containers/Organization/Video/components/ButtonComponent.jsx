@@ -12,6 +12,8 @@ import StopIcon from "@mui/icons-material/Stop";
 import { useSelector } from "react-redux";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import LyricsIcon from "@mui/icons-material/Lyrics";
+import PauseIcon from "@mui/icons-material/Pause";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const ButtonComponent = ({
   index,
@@ -28,6 +30,7 @@ const ButtonComponent = ({
   showChangeBtn,
   saveTranscriptHandler,
   showSpeedChangeBtn,
+  handlePauseRecording,
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -129,6 +132,32 @@ const ButtonComponent = ({
             </IconButton>
           </Tooltip>
         ))}
+
+      {taskData.task_type.includes("VOICEOVER") &&
+        transcriptPayload.source_type !== "MACHINE_GENERATED" &&
+        recordAudio?.[index] === "start" && (
+          <Tooltip title="Pause Recording" placement="bottom">
+            <IconButton
+              className={classes.optionIconBtn}
+              onClick={() => handlePauseRecording(index)}
+            >
+              <PauseIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+
+      {taskData.task_type.includes("VOICEOVER") &&
+        transcriptPayload.source_type !== "MACHINE_GENERATED" &&
+        recordAudio?.[index] === "pause" && (
+          <Tooltip title="Play Recording" placement="bottom">
+            <IconButton
+              className={classes.optionIconBtn}
+              onClick={() => handleStartRecording(index)}
+            >
+              <PlayArrowIcon />
+            </IconButton>
+          </Tooltip>
+        )}
 
       {taskData.task_type.includes("VOICEOVER") &&
         transcriptPayload.source_type !== "MACHINE_GENERATED" && (
