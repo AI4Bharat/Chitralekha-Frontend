@@ -64,13 +64,17 @@ export const timeChange = (value, index, type, time) => {
     copySub[index].start_time = getUpdatedTime(
       value,
       time,
-      copySub[index].start_time
+      copySub[index].start_time,
+      index,
+      type
     );
   } else {
     copySub[index].end_time = getUpdatedTime(
       value,
       time,
-      copySub[index].end_time
+      copySub[index].end_time,
+      index,
+      type
     );
   }
 
