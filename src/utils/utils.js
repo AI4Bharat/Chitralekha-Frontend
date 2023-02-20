@@ -1,6 +1,7 @@
 import Sub from "./Sub";
 import DT from "duration-time-conversion";
 import { useCallback } from "react";
+import store from "../redux/store/store";
 
 export function authenticateUser() {
   const access_token = localStorage.getItem("token");
@@ -76,8 +77,8 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -94,9 +95,9 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -112,8 +113,8 @@ export const roles = [
     projectSettingVisible: false,
     showSelectCheckbox: false,
     canEditTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -130,8 +131,8 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -147,8 +148,8 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -165,8 +166,8 @@ export const roles = [
     showSelectCheckbox: true,
     canEditTask: true,
     canDeleteTask: true,
-    ProjectReport:true,
-    organizationReport:false,
+    ProjectReport: true,
+    organizationReport: false,
     canAddMembers: true,
   },
   {
@@ -183,8 +184,8 @@ export const roles = [
     showSelectCheckbox: true,
     canEditTask: true,
     canDeleteTask: true,
-    ProjectReport:true,
-    organizationReport:true,
+    ProjectReport: true,
+    organizationReport: true,
     canAddMembers: true,
   },
 ];
@@ -487,7 +488,9 @@ export const getMilliseconds = (timeInString) => {
   return 0;
 };
 
-export const getUpdatedTime = (value, type, time) => {
+export const getUpdatedTime = (value, type, time, index, startEnd) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
   const [hh, mm, sec] = time.split(":");
   const [ss, SSS] = sec.split(".");
 
@@ -530,15 +533,37 @@ export const getUpdatedTime = (value, type, time) => {
     }
   }
 
+  let newTime = "";
+
   if (type === "hours") {
-    return `${newValue}:${mm}:${ss}.${SSS}`;
+    newTime = `${newValue}:${mm}:${ss}.${SSS}`;
   } else if (type === "minutes") {
-    return `${hh}:${newValue}:${ss}.${SSS}`;
+    newTime = `${hh}:${newValue}:${ss}.${SSS}`;
   } else if (type === "seconds") {
-    return `${hh}:${mm}:${newValue}.${SSS}`;
+    newTime = `${hh}:${mm}:${newValue}.${SSS}`;
   } else if (type === "miliseconds") {
-    return `${hh}:${mm}:${ss}.${newValue}`;
+    newTime = `${hh}:${mm}:${ss}.${newValue}`;
   }
+
+  if (startEnd === "startTime" && index > 0) {
+    const durationOfPrevious = DT.t2d(subtitles[index - 1].end_time);
+    const durationOfCurrent = DT.t2d(newTime);
+
+    if (durationOfPrevious >= durationOfCurrent) {
+      newTime = subtitles[index - 1].end_time;
+    }
+  }
+
+  if (startEnd === "endTime" && index < subtitles.length) {
+    const durationOfNext = DT.t2d(subtitles[index + 1].start_time);
+    const durationOfCurrent = DT.t2d(newTime);
+
+    if (durationOfNext <= durationOfCurrent) {
+      newTime = subtitles[index + 1].start_time;
+    }
+  }
+
+  return newTime;
 };
 
 export const getProfile = (userDetails) => {
@@ -573,7 +598,9 @@ export const getProfile = (userDetails) => {
     },
     {
       label: "Organization",
-      value: userDetails?.organization?.title?.length ? userDetails?.organization?.title : "-",
+      value: userDetails?.organization?.title?.length
+        ? userDetails?.organization?.title
+        : "-",
     },
     {
       label: "Language Proficiency",
@@ -600,9 +627,12 @@ export const MenuProps = {
 };
 
 export function snakeToTitleCase(str) {
-  return str.split("_").map((word) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }).join(" ");
+  return str
+    .split("_")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 }
 
 export const getDisableOption = (data, defaultTask) => {
@@ -646,14 +676,14 @@ export const defaultTaskHandler = (task) => {
 
     if (isTranslationEdit === -1) {
       const temp = task.filter((item) => item.value !== "TRANSLATION_REVIEW");
-      dTask = [...temp]
+      dTask = [...temp];
       lang = [];
     } else {
-      dTask = [...task]
+      dTask = [...task];
     }
   }
 
-  return { dTask, lang }
+  return { dTask, lang };
 };
 
 export const diableTargetLang = (defaultTask) => {
