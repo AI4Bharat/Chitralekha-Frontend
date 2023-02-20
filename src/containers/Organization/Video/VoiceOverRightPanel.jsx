@@ -198,7 +198,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       }
 
       if (isAutosave) {
-        getPayloadAPI("", currentPage);
+        getPayloadAPI(currentPage);
       }
     } else {
       setLoading(false);
