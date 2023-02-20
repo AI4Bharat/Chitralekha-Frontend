@@ -386,6 +386,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     paddingBottom: "0",
                     borderBottom: 2,
                     flexWrap: "wrap",
+                    ...(!xl && {
+                      paddingBottom: "20px",
+                    }),
                   }}
                   onClick={() => {
                     if (player) {
@@ -407,7 +410,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                         style={{
                           fontSize: fontSize,
                           height: "100px",
-                          margin: "15px 0 25px 0",
+                          // margin: "15px 0 25px 0",
                           width: "89%",
                           ...(xl && {
                             width: "80%",
@@ -437,7 +440,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                       {recordAudio[index] == "stop" ? (
                         <div
                           className={classes.audioBox}
-                          style={!xl ? { alignItems: "center" } : {}}
+                          style={!xl ? { alignItems: "center", flexDirection: "row", width: "100%" } : {}}
                         >
                           <audio
                             src={data[index]}
@@ -449,7 +452,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
                           <div
                             className={classes.playbackRate}
-                            style={!xl ? { margin: "10px 0 0 0" } : {}}
+                            style={!xl ? { margin: "0" } : {}}
                           >
                             <IconButton
                               onClick={() =>
