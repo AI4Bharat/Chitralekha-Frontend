@@ -80,6 +80,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [audioPlaybackRate, setAudioPlaybackRate] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
+  const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorResponse, setErrorResponse] = useState([]);
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -211,13 +214,11 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     } else {
       setLoading(false);
       setOpenConfirmDialog(false);
-      
+
       if (isFinal) {
-        <ConfirmErrorDialog 
-          message={resp.message}
-          openDialog={openConfirmErrorDialog}
-          handleClose={() => setOpenConfirmErrorDialog(false)}
-        />
+        setOpenConfirmErrorDialog(true);
+        setErrorMessage(resp.message);
+        setErrorResponse(resp.missing_cards_info);
       }
 
       setSnackbarInfo({
@@ -562,6 +563,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             submit={() => saveTranscriptHandler(true, false)}
             message={"Do you want to submit the Voice Over?"}
             loading={loading}
+          />
+        )}
+
+        {openConfirmErrorDialog && (
+          <ConfirmErrorDialog
+            message={errorMessage}
+            openDialog={openConfirmErrorDialog}
+            handleClose={() => setOpenConfirmErrorDialog(false)}
+            response={errorResponse}
           />
         )}
       </Box>

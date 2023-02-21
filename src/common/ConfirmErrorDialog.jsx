@@ -8,81 +8,64 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   Typography,
 } from "@mui/material";
 import React from "react";
-import Loader from "./Spinner";
 
-const ConfirmErrorDialog = ({
-  openDialog,
-  handleClose,
-  submit,
-  message,
-  loading,
-  response,
-}) => {
+const headers = ["Card Number", "Error"];
+
+const ConfirmErrorDialog = ({ openDialog, handleClose, message, response }) => {
   return (
     <Dialog
       open={openDialog}
       onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
       maxWidth={"md"}
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          <Typography variant="body1">{message}</Typography>
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            {message}
+          </Typography>
 
           {response && (
-            <TableRow
-              style={{
-                borderLeft: `2px solid #E9F7EF`,
-                borderRight: `2px solid #E9F7EF`,
-                backgroundColor: "#fff",
-              }}
-            >
-              <TableCell colSpan={9} sx={{ borderBottom: "none" }}>
-                <Box>
-                  <Table size="large">
-                    <TableHead>
+            <TableContainer sx={{ maxHeight: 420 }}>
+              <Table stickyHeader size="large">
+                <TableHead>
+                  <TableRow
+                    style={{
+                      height: "60px",
+                    }}
+                  >
+                    {headers.map((item) => {
+                      return (
+                        <TableCell sx={{ padding: "6px 16px" }}>
+                          {item}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {response.map((item) => {
+                    return (
                       <TableRow
                         style={{
+                          backgroundColor: "rgba(254, 191, 44, 0.1)",
                           height: "60px",
                         }}
                       >
-                        {headers.map((item) => {
-                          return (
-                            <TableCell sx={{ padding: "6px 16px" }}>
-                              {item}
-                            </TableCell>
-                          );
-                        })}
+                        <TableCell>{item.card_number}</TableCell>
+                        <TableCell>{item.message}</TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {deleteResponse.map((item) => {
-                        return (
-                          <TableRow
-                            style={{
-                              backgroundColor: "rgba(254, 191, 44, 0.1)",
-                              height: "60px",
-                            }}
-                          >
-                            <TableCell>{item.video_id}</TableCell>
-                            <TableCell>{item.task_type}</TableCell>
-                            <TableCell>{item.target_language}</TableCell>
-                            <TableCell>{item.video_name}</TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </Box>
-              </TableCell>
-            </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </DialogContentText>
       </DialogContent>
@@ -92,16 +75,7 @@ const ConfirmErrorDialog = ({
           onClick={handleClose}
           sx={{ lineHeight: "1", borderRadius: "6px" }}
         >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => submit()}
-          autoFocus
-          sx={{ lineHeight: "1", borderRadius: "8px" }}
-        >
-          Delete
-          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
+          Close
         </Button>
       </DialogActions>
     </Dialog>
