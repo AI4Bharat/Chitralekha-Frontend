@@ -352,7 +352,7 @@ const SignUp = () => {
               error={error.languages ? true : false}
               renderValue={(selected) => {
                 if (selected.length === 0) {
-                  return <Box>Select Langauges</Box>;
+                  return <Box>Select Languages</Box>;
                 }
 
                 return (
