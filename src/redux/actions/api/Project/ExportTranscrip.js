@@ -7,6 +7,7 @@ export default class exportTranscriptionAPI extends API {
     super("GET", timeout, false);
     this.type = C.EXPORT_TRANSCRIPTION;
     this.data = data;
+    this.exportType = exportType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.transcript
     }export_transcript/?task_id=${projectId}&export_type=${exportType}`;

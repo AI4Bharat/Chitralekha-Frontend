@@ -7,6 +7,7 @@ export default class exportTranslationAPI extends API {
     super("GET", timeout, false);
     this.type = C.EXPORT_TRANLATION;
     this.data = data;
+    this.exportType = exportType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.translation
     }export_translation/?task_id=${projectId}&export_type=${exportType}`;
