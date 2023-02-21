@@ -2,21 +2,21 @@
 
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
-import {
-  Button,
-  CardContent,
-  Grid,
-  IconButton,
-  // Pagination,
-  Typography,
-} from "@mui/material";
+import { CardContent, Grid, IconButton, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
-import { setSubtitles } from "../../../redux/actions/Common";
+import {
+  setCurrentPage,
+  setNextPage,
+  setPreviousPage,
+  setSubtitles,
+  setSubtitlesForCheck,
+  setTotalPages,
+} from "../../../redux/actions/Common";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import AudioReactRecorder, { RecordState } from "audio-react-recorder";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
@@ -35,6 +35,9 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import Pagination from "./components/Pagination";
+import Sub from "../../../utils/Sub";
+import { cloneDeep } from "lodash";
+import ConfirmErrorDialog from "../../../common/ConfirmErrorDialog";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -77,15 +80,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [audioPlaybackRate, setAudioPlaybackRate] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
-
-  const getPayloadAPI = (value) => {
-    const payloadObj = new FetchTranscriptPayloadAPI(
-      taskData.id,
-      taskData.task_type,
-      value
-    );
-    dispatch(APITransport(payloadObj));
-  };
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -148,7 +142,11 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     // saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal, isAutosave) => {
+  const saveTranscriptHandler = async (
+    isFinal,
+    isAutosave,
+    isGetUpdatedAudio
+  ) => {
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -180,6 +178,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
     if (res.ok) {
       setLoading(false);
+      setOpenConfirmDialog(false);
 
       setSnackbarInfo({
         open: isAutosave,
@@ -197,18 +196,50 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         );
       }
 
-      if (isAutosave) {
-        getPayloadAPI(currentPage);
+      if (isGetUpdatedAudio) {
+        const sub = resp?.payload?.payload.map((item) => new Sub(item));
+
+        const newSub = cloneDeep(sub);
+
+        dispatch(setCurrentPage(resp?.current));
+        dispatch(setNextPage(resp?.next));
+        dispatch(setPreviousPage(resp?.previous));
+        dispatch(setTotalPages(resp?.count));
+        dispatch(setSubtitlesForCheck(newSub));
+        dispatch(setSubtitles(sub, C.SUBTITLES));
       }
     } else {
       setLoading(false);
+      setOpenConfirmDialog(false);
+      
+      if (isFinal) {
+        <ConfirmErrorDialog 
+          message={resp.message}
+          openDialog={openConfirmErrorDialog}
+          handleClose={() => setOpenConfirmErrorDialog(false)}
+        />
+      }
 
       setSnackbarInfo({
-        open: true,
+        open: isAutosave,
         message: resp?.message,
         variant: "error",
       });
     }
+  };
+
+  const getPayloadAPI = (value) => {
+    const payloadObj = new FetchTranscriptPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+      value
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
+  const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true);
+    getPayloadAPI(value);
   };
 
   const onUndo = useCallback(() => {
@@ -440,7 +471,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                       {recordAudio[index] == "stop" ? (
                         <div
                           className={classes.audioBox}
-                          style={!xl ? { alignItems: "center", flexDirection: "row", width: "100%" } : {}}
+                          style={
+                            !xl
+                              ? {
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  width: "100%",
+                                }
+                              : {}
+                          }
                         >
                           <audio
                             src={data[index]}
@@ -511,7 +550,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             rows={totalPages + 2}
             previous={previous}
             next={next}
-            onClick={getPayloadAPI}
+            onClick={onNavigationClick}
             jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
           />
         </Box>
@@ -521,7 +560,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
             submit={() => saveTranscriptHandler(true, false)}
-            message={"Do you want to submit the translation?"}
+            message={"Do you want to submit the Voice Over?"}
             loading={loading}
           />
         )}
