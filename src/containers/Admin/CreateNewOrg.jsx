@@ -196,7 +196,7 @@ const CreateNewOrg = () => {
               {orgOwnerList.map((item) => {
                 return (
                   <MenuItem key={"1"} value={item.id}>
-                    {item.username}
+                    {item.email}
                   </MenuItem>
                 );
               })}

@@ -98,17 +98,19 @@ const CreateTaskDialog = ({
 
   const selectTaskTypeHandler = (event) => {
     setTaskType(event.target.value);
-
+    
     if (!isBulk) {
       setShowAllowedTaskList(true);
 
-      const allowedTaskObj = new FetchAllowedTasksAPI(
-        Array.isArray(videoDetails)
-          ? videoDetails.map((item) => item.id)
-          : videoDetails.id,
-        event.target.value
-      );
-      dispatch(APITransport(allowedTaskObj));
+      if (event.target.value === "TRANSCRIPTION") {
+        const allowedTaskObj = new FetchAllowedTasksAPI(
+          Array.isArray(videoDetails)
+            ? videoDetails.map((item) => item.id)
+            : videoDetails.id,
+          event.target.value
+        );
+        dispatch(APITransport(allowedTaskObj));
+      }
     }
   };
 

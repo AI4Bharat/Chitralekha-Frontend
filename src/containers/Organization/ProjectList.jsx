@@ -113,7 +113,7 @@ const ProjectList = ({ data, removeProjectList }) => {
             item.title,
             item.managers[0]?.email,
             moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-            item.created_by?.username,
+            `${item.created_by?.first_name} ${item.created_by?.last_name}`,
             <div style={{ textAlign: "center" }}>
               <Link
                 to={`/my-organization/${id}/project/${item.id}`}

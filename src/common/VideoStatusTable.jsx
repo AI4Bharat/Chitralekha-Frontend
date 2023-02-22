@@ -56,7 +56,7 @@ const VideoStatusTable = ({ headers, status }) => {
                           )}
                         </TableCell>
                         <TableCell sx={{ width: "20%" }}>
-                          {item.user.username}
+                          {`${item.user.first_name} ${item.user.last_name}`}
                         </TableCell>
                         <TableCell sx={{ width: "40%" }}>
                           {item.task_status}
