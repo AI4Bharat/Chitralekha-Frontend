@@ -108,6 +108,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       const recorderArray = subtitles.map(() => "stop");
       setRecordAudio(recorderArray);
       setData(new Array(recorderArray.length));
+      updatedArray = subtitles.map(() => "");
     }
 
     subtitles?.forEach((item, index) => {
