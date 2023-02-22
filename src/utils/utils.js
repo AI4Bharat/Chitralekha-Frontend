@@ -693,3 +693,16 @@ export const diableTargetLang = (defaultTask) => {
   }
   return true;
 };
+
+export const getDateTime = () => {
+  const date = new Date();
+  const YYYYMMDD = date
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("");
+
+  const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+  return `${YYYYMMDD}_${HHMMSS}`;
+};
