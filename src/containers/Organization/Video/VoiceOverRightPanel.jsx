@@ -60,6 +60,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
   const previous = useSelector((state) => state.commonReducer.previousPage);
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -239,7 +242,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    saveTranscriptHandler(false, true);
+    // saveTranscriptHandler(false, true);
     getPayloadAPI(value);
   };
 
@@ -492,7 +495,14 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
                           <div
                             className={classes.playbackRate}
-                            style={!xl ? { margin: "0" } : {}}
+                            style={{
+                              margin: !xl ? "0" : "",
+                              display:
+                                transcriptPayload.source_type ===
+                                "MACHINE_GENERATED"
+                                  ? "none"
+                                  : "",
+                            }}
                           >
                             <IconButton
                               onClick={() =>

@@ -93,7 +93,7 @@ const ButtonComponent = ({
           <Tooltip title="Get Updated Audio" placement="bottom">
             <IconButton
               className={classes.optionIconBtn}
-              onClick={() => saveTranscriptHandler(false, true)}
+              onClick={() => saveTranscriptHandler(false, true, true)}
             >
               <TaskAltIcon />
             </IconButton>
