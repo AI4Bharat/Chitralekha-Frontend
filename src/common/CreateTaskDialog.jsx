@@ -328,7 +328,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={disableBtn()}
+          disabled={isBulk ? false : disableBtn()}
           onClick={() => submitHandler()}
         >
           Create Task{" "}

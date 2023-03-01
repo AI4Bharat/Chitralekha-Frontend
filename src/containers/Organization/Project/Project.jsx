@@ -42,6 +42,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import Loader from "../../../common/Spinner";
 import ProjectReport from "./ProjectReport";
 import C from "../../../redux/constants";
+import AlertComponent from "../../../common/Alert";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -67,6 +68,8 @@ const Project = () => {
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertData, setAlertData] = useState({});
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -194,7 +197,14 @@ const Project = () => {
       variant: "info",
     });
 
-    const apiObj = new CreateNewVideoAPI(link, isAudio, projectId, lang, desc,create);
+    const apiObj = new CreateNewVideoAPI(
+      link,
+      isAudio,
+      projectId,
+      lang,
+      desc,
+      create
+    );
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
@@ -205,10 +215,10 @@ const Project = () => {
     const resp = await res.json();
 
     if (res.ok) {
+      setShowAlert(true);
+      setAlertData(resp);
       setSnackbarInfo({
-        open: true,
-        message: "Video added successfully",
-        variant: "success",
+        open: false,
       });
     } else {
       setSnackbarInfo({
@@ -440,15 +450,27 @@ const Project = () => {
           setVideoDescription={setVideoDescription}
         />
       )}
-      <AddProjectMembers
-        managerNames={userList}
-        open={addUserDialog}
-        handleUserDialogClose={() => setAddUserDialog(false)}
-        addBtnClickHandler={addNewMemberHandler}
-        selectFieldValue={addmembers}
-        handleSelectField={(item) => setAddmembers(item)}
-        title="Add Project Members"
-      />
+
+      {addUserDialog && (
+        <AddProjectMembers
+          managerNames={userList}
+          open={addUserDialog}
+          handleUserDialogClose={() => setAddUserDialog(false)}
+          addBtnClickHandler={addNewMemberHandler}
+          selectFieldValue={addmembers}
+          handleSelectField={(item) => setAddmembers(item)}
+          title="Add Project Members"
+        />
+      )}
+
+      {showAlert && (
+        <AlertComponent
+          open={showAlert}
+          onClose={() => setShowAlert(false)}
+          message={alertData.message}
+          report={alertData.detailed_report}
+        />
+      )}
     </Grid>
   );
 };

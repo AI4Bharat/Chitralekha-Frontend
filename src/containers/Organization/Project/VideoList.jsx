@@ -583,9 +583,9 @@ const VideoList = ({ data, removeVideo }) => {
       {showAlert && (
         <AlertComponent
           open={showAlert}
-          data={alertData}
           onClose={() => setShowAlert(false)}
-          alertType={alertType}
+          message={alertData.message}
+          report={alertData?.response?.detailed_report}
         />
       )}
     </>
