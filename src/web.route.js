@@ -29,6 +29,7 @@ import TaskList from "./containers/Organization/Project/TaskList";
 import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";
+import TaskQueueStatus from "./containers/Organization/TaskQueueStatus";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -160,6 +161,13 @@ const RootRouter = () => {
         <Route path="/invite/:invitecode" element={<SignUp />} />
       
         <Route path="/forget-password/confirm/:uid/:token" element={<ConfirmForgetPassword />} />
+
+        <Route
+          path="/task-queue-status"
+          element={ProtectedRouteWrapper(
+            <Layout component={<TaskQueueStatus />} Backbutton={true} />
+          )}
+        />
       </Routes>
     </HashRouter>
   );

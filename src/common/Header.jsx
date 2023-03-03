@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import C from "../redux/constants";
 import HelpDialog from "./HelpDialog"
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 
 const Header = () => {
   const classes = headerStyle();
@@ -54,7 +55,6 @@ const Header = () => {
     setAnchorElUser(event.currentTarget);
   };
   
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
@@ -234,6 +234,15 @@ const Header = () => {
               </Grid>
 
               <Box className={classes.avatarBox}>
+                <IconButton
+                  onClick={() => navigate('/task-queue-status')}
+                  className={`${classes.icon} help`}
+                >
+                  <Tooltip title="Task Queue Status">
+                    <HourglassBottomIcon color="primary" className={classes.icon} />
+                  </Tooltip>
+                </IconButton>
+
                 <IconButton
                   onClick={handleOpenHelpMenu}
                   className={`${classes.icon} help`}
