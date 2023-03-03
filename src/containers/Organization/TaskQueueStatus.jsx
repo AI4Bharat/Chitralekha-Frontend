@@ -95,7 +95,7 @@ const TaskQueueStatus = () => {
   const columns = [
     {
       name: "S. No",
-      label: "Queue Position",
+      label: "Seq. No.",
       options: {
         filter: false,
         sort: false,
@@ -157,7 +157,7 @@ const TaskQueueStatus = () => {
 
   return (
     <div>
-      <MUIDataTable data={tableData} columns={columns} options={options} />
+      <MUIDataTable title="Tasks Queue Status" data={tableData} columns={columns} options={options} />
       {renderSnackBar()}
     </div>
   );
