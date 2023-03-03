@@ -43,6 +43,7 @@ import getInviteUserInfo from "./User/FetchInviteUserInfo";
 import getTranscriptExportTypes from "./Project/FetchTranscriptExportTypes";
 import getTranslationExportTypes from "./Project/FetchTranslationExportTypes";
 import getOrgTaskList from "./Organization/FetchOrgTaskList";
+import getTaskQueueStatus from "./Organization/FetchTaskQueueStatus";
 
 const rootReducer = {
     apiStatus,
@@ -89,7 +90,8 @@ const rootReducer = {
     getInviteUserInfo,
     getTranscriptExportTypes,
     getTranslationExportTypes,
-    getOrgTaskList
+    getOrgTaskList,
+    getTaskQueueStatus,
 };
 
 export default rootReducer;
