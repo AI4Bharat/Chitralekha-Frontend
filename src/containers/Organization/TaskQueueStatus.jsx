@@ -26,7 +26,17 @@ const TaskQueueStatus = () => {
 
     const resp = await res.json();
     if (res.ok) {
-      setTableData(resp.data);
+      const result = resp.data.map((item, index) => {
+        return [
+          index + 1,
+          item.task_id,
+          item.submitter_name,
+          item.org_name,
+          item.video_duration,
+        ];
+      });
+
+      setTableData(result);
       setLoading(false);
     } else {
       setSnackbarInfo({
@@ -84,6 +94,18 @@ const TaskQueueStatus = () => {
 
   const columns = [
     {
+      name: "S. No",
+      label: "Queue Position",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
       name: "task_id",
       label: "Task Id",
       options: {
@@ -97,7 +119,7 @@ const TaskQueueStatus = () => {
     },
     {
       name: "submitter_name",
-      label: "Submitter Name",
+      label: "Submitter",
       options: {
         filter: false,
         sort: false,
@@ -109,7 +131,7 @@ const TaskQueueStatus = () => {
     },
     {
       name: "org_name",
-      label: "Organization Name",
+      label: "Organization",
       options: {
         filter: false,
         sort: false,
