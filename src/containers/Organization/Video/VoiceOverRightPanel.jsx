@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid, IconButton, Typography } from "@mui/material";
+import { CardContent, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
@@ -32,8 +32,8 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import FastForwardIcon from "@mui/icons-material/FastForward";
-import FastRewindIcon from "@mui/icons-material/FastRewind";
+// import FastForwardIcon from "@mui/icons-material/FastForward";
+// import FastRewindIcon from "@mui/icons-material/FastRewind";
 import Pagination from "./components/Pagination";
 import Sub from "../../../utils/Sub";
 import { cloneDeep } from "lodash";
@@ -60,9 +60,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
   const previous = useSelector((state) => state.commonReducer.previousPage);
-  const transcriptPayload = useSelector(
-    (state) => state.getTranscriptPayload.data
-  );
+  // const transcriptPayload = useSelector(
+  //   (state) => state.getTranscriptPayload.data
+  // );
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -80,12 +80,13 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
-  const [audioPlaybackRate, setAudioPlaybackRate] = useState([]);
+  // const [audioPlaybackRate, setAudioPlaybackRate] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
   const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorResponse, setErrorResponse] = useState([]);
+  const [durationError, setDurationError] = useState([]);
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -96,9 +97,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     subtitlesForCheck?.forEach(() => temp.push(1));
 
     $audioRef.current = $audioRef.current.slice(0, subtitlesForCheck?.length);
-    setAudioPlaybackRate(temp);
+    // setAudioPlaybackRate(temp);
     setTextChangeBtn(subtitlesForCheck?.map(() => false));
     setSpeedChangeBtn(subtitlesForCheck?.map(() => false));
+    setDurationError(subtitlesForCheck?.map(() => false));
   }, [subtitlesForCheck]);
 
   useEffect(() => {
@@ -292,6 +294,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onStopRecording = (data, index) => {
+    updateRecorderState(RecordState.STOP, index);
+
     if (data && data.hasOwnProperty("url")) {
       const updatedArray = Object.assign([], data);
       updatedArray[index] = data.url;
@@ -309,8 +313,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       };
 
       setData(updatedArray);
-      updateRecorderState(RecordState.STOP, index);
     }
+
+    setTimeout(() => {
+      const temp = [...durationError];
+      if (subtitles[index].time_difference < audioPlayer[index].duration) {
+        temp[index] = true;
+      } else {
+        temp[index] = false;
+      }
+      setDurationError(temp);
+    }, 500);
   };
 
   const handleStopRecording = (index) => {
@@ -321,34 +334,34 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     updateRecorderState(RecordState.PAUSE, index);
   };
 
-  const playbackRateHandler = (rate, index) => {
-    if (rate <= 2.1) {
-      const arr = [...sourceText];
-      const speed = [...speedChangeBtn];
+  // const playbackRateHandler = (rate, index) => {
+  //   if (rate <= 2.1) {
+  //     const arr = [...sourceText];
+  //     const speed = [...speedChangeBtn];
 
-      if (rate !== 1) {
-        speed[index] = true;
-      } else {
-        speed[index] = false;
-      }
+  //     if (rate !== 1) {
+  //       speed[index] = true;
+  //     } else {
+  //       speed[index] = false;
+  //     }
 
-      arr.forEach((element, i) => {
-        if (index === i) {
-          element.audio_speed = Math.round(audioPlaybackRate[index] * 10) / 10;
-        }
-      });
+  //     arr.forEach((element, i) => {
+  //       if (index === i) {
+  //         element.audio_speed = Math.round(audioPlaybackRate[index] * 10) / 10;
+  //       }
+  //     });
 
-      const tempArr = [...audioPlayer];
-      tempArr[index].playbackRate = rate;
+  //     const tempArr = [...audioPlayer];
+  //     tempArr[index].playbackRate = rate;
 
-      const temp = [...audioPlaybackRate];
-      temp[index] = rate;
+  //     const temp = [...audioPlaybackRate];
+  //     temp[index] = rate;
 
-      setSpeedChangeBtn(speed);
-      setAudioPlayer(tempArr);
-      setAudioPlaybackRate(temp);
-    }
-  };
+  //     setSpeedChangeBtn(speed);
+  //     setAudioPlayer(tempArr);
+  //     setAudioPlaybackRate(temp);
+  //   }
+  // };
 
   return (
     <>
@@ -412,6 +425,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     saveTranscriptHandler={saveTranscriptHandler}
                     showSpeedChangeBtn={speedChangeBtn[index]}
                     handlePauseRecording={handlePauseRecording}
+                    durationError={durationError}
                   />
                 </Box>
 
@@ -473,28 +487,30 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                           onStop={(data) => onStopRecording(data, index)}
                         />
                       </div>
-                      {recordAudio[index] == "stop" ? (
-                        <div
-                          className={classes.audioBox}
-                          style={
-                            !xl
-                              ? {
-                                  alignItems: "center",
-                                  flexDirection: "row",
-                                  width: "100%",
-                                }
-                              : {}
+                      <div
+                        className={classes.audioBox}
+                        style={
+                          !xl
+                            ? {
+                                alignItems: "center",
+                                flexDirection: "row",
+                                width: "100%",
+                              }
+                            : {}
+                        }
+                      >
+                        <audio
+                          src={data[index]}
+                          controls
+                          ref={(element) =>
+                            ($audioRef.current[index] = element)
                           }
-                        >
-                          <audio
-                            src={data[index]}
-                            controls
-                            ref={(element) =>
-                              ($audioRef.current[index] = element)
-                            }
-                          />
+                          style={{
+                            display: recordAudio[index] == "stop" ? "" : "none",
+                          }}
+                        />
 
-                          <div
+                        {/* <div
                             className={classes.playbackRate}
                             style={{
                               margin: !xl ? "0" : "",
@@ -534,13 +550,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                             >
                               <FastForwardIcon />
                             </IconButton>
-                          </div>
-                        </div>
-                      ) : (
-                        <div style={{ color: "#fff", margin: "18px auto" }}>
-                          Recording Audio....
-                        </div>
-                      )}
+                          </div> */}
+                      </div>
+                      <div
+                        style={{
+                          color: "#fff",
+                          margin: "18px auto",
+                          display: recordAudio[index] == "stop" ? "none" : "",
+                        }}
+                      >
+                        Recording Audio....
+                      </div>
                     </div>
                   </Box>
                 </CardContent>

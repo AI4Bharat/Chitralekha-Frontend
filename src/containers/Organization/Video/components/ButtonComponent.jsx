@@ -14,6 +14,7 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import LyricsIcon from "@mui/icons-material/Lyrics";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 const ButtonComponent = ({
   index,
@@ -31,6 +32,7 @@ const ButtonComponent = ({
   saveTranscriptHandler,
   showSpeedChangeBtn,
   handlePauseRecording,
+  durationError,
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -107,6 +109,20 @@ const ButtonComponent = ({
             onClick={() => saveTranscriptHandler(false, true, true)}
           >
             <LyricsIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {taskData.task_type.includes("VOICEOVER") && durationError[index] && (
+        <Tooltip
+          title="Audio length should be equal or less than duration"
+          placement="bottom"
+        >
+          <IconButton
+            className={classes.optionIconBtn}
+            style={{ backgroundColor: "red" }}
+          >
+            <ReportProblemIcon />
           </IconButton>
         </Tooltip>
       )}
