@@ -165,7 +165,7 @@ const RootRouter = () => {
         <Route
           path="/task-queue-status"
           element={ProtectedRouteWrapper(
-            <Layout component={<TaskQueueStatus />} Backbutton={true} />
+            <Layout component={<TaskQueueStatus />} />
           )}
         />
       </Routes>
