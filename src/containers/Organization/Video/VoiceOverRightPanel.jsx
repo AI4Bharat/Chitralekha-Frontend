@@ -185,6 +185,12 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
     const resp = await res.json();
 
+    if (isFinal) {
+      navigate(
+        `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+      );
+    }
+
     if (res.ok) {
       setLoading(false);
       setOpenConfirmDialog(false);
@@ -198,12 +204,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
-
-      if (isFinal) {
-        navigate(
-          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-        );
-      }
 
       if (isGetUpdatedAudio) {
         const sub = resp?.payload?.payload.map((item) => new Sub(item));
