@@ -656,6 +656,13 @@ export const getDisableOption = (data, defaultTask) => {
     }
     return true;
   }
+
+  if (data.value === "VOICEOVER_EDIT") {
+    if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
+      return false;
+    }
+    return true;
+  }
 };
 
 export const defaultTaskHandler = (task) => {
@@ -675,7 +682,10 @@ export const defaultTaskHandler = (task) => {
     );
 
     if (isTranslationEdit === -1) {
-      const temp = task.filter((item) => item.value !== "TRANSLATION_REVIEW");
+      const temp = task.filter(
+        (item) =>
+          item.value !== "TRANSLATION_REVIEW" && item.value !== "VOICEOVER_EDIT"
+      );
       dTask = [...temp];
       lang = [];
     } else {

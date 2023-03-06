@@ -181,18 +181,15 @@ const TaskList = () => {
       headers: apiObj.getHeaders().headers,
     });
 
-    const resp = await res.blob();
+    const resp = await res.json();
 
     if (res.ok) {
       const task = taskList.tasks_list.filter(
         (task) => task.id === id
       )[0];
 
-      const newBlob = new Blob([resp]);
-      const blobUrl = window.URL.createObjectURL(newBlob);
-
       const link = document.createElement("a");
-      link.href = blobUrl;
+      link.href = resp.azure_url;
 
       link.setAttribute(
         "download",
@@ -204,8 +201,6 @@ const TaskList = () => {
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
     } else {
       setSnackbarInfo({
         open: true,
