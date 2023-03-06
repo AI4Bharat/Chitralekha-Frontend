@@ -38,6 +38,7 @@ import Pagination from "./components/Pagination";
 import Sub from "../../../utils/Sub";
 import { cloneDeep } from "lodash";
 import ConfirmErrorDialog from "../../../common/ConfirmErrorDialog";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -451,7 +452,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                 >
                   <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
                     <div className={classes.relative} style={{ width: "100%" }}>
-                      <textarea
+                      {/* <textarea
                         rows={4}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
@@ -475,7 +476,69 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                             "voiceover"
                           );
                         }}
-                      />
+                      /> */}
+
+                      {taskData?.target_language !== "en" &&
+                      enableTransliteration ? (
+                        <IndicTransliterate
+                          lang={taskData?.target_language}
+                          value={item.text}
+                          onChangeText={(text) => {
+                            changeTranscriptHandler(text, index);
+                          }}
+                          style={{
+                            fontSize: fontSize,
+                            height: "100px",
+                            width: "89%",
+                            ...(xl && {
+                              width: "80%",
+                              margin: "15px 0",
+                            }),
+                          }}
+                          renderComponent={(props) => (
+                            <div>
+                              <textarea
+                                className={`${
+                                  classes.textAreaTransliteration
+                                } ${
+                                  currentIndex === index
+                                    ? classes.boxHighlight
+                                    : ""
+                                }`}
+                                dir={enableRTL_Typing ? "rtl" : "ltr"}
+                                rows={4}
+                                {...props}
+                              />
+                            </div>
+                          )}
+                        />
+                      ) : (
+                        <div>
+                          <textarea
+                            onChange={(event) => {
+                              changeTranscriptHandler(
+                                event.target.value,
+                                index
+                              );
+                            }}
+                            style={{
+                              fontSize: fontSize,
+                              height: "100px",
+                              width: "89%",
+                              ...(xl && {
+                                width: "80%",
+                                margin: "15px 0",
+                              }),
+                            }}
+                            value={item.text}
+                            dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            }`}
+                            rows={4}
+                          />
+                        </div>
+                      )}
                     </div>
                   </Box>
 

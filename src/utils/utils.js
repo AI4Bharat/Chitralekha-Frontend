@@ -548,18 +548,28 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
   if (startEnd === "startTime" && index > 0) {
     const durationOfPrevious = DT.t2d(subtitles[index - 1].end_time);
     const durationOfCurrent = DT.t2d(newTime);
+    const durationOfEndTime = DT.t2d(subtitles[index].end_time);
 
     if (durationOfPrevious >= durationOfCurrent) {
       newTime = subtitles[index - 1].end_time;
+    }
+
+    if(durationOfCurrent >= durationOfEndTime) {
+      newTime = subtitles[index].end_time;
     }
   }
 
   if (startEnd === "endTime" && index < subtitles.length) {
     const durationOfNext = DT.t2d(subtitles[index + 1].start_time);
     const durationOfCurrent = DT.t2d(newTime);
+    const durationOfStartTime = DT.t2d(subtitles[index].start_time);
 
     if (durationOfNext <= durationOfCurrent) {
       newTime = subtitles[index + 1].start_time;
+    }
+
+    if(durationOfCurrent <= durationOfStartTime) {
+      newTime = subtitles[index].start_time;
     }
   }
 
