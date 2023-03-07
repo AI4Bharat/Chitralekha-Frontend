@@ -25,6 +25,7 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import { Box } from "@mui/system";
 import {
   FullScreen,
+  setCompletedCount,
   setCurrentPage,
   setNextPage,
   setPreviousPage,
@@ -105,6 +106,7 @@ const VideoLanding = () => {
     dispatch(setPreviousPage(transcriptPayload?.previous));
     dispatch(setTotalPages(transcriptPayload?.count));
     dispatch(setSubtitlesForCheck(newSub));
+    dispatch(setCompletedCount(transcriptPayload?.completed_count));
     dispatch(setSubtitles(sub, C.SUBTITLES));
   }, [transcriptPayload?.payload?.payload]);
 

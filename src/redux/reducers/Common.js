@@ -11,6 +11,7 @@ const initialState = {
   currentPage: 1,
   nextPage: "",
   previousPage: "",
+  completedCount: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -66,6 +67,12 @@ const reducer = (state = initialState, action) => {
     case C.PREVIOUS_PAGE: {
       let result = {...state};
       result.previousPage = action.payload;
+      return result;
+    }
+
+    case C.COMPLETED_COUNT: {
+      let result = {...state};
+      result.completedCount = action.payload;
       return result;
     }
 
