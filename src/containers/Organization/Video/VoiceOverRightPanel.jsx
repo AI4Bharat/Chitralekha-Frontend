@@ -61,9 +61,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
   const previous = useSelector((state) => state.commonReducer.previousPage);
-  // const transcriptPayload = useSelector(
-  //   (state) => state.getTranscriptPayload.data
-  // );
+  const completedCount = useSelector((state) => state.commonReducer.completedCount);
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -246,7 +247,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    // saveTranscriptHandler(false, true);
+    if(transcriptPayload?.source_type !== "MACHINE_GENERATED") {
+      saveTranscriptHandler(false, true);
+    }
     getPayloadAPI(value);
   };
 
@@ -315,7 +318,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
       setData(updatedArray);
     }
-
     setTimeout(() => {
       const temp = [...durationError];
       if (subtitles[index].time_difference < audioPlayer[index].duration) {
@@ -324,7 +326,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         temp[index] = false;
       }
       setDurationError(temp);
-    }, 500);
+    }, 1000);
   };
 
   const handleStopRecording = (index) => {
@@ -334,35 +336,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const handlePauseRecording = (index) => {
     updateRecorderState(RecordState.PAUSE, index);
   };
-
-  // const playbackRateHandler = (rate, index) => {
-  //   if (rate <= 2.1) {
-  //     const arr = [...sourceText];
-  //     const speed = [...speedChangeBtn];
-
-  //     if (rate !== 1) {
-  //       speed[index] = true;
-  //     } else {
-  //       speed[index] = false;
-  //     }
-
-  //     arr.forEach((element, i) => {
-  //       if (index === i) {
-  //         element.audio_speed = Math.round(audioPlaybackRate[index] * 10) / 10;
-  //       }
-  //     });
-
-  //     const tempArr = [...audioPlayer];
-  //     tempArr[index].playbackRate = rate;
-
-  //     const temp = [...audioPlaybackRate];
-  //     temp[index] = rate;
-
-  //     setSpeedChangeBtn(speed);
-  //     setAudioPlayer(tempArr);
-  //     setAudioPlaybackRate(temp);
-  //   }
-  // };
 
   return (
     <>
@@ -386,6 +359,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             onRedo={onRedo}
             undoStack={undoStack}
             redoStack={redoStack}
+            durationError={durationError}
           />
         </Grid>
 
@@ -452,32 +426,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                 >
                   <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
                     <div className={classes.relative} style={{ width: "100%" }}>
-                      {/* <textarea
-                        rows={4}
-                        className={`${classes.textAreaTransliteration} ${
-                          currentIndex === index ? classes.boxHighlight : ""
-                        }`}
-                        dir={enableRTL_Typing ? "rtl" : "ltr"}
-                        style={{
-                          fontSize: fontSize,
-                          height: "100px",
-                          // margin: "15px 0 25px 0",
-                          width: "89%",
-                          ...(xl && {
-                            width: "80%",
-                            margin: "15px 0",
-                          }),
-                        }}
-                        value={item.text}
-                        onChange={(event) => {
-                          changeTranscriptHandler(
-                            event.target.value,
-                            index,
-                            "voiceover"
-                          );
-                        }}
-                      /> */}
-
                       {taskData?.target_language !== "en" &&
                       enableTransliteration ? (
                         <IndicTransliterate
@@ -572,48 +520,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                             display: recordAudio[index] == "stop" ? "" : "none",
                           }}
                         />
-
-                        {/* <div
-                            className={classes.playbackRate}
-                            style={{
-                              margin: !xl ? "0" : "",
-                              display:
-                                transcriptPayload.source_type ===
-                                "MACHINE_GENERATED"
-                                  ? "none"
-                                  : "",
-                            }}
-                          >
-                            <IconButton
-                              onClick={() =>
-                                audioPlaybackRate[index] >= 0.2 &&
-                                playbackRateHandler(
-                                  audioPlaybackRate[index] - 0.1,
-                                  index
-                                )
-                              }
-                              sx={{ color: " #fff" }}
-                            >
-                              <FastRewindIcon />
-                            </IconButton>
-
-                            <p style={{ margin: 0, color: " #fff" }}>
-                              {Math.round(audioPlaybackRate[index] * 10) / 10}x
-                            </p>
-
-                            <IconButton
-                              onClick={() =>
-                                audioPlaybackRate[index] <= 15.9 &&
-                                playbackRateHandler(
-                                  audioPlaybackRate[index] + 0.1,
-                                  index
-                                )
-                              }
-                              sx={{ color: " #fff" }}
-                            >
-                              <FastForwardIcon />
-                            </IconButton>
-                          </div> */}
                       </div>
                       <div
                         style={{
@@ -647,6 +553,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             next={next}
             onClick={onNavigationClick}
             jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            durationError={durationError}
+            completedCount={completedCount}
           />
         </Box>
 

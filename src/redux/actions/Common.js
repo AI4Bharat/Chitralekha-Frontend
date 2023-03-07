@@ -62,3 +62,10 @@ export const setPreviousPage = (data) => {
     payload: data,
   };
 };
+
+export const setCompletedCount = (data) => {
+  return {
+    type: C.COMPLETED_COUNT,
+    payload: data,
+  };
+};
