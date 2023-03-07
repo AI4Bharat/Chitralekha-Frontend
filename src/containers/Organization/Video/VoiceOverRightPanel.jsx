@@ -188,6 +188,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
 
     if (res.ok) {
+      getPayloadAPI(value);
       setLoading(false);
       setOpenConfirmDialog(false);
 
@@ -250,7 +251,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     if(transcriptPayload?.source_type !== "MACHINE_GENERATED") {
       saveTranscriptHandler(false, true);
     }
-    getPayloadAPI(value);
   };
 
   const onUndo = useCallback(() => {
