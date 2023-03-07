@@ -21,6 +21,7 @@ const Pagination = ({
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
   const getDisbled = (navigate = true) => {
     if (!navigate) {
@@ -28,7 +29,17 @@ const Pagination = ({
     }
 
     if (transcriptPayload?.source_type !== "MACHINE_GENERATED") {
-      return durationError?.some((item) => item === true);
+      if (durationError?.some((item) => item === true)) {
+        return true;
+      }
+
+      const error = subtitles?.filter((item) => {
+        return item.audio === "";
+      });
+
+      if (error?.length) {
+        return true;
+      }
     }
 
     return false;
@@ -40,7 +51,7 @@ const Pagination = ({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        width: "80%"
+        width: "80%",
       }}
     >
       <Box>
