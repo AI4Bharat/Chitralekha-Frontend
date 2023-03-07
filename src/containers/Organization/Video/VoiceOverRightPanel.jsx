@@ -89,6 +89,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -188,7 +189,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
 
     if (res.ok) {
-      getPayloadAPI(value);
+      getPayloadAPI(offset);
       setLoading(false);
       setOpenConfirmDialog(false);
 
@@ -250,6 +251,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const onNavigationClick = (value) => {
     if(transcriptPayload?.source_type !== "MACHINE_GENERATED") {
       saveTranscriptHandler(false, true);
+      setOffset(value);
     } else {
       getPayloadAPI(value);
     }
