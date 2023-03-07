@@ -59,8 +59,9 @@ const SettingsButtonComponent = ({
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
+  const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
-  const getDisbled = () => {
+  const getDisbled = (flag) => {
     if (
       taskData?.task_type?.includes("VOICEOVER") &&
       transcriptPayload?.source_type !== "MACHINE_GENERATED"
@@ -69,7 +70,15 @@ const SettingsButtonComponent = ({
         return true;
       }
 
-      if (completedCount != totalPages + 2) {
+      const error = subtitles?.filter((item) => {
+        return item.audio === "";
+      });
+
+      if (error?.length) {
+        return true;
+      }
+
+      if (flag && completedCount != totalPages + 2) {
         return true;
       }
     }
@@ -223,7 +232,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
-          disabled={getDisbled()}
+          disabled={getDisbled("complete")}
           onClick={() => setOpenConfirmDialog(true)}
         >
           <VerifiedIcon />
