@@ -186,15 +186,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
     const resp = await res.json();
 
-    if (isFinal) {
-      navigate(
-        `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-      );
-    }
-
     if (res.ok) {
       setLoading(false);
       setOpenConfirmDialog(false);
+
+      if (isFinal) {
+        navigate(
+          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+        );
+      }
 
       setSnackbarInfo({
         open: isAutosave,

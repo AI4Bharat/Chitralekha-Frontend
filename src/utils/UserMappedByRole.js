@@ -21,7 +21,7 @@ console.log(statusLabel,'statusLabel');
     } else if (statusLabel == "In Progress") {
         return {
             name: statusLabel, name: "In Progress", element: <Typography variant="caption"
-                sx={{ p: 1, backgroundColor: "rgb(255, 99, 71,0.2)", color: "rgb(255, 99, 71)", borderRadius: 2, fontWeight: 600 }}>In Progress</Typography>
+                sx={{ p: 1, backgroundColor: "rgb(255, 99, 71,0.2)", color: "rgb(255, 99, 71)", borderRadius: 2, fontWeight: 600,whiteSpace: "nowrap" }}>In Progress</Typography>
         }
     }
     else if (statusLabel == "Selected Source") {

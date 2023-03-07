@@ -1,7 +1,7 @@
 export const TaskStatus = [
     { value: "COMPLETE", label: "Complete"},
     { value: 'NEW', label: 'New' },
-    { value: "INPROGRESS", label: "Inprogress" },
+    { value: "INPROGRESS", label: "In Progress" },
     { value: "SELECTED_SOURCE", label: "Selected Source" },
     { value: "POST_PROCESS", label: "Post Process" },
   ];
