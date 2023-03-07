@@ -250,6 +250,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const onNavigationClick = (value) => {
     if(transcriptPayload?.source_type !== "MACHINE_GENERATED") {
       saveTranscriptHandler(false, true);
+    } else {
+      getPayloadAPI(value);
     }
   };
 
