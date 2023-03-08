@@ -32,14 +32,6 @@ const Pagination = ({
       if (durationError?.some((item) => item === true)) {
         return true;
       }
-
-      const error = subtitles?.filter((item) => {
-        return item.audio === "";
-      });
-
-      if (error?.length) {
-        return true;
-      }
     }
 
     return false;

@@ -89,6 +89,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
+  const [canSave, setCanSave] = useState(false);
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -195,6 +196,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     }
 
     if (res.ok) {
+      setCanSave(false);
       getPayloadAPI(value);
       setLoading(false);
       setOpenConfirmDialog(false);
@@ -249,7 +251,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    if(transcriptPayload?.source_type !== "MACHINE_GENERATED") {
+    if(canSave) {
       saveTranscriptHandler(false, true, false, value);
     } else {
       getPayloadAPI(value);
@@ -302,6 +304,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   const onStopRecording = (data, index) => {
     updateRecorderState(RecordState.STOP, index);
+    setCanSave(true);
 
     if (data && data.hasOwnProperty("url")) {
       const updatedArray = Object.assign([], data);

@@ -70,14 +70,6 @@ const SettingsButtonComponent = ({
         return true;
       }
 
-      const error = subtitles?.filter((item) => {
-        return item.audio === "";
-      });
-
-      if (error?.length) {
-        return true;
-      }
-
       if (flag && completedCount != totalPages + 2) {
         return true;
       }
