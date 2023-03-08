@@ -222,6 +222,11 @@ const ProjectStyle = makeStyles({
     "& .MuiInput-root:before": {
       border: "none",
     },
+    '& .MuiInput-input': {
+      '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+        '-webkit-appearance': 'none',
+      },
+     }
   },
 
   taskBox: {
