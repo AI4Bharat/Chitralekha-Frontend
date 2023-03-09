@@ -78,7 +78,6 @@ const ProjectStyle = makeStyles({
     justifyContent: "center",
     height: "100%",
     width: "600px",
-    margin: "auto",
     position: "relative",
     flexDirection: "column",
   },

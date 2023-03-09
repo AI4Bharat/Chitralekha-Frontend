@@ -124,7 +124,7 @@ const ButtonComponent = ({
         >
           <IconButton
             className={classes.optionIconBtn}
-            style={{ backgroundColor: "red" }}
+            style={{ backgroundColor: "red", color: "#fff" }}
           >
             <ReportProblemIcon />
           </IconButton>

@@ -70,6 +70,7 @@ const Project = () => {
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
+  const [voice, setVoice] = useState("");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -448,6 +449,8 @@ const Project = () => {
           setLang={setLang}
           videoDescription={videoDescription}
           setVideoDescription={setVideoDescription}
+          voice={voice}
+          setVoice={setVoice}
         />
       )}
 

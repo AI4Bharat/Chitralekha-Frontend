@@ -260,10 +260,34 @@ const EditProject = () => {
           }}
         >
           <Grid container spacing={4}>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Typography variant="h3" align="center">
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              xl={12}
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <Typography variant="h3" align="center" marginLeft={"auto"}>
                 Project Settings
               </Typography>
+
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => handleSubmit()}
+                style={{
+                  borderRadius: 6,
+                  marginLeft: "auto",
+                  visibility: showBtn() ? "" : "hidden",
+                }}
+              >
+                Update Project{" "}
+                {loading && (
+                  <Loader size={20} margin="0 0 0 10px" color="secondary" />
+                )}
+              </Button>
             </Grid>
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>

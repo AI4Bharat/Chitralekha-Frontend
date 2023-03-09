@@ -9,9 +9,12 @@ import { useTheme } from "@mui/material/styles";
 import {
   Grid,
   Typography,
-  Switch,
-  FormControlLabel,
   IconButton,
+  FormControl,
+  TextField,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
@@ -20,26 +23,45 @@ import { Box } from "@mui/system";
 import ProjectStyle from "../styles/ProjectStyle";
 import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
 import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
-import { getTimeStamp, getMilliseconds } from "../utils/utils";
+import { getTimeStamp, getMilliseconds, MenuProps } from "../utils/utils";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import CloseIcon from "@mui/icons-material/Close";
 import C from "../redux/constants";
 
+const voiceOptions = [
+  {
+    label: "Male - Adult",
+    value: "male",
+  },
+  {
+    label: "Female - Adult",
+    value: "female",
+  },
+];
+
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const [time, setTime] = useState("");
   const [subtitles, setSubtitles] = useState([]);
   const [highlightedSubtitle, setHighlightedSubtitle] = useState([]);
   const [fullScreenMode, setFullScreenMode] = useState(false);
   const [darkAndLightMood, setDarkAndLightMood] = useState(true);
+  const [videoDescription, setVideoDescription] = useState("");
+  const [voice, setVoice] = useState("");
+
   const ref = useRef(null);
   const { subtitle } = useVideoSubtitle(videoDetails[0].id);
 
   const classes = ProjectStyle();
+
+  useEffect(() => {
+    setVideoDescription(videoDetails[0].description);
+  }, [videoDetails]);
 
   useEffect(() => {
     const subtitleList = Object.values(subtitle);
@@ -111,7 +133,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
     return () => {
       dispatch({ type: C.CLEAR_VIDEO_DETAILS });
-    }
+    };
   }, []);
 
   const onFullScreenChange = (status) => {
@@ -233,90 +255,120 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       </DialogTitle>
 
       <DialogContent>
-        <Grid className={classes.videoBox} id="myvideo">
-          <video
-            id="myBtn"
-            ref={ref}
-            style={fullScreenMode ? { width: "100%" } : { width: "600px" }}
-            controls
-            src={video.direct_video_url}
-            className={classes.video}
-            onTimeUpdate={handleProgress}
-            onClick={() => handleplayVideo()}
-          />
-
-          <div
-            className={
-              fullScreenMode
-                ? darkAndLightMood === false
-                  ? classes.lightmodesubtitle
-                  : classes.darkmodesubtitle
-                : classes.darkmodesubtitle
-            }
-            style={
-              fullScreenMode
-                ? {
-                    zIndex: 100,
-                    fontSize: "35px",
-                    position: "absolute",
-                    bottom: "100px",
-                    width: "100%",
-                  }
-                : {}
-            }
-          >
-            {highlightedSubtitle.length ? (
-              highlightedSubtitle.map((s) => s)
-            ) : (
-              <></>
-            )}
-          </div>
-
-          <Box>
-            {fullScreenMode ? (
-              <Button
-                className={classes.fullscreenVideoBtns}
-                aria-label="fullscreen"
-                onClick={() => handleFullscreenVideo()}
-                variant="contained"
-                style={{
-                  right: fullScreenMode ? "9%" : "",
-                  bottom: fullScreenMode ? "5.5%" : "",
-                }}
-              >
-                <FullscreenExitIcon sx={{ fontSize: "40px" }} />
-              </Button>
-            ) : (
-              <Button
-                className={classes.fullscreenVideoBtns}
-                aria-label="fullscreenExit"
-                onClick={() => handleFullscreenVideo()}
-                variant="contained"
-              >
-                <FullscreenIcon />
-              </Button>
-            )}
-          </Box>
-
-          {fullScreenMode && (
-            <CustomSwitchDarkBackground
-              sx={{ position: "relative", bottom: "7%", left: "34%" }}
-              labelPlacement="start"
-              checked={darkAndLightMood}
-              onChange={() =>
-                darkAndLightMood === false
-                  ? setDarkAndLightMood(true)
-                  : setDarkAndLightMood(false)
-              }
+        <Grid container width={"100%"} alignItems="center" marginBottom="20px">
+          <Grid className={classes.videoBox} id="myvideo">
+            <video
+              id="myBtn"
+              ref={ref}
+              style={fullScreenMode ? { width: "100%" } : { width: "600px" }}
+              controls
+              src={video.direct_video_url}
+              className={classes.video}
+              onTimeUpdate={handleProgress}
+              onClick={() => handleplayVideo()}
             />
-          )}
+
+            <div
+              className={
+                fullScreenMode
+                  ? darkAndLightMood === false
+                    ? classes.lightmodesubtitle
+                    : classes.darkmodesubtitle
+                  : classes.darkmodesubtitle
+              }
+              style={
+                fullScreenMode
+                  ? {
+                      zIndex: 100,
+                      fontSize: "35px",
+                      position: "absolute",
+                      bottom: "100px",
+                      width: "100%",
+                    }
+                  : {}
+              }
+            >
+              {highlightedSubtitle.length ? (
+                highlightedSubtitle.map((s) => s)
+              ) : (
+                <></>
+              )}
+            </div>
+
+            <Box>
+              {fullScreenMode ? (
+                <Button
+                  className={classes.fullscreenVideoBtns}
+                  aria-label="fullscreen"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                  style={{
+                    right: fullScreenMode ? "9%" : "",
+                    bottom: fullScreenMode ? "5.5%" : "",
+                  }}
+                >
+                  <FullscreenExitIcon sx={{ fontSize: "40px" }} />
+                </Button>
+              ) : (
+                <Button
+                  className={classes.fullscreenVideoBtns}
+                  aria-label="fullscreenExit"
+                  onClick={() => handleFullscreenVideo()}
+                  variant="contained"
+                >
+                  <FullscreenIcon />
+                </Button>
+              )}
+            </Box>
+
+            {fullScreenMode && (
+              <CustomSwitchDarkBackground
+                sx={{ position: "relative", bottom: "7%", left: "34%" }}
+                labelPlacement="start"
+                checked={darkAndLightMood}
+                onChange={() =>
+                  darkAndLightMood === false
+                    ? setDarkAndLightMood(true)
+                    : setDarkAndLightMood(false)
+                }
+              />
+            )}
+          </Grid>
+
+          <Grid width={"40%"} marginLeft="auto">
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              rows={3}
+              value={videoDescription}
+              onChange={(event) => setVideoDescription(event.target.value)}
+              sx={{ mb: 3, mt: 3 }}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel id="select-voice">Voice Selection</InputLabel>
+              <Select
+                fullWidth
+                labelId="select-voice"
+                label="Voice Selection"
+                value={voice}
+                onChange={(event) => setVoice(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+                MenuProps={MenuProps}
+              >
+                {voiceOptions?.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
 
-        <Typography variant="body1" style={{ padding: "24px" }}>
-          Duration: {videoDetails[0].duration}
-        </Typography>
-
-        <div style={{ padding: "0px 20px " }}>
+        <div>
           <VideoTaskList videoDetails={videoDetails[0].id} />
         </div>
       </DialogContent>
