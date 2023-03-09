@@ -35,6 +35,7 @@ const ButtonComponent = ({
   handlePauseRecording,
   durationError,
   handleFileUpload,
+  isDisabled,
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -136,6 +137,7 @@ const ButtonComponent = ({
         (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (
           <Tooltip title="Record Audio" placement="bottom">
             <IconButton
+              disabled={isDisabled}
               className={classes.optionIconBtn}
               onClick={() => handleStartRecording(index)}
             >
@@ -183,6 +185,7 @@ const ButtonComponent = ({
         transcriptPayload.source_type !== "MACHINE_GENERATED" && (
           <Tooltip title="Upload Audio" placement="bottom">
             <IconButton
+              disabled={isDisabled}
               className={classes.optionIconBtn}
               onClick={() => $audioFile.current.click()}
             >
