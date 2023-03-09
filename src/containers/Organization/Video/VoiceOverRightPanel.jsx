@@ -197,9 +197,12 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
     if (res.ok) {
       setCanSave(false);
-      getPayloadAPI(value);
       setLoading(false);
       setOpenConfirmDialog(false);
+
+      if (!isGetUpdatedAudio) {
+        getPayloadAPI(value);
+       }
 
       setSnackbarInfo({
         open: isAutosave,
