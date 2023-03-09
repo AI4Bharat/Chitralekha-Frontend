@@ -191,7 +191,7 @@ const ButtonComponent = ({
                 type="file"
                 style={{ display: "none" }}
                 ref={$audioFile}
-                accept="audio/wav"
+                accept="audio/wav, audio/mp3"
                 onChange={(event) => handleFileUpload(event, index)}
               />
             </IconButton>

@@ -39,14 +39,6 @@ const Pagination = ({
       if (durationError?.some((item) => item === true)) {
         return true;
       }
-
-      const error = subtitles?.filter((item) => {
-        return item.audio === "";
-      });
-
-      if (error?.length) {
-        return true;
-      }
     }
 
     return false;
@@ -62,12 +54,17 @@ const Pagination = ({
         ...(!xl && {
           flexDirection: "column",
         }),
+        ...(transcriptPayload.source_type === "MACHINE_GENERATED" && {
+          width: "auto",
+        })
       }}
     >
       <Box>
-        <Typography variant="body2" margin="0 5px 0 0" fontWeight={"bold"}>
-          Completed: {completedCount} / {rows}
-        </Typography>
+        {transcriptPayload.source_type !== "MACHINE_GENERATED" && (
+          <Typography variant="body2" margin="0 5px 0 0">
+            Completed: {completedCount} / {rows}
+          </Typography>
+        )}
       </Box>
 
       <Box display="flex" justifyContent="center" alignItems="center">
