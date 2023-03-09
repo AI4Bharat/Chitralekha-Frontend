@@ -61,7 +61,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
   const previous = useSelector((state) => state.commonReducer.previousPage);
-  const completedCount = useSelector((state) => state.commonReducer.completedCount);
+  const completedCount = useSelector(
+    (state) => state.commonReducer.completedCount
+  );
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
@@ -202,7 +204,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
       if (!isGetUpdatedAudio) {
         getPayloadAPI(value);
-       }
+      }
 
       setSnackbarInfo({
         open: isAutosave,
@@ -254,7 +256,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    if(canSave) {
+    if (canSave) {
       saveTranscriptHandler(false, true, false, value);
     } else {
       getPayloadAPI(value);
@@ -321,7 +323,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         base64data = reader.result;
         const encode = base64data.replace("data:audio/wav;base64,", "");
         updatedArray.audioContent = encode;
-        console.log(updatedArray,'updatedArray');
+        console.log(updatedArray, "updatedArray");
         const updatedSourceText = setAudioContent(index, encode);
         dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
       };
@@ -348,7 +350,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const handleFileUpload = (event, index) => {
-    const file = event.target.files[0]
+    const file = event.target.files[0];
     const updatedArray = [];
     updatedArray[index] = URL.createObjectURL(file);
 
@@ -358,14 +360,31 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     reader.readAsDataURL(file);
     reader.onloadend = function () {
       base64data = reader.result;
-      const encode = base64data.replace("data:audio/wav;base64,", "");
+      console.log(base64data, "base64data");
+      let encode;
+      if (base64data.includes("data:audio/wav;base64,")) {
+        encode = base64data.replace("data:audio/wav;base64,", "");
+      } else {
+        encode = base64data.replace("data:audio/mpeg;base64,", "");
+      }
+
       updatedArray.audioContent = encode;
       const updatedSourceText = setAudioContent(index, encode);
       dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
     };
 
     setData(updatedArray);
-  }
+
+    setTimeout(() => {
+      const temp = [...durationError];
+      if (subtitles[index].time_difference < audioPlayer[index].duration) {
+        temp[index] = true;
+      } else {
+        temp[index] = false;
+      }
+      setDurationError(temp);
+    }, 1000);
+  };
 
   return (
     <>
