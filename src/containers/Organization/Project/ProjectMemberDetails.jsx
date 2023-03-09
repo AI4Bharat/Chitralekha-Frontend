@@ -295,8 +295,7 @@ const ProjectMemberDetails = () => {
           handleClose={() => setOpenDeleteDialog(false)}
           submit={() => removeProjectMember(memberId)}
           loading={loading}
-          message={`Are you sure, you want to delete this project? All the associated
-          video and tasks will be deleted.`}
+          message={`Are you sure, you want to delete this member?`}
         />
       )}
     </>
