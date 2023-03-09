@@ -15,6 +15,7 @@ import LyricsIcon from "@mui/icons-material/Lyrics";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import { useRef } from "react";
 
 const ButtonComponent = ({
   index,
@@ -33,12 +34,15 @@ const ButtonComponent = ({
   showSpeedChangeBtn,
   handlePauseRecording,
   durationError,
+  handleFileUpload,
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+
+  const $audioFile = useRef(null);
 
   return (
     <>
@@ -178,8 +182,18 @@ const ButtonComponent = ({
       {taskData.task_type.includes("VOICEOVER") &&
         transcriptPayload.source_type !== "MACHINE_GENERATED" && (
           <Tooltip title="Upload Audio" placement="bottom">
-            <IconButton className={classes.optionIconBtn} onClick={() => {}}>
+            <IconButton
+              className={classes.optionIconBtn}
+              onClick={() => $audioFile.current.click()}
+            >
               <UploadIcon />
+              <input
+                type="file"
+                style={{ display: "none" }}
+                ref={$audioFile}
+                accept="audio/wav"
+                onChange={(event) => handleFileUpload(event, index)}
+              />
             </IconButton>
           </Tooltip>
         )}

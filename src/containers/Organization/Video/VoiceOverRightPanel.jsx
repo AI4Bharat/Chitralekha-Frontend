@@ -318,6 +318,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         base64data = reader.result;
         const encode = base64data.replace("data:audio/wav;base64,", "");
         updatedArray.audioContent = encode;
+        console.log(updatedArray,'updatedArray');
         const updatedSourceText = setAudioContent(index, encode);
         dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
       };
@@ -342,6 +343,26 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const handlePauseRecording = (index) => {
     updateRecorderState(RecordState.PAUSE, index);
   };
+
+  const handleFileUpload = (event, index) => {
+    const file = event.target.files[0]
+    const updatedArray = [];
+    updatedArray[index] = URL.createObjectURL(file);
+
+    const reader = new FileReader();
+
+    let base64data;
+    reader.readAsDataURL(file);
+    reader.onloadend = function () {
+      base64data = reader.result;
+      const encode = base64data.replace("data:audio/wav;base64,", "");
+      updatedArray.audioContent = encode;
+      const updatedSourceText = setAudioContent(index, encode);
+      dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
+    };
+
+    setData(updatedArray);
+  }
 
   return (
     <>
@@ -407,6 +428,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     showSpeedChangeBtn={speedChangeBtn[index]}
                     handlePauseRecording={handlePauseRecording}
                     durationError={durationError}
+                    handleFileUpload={handleFileUpload}
                   />
                 </Box>
 

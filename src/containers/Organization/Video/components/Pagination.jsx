@@ -1,4 +1,10 @@
-import { Select, IconButton, MenuItem, Typography } from "@mui/material";
+import {
+  Select,
+  IconButton,
+  MenuItem,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import React from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -22,6 +28,7 @@ const Pagination = ({
     (state) => state.getTranscriptPayload.data
   );
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
+  const xl = useMediaQuery("(min-width:1440px)");
 
   const getDisbled = (navigate = true) => {
     if (!navigate) {
@@ -43,11 +50,14 @@ const Pagination = ({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        width: "80%",
+        width: "95%",
+        ...(!xl && {
+          flexDirection: "column",
+        }),
       }}
     >
       <Box>
-        <Typography variant="body2" margin="0 5px 0 0">
+        <Typography variant="body2" margin="0 5px 0 0" fontWeight={"bold"}>
           Completed: {completedCount} / {rows}
         </Typography>
       </Box>
@@ -77,7 +87,7 @@ const Pagination = ({
           })}
         </Select>
 
-        <Typography variant="body2" margin="0 15px 0 35px">
+        <Typography variant="body2" margin="0 15px 0 15px">
           {range} of {rows}
         </Typography>
 
