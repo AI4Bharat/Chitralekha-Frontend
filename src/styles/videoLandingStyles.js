@@ -372,15 +372,15 @@ const VideoLandingStyle = makeStyles({
   },
 
   optionIconBtn: {
-    backgroundColor: "#0083e2",
+    backgroundColor: "#fff",
     borderRadius: "50%",
     marginRight: "10px",
-    color: "#fff",
+    color: "blue",
     "&:disabled": {
       background: "grey",
     },
     "&:hover": {
-      backgroundColor: "#271e4f",
+      backgroundColor: "#fff",
     },
   },
 
