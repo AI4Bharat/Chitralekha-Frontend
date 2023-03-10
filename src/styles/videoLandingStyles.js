@@ -562,6 +562,11 @@ const VideoLandingStyle = makeStyles({
     alignItems: "center",
     marginRight: "10%"
   },
+
+  disabledCard: {
+    opacity: "0.5",
+    cursor: "not-allowed",
+  },
 });
 
 export default VideoLandingStyle;

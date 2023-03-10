@@ -32,8 +32,6 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-// import FastForwardIcon from "@mui/icons-material/FastForward";
-// import FastRewindIcon from "@mui/icons-material/FastRewind";
 import Pagination from "./components/Pagination";
 import Sub from "../../../utils/Sub";
 import { cloneDeep } from "lodash";
@@ -64,9 +62,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
-  const transcriptPayload = useSelector(
-    (state) => state.getTranscriptPayload.data
-  );
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -84,7 +79,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
-  // const [audioPlaybackRate, setAudioPlaybackRate] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
   const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
@@ -92,6 +86,14 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
   const [canSave, setCanSave] = useState(false);
+
+  const isDisabled = (index) => {
+    if (next && sourceText.length - 1 === index) {
+      return true;
+    }
+
+    return false;
+  };
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -102,7 +104,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     subtitlesForCheck?.forEach(() => temp.push(1));
 
     $audioRef.current = $audioRef.current.slice(0, subtitlesForCheck?.length);
-    // setAudioPlaybackRate(temp);
     setTextChangeBtn(subtitlesForCheck?.map(() => false));
     setSpeedChangeBtn(subtitlesForCheck?.map(() => false));
     setDurationError(subtitlesForCheck?.map(() => false));
@@ -386,6 +387,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     }, 1000);
   };
 
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+    subtitleScrollEle
+      .querySelector(`#container-1`)
+      ?.scrollIntoView({ block: "center" });
+  }, [
+    document
+      .getElementById("subtitleContainerVO")
+      ?.querySelector(`#container-1`),
+  ]);
+
   return (
     <>
       {renderSnackBar()}
@@ -412,16 +424,17 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           />
         </Grid>
 
-        <Box
-          className={classes.subTitleContainer}
-          id={"subtitleContainerTranslation"}
-        >
+        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"}>
           {sourceText?.map((item, index) => {
             return (
-              <div style={{ borderBottom: "1px solid grey" }}>
+              <div
+                className={isDisabled(index) ? classes.disabledCard : ""}
+                style={{ borderBottom: "1px solid grey" }}
+                id={`container-${index}`}
+              >
                 <Box
                   display="flex"
-                  paddingTop="25px"
+                  paddingTop={index === 1 ? "100px" : "25px"}
                   sx={{ paddingX: "20px", justifyContent: "space-between" }}
                 >
                   <Typography
@@ -451,6 +464,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     handlePauseRecording={handlePauseRecording}
                     durationError={durationError}
                     handleFileUpload={handleFileUpload}
+                    isDisabled={isDisabled(index)}
                   />
                 </Box>
 
@@ -458,7 +472,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                   style={{
                     display: "flex",
                     padding: "5px 0",
-                    paddingBottom: "0",
+                    paddingBottom: index === 1 ? "100px" : "0px",
                     borderBottom: 2,
                     flexWrap: "wrap",
                     ...(!xl && {
@@ -474,7 +488,12 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
+                  <Box
+                    sx={{
+                      width: index === 2 ? "100%" : "50%",
+                      ...(!xl && { width: "100%" }),
+                    }}
+                  >
                     <div className={classes.relative} style={{ width: "100%" }}>
                       {taskData?.target_language !== "en" &&
                       enableTransliteration ? (
@@ -488,8 +507,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                             fontSize: fontSize,
                             height: "100px",
                             width: "89%",
+                            opacity: "1 !important",
                             ...(xl && {
-                              width: "80%",
+                              width: index === 2 ? "89%" : "80%",
                               margin: "15px 0",
                             }),
                           }}
@@ -499,12 +519,13 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                                 className={`${
                                   classes.textAreaTransliteration
                                 } ${
-                                  currentIndex === index
+                                  index === 1
                                     ? classes.boxHighlight
                                     : ""
                                 }`}
                                 dir={enableRTL_Typing ? "rtl" : "ltr"}
                                 rows={4}
+                                disabled={isDisabled(index)}
                                 {...props}
                               />
                             </div>
@@ -513,6 +534,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                       ) : (
                         <div>
                           <textarea
+                            disabled={isDisabled(index)}
                             onChange={(event) => {
                               changeTranscriptHandler(
                                 event.target.value,
@@ -524,14 +546,14 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                               height: "100px",
                               width: "89%",
                               ...(xl && {
-                                width: "80%",
+                                width: index === 2 ? "89%" : "80%",
                                 margin: "15px 0",
                               }),
                             }}
                             value={item.text}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             className={`${classes.textAreaTransliteration} ${
-                              currentIndex === index ? classes.boxHighlight : ""
+                              index === 1 ? classes.boxHighlight : ""
                             }`}
                             rows={4}
                           />
@@ -540,7 +562,12 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     </div>
                   </Box>
 
-                  <Box sx={{ width: "50%", ...(!xl && { width: "100%" }) }}>
+                  <Box
+                    sx={{
+                      width: index === 2 ? "100%" : "50%",
+                      ...(!xl && { width: "100%" }),
+                    }}
+                  >
                     <div className={classes.recorder}>
                       <div style={{ display: "none" }}>
                         <AudioReactRecorder
@@ -557,17 +584,24 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                                 flexDirection: "row",
                                 width: "100%",
                               }
-                            : {}
+                            : { width: "100%" }
                         }
                       >
                         <audio
+                          disabled={isDisabled(index)}
                           src={data[index]}
                           controls
                           ref={(element) =>
                             ($audioRef.current[index] = element)
                           }
                           style={{
-                            display: recordAudio[index] == "stop" ? "" : "none",
+                            display: isDisabled(index)
+                              ? "none"
+                              : recordAudio[index] == "stop"
+                              ? ""
+                              : "none",
+                            width: index === 2 ? "91%" : "",
+                            margin: index === 2 ? "0 auto 25px auto" : "",
                           }}
                         />
                       </div>
