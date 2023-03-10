@@ -26,7 +26,7 @@ export default class RemoveProjectMemberAPI extends API {
 
   getBody() {
     return {
-      user_id: `${this.userId}`,
+      user_id: [this.userId],
     };
   }
 
