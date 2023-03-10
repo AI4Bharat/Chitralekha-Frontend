@@ -137,7 +137,7 @@ const ButtonComponent = ({
         (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (
           <Tooltip title="Record Audio" placement="bottom">
             <IconButton
-              disabled={isDisabled}
+              style={{ display: isDisabled ? "none" : "" }}
               className={classes.optionIconBtn}
               onClick={() => handleStartRecording(index)}
             >
@@ -185,7 +185,7 @@ const ButtonComponent = ({
         transcriptPayload.source_type !== "MACHINE_GENERATED" && (
           <Tooltip title="Upload Audio" placement="bottom">
             <IconButton
-              disabled={isDisabled}
+              style={{ display: isDisabled ? "none" : "" }}
               className={classes.optionIconBtn}
               onClick={() => $audioFile.current.click()}
             >
