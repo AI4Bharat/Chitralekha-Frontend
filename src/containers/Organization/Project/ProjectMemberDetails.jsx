@@ -14,13 +14,14 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 import Search from "../../../common/Search";
+import Loader from "../../../common/Spinner";
+import DeleteDialog from "../../../common/DeleteDialog";
 
 //APIs
 import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
-import Loader from "../../../common/Spinner";
-import DeleteDialog from "../../../common/DeleteDialog";
+import DeleteMemberErrorDialog from "../../../common/DeleteMemberErrorDialog";
 
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
@@ -35,6 +36,9 @@ const ProjectMemberDetails = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [memberId, setMemberId] = useState("");
+  const [openMemberErrorDialog, setOpenMemberErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorResponse, setErrorResponse] = useState("");
 
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
@@ -49,13 +53,14 @@ const ProjectMemberDetails = () => {
     setLoading(true);
 
     const apiObj = new RemoveProjectMemberAPI(projectId, id);
-    //dispatch(APITransport(apiObj));
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
     });
+
     const resp = await res.json();
+
     if (res.ok) {
       setSnackbarInfo({
         open: true,
@@ -66,11 +71,9 @@ const ProjectMemberDetails = () => {
       setLoading(false);
       getProjectMembers();
     } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
+      setErrorResponse(resp.response);
+      setErrorMessage(resp.message);
+      setOpenMemberErrorDialog(true);
       setOpenDeleteDialog(false);
       setLoading(false);
     }
@@ -148,9 +151,6 @@ const ProjectMemberDetails = () => {
           ];
         })
       : [];
-
-  //   setTableData(result);
-  // }, [projectMembersList]);
 
   const columns = [
     {
@@ -285,8 +285,16 @@ const ProjectMemberDetails = () => {
           handleClose={() => setOpenDeleteDialog(false)}
           submit={() => removeProjectMember(memberId)}
           loading={loading}
-          message={`Are you sure, you want to delete this project? All the associated
-          video and tasks will be deleted.`}
+          message={`Are you sure, you want to delete this member?`}
+        />
+      )}
+
+      {openMemberErrorDialog && (
+        <DeleteMemberErrorDialog
+          openDialog={openMemberErrorDialog}
+          handleClose={() => setOpenMemberErrorDialog(false)}
+          message={errorMessage}
+          response={errorResponse}
         />
       )}
     </>
