@@ -30,6 +30,7 @@ const TaskQueueStatus = () => {
         return [
           index + 1,
           item.task_id,
+          item.video_id,
           item.submitter_name,
           item.org_name,
           item.video_duration,
@@ -109,6 +110,19 @@ const TaskQueueStatus = () => {
       name: "task_id",
       label: "Task Id",
       options: {
+        display: false,
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: { height: "30px", fontSize: "16px", padding: "16px" },
+        }),
+      },
+    },
+    {
+      name: "video_id",
+      label: "Video Id",
+      options: {
         filter: false,
         sort: false,
         align: "center",
@@ -157,7 +171,12 @@ const TaskQueueStatus = () => {
 
   return (
     <div>
-      <MUIDataTable title="Tasks Queue Status" data={tableData} columns={columns} options={options} />
+      <MUIDataTable
+        title="Tasks Queue Status"
+        data={tableData}
+        columns={columns}
+        options={options}
+      />
       {renderSnackBar()}
     </div>
   );
