@@ -49,6 +49,25 @@ console.log(statusLabel,'statusLabel');
           </Typography>
         ),
       };
+    } else if(statusLabel === "Failed") {
+      return {
+        name: statusLabel,
+        element: (
+          <Typography
+            variant="caption"
+            sx={{
+              p: 1,
+              backgroundColor: "#ff606073",
+              color: "#f10000",
+              borderRadius: 2,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Failed
+          </Typography>
+        ),
+      };
     }
 }
 
