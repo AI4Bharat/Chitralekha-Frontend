@@ -490,6 +490,7 @@ export const getMilliseconds = (timeInString) => {
 
 export const getUpdatedTime = (value, type, time, index, startEnd) => {
   const subtitles = store.getState().commonReducer.subtitles;
+  const videoDuration = store.getState().getVideoDetails.data.video.duration;
 
   const [hh, mm, sec] = time.split(":");
   const [ss, SSS] = sec.split(".");
@@ -507,7 +508,7 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     if (+value <= 9 && value.length < 2) {
       newValue = value.padStart(2, "0");
     } else {
-      newValue = `${value[value.length - 2]}${value[value.length - 1]}`;
+      newValue = `${value[value.length - 3]}${value[value.length - 1]}`;
     }
 
     if (+newValue >= 60) {
@@ -559,13 +560,27 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     }
   }
 
-  if (startEnd === "endTime" && index < subtitles.length) {
+  if (startEnd === "endTime" && index < subtitles.length-1) {
     const durationOfNext = DT.t2d(subtitles[index + 1].start_time);
     const durationOfCurrent = DT.t2d(newTime);
     const durationOfStartTime = DT.t2d(subtitles[index].start_time);
 
     if (durationOfNext <= durationOfCurrent) {
       newTime = subtitles[index + 1].start_time;
+    }
+
+    if(durationOfCurrent <= durationOfStartTime) {
+      newTime = subtitles[index].start_time;
+    }
+  }
+
+  if (startEnd === "endTime" && index === subtitles.length-1) {
+    const durationOfVideo = DT.t2d(videoDuration);
+    const durationOfCurrent = DT.t2d(newTime);
+    const durationOfStartTime = DT.t2d(subtitles[index].start_time);
+    
+    if(durationOfCurrent > durationOfVideo) {
+      newTime = videoDuration;
     }
 
     if(durationOfCurrent <= durationOfStartTime) {

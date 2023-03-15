@@ -8,7 +8,6 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
   return (
     <Box display="flex">
       <TextField
-        type="number"
         variant="standard"
         onChange={(event) =>
           handleTimeChange(event.target.value, index, type, "hours")
@@ -30,7 +29,6 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
       />
 
       <TextField
-        type="number"
         variant="standard"
         value={time.split(":")[1]}
         className={classes.timeInputBox}
@@ -49,7 +47,6 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
       />
 
       <TextField
-        type="number"
         variant="standard"
         value={time.split(":")[2].split(".")[0]}
         onFocus={(event) => event.target.select()}
@@ -71,7 +68,6 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
       />
 
       <TextField
-        type="number"
         variant="standard"
         value={time.split(":")[2].split(".")[1]}
         style={{ width: "20%", paddingRight: "10px" }}
