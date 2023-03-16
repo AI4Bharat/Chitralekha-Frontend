@@ -3,7 +3,7 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class CreateNewVideoAPI extends API {
-  constructor(url, isAudio, projectId, language, description,create, timeout = 2000) {
+  constructor(url, isAudio, projectId, language, description, create, gender, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.CREATE_NEW_VIDEO;
     this.url = url;
@@ -11,9 +11,10 @@ export default class CreateNewVideoAPI extends API {
     this.projectId = projectId;
     this.language = language;
     this.description = description;
+    this.gender = gender;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.video
-    }?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}&description=${description}&create=${create}`;
+    }?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}&description=${description}&create=${create}&voice={}`;
   }
 
   processResponse(res) {

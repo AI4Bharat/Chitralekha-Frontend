@@ -25,11 +25,11 @@ import { Box } from "@mui/system";
 const voiceOptions = [
   {
     label: "Male - Adult",
-    value: "male",
+    value: "Male",
   },
   {
     label: "Female - Adult",
-    value: "female",
+    value: "Female",
   },
 ];
 

@@ -204,7 +204,8 @@ const Project = () => {
       projectId,
       lang,
       desc,
-      create
+      create,
+      voice
     );
 
     const res = await fetch(apiObj.apiEndPoint(), {
