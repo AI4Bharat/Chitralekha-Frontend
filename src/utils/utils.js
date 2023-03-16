@@ -492,10 +492,11 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const videoDuration = store.getState().getVideoDetails.data.video.duration;
 
+  let newValue = "";
+
   const [hh, mm, sec] = time.split(":");
   const [ss, SSS] = sec.split(".");
 
-  let newValue = "";
   if (type === "hours") {
     if (value < 0) {
       newValue = "00";
@@ -506,9 +507,10 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
 
   if (type === "minutes" || type === "seconds") {
     if (+value <= 9 && value.length < 2) {
+      localStorage.setItem("value", value);
       newValue = value.padStart(2, "0");
     } else {
-      newValue = `${value[value.length - 3]}${value[value.length - 1]}`;
+      newValue = `${localStorage.getItem("value")}${value[value.length - 1]}`;
     }
 
     if (+newValue >= 60) {
@@ -552,15 +554,15 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     const durationOfEndTime = DT.t2d(subtitles[index].end_time);
 
     if (durationOfPrevious >= durationOfCurrent) {
-      newTime = subtitles[index - 1].end_time;
+      newTime = subtitles[index].start_time;
     }
 
-    if(durationOfCurrent >= durationOfEndTime) {
+    if (durationOfCurrent >= durationOfEndTime) {
       newTime = subtitles[index].end_time;
     }
   }
 
-  if (startEnd === "endTime" && index < subtitles.length-1) {
+  if (startEnd === "endTime" && index < subtitles.length - 1) {
     const durationOfNext = DT.t2d(subtitles[index + 1].start_time);
     const durationOfCurrent = DT.t2d(newTime);
     const durationOfStartTime = DT.t2d(subtitles[index].start_time);
@@ -569,22 +571,27 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
       newTime = subtitles[index + 1].start_time;
     }
 
-    if(durationOfCurrent <= durationOfStartTime) {
-      newTime = subtitles[index].start_time;
+    if (durationOfCurrent <= durationOfStartTime) {
+      let modifiedDuration = DT.t2d(subtitles[index].start_time);
+      modifiedDuration = modifiedDuration + 1;
+      console.log("qwe ===> ",DT.t2d(subtitles[index].start_time), DT.d2t(modifiedDuration));
+      newTime = DT.d2t(modifiedDuration);
     }
   }
 
-  if (startEnd === "endTime" && index === subtitles.length-1) {
+  if (startEnd === "endTime" && index === subtitles.length - 1) {
     const durationOfVideo = DT.t2d(videoDuration);
     const durationOfCurrent = DT.t2d(newTime);
     const durationOfStartTime = DT.t2d(subtitles[index].start_time);
-    
-    if(durationOfCurrent > durationOfVideo) {
+
+    if (durationOfCurrent > durationOfVideo) {
       newTime = videoDuration;
     }
 
-    if(durationOfCurrent <= durationOfStartTime) {
-      newTime = subtitles[index].start_time;
+    if (durationOfCurrent <= durationOfStartTime) {
+      let modifiedDuration = DT.t2d(subtitles[index].start_time);
+      modifiedDuration = modifiedDuration + 1;
+      newTime = DT.t2d(modifiedDuration);
     }
   }
 
