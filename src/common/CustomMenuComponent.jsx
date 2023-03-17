@@ -4,6 +4,7 @@ import { useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
 import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "../utils/subtitleUtils";
+import { useSelector } from "react-redux";
 
 const CustomMenuComponent = ({
   anchorElSettings,
@@ -12,11 +13,12 @@ const CustomMenuComponent = ({
   fontSize,
   darkAndLightMode,
   setDarkAndLightMode,
-  player,
   contianer,
   subtitlePlacement,
   setSubtitlePlacement,
 }) => {
+  const player = useSelector(state => state.commonReducer.player);
+
   const [anchorElFonts, setAnchorElFonts] = useState(null);
   const [anchorElTheme, setAnchorElTheme] = useState(null);
   const [anchorElPlayback, setAnchorElPlayback] = useState(null);

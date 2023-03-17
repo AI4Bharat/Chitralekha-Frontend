@@ -2,15 +2,11 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchAllowedTasksAPI extends API {
-  constructor(videoId, taskType,language, timeout = 2000) {
-    super("GET", timeout, false);
-    this.type = C.GET_ALLOWED_TASK;
-    this.videoId = videoId;
-    this.taskType = taskType;
-    this.language = language;
-    this.queryStr = taskType === "TRANSLATION" || taskType === "VOICEOVER" ? `&target_language=${language}`:""
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}get_allowed_task/?video_id=${videoId}&type=${taskType}${this.queryStr}`;
+export default class UpdateVideoAPI extends API {
+  constructor(updateData, timeout = 2000) {
+    super("PATCH", timeout, false);
+    this.updateData = updateData;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.video}update_video`;
   }
 
   processResponse(res) {
@@ -24,7 +20,9 @@ export default class FetchAllowedTasksAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return this.updateData;
+  }
 
   getHeaders() {
     this.headers = {

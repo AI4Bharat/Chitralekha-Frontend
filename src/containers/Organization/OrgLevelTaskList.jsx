@@ -449,13 +449,12 @@ const OrgLevelTaskList = () => {
           <IconButton
             disabled={!tableData.rowData[11]}
             onClick={() => {
-              if (
-                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-              ) {
+              if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
-              } else {
+              } else if (tableData.rowData[1].includes("TRANSLATION")) {
                 navigate(`/task/${tableData.rowData[0]}/translate`);
+              } else {
+                navigate(`/task/${tableData.rowData[0]}/voiceover`);
               }
             }}
             color="primary"
@@ -677,7 +676,6 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
       },
@@ -702,10 +700,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -731,10 +727,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -762,10 +756,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -799,10 +791,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -836,10 +826,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -865,10 +853,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -908,10 +894,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -938,10 +922,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -975,10 +957,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -1004,10 +984,8 @@ const OrgLevelTaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           // console.log("tableMeta ------ ", tableMeta);
           return (

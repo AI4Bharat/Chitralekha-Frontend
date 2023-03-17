@@ -65,7 +65,7 @@ const MemberList = () => {
       ? pageSearch().map((item, i) => {
           return [
             item.id,
-            item.username,
+            `${item.first_name} ${item.last_name}`,
             item.organization,
             item.email,
             item.role_label,
@@ -82,8 +82,8 @@ const MemberList = () => {
       },
     },
     {
-      name: "username",
-      label: "Username",
+      name: "first_name",
+      label: "Name",
       options: {
         filter: false,
         sort: false,

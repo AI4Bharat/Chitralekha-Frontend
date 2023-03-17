@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
-import { roles } from "../../../utils/utils";
+import { useParams } from "react-router-dom";
+import { getDateTime, roles } from "../../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,6 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import Search from "../../../common/Search";
 import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import Loader from "../../../common/Spinner";
@@ -59,13 +58,13 @@ import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
+import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
 
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -110,8 +109,6 @@ const TaskList = () => {
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-  const apiStatus = useSelector((state) => state.apiStatus);
-  const orgId = userData?.organization?.id;
 
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -124,6 +121,7 @@ const TaskList = () => {
     const apiObj = new FetchTaskListAPI(projectId);
     dispatch(APITransport(apiObj));
   };
+
   useEffect(() => {
     setLoading(true);
     const langObj = new FetchSupportedLanguagesAPI();
@@ -133,10 +131,6 @@ const TaskList = () => {
       dispatch({ type: C.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };
   }, []);
-
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
-  );
 
   useEffect(() => {
     const statusData = selectedFilters?.status?.map((el) => el);
@@ -168,21 +162,63 @@ const TaskList = () => {
     }
   }, [taskList]);
 
-  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
   };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setOpenPreviewDialog(false);
   };
 
-  const handleClickOpen = (id, tasttype) => {
-    setOpen(true);
-    setTaskdata(id);
-    setTasktype(tasttype);
-    setIsBulkTaskDownload(false);
+  const exportVoiceoverTask = async (id) => {
+    const apiObj = new ExportVoiceoverTaskAPI(id);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === id
+      )[0];
+
+      const link = document.createElement("a");
+      link.href = resp.azure_url;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video_${task.video_name}_${getDateTime()}_${
+          task.target_language
+        }.mp4`
+      );
+
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
+  const handleClickOpen = (id, taskType) => {
+    if (taskType.includes("VOICEOVER")) {
+      exportVoiceoverTask(id);
+    } else {
+      setOpen(true);
+      setTaskdata(id);
+      setTasktype(taskType);
+      setIsBulkTaskDownload(false);
+    }
   };
 
   const handleShowFilter = (event) => {
@@ -300,6 +336,7 @@ const TaskList = () => {
   const handleClickRadioButton = (e) => {
     setExportTranscription(e.target.value);
   };
+
   const handleClickRadioButtonTranslation = (e) => {
     setexportTranslation(e.target.value);
   };
@@ -465,16 +502,15 @@ const TaskList = () => {
           <IconButton
             disabled={!tableData.rowData[11]}
             onClick={() => {
-              if (
-                tableData.rowData[1] === "TRANSCRIPTION_EDIT" ||
-                tableData.rowData[1] === "TRANSCRIPTION_REVIEW"
-              ) {
+              if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
-              } else {
+              } else if (tableData.rowData[1].includes("TRANSLATION")) {
                 generateTranslationCall(
                   tableData.rowData[0],
                   tableData.rowData[17]
                 );
+              } else {
+                navigate(`/task/${tableData.rowData[0]}/voiceover`);
               }
             }}
             color="primary"
@@ -696,7 +732,6 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
       },
@@ -721,10 +756,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -750,10 +783,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -780,10 +811,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -817,10 +846,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -854,10 +881,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -883,10 +908,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -926,10 +949,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -956,10 +977,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -993,10 +1012,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
@@ -1022,10 +1039,8 @@ const TaskList = () => {
             height: "30px",
             fontSize: "16px",
             padding: "16px",
-            textAlign: "center",
           },
         }),
-        setCellProps: () => ({ style: { textAlign: "center" } }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>

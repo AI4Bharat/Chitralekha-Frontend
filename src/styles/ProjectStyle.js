@@ -78,7 +78,6 @@ const ProjectStyle = makeStyles({
     justifyContent: "center",
     height: "100%",
     width: "600px",
-    margin: "auto",
     position: "relative",
     flexDirection: "column",
   },
@@ -222,6 +221,11 @@ const ProjectStyle = makeStyles({
     "& .MuiInput-root:before": {
       border: "none",
     },
+    '& .MuiInput-input': {
+      '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+        '-webkit-appearance': 'none',
+      },
+     }
   },
 
   taskBox: {

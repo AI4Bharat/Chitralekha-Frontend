@@ -224,13 +224,13 @@ const EditOrganizationDetails = () => {
               onChange={(event) => setOwner(event.target.value)}
               MenuProps={MenuProps}
               renderValue={(selected) => {
-                return <Chip key={selected.id} label={selected.username} />;
+                return <Chip key={selected.id} label={selected.email} />;
               }}
             >
               {orgOwnerList.map((item, index) => {
                 return (
                   <MenuItem key={index} value={item}>
-                    {item.username}
+                    {item.email}
                   </MenuItem>
                 );
               })}

@@ -13,11 +13,14 @@ import { throttle } from "lodash";
 import Metronome from "./components/Metronome";
 import SubtitleBoxes from "./components/SubtitleBoxes";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
+import { useSelector } from "react-redux";
 
 const WaveForm = memo(
-  ({ player, setWaveform, setRender }) => {
+  ({ setWaveform, setRender }) => {
     const classes = VideoLandingStyle();
     const $waveform = createRef();
+    
+    const player = useSelector(state => state.commonReducer.player);
 
     useEffect(() => {
       [...WFPlayer.instances].forEach((item) => item.destroy());
@@ -41,16 +44,21 @@ const WaveForm = memo(
 
       setWaveform(waveform);
       waveform.on("update", setRender);
-      waveform.load("/sample.mp3");
-    }, [player, $waveform, setWaveform, setRender]);
+
+      if(player.src !== "") {
+        waveform.load(encodeURIComponent(player.src.replace(/&amp;/g, "&")));
+      }
+    }, [player, $waveform, setWaveform, setRender, player.src]); 
 
     return <div className={classes.waveform} ref={$waveform} />;
   }
 );
 
 const Progress = memo(
-  ({ player, waveform, currentTime, subtitle = [] }) => {
+  ({ waveform, currentTime, subtitle = [] }) => {
     const classes = VideoLandingStyle();
+    const player = useSelector(state => state.commonReducer.player);
+
     const [grabbing, setGrabbing] = useState(false);
 
     const onProgressClick = useCallback(
@@ -131,8 +139,9 @@ const Progress = memo(
   }
 );
 
-const Grab = memo(({ player, waveform }) => {
+const Grab = memo(({ waveform }) => {
   const classes = VideoLandingStyle();
+  const player = useSelector(state => state.commonReducer.player);
 
   const [grabStartX, setGrabStartX] = useState(0);
   const [grabStartTime, setGrabStartTime] = useState(0);
@@ -184,8 +193,9 @@ const Grab = memo(({ player, waveform }) => {
   );
 });
 
-const Duration = memo(({ player, currentTime }) => {
+const Duration = memo(({ currentTime }) => {
   const classes = VideoLandingStyle();
+  const player = useSelector(state => state.commonReducer.player);
 
   const getDuration = useCallback((time) => {
     time = time === Infinity ? 0 : time;
@@ -203,9 +213,12 @@ const Duration = memo(({ player, currentTime }) => {
   );
 });
 
-const Timeline = ({ player, currentTime, playing }) => {
+const Timeline = ({ currentTime, playing }) => {
   const $footer = createRef();
   const classes = VideoLandingStyle();
+
+  const player = useSelector(state => state.commonReducer.player);
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [waveform, setWaveform] = useState();
   const [render, setRender] = useState({
@@ -248,24 +261,21 @@ const Timeline = ({ player, currentTime, playing }) => {
 
   return (
     <Box className={classes.timeLineParent} ref={$footer}>
-      {player && (
+      {player && videoDetails.direct_video_url && (
         <>
           <Progress
-            player={player}
             waveform={waveform}
             currentTime={currentTime}
           />
-          <Duration player={player} currentTime={currentTime} />
+          <Duration currentTime={currentTime} />
           <WaveForm
             setWaveform={setWaveform}
-            player={player}
             setRender={setRender}
           />
-          <Grab player={player} waveform={waveform} />
-          <Metronome render={render} player={player} playing={playing} />
+          <Grab waveform={waveform} />
+          <Metronome render={render} playing={playing} />
           <SubtitleBoxes
             render={render}
-            player={player}
             playing={playing}
             currentTime={currentTime}
           />
