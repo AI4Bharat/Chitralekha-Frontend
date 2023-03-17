@@ -197,7 +197,7 @@ const Project = () => {
       message: "Your request is being processed.",
       variant: "info",
     });
-
+console.log(voice,'voice');
     const apiObj = new CreateNewVideoAPI(
       link,
       isAudio,

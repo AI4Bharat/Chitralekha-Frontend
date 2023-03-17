@@ -227,10 +227,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     const updateData = {
       gender: voice,
       description: videoDescription,
-      id: videoDetails[0].id,
+      video_id: videoDetails[0].id,
     };
 
-    const apiObj = UpdateVideoAPI(updateData);
+    const apiObj = new UpdateVideoAPI(updateData);
     dispatch(APITransport(apiObj));
   };
 

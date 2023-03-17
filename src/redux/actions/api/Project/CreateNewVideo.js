@@ -14,7 +14,7 @@ export default class CreateNewVideoAPI extends API {
     this.gender = gender;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.video
-    }?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}&description=${description}&create=${create}&voice={}`;
+    }?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}&description=${description}&create=${create}&gender=${gender}`;
   }
 
   processResponse(res) {
