@@ -62,7 +62,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
   useEffect(() => {
     setVideoDescription(videoDetails[0].description);
-    setVoice(videoDetails[0].gender);
+    setVoice(videoDetails[0].gender_label);
   }, [videoDetails]);
 
   useEffect(() => {
