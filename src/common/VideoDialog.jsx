@@ -29,15 +29,16 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import CloseIcon from "@mui/icons-material/Close";
 import C from "../redux/constants";
+import UpdateVideoAPI from "../redux/actions/api/Project/UpdateVideo";
 
 const voiceOptions = [
   {
     label: "Male - Adult",
-    value: "male",
+    value: "Male",
   },
   {
     label: "Female - Adult",
-    value: "female",
+    value: "Female",
   },
 ];
 
@@ -61,6 +62,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
   useEffect(() => {
     setVideoDescription(videoDetails[0].description);
+    setVoice(videoDetails[0].gender);
   }, [videoDetails]);
 
   useEffect(() => {
@@ -221,6 +223,17 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
 
+  const updateVideoHandler = () => {
+    const updateData = {
+      gender: voice,
+      description: videoDescription,
+      video_id: videoDetails[0].id,
+    };
+
+    const apiObj = new UpdateVideoAPI(updateData);
+    dispatch(APITransport(apiObj));
+  };
+
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -365,6 +378,14 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
                 ))}
               </Select>
             </FormControl>
+
+            <Button
+              variant="contained"
+              sx={{ borderRadius: "8px", mt: 3, float: "right" }}
+              onClick={() => updateVideoHandler()}
+            >
+              Update Details
+            </Button>
           </Grid>
         </Grid>
 
