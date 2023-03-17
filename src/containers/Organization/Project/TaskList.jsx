@@ -56,8 +56,8 @@ import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/Fe
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
 import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
-import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
+import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
 
 const TaskList = () => {
@@ -239,7 +239,16 @@ const TaskList = () => {
       const task = taskList.tasks_list.filter(
         (task) => task.id === taskdata
       )[0];
-      const newBlob = new Blob([resp]);
+
+      let newBlob;
+      if (exportTranscription === "docx") {
+        newBlob = new Blob([resp], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+      } else {
+        newBlob = new Blob([resp]);
+      }
+
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
@@ -284,7 +293,16 @@ const TaskList = () => {
       const task = taskList.tasks_list.filter(
         (task) => task.id === taskdata
       )[0];
-      const newBlob = new Blob([resp]);
+      
+      let newBlob;
+      if (exportTranscription === "docx") {
+        newBlob = new Blob([resp], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+      } else {
+        newBlob = new Blob([resp]);
+      }
+
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;

@@ -214,7 +214,16 @@ const OrgLevelTaskList = () => {
       const task = taskList.tasks_list.filter(
         (task) => task.id === taskdata
       )[0];
-      const newBlob = new Blob([resp]);
+
+      let newBlob;
+      if (exportTranscription === "docx") {
+        newBlob = new Blob([resp], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+      } else {
+        newBlob = new Blob([resp]);
+      }
+
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
@@ -259,7 +268,16 @@ const OrgLevelTaskList = () => {
       const task = taskList.tasks_list.filter(
         (task) => task.id === taskdata
       )[0];
-      const newBlob = new Blob([resp]);
+
+      let newBlob;
+      if (exportTranscription === "docx") {
+        newBlob = new Blob([resp], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+      } else {
+        newBlob = new Blob([resp]);
+      }
+
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = blobUrl;
