@@ -2,6 +2,7 @@ import Sub from "./Sub";
 import { getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
+import SaveTranscriptAPI from "../redux/actions/api/Project/SaveTranscript";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -129,7 +130,11 @@ export const onSubtitleDelete = (index) => {
   return copySub;
 };
 
-export const onSplit = (currentIndex, selectionStart, targetSelectionStart = null) => {
+export const onSplit = (
+  currentIndex,
+  selectionStart,
+  targetSelectionStart = null
+) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = copySubs(subtitles);
 
@@ -138,10 +143,19 @@ export const onSplit = (currentIndex, selectionStart, targetSelectionStart = nul
 
   const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
   const text2 = targetTextBlock.text.slice(selectionStart).trim();
-  const targetText1 = targetSelectionStart ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim() : null;
-  const targetText2 = targetSelectionStart ? targetTextBlock.target_text.slice(targetSelectionStart).trim() : null;
+  const targetText1 = targetSelectionStart
+    ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
+    : null;
+  const targetText2 = targetSelectionStart
+    ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
+    : null;
 
-  if ((!text1 || !text2) || (targetSelectionStart && (!targetText1 || !targetText2))) return;
+  if (
+    !text1 ||
+    !text2 ||
+    (targetSelectionStart && (!targetText1 || !targetText2))
+  )
+    return;
 
   const splitDuration = (
     targetTextBlock.duration *
@@ -164,7 +178,7 @@ export const onSplit = (currentIndex, selectionStart, targetSelectionStart = nul
       start_time: subtitles[currentIndex].start_time,
       end_time: middleTime,
       text: text1,
-      ...(targetSelectionStart && { target_text: targetText1 })
+      ...(targetSelectionStart && { target_text: targetText1 }),
     })
   );
 
@@ -175,9 +189,22 @@ export const onSplit = (currentIndex, selectionStart, targetSelectionStart = nul
       start_time: middleTime,
       end_time: subtitles[currentIndex].end_time,
       text: text2,
-      ...(targetSelectionStart && { target_text: targetText2 })
+      ...(targetSelectionStart && { target_text: targetText2 }),
     })
   );
+
+  return copySub;
+};
+
+export const onSubtitleChange = (text, index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = copySubs(subtitles);
+
+  copySub.forEach((element, i) => {
+    if (index === i) {
+      element.text = text;
+    }
+  });
 
   return copySub;
 };
@@ -267,7 +294,8 @@ export const onUndoAction = (lastAction) => {
         lastAction.selectionStart >= subtitles[lastAction.index].text.length
           ? subtitles[lastAction.index].text.length / 2
           : lastAction.selectionStart,
-        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+        lastAction.targetSelectionStart >=
+          subtitles[lastAction.index].target_text.length
           ? subtitles[lastAction.index].target_text.length / 2
           : lastAction.targetSelectionStart
       ) ?? subtitles
@@ -279,7 +307,7 @@ export const onUndoAction = (lastAction) => {
     copySub.splice(lastAction.index, 0, lastAction.data);
     return copySub;
   } else if (lastAction.type === "add") {
-    return onSubtitleDelete(lastAction.index+1);
+    return onSubtitleDelete(lastAction.index + 1);
   }
   return subtitles;
 };
@@ -295,7 +323,8 @@ export const onRedoAction = (lastAction) => {
         lastAction.selectionStart >= subtitles[lastAction.index].text.length
           ? subtitles[lastAction.index].text.length / 2
           : lastAction.selectionStart,
-        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+        lastAction.targetSelectionStart >=
+          subtitles[lastAction.index].target_text.length
           ? subtitles[lastAction.index].target_text.length / 2
           : lastAction.targetSelectionStart
       ) ?? subtitles
@@ -307,3 +336,55 @@ export const onRedoAction = (lastAction) => {
   }
   return subtitles;
 };
+
+// export const saveTranscriptHandler = async (
+//   isFinal,
+//   isAutosave,
+//   payload = store.getState().commonReducer.subtitles
+// ) => {
+//   const reqBody = {
+//     task_id: taskId,
+//     payload: {
+//       payload: payload,
+//     },
+//   };
+
+//   if (isFinal) {
+//     reqBody.final = true;
+//   }
+
+//   const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+//   const res = await fetch(obj.apiEndPoint(), {
+//     method: "POST",
+//     body: JSON.stringify(obj.getBody()),
+//     headers: obj.getHeaders().headers,
+//   });
+
+//   const resp = await res.json();
+
+//   if (res.ok) {
+//     setSnackbarInfo({
+//       open: isAutosave,
+//       message: resp?.message
+//         ? resp?.message
+//         : isAutosave
+//         ? "Saved as draft"
+//         : "",
+//       variant: "success",
+//     });
+
+//     if (isFinal) {
+//       setTimeout(() => {
+//         navigate(
+//           `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+//         );
+//       }, 2000);
+//     }
+//   } else {
+//     setSnackbarInfo({
+//       open: isAutosave,
+//       message: "Failed",
+//       variant: "error",
+//     });
+//   }
+// };
