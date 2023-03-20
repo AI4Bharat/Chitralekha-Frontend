@@ -18,8 +18,8 @@ import {
   onMerge,
   onSubtitleDelete,
   timeChange,
-  onUndoAction,
-  onRedoAction,
+  // onUndoAction,
+  // onRedoAction,
 } from "../../../utils/subtitleUtils";
 import ButtonComponent from "./components/ButtonComponent";
 import { memo } from "react";
@@ -49,44 +49,35 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
-  const [undoStack, setUndoStack] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
+  // const [undoStack, setUndoStack] = useState([]);
+  // const [redoStack, setRedoStack] = useState([]);
 
   const onDelete = useCallback((index) => {
-    const data = subtitles[index];
+    // const data = subtitles[index];
     const sub = onSubtitleDelete(index); 
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    setUndoStack([...undoStack, {
-      type: "delete",
-      index: index,
-      data: data,
-    }]);
-    setRedoStack([]);
-  }, [undoStack, subtitles]);
+    // setUndoStack([...undoStack, {
+    //   type: "delete",
+    //   index: index,
+    //   data: data,
+    // }]);
+    // setRedoStack([]);
+  }, []);
 
   const onMergeClick = useCallback((index) => {
-    const selectionStart = subtitles[index].text.length;
-    const targetSelectionStart = subtitles[index].target_text.length;
-    const timings = [{
-      start: subtitles[index].start_time,
-      end: subtitles[index].end_time,
-    },
-    {
-      start: subtitles[index + 1]?.start_time,
-      end: subtitles[index + 1]?.end_time,
-    }]
+    // const selectionStart = subtitles[index].text.length;
+    // const targetSelectionStart = subtitles[index].target_text.length;
     const sub = onMerge(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, true, sub);
-    setUndoStack([...undoStack, {
-      type: "merge",
-      index: index,
-      selectionStart: selectionStart,
-      targetSelectionStart: targetSelectionStart,
-      timings: timings
-    }]);
-    setRedoStack([]);
-  }, [undoStack, subtitles]);
+    // setUndoStack([...undoStack, {
+    //   type: "merge",
+    //   index: index,
+    //   selectionStart: selectionStart,
+    //   targetSelectionStart: targetSelectionStart,
+    // }]);
+    // setRedoStack([]);
+  }, []);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -189,32 +180,32 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    setUndoStack([...undoStack, {
-      type: "add",
-      index: index,
-    }]);
-    setRedoStack([]);
-  }, [undoStack]);
+    // setUndoStack([...undoStack, {
+    //   type: "add",
+    //   index: index,
+    // }]);
+    // setRedoStack([]);
+  }, []);
 
-  const onUndo = useCallback(() => {
-    if (undoStack.length > 0) {
-      const lastAction = undoStack[undoStack.length - 1];
-      const sub = onUndoAction(lastAction);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack(undoStack.slice(0, undoStack.length - 1));
-      setRedoStack([...redoStack, lastAction]);
-    }
-  }, [undoStack, redoStack]);
+  // const onUndo = useCallback(() => {
+  //   if (undoStack.length > 0) {
+  //     const lastAction = undoStack[undoStack.length - 1];
+  //     const sub = onUndoAction(lastAction);
+  //     dispatch(setSubtitles(sub, C.SUBTITLES));
+  //     setUndoStack(undoStack.slice(0, undoStack.length - 1));
+  //     setRedoStack([...redoStack, lastAction]);
+  //   }
+  // }, [undoStack, redoStack]);
 
-  const onRedo = useCallback(() => {
-    if (redoStack.length > 0) {
-      const lastAction = redoStack[redoStack.length - 1];
-      const sub = onRedoAction(lastAction);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setRedoStack(redoStack.slice(0, redoStack.length - 1));
-      setUndoStack([...undoStack, lastAction]);
-    }
-  }, [undoStack, redoStack]);
+  // const onRedo = useCallback(() => {
+  //   if (redoStack.length > 0) {
+  //     const lastAction = redoStack[redoStack.length - 1];
+  //     const sub = onRedoAction(lastAction);
+  //     dispatch(setSubtitles(sub, C.SUBTITLES));
+  //     setRedoStack(redoStack.slice(0, redoStack.length - 1));
+  //     setUndoStack([...undoStack, lastAction]);
+  //   }
+  // }, [undoStack, redoStack]);
 
   const sourceLength = (index) => {
     if (sourceText[index]?.text.trim() !== "")
@@ -243,10 +234,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
-            onUndo={onUndo}
-            onRedo={onRedo}
-            undoStack={undoStack}
-            redoStack={redoStack}
+            // onUndo={onUndo}
+            // onRedo={onRedo}
+            // undoStack={undoStack}
+            // redoStack={redoStack}
           />
         </Grid>
 
@@ -262,12 +253,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                   paddingTop="16px"
                   sx={{ paddingX: "20px", justifyContent: "space-around" }}
                 >
-                  <TimeBoxes
+                  {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  />
+                  /> */}
 
                   <ButtonComponent
                     index={index}
@@ -277,12 +268,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     addNewSubtitleBox={addNewSubtitleBox}
                   />
 
-                  <TimeBoxes
+                  {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  />
+                  /> */}
                 </Box>
 
                 <CardContent

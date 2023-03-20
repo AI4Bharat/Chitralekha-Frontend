@@ -16,8 +16,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckIcon from "@mui/icons-material/Check";
-import UndoIcon from "@mui/icons-material/Undo";
-import RedoIcon from "@mui/icons-material/Redo";
+// import UndoIcon from '@mui/icons-material/Undo';
+// import RedoIcon from '@mui/icons-material/Redo';
 import { fontMenu } from "../../../../utils/subtitleUtils";
 import { useSelector } from "react-redux";
 
@@ -40,11 +40,11 @@ const SettingsButtonComponent = ({
   fontSize,
   saveTranscriptHandler,
   setOpenConfirmDialog,
-  onUndo,
-  onRedo,
-  undoStack,
-  redoStack,
   durationError,
+  // onUndo,
+  // onRedo,
+  // undoStack,
+  // redoStack,
 }) => {
   const classes = VideoLandingStyle();
 
@@ -231,7 +231,7 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
-      <Divider orientation="vertical" className={classes.rightPanelDivider} />
+      {/* <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
       <Tooltip title="Undo" placement="bottom">
         <IconButton
@@ -252,7 +252,7 @@ const SettingsButtonComponent = ({
         >
           <RedoIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
     </>
   );
 };

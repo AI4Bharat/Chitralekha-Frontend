@@ -142,10 +142,19 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
 
   const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
   const text2 = targetTextBlock.text.slice(selectionStart).trim();
-  const targetText1 = targetSelectionStart ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim() : null;
-  const targetText2 = targetSelectionStart ? targetTextBlock.target_text.slice(targetSelectionStart).trim() : null;
+  const targetText1 = targetSelectionStart
+    ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
+    : null;
+  const targetText2 = targetSelectionStart
+    ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
+    : null;
 
-  if ((!text1 || !text2) || (targetSelectionStart && (!targetText1 || !targetText2))) return;
+  if (
+    !text1 ||
+    !text2 ||
+    (targetSelectionStart && (!targetText1 || !targetText2))
+  )
+    return;
 
   copySub.splice(currentIndex, 1);
   let middleTime = null;
@@ -171,7 +180,7 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
       start_time: middleTime ? subtitles[currentIndex].start_time : timings[0].start,
       end_time: middleTime ??  timings[0].end,
       text: text1,
-      ...(targetSelectionStart && { target_text: targetText1 })
+      ...(targetSelectionStart && { target_text: targetText1 }),
     })
   );
 
@@ -182,9 +191,22 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
       start_time: middleTime ?? timings[1].start ?? timings[0].end,
       end_time: middleTime || !timings[1].end ? subtitles[currentIndex].end_time :  timings[1].end,
       text: text2,
-      ...(targetSelectionStart && { target_text: targetText2 })
+      ...(targetSelectionStart && { target_text: targetText2 }),
     })
   );
+
+  return copySub;
+};
+
+export const onSubtitleChange = (text, index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = copySubs(subtitles);
+
+  copySub.forEach((element, i) => {
+    if (index === i) {
+      element.text = text;
+    }
+  });
 
   return copySub;
 };
@@ -287,7 +309,7 @@ export const onUndoAction = (lastAction) => {
     copySub.splice(lastAction.index, 0, lastAction.data);
     return copySub;
   } else if (lastAction.type === "add") {
-    return onSubtitleDelete(lastAction.index+1);
+    return onSubtitleDelete(lastAction.index + 1);
   }
   return subtitles;
 };

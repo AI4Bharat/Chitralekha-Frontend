@@ -13,13 +13,13 @@ import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
-  newSub,
   onMerge,
   onSplit,
+  onSubtitleChange,
   onSubtitleDelete,
   timeChange,
-  onUndoAction,
-  onRedoAction,
+  // onUndoAction,
+  // onRedoAction,
 } from "../../../utils/subtitleUtils";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
@@ -37,7 +37,7 @@ const RightPanel = ({ currentIndex }) => {
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector(state => state.commonReducer.player);
 
-  const [sourceText, setSourceText] = useState([]);
+  // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -52,23 +52,23 @@ const RightPanel = ({ currentIndex }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
-  const [undoStack, setUndoStack] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
+  // const [undoStack, setUndoStack] = useState([]);
+  // const [redoStack, setRedoStack] = useState([]);
 
-  useEffect(() => {
-    if (subtitles?.length === 0) {
-      const defaultSubs = [
-        newSub({
-          start_time: "00:00:00.000",
-          end_time: "00:00:00.000",
-          text: "Please type here..",
-        }),
-      ];
-      dispatch(setSubtitles(defaultSubs, C.SUBTITLES));
-    } else {
-      setSourceText(subtitles);
-    }
-  }, [subtitles]);
+  // useEffect(() => {
+  //   if (subtitles?.length === 0) {
+  //     const defaultSubs = [
+  //       newSub({
+  //         start_time: "00:00:00.000",
+  //         end_time: "00:00:00.000",
+  //         text: "Please type here..",
+  //       }),
+  //     ];
+  //     dispatch(setSubtitles(defaultSubs, C.SUBTITLES));
+  //   } else {
+  //     setSourceText(subtitles);
+  //   }
+  // }, [subtitles]);
 
   useEffect(() => {
     const subtitleScrollEle = document.getElementById("subTitleContainer");
@@ -78,7 +78,7 @@ const RightPanel = ({ currentIndex }) => {
   }, [currentIndex]);
 
   const onMergeClick = useCallback((index) => {
-    const selectionStart = subtitles[index].text.length;
+    // const selectionStart = subtitles[index].text.length;
     const sub = onMerge(index);
     const timings = [{
       start: subtitles[index].start_time,
@@ -89,15 +89,14 @@ const RightPanel = ({ currentIndex }) => {
       end: subtitles[index + 1]?.end_time,
     }]
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    setUndoStack([...undoStack, {
-      type: "merge",
-      index: index,
-      selectionStart: selectionStart,
-      timings: timings
-    }]);
-    setRedoStack([]);
+    // setUndoStack([...undoStack, {
+    //   type: "merge",
+    //   index: index,
+    //   selectionStart: selectionStart,
+    // }]);
+    // setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
-  }, [undoStack, subtitles]);
+  }, []);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -111,42 +110,25 @@ const RightPanel = ({ currentIndex }) => {
   const onSplitClick = useCallback(() => {
     const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    setUndoStack([...undoStack, {
-      type: "split",
-      index: currentIndexToSplitTextBlock,
-      selectionStart: selectionStart,
-      timings: [{
-        start: sub[currentIndexToSplitTextBlock].start_time,
-        end: sub[currentIndexToSplitTextBlock].end_time,
-      },
-      {
-        start: sub[currentIndexToSplitTextBlock + 1]?.start_time,
-        end: sub[currentIndexToSplitTextBlock + 1]?.end_time,
-      }]
-    }]);
-    setRedoStack([]);
+    // setUndoStack([...undoStack, {
+    //   type: "split",
+    //   index: currentIndexToSplitTextBlock,
+    //   selectionStart: selectionStart,
+    // }]);
+    // setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
-  }, [currentIndexToSplitTextBlock, selectionStart, undoStack]);
+  }, [currentIndexToSplitTextBlock, selectionStart]);
 
-  const changeTranscriptHandler = useCallback(
-    (text, index) => {
-      const arr = [...sourceText];
-      arr.forEach((element, i) => {
-        if (index === i) {
-          element.text = text;
-        }
-      });
-
-      dispatch(setSubtitles(arr, C.SUBTITLES));
-      saveTranscriptHandler(false, false);
-    },
-    [sourceText]
-  );
+  const changeTranscriptHandler = useCallback((text, index) => {
+    const sub = onSubtitleChange(text, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false);
+  }, []);
 
   const saveTranscriptHandler = async (
     isFinal,
     isAutosave,
-    payload = sourceText
+    payload = subtitles
   ) => {
     setLoading(true);
     const reqBody = {
@@ -215,50 +197,50 @@ const RightPanel = ({ currentIndex }) => {
   }, []);
 
   const onDelete = useCallback((index) => {
-    const data = subtitles[index];
+    // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    setUndoStack([...undoStack, {
-      type: "delete",
-      index: index,
-      data: data,
-    }]);
-    setRedoStack([]);
-  }, [undoStack, subtitles]);
+    // setUndoStack([...undoStack, {
+    //   type: "delete",
+    //   index: index,
+    //   data: data,
+    // }]);
+    // setRedoStack([]);
+  }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    setUndoStack([...undoStack, {
-      type: "add",
-      index: index,
-    }]);
-    setRedoStack([]);
-  }, [undoStack]);
+    // setUndoStack([...undoStack, {
+    //   type: "add",
+    //   index: index,
+    // }]);
+    // setRedoStack([]);
+  }, []);
 
-  const onUndo = useCallback(() => {
-    if (undoStack.length > 0) {
-      const lastAction = undoStack[undoStack.length - 1];
-      const sub = onUndoAction(lastAction);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack(undoStack.slice(0, undoStack.length - 1));
-      setRedoStack([...redoStack, lastAction]);
-    }
-  }, [undoStack, redoStack]);
+  // const onUndo = useCallback(() => {
+  //   if (undoStack.length > 0) {
+  //     const lastAction = undoStack[undoStack.length - 1];
+  //     const sub = onUndoAction(lastAction);
+  //     dispatch(setSubtitles(sub, C.SUBTITLES));
+  //     setUndoStack(undoStack.slice(0, undoStack.length - 1));
+  //     setRedoStack([...redoStack, lastAction]);
+  //   }
+  // }, [undoStack, redoStack]);
 
-  const onRedo = useCallback(() => {
-    if (redoStack.length > 0) {
-      const lastAction = redoStack[redoStack.length - 1];
-      const sub = onRedoAction(lastAction);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setRedoStack(redoStack.slice(0, redoStack.length - 1));
-      setUndoStack([...undoStack, lastAction]);
-    }
-  }, [undoStack, redoStack]);
+  // const onRedo = useCallback(() => {
+  //   if (redoStack.length > 0) {
+  //     const lastAction = redoStack[redoStack.length - 1];
+  //     const sub = onRedoAction(lastAction);
+  //     dispatch(setSubtitles(sub, C.SUBTITLES));
+  //     setRedoStack(redoStack.slice(0, redoStack.length - 1));
+  //     setUndoStack([...undoStack, lastAction]);
+  //   }
+  // }, [undoStack, redoStack]);
 
   const targetLength = (index) => {
-    if (sourceText[index]?.text.trim() !== "")
-      return sourceText[index]?.text.trim().split(" ").length;
+    if (subtitles[index]?.text.trim() !== "")
+      return subtitles[index]?.text.trim().split(" ").length;
     return 0;
   };
 
@@ -276,28 +258,28 @@ const RightPanel = ({ currentIndex }) => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
-            onUndo={onUndo}
-            onRedo={onRedo}
-            undoStack={undoStack}
-            redoStack={redoStack}
+            // onUndo={onUndo}
+            // onRedo={onRedo}
+            // undoStack={undoStack}
+            // redoStack={redoStack}
           />
         </Grid>
 
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
-          {sourceText?.map((item, index) => {
+          {subtitles?.map((item, index) => {
             return (
               <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
                 <Box className={classes.topBox}>
-                  <TimeBoxes
+                  {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  />
+                  /> */}
 
                   <ButtonComponent
                     index={index}
-                    lastItem={index < sourceText.length - 1}
+                    lastItem={index < subtitles.length - 1}
                     onMergeClick={onMergeClick}
                     onDelete={onDelete}
                     addNewSubtitleBox={addNewSubtitleBox}
@@ -306,12 +288,12 @@ const RightPanel = ({ currentIndex }) => {
                     showSplit={true}
                   />
 
-                  <TimeBoxes
+                  {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  />
+                  /> */}
                 </Box>
 
                 <CardContent
