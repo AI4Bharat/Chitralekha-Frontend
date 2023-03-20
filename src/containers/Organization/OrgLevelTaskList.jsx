@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { roles } from "../../utils/utils";
+import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
@@ -68,6 +68,7 @@ import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/Fetch
 import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
 import ExportDialog from "../../common/ExportDialog";
 import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
+import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceoverTask";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
@@ -189,11 +190,53 @@ const OrgLevelTaskList = () => {
     setOpenPreviewDialog(false);
   };
 
-  const handleClickOpen = (id, tasttype) => {
-    setOpen(true);
-    setTaskdata(id);
-    setTasktype(tasttype);
-    setIsBulkTaskDownload(false);
+  const exportVoiceoverTask = async (id) => {
+    const apiObj = new ExportVoiceoverTaskAPI(id);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "GET",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === id
+      )[0];
+
+      const link = document.createElement("a");
+      link.href = resp.azure_url;
+
+      link.setAttribute(
+        "download",
+        `Chitralekha_Video_${task.video_name}_${getDateTime()}_${
+          task.target_language
+        }.mp4`
+      );
+
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
+  const handleClickOpen = (id, taskType) => {
+    if (taskType.includes("VOICEOVER")) {
+      exportVoiceoverTask(id);
+    } else {
+      setOpen(true);
+      setTaskdata(id);
+      setTasktype(taskType);
+      setIsBulkTaskDownload(false);
+    }
   };
 
   const handleShowFilter = (event) => {
