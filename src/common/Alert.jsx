@@ -4,7 +4,7 @@ import ProjectStyle from "../styles/ProjectStyle";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
-const AlertComponent = ({ open, data, onClose }) => {
+const AlertComponent = ({ open, message, report, onClose }) => {
   const classes = ProjectStyle();
 
   return (
@@ -26,10 +26,10 @@ const AlertComponent = ({ open, data, onClose }) => {
         }}
       >
         <Box className={classes.message} style={{ color: "#03a9f4" }}>
-          {data.message}
+          {message}
         </Box>
 
-        {data?.response?.detailed_report?.length > 0 && (
+        {report?.length > 0 && (
           <Box>
             <Box className={classes.headerParent}>
               <Box className={classes.header} style={{ width: "28%" }}>
@@ -45,11 +45,11 @@ const AlertComponent = ({ open, data, onClose }) => {
               style={{
                 maxHeight: "200px",
                 overflowY:
-                  data?.response?.detailed_report?.length > 3 ? "scroll" : "",
+                report?.length > 3 ? "scroll" : "",
               }}
             >
               <Box display="flex" flexDirection="column" backgroundColor="#fff">
-                {data?.response?.detailed_report?.map((item) => {
+                {report?.map((item) => {
                   return (
                     <Box className={classes.contentParent}>
                       <Box
@@ -64,9 +64,9 @@ const AlertComponent = ({ open, data, onClose }) => {
                         </Box>
                         <Box>
                           {item.status === "Fail" ? (
-                            <CancelOutlinedIcon  color="error"/>
+                            <CancelOutlinedIcon color="error" />
                           ) : (
-                            <TaskAltIcon color= "success" />
+                            <TaskAltIcon color="success" />
                           )}
                         </Box>
                       </Box>

@@ -6,7 +6,7 @@ import {
   Menu,
   Tooltip,
   Typography,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import React, { memo, useState } from "react";
 import FindAndReplace from "../../../../common/FindAndReplace";
@@ -19,6 +19,7 @@ import CheckIcon from "@mui/icons-material/Check";
 // import UndoIcon from '@mui/icons-material/Undo';
 // import RedoIcon from '@mui/icons-material/Redo';
 import { fontMenu } from "../../../../utils/subtitleUtils";
+import { useSelector } from "react-redux";
 
 const anchorOrigin = {
   vertical: "top",
@@ -39,6 +40,7 @@ const SettingsButtonComponent = ({
   fontSize,
   saveTranscriptHandler,
   setOpenConfirmDialog,
+  durationError,
   // onUndo,
   // onRedo,
   // undoStack,
@@ -48,6 +50,33 @@ const SettingsButtonComponent = ({
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
+
+  const taskData = useSelector((state) => state.getTaskDetails.data);
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
+  const totalPages = useSelector((state) => state.commonReducer.totalPages);
+  const completedCount = useSelector(
+    (state) => state.commonReducer.completedCount
+  );
+  const subtitles = useSelector((state) => state.commonReducer.subtitles);
+
+  const getDisbled = (flag) => {
+    if (
+      taskData?.task_type?.includes("VOICEOVER") &&
+      transcriptPayload?.source_type !== "MACHINE_GENERATED"
+    ) {
+      if (durationError?.some((item) => item === true)) {
+        return true;
+      }
+
+      if (flag && completedCount != totalPages + 2) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   return (
     <>
@@ -184,6 +213,7 @@ const SettingsButtonComponent = ({
       <Tooltip title="Save" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
+          disabled={getDisbled()}
           onClick={() => saveTranscriptHandler(false, true)}
         >
           <SaveIcon />
@@ -194,6 +224,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
+          disabled={getDisbled("complete")}
           onClick={() => setOpenConfirmDialog(true)}
         >
           <VerifiedIcon />

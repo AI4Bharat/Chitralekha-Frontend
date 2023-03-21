@@ -12,7 +12,7 @@ import {
   Chip,
   Checkbox,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -24,7 +24,12 @@ import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSup
 import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTranscriptTypes";
 import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import { MenuProps } from "../../utils/utils";
+import {
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "../../utils/utils";
 
 const OrganizationSettings = () => {
   const { id } = useParams();
@@ -54,6 +59,7 @@ const OrganizationSettings = () => {
   const [translationSourceType, setTranslationSourceType] = useState("");
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [voiceOverSourceType, setVoiceOverSourceType] = useState("");
 
   useEffect(() => {
     const orgObj = new FetchOrganizationDetailsAPI(id);
@@ -80,6 +86,7 @@ const OrganizationSettings = () => {
 
     setTranscriptSourceType(orgInfo?.default_transcript_type);
     setTranslationSourceType(orgInfo?.default_translation_type);
+    setVoiceOverSourceType(orgInfo?.default_voiceover_type);
 
     if (orgInfo.default_task_types) {
       const items = bulkTaskTypes.filter((item) =>
@@ -114,6 +121,7 @@ const OrganizationSettings = () => {
       default_target_languages: translationLanguage.map((item) => item.value),
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
+      default_voiceover_type: voiceOverSourceType,
     };
 
     const userObj = new EditOrganizationDetailsAPI(id, body);
@@ -165,6 +173,7 @@ const OrganizationSettings = () => {
       default_translation_type: orgInfo.default_translation_type,
       default_task_types: orgInfo.default_task_types,
       default_target_languages: orgInfo.default_target_languages,
+      default_voiceover_type: orgInfo?.default_voiceover_type,
     };
 
     const newObj = {
@@ -174,6 +183,7 @@ const OrganizationSettings = () => {
       default_translation_type: translationSourceType,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
+      default_voiceover_type: voiceOverSourceType,
     };
 
     if (JSON.stringify(oldObj) === JSON.stringify(newObj)) {
@@ -181,6 +191,12 @@ const OrganizationSettings = () => {
     }
 
     return true;
+  };
+
+  const handleDefaultTask = (task) => {
+    const { dTask, lang } = defaultTaskHandler(task);
+    setDefaultTask(dTask);
+    setTranslationLanguage(lang);
   };
 
   return (
@@ -245,7 +261,7 @@ const OrganizationSettings = () => {
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
                   }
-                  sx={{textAlign: "left"}}
+                  sx={{ textAlign: "left" }}
                 >
                   {transcriptTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -270,7 +286,32 @@ const OrganizationSettings = () => {
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
                   }
-                  sx={{textAlign: "left"}}
+                  sx={{ textAlign: "left" }}
+                >
+                  {translationTypes.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <FormControl fullWidth>
+                <InputLabel id="Voiceover-source-type">
+                   Default Voiceover Source
+                </InputLabel>
+                <Select
+                  labelId="Voiceover-source-type"
+                  id="Voiceover-source-type_select"
+                  value={voiceOverSourceType}
+                  label="Default Voiceover Source"
+                  MenuProps={MenuProps}
+                  onChange={(event) =>
+                    setVoiceOverSourceType(event.target.value)
+                  }
+                  sx={{ textAlign: "left" }}
                 >
                   {translationTypes.map((item, index) => (
                     <MenuItem key={index} value={item.value}>
@@ -290,7 +331,7 @@ const OrganizationSettings = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => setDefaultTask(event.target.value)}
+                  onChange={(event) => handleDefaultTask(event.target.value)}
                   MenuProps={MenuProps}
                   renderValue={(selected) => {
                     selected.sort((a, b) => a.id - b.id);
@@ -304,7 +345,11 @@ const OrganizationSettings = () => {
                   }}
                 >
                   {bulkTaskTypes.map((item, index) => (
-                    <MenuItem key={index} value={item}>
+                    <MenuItem
+                      key={index}
+                      value={item}
+                      disabled={getDisableOption(item, defaultTask)}
+                    >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
                     </MenuItem>
@@ -325,6 +370,7 @@ const OrganizationSettings = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
+                  disabled={diableTargetLang(defaultTask)}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>

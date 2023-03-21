@@ -19,6 +19,7 @@ export default {
   video: "/video/",
   transcript: "/transcript/",
   translation: "/translation/",
+  voiceover: "/voiceover/",
   videoSubtitle:"/transcript/get_word_aligned_json/?video_id",
 
   //organization

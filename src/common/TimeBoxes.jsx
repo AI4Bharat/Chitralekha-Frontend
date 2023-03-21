@@ -55,6 +55,9 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         onChange={(event) =>
           handleTimeChange(event.target.value, index, type, "seconds")
         }
+        style={{
+          
+        }}
       />
 
       <TextField

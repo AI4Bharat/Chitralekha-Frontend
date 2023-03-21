@@ -27,6 +27,9 @@ const VideoLandingStyle = makeStyles({
     textAlign: "center",
     margin: "32px",
     width: "90%",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
   },
 
   settingsIconBtn: {
@@ -44,9 +47,9 @@ const VideoLandingStyle = makeStyles({
     zIndex: "20",
     left: "0",
     right: "0",
-    bottom: "18%",
+    bottom: "7%",
     width: "94%",
-    padding: "0 30px",
+    padding: "0 22px",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -91,7 +94,7 @@ const VideoLandingStyle = makeStyles({
 
   fullscreenVideoBtn: {
     position: "absolute",
-    bottom: "12%",
+    bottom: "1%",
     right: "3%",
     zIndex: "999",
     borderRadius: "4px",
@@ -369,15 +372,15 @@ const VideoLandingStyle = makeStyles({
   },
 
   optionIconBtn: {
-    backgroundColor: "#0083e2",
+    backgroundColor: "#fff",
     borderRadius: "50%",
     marginRight: "10px",
-    color: "#fff",
+    color: "blue",
     "&:disabled": {
       background: "grey",
     },
     "&:hover": {
-      backgroundColor: "#271e4f",
+      backgroundColor: "#fff",
     },
   },
 
@@ -417,11 +420,12 @@ const VideoLandingStyle = makeStyles({
     borderTop: "1px solid #eaeaea",
     overflowY: "scroll",
     overflowX: "hidden",
-    height: window.innerHeight * 0.667,
     backgroundColor: "black",
     marginTop: "5px",
     width: "100%",
     textAlign: "center",
+    boxSizing: "border-box",
+    height: "calc(100vh - 370px)",
   },
 
   topBox: {
@@ -496,6 +500,72 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+  },
+
+  videoPlayerParent: {
+    boxSizing: "border-box",
+    height: "calc(100vh - 310px)",
+  },
+
+  videoPlayer: {
+    cursor: "pointer",
+    width: "100%",
+    objectFit: "fill",
+    maxHeight: "100%",
+  },
+
+  recorder: {
+    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "center",
+    height: "100%",
+  },
+
+  paginationBox: {
+    position: "absolute",
+    bottom: "-9%",
+    background: "#fff",
+    width: "100%",
+    color: "#fff",
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
+    border: "1px solid #EAEAEA"
+  },
+
+  durationBox: {
+    backgroundColor: "#616A6B",
+    color: "#fff",
+    padding: "5px 10px",
+    borderRadius: "5px",
+  },
+
+  audioBox: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    height: "100%",
+    justifyContent: "space-evenly",
+  },
+
+  playbackRate: {
+    borderRadius: "4px",
+    minWidth: "45px",
+    padding: 0,
+    backgroundColor: "#0083e2",
+    display: "flex",
+    alignItems: "center",
+    marginRight: "10%"
+  },
+
+  disabledCard: {
+    opacity: "0.5",
+    cursor: "not-allowed",
   },
 });
 

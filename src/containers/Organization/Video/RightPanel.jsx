@@ -25,7 +25,7 @@ import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
-const RightPanel = ({ currentIndex, player }) => {
+const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -35,6 +35,7 @@ const RightPanel = ({ currentIndex, player }) => {
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
+  const player = useSelector(state => state.commonReducer.player);
 
   // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -79,6 +80,14 @@ const RightPanel = ({ currentIndex, player }) => {
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
     const sub = onMerge(index);
+    // const timings = [{
+    //   start: subtitles[index].start_time,
+    //   end: subtitles[index].end_time,
+    // },
+    // {
+    //   start: subtitles[index + 1]?.start_time,
+    //   end: subtitles[index + 1]?.end_time,
+    // }]
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // setUndoStack([...undoStack, {
     //   type: "merge",
@@ -259,7 +268,7 @@ const RightPanel = ({ currentIndex, player }) => {
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {subtitles?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`}>
+              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
                 <Box className={classes.topBox}>
                   {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}

@@ -2,19 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchTranscriptPayloadAPI extends API {
-  constructor(id, taskType, offset = 1, timeout = 2000) {
+export default class FetchTaskQueueStatusAPI extends API {
+  constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_TRANSCRIPT_PAYLOAD;
-    this.id = id;
-    this.payloadEndpoint = taskType.includes("TRANSCRIPTION")
-      ? ENDPOINTS.transcript
-      : taskType.includes("TRANSLATION")
-      ? ENDPOINTS.translation
-      : ENDPOINTS.voiceover;
+    this.type = C.GET_TASK_QUEUE_STATUS;
     this.endpoint = `${super.apiEndPointAuto()}${
-      this.payloadEndpoint
-    }get_payload/?task_id=${id}&offset=${offset}`;
+      ENDPOINTS.task
+    }inspect_asr_queue/`;
   }
 
   processResponse(res) {

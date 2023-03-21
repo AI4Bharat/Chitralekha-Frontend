@@ -28,7 +28,12 @@ import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTra
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import ProjectStyle from "../../../styles/ProjectStyle";
-import { MenuProps } from "../../../utils/utils";
+import {
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "../../../utils/utils";
 import ColorArray from "../../../utils/getColors";
 
 const EditProject = () => {
@@ -61,6 +66,7 @@ const EditProject = () => {
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [transcriptSourceType, setTranscriptSourceType] = useState("");
   const [translationSourceType, setTranslationSourceType] = useState("");
+  const [voiceOverSourceType, setVoiceOverSourceType] = useState("");
   const [defaultTask, setDefaultTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
@@ -120,6 +126,7 @@ const EditProject = () => {
       setManagers(projectInfo?.managers);
       setTranscriptSourceType(projectInfo?.default_transcript_type);
       setTranslationSourceType(projectInfo?.default_translation_type);
+      setVoiceOverSourceType(projectInfo?.default_voiceover_type);
       setDate(projectInfo?.default_eta);
     }
   }, [projectInfo]);
@@ -147,6 +154,7 @@ const EditProject = () => {
       default_task_eta: date,
       default_task_priority: priority.value,
       default_task_description: taskDescription,
+      default_voiceover_type: voiceOverSourceType,
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
@@ -196,6 +204,7 @@ const EditProject = () => {
       managers: projectInfo.managers,
       default_transcript_type: projectInfo.default_transcript_type,
       default_translation_type: projectInfo.default_translation_type,
+      default_voiceover_type: projectInfo.default_voiceover_type,
       description: projectInfo.description,
       default_task_types: projectInfo.default_task_types,
       default_target_languages: projectInfo.default_target_languages,
@@ -209,6 +218,7 @@ const EditProject = () => {
       managers: managers,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
+      default_voiceover_type: voiceOverSourceType,
       description: projectDetails.description,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
@@ -226,31 +236,11 @@ const EditProject = () => {
 
   defaultTask.sort((a, b) => a.id - b.id);
 
-  const getDisableOption = useCallback(
-    (data) => {
-      if (data.value === "TRANSCRIPTION_EDIT") {
-        return false;
-      }
-
-      if (
-        data.value === "TRANSCRIPTION_REVIEW" ||
-        data.value === "TRANSLATION_EDIT"
-      ) {
-        if (defaultTask.some((item) => item.value === "TRANSCRIPTION_EDIT")) {
-          return false;
-        }
-        return true;
-      }
-
-      if (data.value === "TRANSLATION_REVIEW") {
-        if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
-          return false;
-        }
-        return true;
-      }
-    },
-    [defaultTask]
-  );
+  const handleDefaultTask = (task) => {
+    const { dTask, lang } = defaultTaskHandler(task);
+    setDefaultTask(dTask);
+    setTranslationLanguage(lang);
+  };
 
   return (
     <>
@@ -270,10 +260,34 @@ const EditProject = () => {
           }}
         >
           <Grid container spacing={4}>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Typography variant="h3" align="center">
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              xl={12}
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <Typography variant="h3" align="center" marginLeft={"auto"}>
                 Project Settings
               </Typography>
+
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => handleSubmit()}
+                style={{
+                  borderRadius: 6,
+                  marginLeft: "auto",
+                  visibility: showBtn() ? "" : "hidden",
+                }}
+              >
+                Update Project{" "}
+                {loading && (
+                  <Loader size={20} margin="0 0 0 10px" color="secondary" />
+                )}
+              </Button>
             </Grid>
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -343,13 +357,13 @@ const EditProject = () => {
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
                 <InputLabel id="transcription-source-type">
-                  Transcription Source
+                  Default Transcription Source
                 </InputLabel>
                 <Select
                   labelId="transcription-source-type"
                   id="transcription-source-type_select"
                   value={transcriptSourceType}
-                  label="Transcription Source"
+                  label="Default Transcription Source"
                   MenuProps={MenuProps}
                   onChange={(event) =>
                     setTranscriptSourceType(event.target.value)
@@ -374,16 +388,47 @@ const EditProject = () => {
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
                 <InputLabel id="translation-source-type">
-                  Translation Source
+                  Default Translation Source
                 </InputLabel>
                 <Select
                   labelId="translation-source-type"
                   id="translation-source-type_select"
                   value={translationSourceType}
-                  label="Translation Source"
+                  label="Default Translation Source"
                   MenuProps={MenuProps}
                   onChange={(event) =>
                     setTranslationSourceType(event.target.value)
+                  }
+                  disabled={
+                    !(
+                      projectDetails?.managers?.some(
+                        (item) => item.id === userData.id
+                      ) || userData.role === "ORG_OWNER"
+                    )
+                  }
+                >
+                  {translationTypes.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <FormControl fullWidth>
+                <InputLabel id="Voiceover-source-type">
+                  Default Voiceover Source
+                </InputLabel>
+                <Select
+                  labelId="Voiceover-source-type"
+                  id="Voiceover-source-type_select"
+                  value={voiceOverSourceType}
+                  label="Default Voiceover Source"
+                  MenuProps={MenuProps}
+                  onChange={(event) =>
+                    setVoiceOverSourceType(event.target.value)
                   }
                   disabled={
                     !(
@@ -411,7 +456,7 @@ const EditProject = () => {
                   id="default_workflow_select"
                   value={defaultTask}
                   label="Default Workflow"
-                  onChange={(event) => setDefaultTask(event.target.value)}
+                  onChange={(event) => handleDefaultTask(event.target.value)}
                   disabled={
                     !(
                       projectDetails?.managers?.some(
@@ -435,7 +480,7 @@ const EditProject = () => {
                     <MenuItem
                       key={index}
                       value={item}
-                      disabled={getDisableOption(item)}
+                      disabled={getDisableOption(item, defaultTask)}
                     >
                       <Checkbox checked={defaultTask.indexOf(item) > -1} />
                       {item.label}
@@ -457,13 +502,7 @@ const EditProject = () => {
                   label="Target Languages"
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
-                  disabled={
-                    !(
-                      projectDetails?.managers?.some(
-                        (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
-                    )
-                  }
+                  disabled={diableTargetLang(defaultTask)}
                   renderValue={(selected) => {
                     return (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>

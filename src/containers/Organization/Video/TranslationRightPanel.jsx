@@ -26,7 +26,7 @@ import { memo } from "react";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 
-const TranslationRightPanel = ({ currentIndex, player }) => {
+const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -36,7 +36,8 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
-
+  const player = useSelector(state => state.commonReducer.player);
+  
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -246,7 +247,7 @@ const TranslationRightPanel = ({ currentIndex, player }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`}>
+              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
                 <Box
                   display="flex"
                   paddingTop="16px"

@@ -12,7 +12,7 @@ import {
   RadioGroup,
   Select,
   TextField,
-  Typography,
+  Tooltip,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +21,17 @@ import APITransport from "../redux/actions/apitransport/apitransport";
 import Loader from "./Spinner";
 import { MenuProps } from "../utils/utils";
 import { Box } from "@mui/system";
+
+const voiceOptions = [
+  {
+    label: "Male - Adult",
+    value: "Male",
+  },
+  {
+    label: "Female - Adult",
+    value: "Female",
+  },
+];
 
 const CreateVideoDialog = ({
   open,
@@ -34,6 +45,8 @@ const CreateVideoDialog = ({
   setLang,
   videoDescription,
   setVideoDescription,
+  voice,
+  setVoice,
 }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -53,7 +66,7 @@ const CreateVideoDialog = ({
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}
+      maxWidth={"sm"}
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4">Create New Video/Audio</DialogTitle>
@@ -65,16 +78,21 @@ const CreateVideoDialog = ({
             value={isAudio}
             onChange={(event) => setIsAudio(event.target.value)}
           >
-            <FormControlLabel
-              value="false"
-              control={<Radio />}
-              label="Import Video"
-            />
-            <FormControlLabel
-              value="true"
-              control={<Radio />}
-              label="Import Audio"
-            />
+            <Tooltip title="Supported Formats: Youtube Link">
+              <FormControlLabel
+                value="false"
+                control={<Radio />}
+                label="Import Video"
+              />
+            </Tooltip>
+
+            <Tooltip title="Supported Formats: mp3">
+              <FormControlLabel
+                value="true"
+                control={<Radio />}
+                label="Import Audio"
+              />
+            </Tooltip>
           </RadioGroup>
         </FormControl>
 
@@ -99,24 +117,40 @@ const CreateVideoDialog = ({
         </FormControl>
 
         <TextField
-          label={
-            isAudio === "true"
-              ? "Enter Link from Google Drive Here"
-              : "Enter Link from Youtube Here"
-          }
+          label={" Enter Audio/Video Link"}
           fullWidth
           multiline
-          rows={4}
+          rows={1}
           value={videoLink}
           onChange={(event) => setVideoLink(event.target.value)}
           sx={{ mt: 3 }}
         />
 
+        <FormControl fullWidth sx={{ mt: 3 }}>
+          <InputLabel id="select-voice">Voice Selection</InputLabel>
+          <Select
+            fullWidth
+            labelId="select-voice"
+            label="Voice Selection"
+            value={voice}
+            onChange={(event) => setVoice(event.target.value)}
+            style={{ zIndex: "0" }}
+            inputProps={{ "aria-label": "Without label" }}
+            MenuProps={MenuProps}
+          >
+            {voiceOptions?.map((item, index) => (
+              <MenuItem key={index} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         <TextField
           label="Description"
           fullWidth
           multiline
-          rows={4}
+          rows={3}
           value={videoDescription}
           onChange={(event) => setVideoDescription(event.target.value)}
           sx={{ mb: 3, mt: 3 }}
@@ -126,15 +160,10 @@ const CreateVideoDialog = ({
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           padding: "0 24px 24px 24px",
         }}
       >
-        <Box>
-          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-            *Supported Formats: {isAudio === "false" ? "Youtube Link" : "mp3"}
-          </Typography>
-        </Box>
         <Box>
           <Button onClick={handleUserDialogClose}>Close</Button>
           <Button

@@ -47,7 +47,7 @@ let lastDiffX = 0;
 let isDroging = false;
 
 export default memo(
-  function ({ player, render, currentTime }) {
+  function ({ render, currentTime }) {
     const { taskId } = useParams();
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
@@ -57,6 +57,7 @@ export default memo(
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
+    const player = useSelector((state) => state.commonReducer.player);
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
@@ -157,14 +158,28 @@ export default memo(
         if (lastType === "left") {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
             const start_time = DT.d2t(startTime);
-            updateSub(lastSub, { start_time });
+
+            if (index > 0 && startTime >= DT.t2d(previou.end_time)) {
+              updateSub(lastSub, { start_time });
+            }
+
+            if (index === 0) {
+              updateSub(lastSub, { start_time });
+            }
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === "right") {
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
-            updateSub(lastSub, { end_time });
+
+            if (index > 0 && endTime <= DT.t2d(next.start_time)) {
+              updateSub(lastSub, { end_time });
+            }
+
+            if (index === 0) {
+              updateSub(lastSub, { end_time });
+            }
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -173,10 +188,23 @@ export default memo(
             const start_time = DT.d2t(startTime);
             const end_time = DT.d2t(endTime);
 
-            updateSub(lastSub, {
-              start_time,
-              end_time,
-            });
+            if (
+              index > 0 &&
+              startTime >= DT.t2d(previou.end_time) &&
+              endTime <= DT.t2d(next.start_time)
+            ) {
+              updateSub(lastSub, {
+                start_time,
+                end_time,
+              });
+            }
+
+            if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+              updateSub(lastSub, {
+                start_time,
+                end_time,
+              });
+            }
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -230,7 +258,7 @@ export default memo(
       const { id, trigger } = props;
       return (
         <ContextMenu id={id} className={classes.menuItemNav}>
-          {trigger && (
+          {trigger && !taskDetails.task_type.includes("VOICEOVER") && (
             <MenuItem
               className={classes.menuItem}
               onClick={() => removeSub(lastSub)}
@@ -238,14 +266,16 @@ export default memo(
               Delete Subtitle
             </MenuItem>
           )}
-          {trigger && trigger.parentSub !== subtitles[subtitles.length - 1] && (
-            <MenuItem
-              className={classes.menuItem}
-              onClick={() => mergeSub(lastSub)}
-            >
-              Merge Next
-            </MenuItem>
-          )}
+          {trigger &&
+            trigger.parentSub !== subtitles[subtitles.length - 1] &&
+            !taskDetails.task_type.includes("VOICEOVER") && (
+              <MenuItem
+                className={classes.menuItem}
+                onClick={() => mergeSub(lastSub)}
+              >
+                Merge Next
+              </MenuItem>
+            )}
         </ContextMenu>
       );
     };
@@ -311,7 +341,8 @@ export default memo(
                     onMouseDown={(event) => onMouseDown(sub, event)}
                   >
                     <p className={classes.subTextP}>
-                      {taskDetails.task_type.includes("TRANSCRIPTION")
+                      {taskDetails.task_type.includes("TRANSCRIPTION") ||
+                      taskDetails.task_type.includes("VOICEOVER")
                         ? sub.text
                         : sub.target_text}
                     </p>

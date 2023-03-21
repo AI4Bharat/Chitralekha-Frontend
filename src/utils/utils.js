@@ -1,5 +1,7 @@
 import Sub from "./Sub";
 import DT from "duration-time-conversion";
+import { useCallback } from "react";
+import store from "../redux/store/store";
 
 export function authenticateUser() {
   const access_token = localStorage.getItem("token");
@@ -75,8 +77,8 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -93,9 +95,9 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -111,8 +113,8 @@ export const roles = [
     projectSettingVisible: false,
     showSelectCheckbox: false,
     canEditTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -129,8 +131,8 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -146,8 +148,8 @@ export const roles = [
     showSelectCheckbox: false,
     canEditTask: false,
     canDeleteTask: false,
-    ProjectReport:false,
-    organizationReport:false,
+    ProjectReport: false,
+    organizationReport: false,
     canAddMembers: false,
   },
   {
@@ -164,8 +166,8 @@ export const roles = [
     showSelectCheckbox: true,
     canEditTask: true,
     canDeleteTask: true,
-    ProjectReport:true,
-    organizationReport:false,
+    ProjectReport: true,
+    organizationReport: false,
     canAddMembers: true,
   },
   {
@@ -182,8 +184,8 @@ export const roles = [
     showSelectCheckbox: true,
     canEditTask: true,
     canDeleteTask: true,
-    ProjectReport:true,
-    organizationReport:true,
+    ProjectReport: true,
+    organizationReport: true,
     canAddMembers: true,
   },
 ];
@@ -486,11 +488,15 @@ export const getMilliseconds = (timeInString) => {
   return 0;
 };
 
-export const getUpdatedTime = (value, type, time) => {
+export const getUpdatedTime = (value, type, time, index, startEnd) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const videoDuration = store.getState().getVideoDetails.data.video.duration;
+
+  let newValue = "";
+
   const [hh, mm, sec] = time.split(":");
   const [ss, SSS] = sec.split(".");
 
-  let newValue = "";
   if (type === "hours") {
     if (value < 0) {
       newValue = "00";
@@ -501,9 +507,10 @@ export const getUpdatedTime = (value, type, time) => {
 
   if (type === "minutes" || type === "seconds") {
     if (+value <= 9 && value.length < 2) {
+      localStorage.setItem("value", value);
       newValue = value.padStart(2, "0");
     } else {
-      newValue = `${value[value.length - 2]}${value[value.length - 1]}`;
+      newValue = `${localStorage.getItem("value")}${value[value.length - 1]}`;
     }
 
     if (+newValue >= 60) {
@@ -529,15 +536,66 @@ export const getUpdatedTime = (value, type, time) => {
     }
   }
 
+  let newTime = "";
+
   if (type === "hours") {
-    return `${newValue}:${mm}:${ss}.${SSS}`;
+    newTime = `${newValue}:${mm}:${ss}.${SSS}`;
   } else if (type === "minutes") {
-    return `${hh}:${newValue}:${ss}.${SSS}`;
+    newTime = `${hh}:${newValue}:${ss}.${SSS}`;
   } else if (type === "seconds") {
-    return `${hh}:${mm}:${newValue}.${SSS}`;
+    newTime = `${hh}:${mm}:${newValue}.${SSS}`;
   } else if (type === "miliseconds") {
-    return `${hh}:${mm}:${ss}.${newValue}`;
+    newTime = `${hh}:${mm}:${ss}.${newValue}`;
   }
+
+  if (startEnd === "startTime" && index > 0) {
+    const durationOfPrevious = DT.t2d(subtitles[index - 1].end_time);
+    const durationOfCurrent = DT.t2d(newTime);
+    const durationOfEndTime = DT.t2d(subtitles[index].end_time);
+
+    if (durationOfPrevious >= durationOfCurrent) {
+      newTime = subtitles[index].start_time;
+    }
+
+    if (durationOfCurrent >= durationOfEndTime) {
+      newTime = subtitles[index].end_time;
+    }
+  }
+
+  if (startEnd === "endTime" && index < subtitles.length - 1) {
+    const durationOfNext = DT.t2d(subtitles[index + 1].start_time);
+    const durationOfCurrent = DT.t2d(newTime);
+    const durationOfStartTime = DT.t2d(subtitles[index].start_time);
+
+    if (durationOfNext <= durationOfCurrent) {
+      newTime = subtitles[index + 1].start_time;
+    }
+
+    if (durationOfCurrent <= durationOfStartTime) {
+      let modifiedDuration = DT.t2d(subtitles[index].start_time);
+      modifiedDuration = modifiedDuration + 1;
+      console.log("qwe ===> ",DT.t2d(subtitles[index].start_time), DT.d2t(modifiedDuration));
+      newTime = DT.d2t(modifiedDuration);
+    }
+  }
+
+  if (startEnd === "endTime" && index === subtitles.length - 1) {
+    const durationOfVideo = DT.t2d(videoDuration);
+    const durationOfCurrent = DT.t2d(newTime);
+    const durationOfStartTime = DT.t2d(subtitles[index].start_time);
+
+    if (durationOfCurrent > durationOfVideo) {
+      newTime = videoDuration;
+    }
+
+    if (durationOfCurrent <= durationOfStartTime) {
+      let modifiedDuration = DT.t2d(subtitles[index].start_time);
+      modifiedDuration = modifiedDuration + 1;
+      newTime = DT.t2d(modifiedDuration);
+    }
+  }
+
+  return newTime;
 };
 
 export const getProfile = (userDetails) => {
@@ -572,7 +630,9 @@ export const getProfile = (userDetails) => {
     },
     {
       label: "Organization",
-      value: userDetails?.organization?.title?.length ? userDetails?.organization?.title : "-",
+      value: userDetails?.organization?.title?.length
+        ? userDetails?.organization?.title
+        : "-",
     },
     {
       label: "Language Proficiency",
@@ -599,7 +659,92 @@ export const MenuProps = {
 };
 
 export function snakeToTitleCase(str) {
-  return str.split("_").map((word) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }).join(" ");
+  return str
+    .split("_")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 }
+
+export const getDisableOption = (data, defaultTask) => {
+  if (data.value === "TRANSCRIPTION_EDIT") {
+    return false;
+  }
+
+  if (
+    data.value === "TRANSCRIPTION_REVIEW" ||
+    data.value === "TRANSLATION_EDIT"
+  ) {
+    if (defaultTask.some((item) => item.value === "TRANSCRIPTION_EDIT")) {
+      return false;
+    }
+    return true;
+  }
+
+  if (data.value === "TRANSLATION_REVIEW") {
+    if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
+      return false;
+    }
+    return true;
+  }
+
+  if (data.value === "VOICEOVER_EDIT") {
+    if (defaultTask.some((item) => item.value === "TRANSLATION_EDIT")) {
+      return false;
+    }
+    return true;
+  }
+};
+
+export const defaultTaskHandler = (task) => {
+  let dTask = [];
+  let lang = [];
+
+  const isTranscriptionEdit = task.findIndex(
+    (item) => item.value === "TRANSCRIPTION_EDIT"
+  );
+
+  if (isTranscriptionEdit === -1) {
+    dTask = [];
+    lang = [];
+  } else {
+    const isTranslationEdit = task.findIndex(
+      (item) => item.value === "TRANSLATION_EDIT"
+    );
+
+    if (isTranslationEdit === -1) {
+      const temp = task.filter(
+        (item) =>
+          item.value !== "TRANSLATION_REVIEW" && item.value !== "VOICEOVER_EDIT"
+      );
+      dTask = [...temp];
+      lang = [];
+    } else {
+      dTask = [...task];
+    }
+  }
+
+  return { dTask, lang };
+};
+
+export const diableTargetLang = (defaultTask) => {
+  const temp = defaultTask.find((item) => item.value.includes("TRANSLATION"));
+  if (temp) {
+    return false;
+  }
+  return true;
+};
+
+export const getDateTime = () => {
+  const date = new Date();
+  const YYYYMMDD = date
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("");
+
+  const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+  return `${YYYYMMDD}_${HHMMSS}`;
+};

@@ -98,7 +98,7 @@ const CreateTaskDialog = ({
 
   const selectTaskTypeHandler = (event) => {
     setTaskType(event.target.value);
-
+    
     if (!isBulk) {
       setShowAllowedTaskList(true);
 
@@ -147,6 +147,18 @@ const CreateTaskDialog = ({
     );
   };
 
+  const disableBtn = () => {
+    if (!taskType || !allowedTaskType) {
+      return true;
+    }
+
+    if (taskType.includes("TRANSLATION") && language.length <= 0) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -191,7 +203,8 @@ const CreateTaskDialog = ({
             </FormControl>
           </Box>
 
-          {taskType.includes("TRANSLATION") && (
+          {(taskType.includes("TRANSLATION") ||
+            taskType.includes("VOICEOVER")) && (
             <Box width={"100%"} sx={{ mt: 3 }}>
               <FormControl fullWidth>
                 <InputLabel id="select-lang">
@@ -315,7 +328,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={!taskType}
+          disabled={isBulk ? false : disableBtn()}
           onClick={() => submitHandler()}
         >
           Create Task{" "}
