@@ -158,14 +158,28 @@ export default memo(
         if (lastType === "left") {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
             const start_time = DT.d2t(startTime);
-            updateSub(lastSub, { start_time });
+
+            if (index > 0 && startTime >= DT.t2d(previou.end_time)) {
+              updateSub(lastSub, { start_time });
+            }
+
+            if (index === 0) {
+              updateSub(lastSub, { start_time });
+            }
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === "right") {
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
-            updateSub(lastSub, { end_time });
+
+            if (index > 0 && endTime <= DT.t2d(next.start_time)) {
+              updateSub(lastSub, { end_time });
+            }
+
+            if (index === 0) {
+              updateSub(lastSub, { end_time });
+            }
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -174,10 +188,23 @@ export default memo(
             const start_time = DT.d2t(startTime);
             const end_time = DT.d2t(endTime);
 
-            updateSub(lastSub, {
-              start_time,
-              end_time,
-            });
+            if (
+              index > 0 &&
+              startTime >= DT.t2d(previou.end_time) &&
+              endTime <= DT.t2d(next.start_time)
+            ) {
+              updateSub(lastSub, {
+                start_time,
+                end_time,
+              });
+            }
+
+            if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+              updateSub(lastSub, {
+                start_time,
+                end_time,
+              });
+            }
           } else {
             lastTarget.style.width = `${width}px`;
           }
