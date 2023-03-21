@@ -24,8 +24,8 @@ import ButtonComponent from "./components/ButtonComponent";
 import {
   base64toBlob,
   getSubtitleRange,
-  onRedoAction,
-  onUndoAction,
+  // onRedoAction,
+  // onUndoAction,
   setAudioContent,
 } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
@@ -76,8 +76,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [data, setData] = useState(new Array());
   const [recordAudio, setRecordAudio] = useState(new Array());
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
-  const [undoStack, setUndoStack] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
+  // const [undoStack, setUndoStack] = useState([]);
+  // const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
@@ -264,25 +264,25 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     }
   };
 
-  const onUndo = useCallback(() => {
-    if (undoStack.length > 0) {
-      const lastAction = undoStack[undoStack.length - 1];
-      const sub = onUndoAction(lastAction);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setUndoStack(undoStack.slice(0, undoStack.length - 1));
-      setRedoStack([...redoStack, lastAction]);
-    }
-  }, [undoStack, redoStack]);
+  // const onUndo = useCallback(() => {
+  //   if (undoStack.length > 0) {
+  //     const lastAction = undoStack[undoStack.length - 1];
+  //     const sub = onUndoAction(lastAction);
+  //     dispatch(setSubtitles(sub, C.SUBTITLES));
+  //     setUndoStack(undoStack.slice(0, undoStack.length - 1));
+  //     setRedoStack([...redoStack, lastAction]);
+  //   }
+  // }, [undoStack, redoStack]);
 
-  const onRedo = useCallback(() => {
-    if (redoStack.length > 0) {
-      const lastAction = redoStack[redoStack.length - 1];
-      const sub = onRedoAction(lastAction);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      setRedoStack(redoStack.slice(0, redoStack.length - 1));
-      setUndoStack([...undoStack, lastAction]);
-    }
-  }, [undoStack, redoStack]);
+  // const onRedo = useCallback(() => {
+  //   if (redoStack.length > 0) {
+  //     const lastAction = redoStack[redoStack.length - 1];
+  //     const sub = onRedoAction(lastAction);
+  //     dispatch(setSubtitles(sub, C.SUBTITLES));
+  //     setRedoStack(redoStack.slice(0, redoStack.length - 1));
+  //     setUndoStack([...undoStack, lastAction]);
+  //   }
+  // }, [undoStack, redoStack]);
 
   const renderSnackBar = () => {
     return (
@@ -416,10 +416,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
-            onUndo={onUndo}
-            onRedo={onRedo}
-            undoStack={undoStack}
-            redoStack={redoStack}
+            // onUndo={onUndo}
+            // onRedo={onRedo}
+            // undoStack={undoStack}
+            // redoStack={redoStack}
             durationError={durationError}
           />
         </Grid>
@@ -475,9 +475,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                     paddingBottom: index === 1 ? "100px" : "0px",
                     borderBottom: 2,
                     flexWrap: "wrap",
-                    ...(!xl && {
-                      paddingBottom: "20px",
-                    }),
                   }}
                   onClick={() => {
                     if (player) {
@@ -518,11 +515,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                               <textarea
                                 className={`${
                                   classes.textAreaTransliteration
-                                } ${
-                                  index === 1
-                                    ? classes.boxHighlight
-                                    : ""
-                                }`}
+                                } ${index === 1 ? classes.boxHighlight : ""}`}
                                 dir={enableRTL_Typing ? "rtl" : "ltr"}
                                 rows={4}
                                 disabled={isDisabled(index)}
@@ -582,9 +575,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                             ? {
                                 alignItems: "center",
                                 flexDirection: "row",
-                                width: "100%",
                               }
-                            : { width: "100%" }
+                            : {}
                         }
                       >
                         <audio
