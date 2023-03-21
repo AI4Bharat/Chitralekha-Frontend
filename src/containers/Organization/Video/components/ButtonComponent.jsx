@@ -2,7 +2,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteIcon from '@mui/icons-material/Delete';
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { memo } from "react";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
@@ -75,10 +75,10 @@ const ButtonComponent = ({
         <Tooltip title="Delete" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
-            style={{ backgroundColor: "red" }}
+            style={{ color: "#d32f2f" }}
             onClick={() => onDelete(index)}
           >
-            <DeleteOutlineIcon />
+            <DeleteIcon />
           </IconButton>
         </Tooltip>
       )}

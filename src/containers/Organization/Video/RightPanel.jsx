@@ -80,14 +80,14 @@ const RightPanel = ({ currentIndex }) => {
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
     const sub = onMerge(index);
-    const timings = [{
-      start: subtitles[index].start_time,
-      end: subtitles[index].end_time,
-    },
-    {
-      start: subtitles[index + 1]?.start_time,
-      end: subtitles[index + 1]?.end_time,
-    }]
+    // const timings = [{
+    //   start: subtitles[index].start_time,
+    //   end: subtitles[index].end_time,
+    // },
+    // {
+    //   start: subtitles[index + 1]?.start_time,
+    //   end: subtitles[index + 1]?.end_time,
+    // }]
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // setUndoStack([...undoStack, {
     //   type: "merge",
