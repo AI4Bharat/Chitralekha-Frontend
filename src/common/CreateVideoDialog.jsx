@@ -63,6 +63,13 @@ const CreateVideoDialog = ({
     (state) => state.getSupportedLanguages.data
   );
 
+  const handleClear = () => {
+    setLang("");
+    setVideoLink("");
+    setVoice("");
+    setVideoDescription("");
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -82,6 +89,7 @@ const CreateVideoDialog = ({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
+
       <DialogContent style={{ paddingTop: 4 }}>
         <FormControl fullWidth>
           <RadioGroup
@@ -168,6 +176,7 @@ const CreateVideoDialog = ({
           sx={{ mb: 3, mt: 3 }}
         />
       </DialogContent>
+
       <DialogActions
         style={{
           display: "flex",
@@ -177,7 +186,21 @@ const CreateVideoDialog = ({
         }}
       >
         <Box>
-          <Button sx={{ borderRadius: 2, lineHeight: 1 }} onClick={handleUserDialogClose}>Cancel</Button>
+          <Button
+            sx={{ borderRadius: 2, lineHeight: 1 }}
+            onClick={handleUserDialogClose}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="outlined"
+            sx={{ borderRadius: 2, margin: "0 10px"  }}
+            onClick={() => handleClear()}
+          >
+            Clear
+          </Button>
+
           <Button
             variant="contained"
             sx={{ borderRadius: 2, lineHeight: 1 }}

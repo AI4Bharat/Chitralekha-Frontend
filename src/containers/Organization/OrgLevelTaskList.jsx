@@ -202,9 +202,7 @@ const OrgLevelTaskList = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      const task = taskList.tasks_list.filter(
-        (task) => task.id === id
-      )[0];
+      const task = taskList.tasks_list.filter((task) => task.id === id)[0];
 
       const link = document.createElement("a");
       link.href = resp.azure_url;
@@ -1115,7 +1113,7 @@ const OrgLevelTaskList = () => {
       title: "Bulk Task Delete",
       icon: <DeleteIcon />,
       onClick: () => {},
-      style: { backgroundColor: "red" },
+      style: { backgroundColor: "#d32f2f" },
     },
     {
       title: "Bulk Task Dowload",
@@ -1138,31 +1136,22 @@ const OrgLevelTaskList = () => {
           </Tooltip>
         </Button>
 
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          className={classes.searchStyle}
-        >
-          {roles.filter((role) => role.value === userData?.role)[0]
-            ?.permittedToCreateTask &&
-            showEditTaskBtn &&
-            toolBarActions.map((item) => {
-              return (
-                <Tooltip title={item.title} placement="bottom">
-                  <IconButton
-                    className={classes.createTaskBtn}
-                    onClick={item.onClick}
-                    style={item.style}
-                  >
-                    {item.icon}
-                  </IconButton>
-                </Tooltip>
-              );
-            })}
-
-          {/* <Search /> */}
-        </Box>
+        {roles.filter((role) => role.value === userData?.role)[0]
+          ?.permittedToCreateTask &&
+          showEditTaskBtn &&
+          toolBarActions.map((item) => {
+            return (
+              <Tooltip title={item.title} placement="bottom">
+                <IconButton
+                  className={classes.createTaskBtn}
+                  onClick={item.onClick}
+                  style={item.style}
+                >
+                  {item.icon}
+                </IconButton>
+              </Tooltip>
+            );
+          })}
       </>
     );
   };

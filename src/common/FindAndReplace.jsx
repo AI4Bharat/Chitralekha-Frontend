@@ -142,29 +142,17 @@ const FindAndReplace = (props) => {
                 maxWidth={"lg"}
                 PaperProps={{ style: { borderRadius: "10px" } }}
                 >
-                <Grid
-                    display="flex"
-                    justifyContent={"space-between"}
-                    sx={{ backgroundImage: "linear-gradient(to right, #f1f1f1, #ffffff)", width: "100%", paddingX: 1 }}
-                >
-                    <Grid item sx={{ alignSelf: "center" }}><DialogTitle
-                    >Find and Replace</DialogTitle>
-                    </Grid>
-                    <Grid item><Button
-                        variant="outlined"
+                     <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+                        <Typography variant="h4">Find and Replace</Typography>{" "}
+                        <IconButton
+                        aria-label="close"
                         onClick={handleCloseModel}
-                        sx={{
-                            color: "#000",
-                            border: "none",
-                            height: "60px",
-                            "&:hover": {
-                                border: "none"
-                            }
-                        }}
-                    >
-                        <CloseIcon />
-                    </Button></Grid>
-                </Grid>
+                        sx={{ marginLeft: "auto" }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+
                 <DialogContent
                     sx={{ overflow: "hidden", position: "unset", overscrollBehavior: "none" }}
                 >

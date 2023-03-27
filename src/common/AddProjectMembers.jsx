@@ -112,7 +112,6 @@ const AddProjectMembers = ({
 
         <Button
           autoFocus
-          endIcon={<Add />}
           variant="contained"
           sx={{ marginLeft: "10px", borderRadius: "8px" }}
           onClick={() => {

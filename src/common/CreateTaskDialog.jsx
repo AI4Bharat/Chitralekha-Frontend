@@ -162,6 +162,16 @@ const CreateTaskDialog = ({
     return false;
   };
 
+  const handleClear = () => {
+    setTaskType("");
+    setLanguage("");
+    setAllowedTaskType("");
+    setUser("");
+    setDescription("");
+    setPriority("");
+    setDate(moment().format());
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -181,6 +191,7 @@ const CreateTaskDialog = ({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
+
       <DialogContent style={{ paddingTop: 4 }}>
         <Grid
           container
@@ -332,10 +343,24 @@ const CreateTaskDialog = ({
           </Box>
         </Grid>
       </DialogContent>
+
       <DialogActions style={{ padding: "24px 24px 24px 0" }}>
-        <Button sx={{ borderRadius: 2 }} autoFocus onClick={handleUserDialogClose}>
+        <Button
+          sx={{ borderRadius: "8px" }}
+          autoFocus
+          onClick={handleUserDialogClose}
+        >
           Cancel
         </Button>
+
+        <Button
+          variant="outlined"
+          sx={{ borderRadius: 2 }}
+          onClick={() => handleClear()}
+        >
+          Clear
+        </Button>
+
         <Button
           autoFocus
           variant="contained"

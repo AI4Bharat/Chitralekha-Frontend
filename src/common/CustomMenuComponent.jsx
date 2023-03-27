@@ -219,7 +219,7 @@ const CustomMenuComponent = ({
         }}
         open={Boolean(anchorElPlacement)}
         onClose={() => {
-          setAnchorElTheme(null);
+          setAnchorElPlacement(null);
         }}
         container={contianer}
       >

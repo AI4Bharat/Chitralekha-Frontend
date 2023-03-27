@@ -131,7 +131,7 @@ const VideoList = ({ data, removeVideo }) => {
     });
     const resp = await res.blob();
     if (res.ok) {
-    //  const resp = await res.blob();
+      //  const resp = await res.blob();
       const newBlob = new Blob([resp], { type: "application/zip" });
 
       const blobUrl = window.URL.createObjectURL(newBlob);
@@ -448,12 +448,7 @@ const VideoList = ({ data, removeVideo }) => {
 
   const renderToolBar = () => {
     return (
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        className={classes.searchStyle}
-      >
+      <>
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
           showCreateTaskBtn &&
@@ -470,13 +465,10 @@ const VideoList = ({ data, removeVideo }) => {
               </Tooltip>
             );
           })}
-
-        {/* <Search /> */}
-        
-      </Box>
+      </>
     );
   };
- 
+
   const options = {
     textLabels: {
       body: {
@@ -492,7 +484,7 @@ const VideoList = ({ data, removeVideo }) => {
     displaySelectToolbar: false,
     fixedHeader: false,
     filterType: "checkbox",
-     search: true,
+    search: true,
     download: true,
     print: false,
     rowsPerPageOptions: [10, 25, 50, 100],
@@ -502,7 +494,7 @@ const VideoList = ({ data, removeVideo }) => {
       ?.showSelectCheckbox
       ? "multiple"
       : "none",
-    
+
     jumpToPage: true,
     customToolbar: renderToolBar,
     selectToolbarPlacement: "none",

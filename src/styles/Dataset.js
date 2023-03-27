@@ -263,11 +263,14 @@ const DatasetStyle = makeStyles({
     backgroundColor: "#2C2799",
     borderRadius: "50%",
     color: "#fff",
-    marginRight: "10px",
-    marginBottom: "12px",
+    margin: "0 5px",
+    padding: "4px",
     "&:hover": {
       backgroundColor: "#271e4f",
     },
+    "& .MuiSvgIcon-root": {
+      fontSize: "1.3rem"
+    }
   },
   searchStyle:{
     position: "absolute",

@@ -120,6 +120,13 @@ const UpdateBulkTaskDialog = ({
     );
   };
 
+  const handleClear = () => {
+    setUser("");
+    setDescription("");
+    setPriority("");
+    setDate(moment().format());
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -132,7 +139,9 @@ const UpdateBulkTaskDialog = ({
         PaperProps={{ style: { borderRadius: "10px" } }}
       >
         <DialogTitle variant="h4" display="flex" alignItems={"center"}>
-          <Typography variant="h4">{isBulk ? "Update Tasks" : "Update Task"}</Typography>{" "}
+          <Typography variant="h4">
+            {isBulk ? "Update Tasks" : "Update Task"}
+          </Typography>{" "}
           <IconButton
             aria-label="close"
             onClick={handleUserDialogClose}
@@ -141,7 +150,7 @@ const UpdateBulkTaskDialog = ({
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        
+
         <DialogContent style={{ paddingTop: 4 }}>
           <Grid
             container
@@ -224,9 +233,18 @@ const UpdateBulkTaskDialog = ({
         </DialogContent>
 
         <DialogActions style={{ padding: "24px 24px 24px 0" }}>
-          <Button autoFocus onClick={handleUserDialogClose}>
-            Close
+          <Button autoFocus onClick={handleUserDialogClose} sx={{ borderRadius: 2 }}>
+            cancel
           </Button>
+
+          <Button
+            variant="outlined"
+            sx={{ borderRadius: 2, marginRight: "5px" }}
+            onClick={() => handleClear()}
+          >
+            Clear
+          </Button>
+
           <Button
             autoFocus
             variant="contained"
