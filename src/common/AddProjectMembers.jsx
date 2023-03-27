@@ -73,7 +73,7 @@ const AddProjectMembers = ({
       <DialogTitle variant="h4">{title}</DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
         <FormControl fullWidth>
-          <InputLabel id="mutiple-select-label">Add project members</InputLabel>
+          <InputLabel id="mutiple-select-label">Select</InputLabel>
           <Select
             labelId="mutiple-select-label"
             label="mutiple-select-label"
@@ -101,7 +101,7 @@ const AddProjectMembers = ({
 
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
         <Button onClick={handleUserDialogClose} sx={{ borderRadius: "8px" }}>
-          Close
+          Cancel
         </Button>
 
         <Button
@@ -114,7 +114,7 @@ const AddProjectMembers = ({
             handleUserDialogClose();
           }}
         >
-          Add Member
+          Add
         </Button>
       </DialogActions>
     </Dialog>

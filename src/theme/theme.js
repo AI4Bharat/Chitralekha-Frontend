@@ -452,7 +452,7 @@ const themeDefault = createTheme({
     MuiSelect: {
       styleOverrides: {
         select: {
-          fontSize: "0.875rem",
+          fontSize: "1.25rem",
         }
       }
     },

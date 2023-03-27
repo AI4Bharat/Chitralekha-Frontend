@@ -85,7 +85,7 @@ const AddOrganizationMember = ({
 
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
         <Button onClick={handleUserDialogClose} sx={{ borderRadius: "8px" }}>
-          Close
+          Cancel
         </Button>
 
         <Button
@@ -99,7 +99,7 @@ const AddOrganizationMember = ({
           }}
           disabled={textFieldLabel || selectFieldValue ? false : true}
         >
-          Add Member
+          Add
         </Button>
       </DialogActions>
     </Dialog>

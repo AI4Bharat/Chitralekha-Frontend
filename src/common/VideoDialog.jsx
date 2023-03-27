@@ -15,6 +15,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
@@ -45,7 +46,7 @@ const voiceOptions = [
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
 
   const [time, setTime] = useState("");
   const [subtitles, setSubtitles] = useState([]);
@@ -207,7 +208,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   };
   const onKeyDown = (e) => {
     var video = document.getElementById("myBtn");
-    if (e.which == 32) {
+    if (e.which == 32 && e.target.id !== "description") {
       if (video.paused) {
         e.preventDefault();
         video.play();
@@ -237,7 +238,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   return (
     <Dialog
       fullScreen={fullScreen}
-      maxWidth={"xl"}
+      maxWidth={"lg"}
       open={open}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
@@ -250,18 +251,19 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       }}
     >
       <DialogTitle id="responsive-dialog-title" display="flex">
-        <Typography
-          variant="h4"
-          style={{
-            marginRight: "auto",
-            lineHeight: "inherit",
-            overflowWrap: "break-word",
-            wordWrap: "break-word",
-            wordBreak: "break-word",
-          }}
-        >
-          {videoDetails[0].name}
-        </Typography>
+        <Tooltip title={videoDetails[0].name}>
+          <Typography
+            variant="h4"
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {videoDetails[0].name}
+          </Typography>
+        </Tooltip>
+
         <IconButton aria-label="close" onClick={handleClose}>
           <CloseIcon />
         </IconButton>
@@ -269,6 +271,47 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
       <DialogContent>
         <Grid container width={"100%"} alignItems="center" marginBottom="20px">
+          <Grid margin="auto">
+            <TextField
+              id="description"
+              label="Description"
+              fullWidth
+              multiline
+              rows={3}
+              value={videoDescription}
+              onChange={(event) => setVideoDescription(event.target.value)}
+              sx={{ mb: 3, mt: 3 }}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel id="select-voice">Voice Selection</InputLabel>
+              <Select
+                fullWidth
+                labelId="select-voice"
+                label="Voice Selection"
+                value={voice}
+                onChange={(event) => setVoice(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+                MenuProps={MenuProps}
+              >
+                {voiceOptions?.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Button
+              variant="contained"
+              sx={{ display: "flex", borderRadius: "8px", m: "24px auto" }}
+              onClick={() => updateVideoHandler()}
+            >
+              Update Details
+            </Button>
+          </Grid>
+
           <Grid className={classes.videoBox} id="myvideo">
             <video
               id="myBtn"
@@ -346,46 +389,6 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
                 }
               />
             )}
-          </Grid>
-
-          <Grid width={"40%"} marginLeft="auto">
-            <TextField
-              label="Description"
-              fullWidth
-              multiline
-              rows={3}
-              value={videoDescription}
-              onChange={(event) => setVideoDescription(event.target.value)}
-              sx={{ mb: 3, mt: 3 }}
-            />
-
-            <FormControl fullWidth>
-              <InputLabel id="select-voice">Voice Selection</InputLabel>
-              <Select
-                fullWidth
-                labelId="select-voice"
-                label="Voice Selection"
-                value={voice}
-                onChange={(event) => setVoice(event.target.value)}
-                style={{ zIndex: "0" }}
-                inputProps={{ "aria-label": "Without label" }}
-                MenuProps={MenuProps}
-              >
-                {voiceOptions?.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Button
-              variant="contained"
-              sx={{ borderRadius: "8px", mt: 3, float: "right" }}
-              onClick={() => updateVideoHandler()}
-            >
-              Update Details
-            </Button>
           </Grid>
         </Grid>
 
