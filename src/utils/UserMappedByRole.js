@@ -14,14 +14,14 @@ console.log(statusLabel,'statusLabel');
         return {
             name: statusLabel, name: "New", element: <Typography variant="caption"
                 sx={{
-                    p: 1,  backgroundColor: "#fff", color: "blue",
+                    p: 1,  backgroundColor: "#fff", color: "maroon",
                     borderRadius: 2, fontWeight: 600
                 }}>New</Typography>
         }
     } else if (statusLabel == "In Progress") {
         return {
             name: statusLabel, name: "In Progress", element: <Typography variant="caption"
-                sx={{ p: 1, backgroundColor: "#fff", color: "maroon", borderRadius: 2, fontWeight: 600,whiteSpace: "nowrap" }}>In Progress</Typography>
+                sx={{ p: 1, backgroundColor: "#fff", color: "blue", borderRadius: 2, fontWeight: 600,whiteSpace: "nowrap" }}>In Progress</Typography>
         }
     }
     else if (statusLabel == "Selected Source") {
