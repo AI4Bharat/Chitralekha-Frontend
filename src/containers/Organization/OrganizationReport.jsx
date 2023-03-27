@@ -113,7 +113,7 @@ const OrganizationReport = ({}) => {
             align: "center",
             setCellHeaderProps: () => ({
               style: {
-                height: "32px",
+                height: "35px",
                 fontSize: "16px",
                 padding: "16px",
               },
