@@ -13,13 +13,16 @@ import {
   DialogTitle,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CustomizedSnackbars from "../common/Snackbar";
+import CloseIcon from "@mui/icons-material/Close";
 
 //Styles
 import ProjectStyle from "../styles/ProjectStyle";
@@ -128,9 +131,17 @@ const UpdateBulkTaskDialog = ({
         maxWidth={"md"}
         PaperProps={{ style: { borderRadius: "10px" } }}
       >
-        <DialogTitle variant="h4">
-          {isBulk ? "Update Tasks" : "Update Task"}
+        <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+          <Typography variant="h4">{isBulk ? "Update Tasks" : "Update Task"}</Typography>{" "}
+          <IconButton
+            aria-label="close"
+            onClick={handleUserDialogClose}
+            sx={{ marginLeft: "auto" }}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
+        
         <DialogContent style={{ paddingTop: 4 }}>
           <Grid
             container

@@ -250,7 +250,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         },
       }}
     >
-      <DialogTitle id="responsive-dialog-title" display="flex">
+      <DialogTitle id="responsive-dialog-title" display="flex" alignItems={"center"}>
         <Tooltip title={videoDetails[0].name}>
           <Typography
             variant="h4"

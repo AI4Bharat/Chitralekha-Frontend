@@ -6,16 +6,19 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import FetchUserRolesAPI from "../redux/actions/api/User/FetchUsersRoles";
 import { MenuProps } from "../utils/utils";
+import CloseIcon from "@mui/icons-material/Close";
 
 const AddOrganizationMember = ({
   open,
@@ -51,7 +54,17 @@ const AddOrganizationMember = ({
       fullWidth
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">{title}</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">{title}</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleUserDialogClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent style={{ paddingTop: 4 }}>
         <TextField
           label={textFieldLabel}
