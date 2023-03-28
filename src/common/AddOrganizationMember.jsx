@@ -50,7 +50,7 @@ const AddOrganizationMember = ({
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}
+      maxWidth={"sm"}
       fullWidth
       PaperProps={{ style: { borderRadius: "10px" } }}
     >

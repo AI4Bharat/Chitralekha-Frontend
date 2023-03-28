@@ -1113,7 +1113,7 @@ const OrgLevelTaskList = () => {
       title: "Bulk Task Delete",
       icon: <DeleteIcon />,
       onClick: () => {},
-      style: { backgroundColor: "#d32f2f" },
+      style: { color: "#d32f2f" },
     },
     {
       title: "Bulk Task Dowload",
@@ -1136,22 +1136,37 @@ const OrgLevelTaskList = () => {
           </Tooltip>
         </Button>
 
-        {roles.filter((role) => role.value === userData?.role)[0]
-          ?.permittedToCreateTask &&
-          showEditTaskBtn &&
-          toolBarActions.map((item) => {
-            return (
-              <Tooltip title={item.title} placement="bottom">
-                <IconButton
-                  className={classes.createTaskBtn}
-                  onClick={item.onClick}
-                  style={item.style}
-                >
-                  {item.icon}
-                </IconButton>
-              </Tooltip>
-            );
-          })}
+        <div style={{ display: "inline", verticalAlign: "middle" }}>
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn && (
+              <Divider
+                orientation="vertical"
+                sx={{
+                  display: "inline",
+                  margin: "0 10px",
+                  borderColor: "rgba(0, 0, 0, 0.54)",
+                }}
+              />
+            )}
+            
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn &&
+            toolBarActions.map((item) => {
+              return (
+                <Tooltip title={item.title} placement="bottom">
+                  <IconButton
+                    className={classes.createTaskBtn}
+                    onClick={item.onClick}
+                    style={item.style}
+                  >
+                    {item.icon}
+                  </IconButton>
+                </Tooltip>
+              );
+            })}
+        </div>
       </>
     );
   };

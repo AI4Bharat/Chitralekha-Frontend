@@ -267,8 +267,8 @@ const VideoLanding = () => {
                   onClick={() => handleFullscreenVideo()}
                   variant="contained"
                   style={{
-                    bottom: fullscreenVideo ? "4%" : "",
-                    right: fullscreenVideo ? "18%" : "",
+                    bottom: fullscreenVideo ? "2%" : "",
+                    right: fullscreenVideo ? "2%" : "",
                   }}
                 >
                   {fullscreenVideo ? (

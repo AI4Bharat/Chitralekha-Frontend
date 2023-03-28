@@ -178,7 +178,7 @@ const CreateTaskDialog = ({
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}
+      maxWidth={"sm"}
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4" display="flex" alignItems={"center"}>

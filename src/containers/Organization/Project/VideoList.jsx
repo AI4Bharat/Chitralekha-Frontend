@@ -14,7 +14,7 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
-import { Box, ThemeProvider, Tooltip, IconButton, Button } from "@mui/material";
+import { Box, ThemeProvider, Tooltip, IconButton, Button, Divider } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
@@ -448,7 +448,20 @@ const VideoList = ({ data, removeVideo }) => {
 
   const renderToolBar = () => {
     return (
-      <>
+      <div style={{ display: "inline", verticalAlign: "middle" }}>
+        {roles.filter((role) => role.value === userData?.role)[0]
+          ?.permittedToCreateTask &&
+          showCreateTaskBtn && (
+            <Divider
+              orientation="vertical"
+              sx={{
+                display: "inline",
+                margin: "0 10px",
+                borderColor: "rgba(0, 0, 0, 0.54)",
+              }}
+            />
+          )}
+
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
           showCreateTaskBtn &&
@@ -465,7 +478,7 @@ const VideoList = ({ data, removeVideo }) => {
               </Tooltip>
             );
           })}
-      </>
+      </div>
     );
   };
 
