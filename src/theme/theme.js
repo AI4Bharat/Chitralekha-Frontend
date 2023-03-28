@@ -128,10 +128,21 @@ const themeDefault = createTheme({
         },
       },
     },
-    MUIDataTablePagination: {
+    MuiTablePagination: {
       styleOverrides: {
-        backgroundColor: "#fff",
+        select: {
+          fontSize: "0.875rem !important",
+          paddingBottom: "3px",
+        }
       },
+    },
+    MUIDataTableJumpToPage: {
+      styleOverrides: {
+        select: {
+          fontSize: "0.875rem !important",
+          paddingBottom: "5px",
+        }
+      }
     },
     MUIDataTableFilterList: {
       styleOverrides: {

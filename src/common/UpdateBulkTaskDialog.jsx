@@ -233,8 +233,12 @@ const UpdateBulkTaskDialog = ({
         </DialogContent>
 
         <DialogActions style={{ padding: "24px 24px 24px 0" }}>
-          <Button autoFocus onClick={handleUserDialogClose} sx={{ borderRadius: 2 }}>
-            cancel
+          <Button
+            autoFocus
+            onClick={handleUserDialogClose}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancel
           </Button>
 
           <Button
@@ -249,6 +253,7 @@ const UpdateBulkTaskDialog = ({
             autoFocus
             variant="contained"
             sx={{ borderRadius: 2 }}
+            disabled={!user}
             onClick={() => submitHandler()}
           >
             {isBulk ? "Update Tasks" : "Update Task"}
