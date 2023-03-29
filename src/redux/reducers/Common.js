@@ -76,6 +76,15 @@ const reducer = (state = initialState, action) => {
       return result;
     }
 
+    case C.CLEAR_STATE:
+      return {
+        ...state,
+        subtitles: action.payload,
+        player: null,
+        fullscreen: false,
+        fullscreenVideo: false,
+      };
+
     default:
       return {
         ...state,

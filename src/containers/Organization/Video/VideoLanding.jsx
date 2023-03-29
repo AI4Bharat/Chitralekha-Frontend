@@ -72,6 +72,10 @@ const VideoLanding = () => {
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
     dispatch(APITransport(apiObj));
+
+    return () => {
+      dispatch({ type: C.CLEAR_STATE, payload: [] });
+    };
   }, []);
 
   useEffect(() => {
