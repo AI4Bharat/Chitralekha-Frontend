@@ -33,6 +33,7 @@ import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSup
 import UpdateMemberPasswordAPI from "../../redux/actions/api/Admin/UpdateMemberPassword";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import EditIcon from "@mui/icons-material/Edit";
 
 const EditProfile = () => {
   const { id } = useParams();
@@ -58,6 +59,15 @@ const EditProfile = () => {
     password: false,
     confirmPassword: false,
   });
+  const [editfirstName, setEditfirstName] = useState(false);
+  const [editlastName, setEditlastName] = useState(false);
+  const [editemail, setEditemail] = useState(false);
+  const [editrole, setEditrole] = useState(false);
+  const [editphoneNumber, setEditphoneNumber] = useState(false);
+  const [editusername, setEditusername] = useState(false);
+  const [editavailabilityStatus, setEditavailabilityStatus] = useState(false);
+  const [editorganization, setEditorganization] = useState(false);
+  const [editlanguage, setEditlanguage] = useState(false);
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -232,6 +242,36 @@ const EditProfile = () => {
       });
   };
 
+  const handleEditFirstName = () => {
+    setEditfirstName(true);
+  };
+
+  const handleEditLastName = () => {
+    setEditlastName(true);
+  };
+  const handleEditemail = () => {
+    setEditemail(true);
+  };
+  const handleEditrole = () => {
+    setEditrole(true);
+  };
+  const handleEditphoneNumber = () => {
+    setEditphoneNumber(true);
+  };
+  const handleEditusername = () => {
+    setEditusername(true);
+  };
+  const handleEditOrganization = () => {
+    setEditorganization(true);
+  };
+
+  const handleEditavailabilityStatus = () => {
+    setEditavailabilityStatus(true);
+  };
+
+  const handleEditlanguage = () => {
+    setEditlanguage(true);
+  };
   return (
     <>
       <Grid
@@ -245,95 +285,255 @@ const EditProfile = () => {
             width: "100%",
             minHeight: 500,
             padding: 5,
-            border: 0,
+            borderRadius: "5px"
           }}
         >
           <Grid container spacing={4}>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            {/* <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
               <Typography variant="h3" align="center">
                 Edit Profile
               </Typography>
+            </Grid> */}
+
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6"> First Name:</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                {editfirstName == true ? (
+                  <OutlinedTextField
+                    fullWidth
+                    focused
+                    name="first_name"
+                    value={userDetails?.first_name}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                ) : (
+                  <OutlinedTextField
+                    fullWidth
+                    name="first_name"
+                    value={userDetails?.first_name}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              </Grid>
+
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditFirstName}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">Last Name:</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                {editlastName == true ? (
+                  <OutlinedTextField
+                    fullWidth
+                    focused
+                    name="last_name"
+                    value={userDetails?.last_name}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                ) : (
+                  <OutlinedTextField
+                    fullWidth
+                    name="last_name"
+                    value={userDetails?.last_name}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditLastName}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <OutlinedTextField
-                fullWidth
-                label="First Name"
-                name="first_name"
-                value={userDetails?.first_name}
-                onChange={handleFieldChange}
-                InputLabelProps={{ shrink: true }}
-              />
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">Email :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                {editemail == true ? (
+                  <>
+                    <OutlinedTextField
+                       focused
+                      fullWidth
+                      value={email}
+                      onChange={handleEmailChange}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        endAdornment: enableVerifyEmail && (
+                          <InputAdornment position="end">
+                            <Button
+                              variant="text"
+                              color="primary"
+                              onClick={handleUpdateEmail}
+                              sx={{ gap: "4px" }}
+                            >
+                              {emailVerifyLoading && (
+                                <CircularProgress size="1rem" color="primary" />
+                              )}
+                              VERIFY EMAIL
+                            </Button>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    {showEmailDialog && (
+                      <UpdateEmailDialog
+                        isOpen={showEmailDialog}
+                        handleClose={handleEmailDialogClose}
+                        oldEmail={userDetails.email}
+                        newEmail={email}
+                        onSuccess={handleVerificationSuccess}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <OutlinedTextField
+                    fullWidth
+                    name="last_name"
+                    value={userDetails?.email}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditemail}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <OutlinedTextField
-                fullWidth
-                label="Last Name"
-                name="last_name"
-                value={userDetails?.last_name}
-                onChange={handleFieldChange}
-                InputLabelProps={{ shrink: true }}
-              />
+          
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">Phone Number :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                {editphoneNumber == true ? (
+                  <OutlinedTextField
+                    fullWidth
+                    focused
+                    name="phone"
+                    value={userDetails?.phone}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                ) : (
+                  <OutlinedTextField
+                    fullWidth
+                    name="phone"
+                    value={userDetails?.phone}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditphoneNumber}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <OutlinedTextField
-                fullWidth
-                label="Email"
-                value={email}
-                onChange={handleEmailChange}
-                InputLabelProps={{ shrink: true }}
-                InputProps={{
-                  endAdornment: enableVerifyEmail && (
-                    <InputAdornment position="end">
-                      <Button
-                        variant="text"
-                        color="primary"
-                        onClick={handleUpdateEmail}
-                        sx={{ gap: "4px" }}
-                      >
-                        {emailVerifyLoading && (
-                          <CircularProgress size="1rem" color="primary" />
-                        )}
-                        VERIFY EMAIL
-                      </Button>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {showEmailDialog && (
-                <UpdateEmailDialog
-                  isOpen={showEmailDialog}
-                  handleClose={handleEmailDialogClose}
-                  oldEmail={userDetails.email}
-                  newEmail={email}
-                  onSuccess={handleVerificationSuccess}
-                />
-              )}
-            </Grid>
-
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <OutlinedTextField
-                fullWidth
-                label="Phone"
-                name="phone"
-                value={userDetails?.phone}
-                onChange={handleFieldChange}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">Role :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
               {loggedInUserData.role === "ADMIN" ||
-              loggedInUserData.role === "ORG_OWNER" ? (
+              loggedInUserData.role === "ORG_OWNER" && editrole == true? (
                 <FormControl fullWidth>
-                  <InputLabel id="role-type">Role</InputLabel>
                   <Select
                     labelId="role-type"
                     id="role-type_select"
                     value={role}
-                    label="Role"
                     MenuProps={MenuProps}
                     onChange={(event) => setRole(event.target.value)}
                     renderValue={(selected) => {
@@ -357,116 +557,286 @@ const EditProfile = () => {
                 <OutlinedTextField
                   disabled
                   fullWidth
-                  label="Role"
                   value={userData?.role_label}
                   InputLabelProps={{ shrink: true }}
                 />
               )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditrole}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <OutlinedTextField
-                required
-                fullWidth
-                label="Username"
-                name="username"
-                value={userDetails?.username}
-                onChange={handleFieldChange}
-                InputLabelProps={{ shrink: true }}
-              />
+          
+
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">User Name :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                {editusername == true ? (
+                  <OutlinedTextField
+                    required
+                    focused
+                    fullWidth
+                    name="username"
+                    value={userDetails?.username}
+                    onChange={handleFieldChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                ) : (
+                  <OutlinedTextField
+                    required
+                    fullWidth
+                    name="username"
+                    value={userDetails?.username}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditusername}
+                >
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <FormControl fullWidth>
-                <InputLabel id="org-type">Organization</InputLabel>
-                <Select
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">Organization :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                {editorganization == true ? (
+                  <FormControl fullWidth>
+                    <Select
+                      disabled={
+                        loggedInUserData.role === "ADMIN" ? false : true
+                      }
+                      labelId="org-type"
+                      id="org-type_select"
+                      value={organization}
+                      MenuProps={MenuProps}
+                      onChange={(event) => setOrganization(event.target.value)}
+                      renderValue={(selected) => {
+                        return (
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                          >
+                            {selected.title}
+                          </Box>
+                        );
+                      }}
+                    >
+                      {orgList.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {item.title}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <OutlinedTextField
+                    required
+                    fullWidth
+                    name="username"
+                    value={userDetails?.username}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
                   disabled={loggedInUserData.role === "ADMIN" ? false : true}
-                  labelId="org-type"
-                  id="org-type_select"
-                  value={organization}
-                  label="Organization"
-                  MenuProps={MenuProps}
-                  onChange={(event) => setOrganization(event.target.value)}
-                  renderValue={(selected) => {
-                    return (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.title}
-                      </Box>
-                    );
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
                   }}
+                  onClick={handleEditOrganization}
                 >
-                  {orgList.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item.title}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <FormControl fullWidth>
-                <InputLabel id="availability-status-type">
-                  Availability Status
-                </InputLabel>
-                <Select
-                  labelId="availability-status-type"
-                  id="availability-status-type_select"
-                  value={availabilityStatus}
-                  label="Availability Status"
-                  MenuProps={MenuProps}
-                  name="availability_status"
-                  onChange={(event) =>
-                    setAvailabilityStatus(event.target.value)
-                  }
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6"> Availability Status :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                <FormControl fullWidth>
+                  <Select
+                    disabled={editavailabilityStatus == true ? false : true}
+                    labelId="availability-status-type"
+                    id="availability-status-type_select"
+                    value={availabilityStatus}
+                    MenuProps={MenuProps}
+                    name="availability_status"
+                    onChange={(event) =>
+                      setAvailabilityStatus(event.target.value)
+                    }
+                  >
+                    <MenuItem key={1} value={1}>
+                      true
+                    </MenuItem>
+                    <MenuItem key={0} value={0}>
+                      false
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
+                  }}
+                  onClick={handleEditavailabilityStatus}
                 >
-                  <MenuItem key={1} value={1}>
-                    true
-                  </MenuItem>
-                  <MenuItem key={0} value={0}>
-                    false
-                  </MenuItem>
-                </Select>
-              </FormControl>
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <FormControl fullWidth>
-                <InputLabel id="languages">Languages</InputLabel>
-                <Select
-                  multiple
-                  disabled={
-                    loggedInUserData.role === "ADMIN" ||
-                    loggedInUserData.role === "ORG_OWNER"
-                      ? false
-                      : true
-                  }
-                  labelId="languages"
-                  id="languages_select"
-                  value={language}
-                  name="languages"
-                  label="Languages"
-                  onChange={(e) => setLanguage(e.target.value)}
-                  MenuProps={MenuProps}
-                  renderValue={(selected) => {
-                    return (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => {
-                          return <Chip key={value.value} label={value.label} />;
-                        })}
-                      </Box>
-                    );
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              borderBottom="1px solid rgb(224 224 224)"
+              sx={{ p: 3 }}
+            >
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Typography variant="h6">Languages :</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                <FormControl fullWidth>
+                  <Select
+                    multiple
+                    disabled={
+                      loggedInUserData.role === "ADMIN" ||
+                      (loggedInUserData.role === "ORG_OWNER" &&
+                        editlanguage == true)
+                        ? false
+                        : true
+                    }
+                    labelId="languages"
+                    id="languages_select"
+                    value={language}
+                    name="languages"
+                    onChange={(e) => setLanguage(e.target.value)}
+                    MenuProps={MenuProps}
+                    renderValue={(selected) => {
+                      return (
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
+                          {selected.map((value) => {
+                            return (
+                              <Chip key={value.value} label={value.label} />
+                            );
+                          })}
+                        </Box>
+                      );
+                    }}
+                  >
+                    {supportedLanguages?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
+                        <Checkbox checked={language.indexOf(item) > -1} />
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "5px",
+                    lineHeight: "1px",
+                    fontSize: "16px",
+                    ml: 20,
+                    width: "120px",
                   }}
+                  onClick={handleEditlanguage}
                 >
-                  {supportedLanguages?.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      <Checkbox checked={language.indexOf(item) > -1} />
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <EditIcon style={{ width: "15px", marginRight: "5px" }} />
+                  Edit
+                </Button>
+              </Grid>
             </Grid>
+
+            <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          sx={{mt:7}}
+        >
+          <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                sx={{ borderRadius: "8px",width:"180px" }}
+              >
+                Submit
+              </Button>
+        </Grid>
 
             <Grid
               container
@@ -474,14 +844,7 @@ const EditProfile = () => {
               justifyContent="flex-end"
               style={{ marginTop: 20 }}
             >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                sx={{ borderRadius: "8px" }}
-              >
-                Update Profile
-              </Button>
+             
             </Grid>
 
             {loggedInUserData.role === "ADMIN" && (

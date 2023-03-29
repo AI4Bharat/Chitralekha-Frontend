@@ -288,6 +288,12 @@ const DatasetStyle = makeStyles({
     padding: "14px",
     // height: "15px",
   },
+  Changepassword:{
+    color: "gray", 
+    marginTop: "-20px" ,
+    fontFamily: "fangsong",
+    fontSize:"18px"
+  }
 });
 
 export default DatasetStyle;
