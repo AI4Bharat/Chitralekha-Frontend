@@ -94,7 +94,7 @@ const DeleteDialog = ({
         <Button
           variant="text"
           onClick={handleClose}
-          sx={{ lineHeight: "1", borderRadius: "6px" }}
+          sx={{ lineHeight: "1", borderRadius: "8px" }}
         >
           Cancel
         </Button>

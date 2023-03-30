@@ -6,11 +6,14 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
+  IconButton,
   Radio,
   RadioGroup,
+  Typography,
 } from "@mui/material";
 import React from "react";
 import CustomButton from "./Button";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ExportDialog = ({
   open,
@@ -35,7 +38,16 @@ const ExportDialog = ({
       aria-describedby="alert-dialog-description"
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">Export Subtitle</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">Export Subtitles</Typography>{" "}
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
       <DialogContent>
         <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
@@ -88,6 +100,7 @@ const ExportDialog = ({
             buttonVariant="standard"
             onClick={handleClose}
             label="Cancel"
+            style={{ borderRadius: "8px" }}
           />
           {isBulkTaskDownload ? (
             <CustomButton

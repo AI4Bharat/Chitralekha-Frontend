@@ -35,7 +35,7 @@ const RightPanel = ({ currentIndex }) => {
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
-  const player = useSelector(state => state.commonReducer.player);
+  const player = useSelector((state) => state.commonReducer.player);
 
   // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -262,13 +262,19 @@ const RightPanel = ({ currentIndex }) => {
             // onRedo={onRedo}
             // undoStack={undoStack}
             // redoStack={redoStack}
+            onSplitClick={onSplitClick}
+            showPopOver={showPopOver}
+            showSplit={true}
           />
         </Grid>
 
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {subtitles?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
+              <Box
+                id={`sub_${index}`}
+                style={{ borderBottom: "1px solid grey" }}
+              >
                 <Box className={classes.topBox}>
                   {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -283,9 +289,6 @@ const RightPanel = ({ currentIndex }) => {
                     onMergeClick={onMergeClick}
                     onDelete={onDelete}
                     addNewSubtitleBox={addNewSubtitleBox}
-                    onSplitClick={onSplitClick}
-                    showPopOver={showPopOver}
-                    showSplit={true}
                   />
 
                   {/* <TimeBoxes

@@ -1,4 +1,4 @@
-import React, { createRef, memo, useCallback, useEffect } from "react";
+import React, { createRef, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPlayer } from "../../../../redux/actions/Common";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
@@ -8,6 +8,8 @@ const VideoPanel = memo(
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
     const $video = createRef();
+
+    const [poster, setPoster] = useState("play.png");
 
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
     const fullscreenVideo = useSelector(
@@ -40,14 +42,16 @@ const VideoPanel = memo(
       if ($video.current) {
         if (isPlaying($video.current)) {
           $video.current.pause();
+          setPoster("play.png");
         } else {
           $video.current.play();
+          setPoster("pause.png");
         }
       }
     }, [$video]);
 
     return (
-      <div className={classes.videoPlayerParent}>
+      <div className={classes.videoPlayerParent} style={{display: videoDetails?.video?.audio_only ? "flex" : ""}}>
         <video
           onClick={onClick}
           src={
@@ -61,7 +65,7 @@ const VideoPanel = memo(
             margin:
               videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
           }}
-          poster={videoDetails?.video?.audio_only && "playpause.png"}
+          poster={videoDetails?.video?.audio_only && poster}
           ref={$video}
           className={classes.videoPlayer}
         />

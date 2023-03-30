@@ -20,6 +20,7 @@ import CheckIcon from "@mui/icons-material/Check";
 // import RedoIcon from '@mui/icons-material/Redo';
 import { fontMenu } from "../../../../utils/subtitleUtils";
 import { useSelector } from "react-redux";
+import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 
 const anchorOrigin = {
   vertical: "top",
@@ -45,6 +46,9 @@ const SettingsButtonComponent = ({
   // onRedo,
   // undoStack,
   // redoStack,
+  onSplitClick,
+  showPopOver,
+  showSplit,
 }) => {
   const classes = VideoLandingStyle();
 
@@ -59,7 +63,6 @@ const SettingsButtonComponent = ({
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
-  const subtitles = useSelector((state) => state.commonReducer.subtitles);
 
   const getDisbled = (flag) => {
     if (
@@ -80,6 +83,19 @@ const SettingsButtonComponent = ({
 
   return (
     <>
+      {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
+        <Tooltip title="Split Subtitle" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onSplitClick}
+            disabled={!showPopOver}
+            sx={{ marginRight: "5px" }}
+          >
+            <SplitscreenIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
       <Tooltip title="Settings" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}

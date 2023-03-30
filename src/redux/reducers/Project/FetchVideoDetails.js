@@ -11,11 +11,13 @@ const reducer = (state = initialState, action) => {
         ...state,
         data: action.payload,
       };
-    case C.CLEAR_VIDEO_DETAILS:
+
+    case C.CLEAR_STATE:
       return {
         ...state,
-        data: [],
+        data: action.payload,
       };
+
     default:
       return {
         ...state,

@@ -88,7 +88,7 @@ const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
               </IconButton>
             )}
 
-            <Typography sx={{ ml: 25 }} variant="h4" align="center">
+            <Typography variant="h4" display={"flex"} alignItems="center">
               Help
             </Typography>
             <IconButton
