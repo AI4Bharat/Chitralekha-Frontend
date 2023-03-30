@@ -133,7 +133,12 @@ export const onSubtitleDelete = (index) => {
   return copySub;
 };
 
-export const onSplit = (currentIndex, selectionStart,  timings = null, targetSelectionStart = null) => {
+export const onSplit = (
+  currentIndex,
+  selectionStart,
+  timings = null,
+  targetSelectionStart = null
+) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = copySubs(subtitles);
 
@@ -164,21 +169,21 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
       targetTextBlock.duration *
       (selectionStart / targetTextBlock.text.length)
     ).toFixed(3);
-  
+
     if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
       return;
-  
-    middleTime = DT.d2t(
-      targetTextBlock.startTime + parseFloat(splitDuration)
-    );
+
+    middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
   }
 
   copySub.splice(
     index,
     0,
     newSub({
-      start_time: middleTime ? subtitles[currentIndex].start_time : timings[0].start,
-      end_time: middleTime ??  timings[0].end,
+      start_time: middleTime
+        ? subtitles[currentIndex].start_time
+        : timings[0].start,
+      end_time: middleTime ?? timings[0].end,
       text: text1,
       ...(targetSelectionStart && { target_text: targetText1 }),
     })
@@ -189,7 +194,10 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
     0,
     newSub({
       start_time: middleTime ?? timings[1].start ?? timings[0].end,
-      end_time: middleTime || !timings[1].end ? subtitles[currentIndex].end_time :  timings[1].end,
+      end_time:
+        middleTime || !timings[1].end
+          ? subtitles[currentIndex].end_time
+          : timings[1].end,
       text: text2,
       ...(targetSelectionStart && { target_text: targetText2 }),
     })
@@ -297,7 +305,8 @@ export const onUndoAction = (lastAction) => {
           ? subtitles[lastAction.index].text.length / 2
           : lastAction.selectionStart,
         lastAction.timings,
-        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+        lastAction.targetSelectionStart >=
+          subtitles[lastAction.index].target_text.length
           ? subtitles[lastAction.index].target_text.length / 2
           : lastAction.targetSelectionStart
       ) ?? subtitles
@@ -326,7 +335,8 @@ export const onRedoAction = (lastAction) => {
           ? subtitles[lastAction.index].text.length / 2
           : lastAction.selectionStart,
         lastAction.timings,
-        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+        lastAction.targetSelectionStart >=
+          subtitles[lastAction.index].target_text.length
           ? subtitles[lastAction.index].target_text.length / 2
           : lastAction.targetSelectionStart
       ) ?? subtitles
@@ -363,7 +373,7 @@ export const base64toBlob = (base64) => {
   const blobUrl = URL.createObjectURL(blob);
 
   return blobUrl;
-}
+};
 
 export const getSubtitleRange = () => {
   const subtitles = store.getState().commonReducer.subtitles;
@@ -376,5 +386,15 @@ export const getSubtitleRange = () => {
     } else {
       return `${subtitles[0]?.id} - ${subtitles[0]?.id}`;
     }
+  }
+};
+
+export const getSubtitleRangeTranscript = () => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  
+  if (subtitles) {
+    return `${subtitles[0]?.id + 1} - ${
+      subtitles[subtitles.length - 1]?.id + 1
+    }`;
   }
 };
