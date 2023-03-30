@@ -624,7 +624,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         >
           <Pagination
             range={getSubtitleRange()}
-            rows={totalPages + 2}
+            rows={totalPages}
             previous={previous}
             next={next}
             onClick={onNavigationClick}

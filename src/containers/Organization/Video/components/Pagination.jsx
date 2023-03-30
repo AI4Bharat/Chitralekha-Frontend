@@ -5,12 +5,13 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/system";
+import { MenuProps } from "../../../../utils/utils";
 
 const Pagination = ({
   range,
@@ -21,13 +22,14 @@ const Pagination = ({
   jumpTo,
   durationError,
   completedCount,
+  current = 1,
 }) => {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(current);
 
+  const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
-  const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const xl = useMediaQuery("(min-width:1440px)");
 
   const getDisbled = (navigate = true) => {
@@ -35,7 +37,10 @@ const Pagination = ({
       return true;
     }
 
-    if (transcriptPayload?.source_type !== "MACHINE_GENERATED") {
+    if (
+      taskData?.task_type?.includes("VOICEOVER") &&
+      transcriptPayload?.source_type !== "MACHINE_GENERATED"
+    ) {
       if (durationError?.some((item) => item === true)) {
         return true;
       }
@@ -43,6 +48,10 @@ const Pagination = ({
 
     return false;
   };
+
+  useEffect(() => {
+    setPage(current);
+  }, [current]);
 
   return (
     <div
@@ -56,15 +65,16 @@ const Pagination = ({
         }),
         ...(transcriptPayload.source_type === "MACHINE_GENERATED" && {
           width: "auto",
-        })
+        }),
       }}
     >
       <Box>
-        {transcriptPayload.source_type !== "MACHINE_GENERATED" && (
-          <Typography variant="body2" margin="0 5px 0 0">
-            Completed: {completedCount} / {rows}
-          </Typography>
-        )}
+        {taskData?.task_type?.includes("VOICEOVER") &&
+          transcriptPayload.source_type !== "MACHINE_GENERATED" && (
+            <Typography variant="body2" margin="0 5px 0 0">
+              Completed: {completedCount} / {rows}
+            </Typography>
+          )}
       </Box>
 
       <Box display="flex" justifyContent="center" alignItems="center">
@@ -76,8 +86,15 @@ const Pagination = ({
           variant="standard"
           disableUnderline
           autoWidth
+          MenuProps={MenuProps}
           value={page}
           onChange={(event) => setPage(event.target.value)}
+          sx={{
+            "& .MuiSelect-select": {
+              fontSize: "0.875rem !important",
+              paddingBottom: "4px",
+            },
+          }}
         >
           {jumpTo.map((item) => {
             return (

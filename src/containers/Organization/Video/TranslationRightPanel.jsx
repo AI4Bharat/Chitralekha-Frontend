@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid } from "@mui/material";
+import { CardContent, Grid, useMediaQuery } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
@@ -15,6 +15,7 @@ import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
+  getSubtitleRangeTranscript,
   onMerge,
   onSubtitleDelete,
   timeChange,
@@ -25,19 +26,33 @@ import ButtonComponent from "./components/ButtonComponent";
 import { memo } from "react";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
+import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
+import Pagination from "./components/Pagination";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const xl = useMediaQuery("(min-width:1800px)");
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
-  const player = useSelector(state => state.commonReducer.player);
-  
+  const player = useSelector((state) => state.commonReducer.player);
+  const totalPages = useSelector((state) => state.commonReducer.totalPages);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const next = useSelector((state) => state.commonReducer.nextPage);
+  const previous = useSelector((state) => state.commonReducer.previousPage);
+  const completedCount = useSelector(
+    (state) => state.commonReducer.completedCount
+  );
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
+
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -49,12 +64,34 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
+  const [currentOffset, setCurrentOffset] = useState(1);
+  const [limit, setLimit] = useState("50");
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
+  useEffect(() => {
+    if (currentPage) {
+      setCurrentOffset(currentPage);
+    }
+  }, [currentPage]);
+
+  const getPayload = (offset = currentOffset, lim = limit) => {
+    const payloadObj = new FetchTranscriptPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+      offset,
+      lim
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
+  useEffect(() => {
+    getPayload(currentOffset, limit);
+  }, [limit]);
+
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
-    const sub = onSubtitleDelete(index); 
+    const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // setUndoStack([...undoStack, {
     //   type: "delete",
@@ -112,6 +149,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const saveTranscriptHandler = async (isFinal, isAutosave) => {
     const reqBody = {
       task_id: taskId,
+      offset: currentOffset,
+      limit: 50,
       payload: {
         payload: sourceText,
       },
@@ -219,11 +258,18 @@ const TranslationRightPanel = ({ currentIndex }) => {
     return 0;
   };
 
+  const onNavigationClick = (value) => {
+    getPayload(value, limit);
+  };
+
   return (
     <>
       {renderSnackBar()}
 
-      <Box className={classes.rightPanelParentBox}>
+      <Box
+        className={classes.rightPanelParentBox}
+        style={{ position: "relative" }}
+      >
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
@@ -238,6 +284,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
             // onRedo={onRedo}
             // undoStack={undoStack}
             // redoStack={redoStack}
+            limit={limit}
+            setLimit={setLimit}
           />
         </Grid>
 
@@ -247,7 +295,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
+              <Box
+                id={`sub_${index}`}
+                style={{ borderBottom: "1px solid grey" }}
+              >
                 <Box
                   display="flex"
                   paddingTop="16px"
@@ -395,6 +446,28 @@ const TranslationRightPanel = ({ currentIndex }) => {
               </Box>
             );
           })}
+        </Box>
+
+        <Box
+          className={classes.paginationBox}
+          style={{
+            ...(!xl && {
+              bottom: "-11%",
+            }),
+          }}
+        >
+          <Pagination
+            range={getSubtitleRangeTranscript()}
+            rows={totalPages}
+            previous={previous}
+            next={next}
+            onClick={onNavigationClick}
+            jumpTo={[...Array(transcriptPayload?.total_pages)].map(
+              (_, index) => index + 1
+            )}
+            completedCount={completedCount}
+            current={currentPage}
+          />
         </Box>
 
         {openConfirmDialog && (

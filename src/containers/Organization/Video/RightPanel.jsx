@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, memo } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid } from "@mui/material";
+import { CardContent, Grid, useMediaQuery } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
@@ -13,6 +13,7 @@ import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
+  getSubtitleRangeTranscript,
   onMerge,
   onSplit,
   onSubtitleChange,
@@ -24,18 +25,32 @@ import {
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
+import Pagination from "./components/Pagination";
+import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const xl = useMediaQuery("(min-width:1800px)");
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
+  const totalPages = useSelector((state) => state.commonReducer.totalPages);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const next = useSelector((state) => state.commonReducer.nextPage);
+  const previous = useSelector((state) => state.commonReducer.previousPage);
+  const completedCount = useSelector(
+    (state) => state.commonReducer.completedCount
+  );
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
 
   // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -52,23 +67,16 @@ const RightPanel = ({ currentIndex }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
+  const [currentOffset, setCurrentOffset] = useState(1);
+  const [limit, setLimit] = useState("50");
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
-  // useEffect(() => {
-  //   if (subtitles?.length === 0) {
-  //     const defaultSubs = [
-  //       newSub({
-  //         start_time: "00:00:00.000",
-  //         end_time: "00:00:00.000",
-  //         text: "Please type here..",
-  //       }),
-  //     ];
-  //     dispatch(setSubtitles(defaultSubs, C.SUBTITLES));
-  //   } else {
-  //     setSourceText(subtitles);
-  //   }
-  // }, [subtitles]);
+  useEffect(() => {
+    if (currentPage) {
+      setCurrentOffset(currentPage);
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     const subtitleScrollEle = document.getElementById("subTitleContainer");
@@ -76,6 +84,20 @@ const RightPanel = ({ currentIndex }) => {
       .querySelector(`#sub_${currentIndex}`)
       ?.scrollIntoView(true, { block: "start" });
   }, [currentIndex]);
+
+  const getPayload = (offset = currentOffset, lim = limit) => {
+    const payloadObj = new FetchTranscriptPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+      offset,
+      lim
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
+  useEffect(() => {
+    getPayload(currentOffset, limit)
+  }, [limit])
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -131,8 +153,11 @@ const RightPanel = ({ currentIndex }) => {
     payload = subtitles
   ) => {
     setLoading(true);
+
     const reqBody = {
       task_id: taskId,
+      offset: currentOffset,
+      limit: 50,
       payload: {
         payload: payload,
       },
@@ -244,10 +269,17 @@ const RightPanel = ({ currentIndex }) => {
     return 0;
   };
 
+  const onNavigationClick = (value) => {
+    getPayload(value, limit);
+  };
+
   return (
     <>
       {renderSnackBar()}
-      <Box className={classes.rightPanelParentBox}>
+      <Box
+        className={classes.rightPanelParentBox}
+        style={{ position: "relative" }}
+      >
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
@@ -265,6 +297,8 @@ const RightPanel = ({ currentIndex }) => {
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
             showSplit={true}
+            limit={limit}
+            setLimit={setLimit}
           />
         </Grid>
 
@@ -386,6 +420,28 @@ const RightPanel = ({ currentIndex }) => {
               </Box>
             );
           })}
+        </Box>
+
+        <Box
+          className={classes.paginationBox}
+          style={{
+            ...(!xl && {
+              bottom: "-11%",
+            }),
+          }}
+        >
+          <Pagination
+            range={getSubtitleRangeTranscript()}
+            rows={totalPages}
+            previous={previous}
+            next={next}
+            onClick={onNavigationClick}
+            jumpTo={[...Array(transcriptPayload?.total_pages)].map(
+              (_, index) => index + 1
+            )}
+            completedCount={completedCount}
+            current={currentPage}
+          />
         </Box>
 
         {openConfirmDialog && (
