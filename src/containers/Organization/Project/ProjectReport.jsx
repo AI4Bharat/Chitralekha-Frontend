@@ -111,6 +111,14 @@ const ProjectReport = ({}) => {
             filter: false,
             sort: false,
             align: "center",
+            setCellHeaderProps: () => ({
+              style: {
+                height: "32px",
+                fontSize: "16px",
+                padding: "16px",
+              },
+            }),
+            setCellProps: () => ({ style: {  height: "40px" } }),
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },

@@ -261,7 +261,7 @@ const Timeline = ({ currentTime, playing }) => {
 
   return (
     <Box className={classes.timeLineParent} ref={$footer}>
-      {player && videoDetails.direct_video_url && (
+      {player && (videoDetails.direct_video_url || videoDetails.direct_audio_url) && (
         <>
           <Progress
             waveform={waveform}
