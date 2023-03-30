@@ -17,6 +17,7 @@ import {
   Tooltip,
   IconButton,
   Button,
+  Divider,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -184,9 +185,7 @@ const TaskList = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      const task = taskList.tasks_list.filter(
-        (task) => task.id === id
-      )[0];
+      const task = taskList.tasks_list.filter((task) => task.id === id)[0];
 
       const link = document.createElement("a");
       link.href = resp.azure_url;
@@ -293,7 +292,7 @@ const TaskList = () => {
       const task = taskList.tasks_list.filter(
         (task) => task.id === taskdata
       )[0];
-      
+
       let newBlob;
       if (exportTranscription === "docx") {
         newBlob = new Blob([resp], {
@@ -1190,7 +1189,7 @@ const TaskList = () => {
         const taskIds = currentSelectedTasks.map((item) => item.id);
         handleBulkDelete(taskIds, false);
       },
-      style: { backgroundColor: "red" },
+      style: { color: "#d32f2f" },
     },
     {
       title: "Bulk Task Dowload",
@@ -1213,12 +1212,20 @@ const TaskList = () => {
           </Tooltip>
         </Button>
 
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          className={classes.searchStyle}
-        >
+        <div style={{ display: "inline", verticalAlign: "middle" }}>
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn && (
+              <Divider
+                orientation="vertical"
+                sx={{
+                  display: "inline",
+                  margin: "0 10px",
+                  borderColor: "rgba(0, 0, 0, 0.54)",
+                }}
+              />
+            )}
+
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
@@ -1235,9 +1242,7 @@ const TaskList = () => {
                 </Tooltip>
               );
             })}
-
-          {/* <Search /> */}
-        </Box>
+        </div>
       </>
     );
   };

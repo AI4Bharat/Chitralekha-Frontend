@@ -5,6 +5,7 @@ import {
   DialogActions,
   DialogTitle,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -12,6 +13,7 @@ import CustomButton from "../common/Button";
 import OutlinedTextField from "../common/OutlinedTextField";
 import Snackbar from "../common/Snackbar";
 import VerifyUpdateEmailAPI from "../redux/actions/api/User/VerifyUpdateEmail";
+import CloseIcon from "@mui/icons-material/Close";
 
 const UpdateEmailDialog = ({
   isOpen,
@@ -69,9 +71,17 @@ const UpdateEmailDialog = ({
       maxWidth="sm"
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle style={{ paddingTop: "1.25rem" }}>
-        <Typography variant="h4">Verify Email</Typography>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">Verify Email</Typography>{" "}
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
+
       <Grid container direction="column" sx={{ padding: "20px" }}>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Typography gutterBottom sx={{ fontSize: "1rem" }}>

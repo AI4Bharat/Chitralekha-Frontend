@@ -6,6 +6,7 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
+  IconButton,
   InputLabel,
   MenuItem,
   Radio,
@@ -13,6 +14,7 @@ import {
   Select,
   TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +23,7 @@ import APITransport from "../redux/actions/apitransport/apitransport";
 import Loader from "./Spinner";
 import { MenuProps } from "../utils/utils";
 import { Box } from "@mui/system";
+import CloseIcon from "@mui/icons-material/Close";
 
 const voiceOptions = [
   {
@@ -60,6 +63,13 @@ const CreateVideoDialog = ({
     (state) => state.getSupportedLanguages.data
   );
 
+  const handleClear = () => {
+    setLang("");
+    setVideoLink("");
+    setVoice("");
+    setVideoDescription("");
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -69,7 +79,17 @@ const CreateVideoDialog = ({
       maxWidth={"sm"}
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">Create New Video/Audio</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">Create New Video/Audio</Typography>{" "}
+        <IconButton
+          aria-label="close"
+          onClick={handleUserDialogClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent style={{ paddingTop: 4 }}>
         <FormControl fullWidth>
           <RadioGroup
@@ -156,6 +176,7 @@ const CreateVideoDialog = ({
           sx={{ mb: 3, mt: 3 }}
         />
       </DialogContent>
+
       <DialogActions
         style={{
           display: "flex",
@@ -165,7 +186,21 @@ const CreateVideoDialog = ({
         }}
       >
         <Box>
-          <Button onClick={handleUserDialogClose}>Close</Button>
+          <Button
+            sx={{ borderRadius: 2, lineHeight: 1 }}
+            onClick={handleUserDialogClose}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="outlined"
+            sx={{ borderRadius: 2, margin: "0 10px"  }}
+            onClick={() => handleClear()}
+          >
+            Clear
+          </Button>
+
           <Button
             variant="contained"
             sx={{ borderRadius: 2, lineHeight: 1 }}
