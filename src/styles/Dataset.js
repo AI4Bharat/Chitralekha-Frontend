@@ -260,14 +260,15 @@ const DatasetStyle = makeStyles({
   },
 
   createTaskBtn: {
-    backgroundColor: "#2C2799",
+    backgroundColor: "rgba(44, 39, 153, 0.04)",
     borderRadius: "50%",
-    color: "#fff",
-    marginRight: "10px",
-    marginBottom: "12px",
-    "&:hover": {
-      backgroundColor: "#271e4f",
-    },
+    color: "#2C2799",
+    margin: "0 5px",
+    padding: "4px",
+    verticalAlign: "sub",
+    "& .MuiSvgIcon-root": {
+      fontSize: "1.3rem"
+    }
   },
   searchStyle:{
     position: "absolute",

@@ -63,7 +63,7 @@ const CustomMenuComponent = ({
         container={contianer}
       >
         {settingsMenu.map((item, index) => (
-          <MenuItem key={index} onClick={(event) => item.onClick(event)}>
+          <MenuItem key={index} onMouseOver={(event) => item.onClick(event)}>
             <div
               style={{
                 display: "flex",
@@ -219,7 +219,7 @@ const CustomMenuComponent = ({
         }}
         open={Boolean(anchorElPlacement)}
         onClose={() => {
-          setAnchorElTheme(null);
+          setAnchorElPlacement(null);
         }}
         container={contianer}
       >
