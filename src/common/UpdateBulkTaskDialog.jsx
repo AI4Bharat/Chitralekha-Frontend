@@ -13,13 +13,16 @@ import {
   DialogTitle,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CustomizedSnackbars from "../common/Snackbar";
+import CloseIcon from "@mui/icons-material/Close";
 
 //Styles
 import ProjectStyle from "../styles/ProjectStyle";
@@ -117,6 +120,13 @@ const UpdateBulkTaskDialog = ({
     );
   };
 
+  const handleClear = () => {
+    setUser("");
+    setDescription("");
+    setPriority("");
+    setDate(moment().format());
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -125,12 +135,22 @@ const UpdateBulkTaskDialog = ({
         open={open}
         onClose={handleUserDialogClose}
         close
-        maxWidth={"md"}
+        maxWidth={"sm"}
         PaperProps={{ style: { borderRadius: "10px" } }}
       >
-        <DialogTitle variant="h4">
-          {isBulk ? "Update Tasks" : "Update Task"}
+        <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+          <Typography variant="h4">
+            {isBulk ? "Update Tasks" : "Update Task"}
+          </Typography>{" "}
+          <IconButton
+            aria-label="close"
+            onClick={handleUserDialogClose}
+            sx={{ marginLeft: "auto" }}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
+
         <DialogContent style={{ paddingTop: 4 }}>
           <Grid
             container
@@ -213,13 +233,27 @@ const UpdateBulkTaskDialog = ({
         </DialogContent>
 
         <DialogActions style={{ padding: "24px 24px 24px 0" }}>
-          <Button autoFocus onClick={handleUserDialogClose}>
-            Close
+          <Button
+            autoFocus
+            onClick={handleUserDialogClose}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancel
           </Button>
+
+          <Button
+            variant="outlined"
+            sx={{ borderRadius: 2, marginRight: "5px" }}
+            onClick={() => handleClear()}
+          >
+            Clear
+          </Button>
+
           <Button
             autoFocus
             variant="contained"
             sx={{ borderRadius: 2 }}
+            disabled={!user}
             onClick={() => submitHandler()}
           >
             {isBulk ? "Update Tasks" : "Update Task"}

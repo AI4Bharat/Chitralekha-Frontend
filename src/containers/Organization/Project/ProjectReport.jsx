@@ -122,6 +122,13 @@ const ProjectReport = ({}) => {
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },
+            setCellHeaderProps: () => ({
+              style: {
+                height: "30px",
+                fontSize: "16px",
+                padding: "16px",
+              },
+            }),
           },
         });
         tempSelected.push(el[0]);
@@ -182,7 +189,7 @@ const ProjectReport = ({}) => {
     <>
       <Grid container columnSpacing={3} rowSpacing={2} mb={2}>
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth >
             <InputLabel id="demo-simple-select-label" sx={{ fontSize: "18px" }}>
               Select Report Type
             </InputLabel>
@@ -203,7 +210,7 @@ const ProjectReport = ({}) => {
         </Grid>
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
           {reportsLevel === "Language" && (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth >
               <InputLabel
                 id="demo-simple-select-label"
                 sx={{ fontSize: "18px" }}

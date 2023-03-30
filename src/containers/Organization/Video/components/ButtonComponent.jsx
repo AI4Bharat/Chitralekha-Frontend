@@ -23,9 +23,6 @@ const ButtonComponent = ({
   onMergeClick,
   onDelete,
   addNewSubtitleBox,
-  onSplitClick,
-  showPopOver,
-  showSplit,
   handleStartRecording,
   handleStopRecording,
   recordAudio,
@@ -47,18 +44,6 @@ const ButtonComponent = ({
 
   return (
     <>
-      {!taskData.task_type.includes("VOICEOVER") && showSplit && (
-        <Tooltip title="Split Subtitle" placement="bottom">
-          <IconButton
-            className={classes.optionIconBtn}
-            onClick={onSplitClick}
-            disabled={!showPopOver}
-          >
-            <SplitscreenIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
       {!taskData.task_type.includes("VOICEOVER") && lastItem && (
         <Tooltip title="Merge Next" placement="bottom">
           <IconButton

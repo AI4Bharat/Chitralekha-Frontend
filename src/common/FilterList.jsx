@@ -146,7 +146,7 @@ const FilterList = (props) => {
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
-              Source Language :
+              Source Language
             </Typography>
             <FormGroup>
               { taskList?.src_languages_list?.map((type) => {
@@ -179,7 +179,7 @@ const FilterList = (props) => {
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
-              Target Language :
+              Target Language
             </Typography>
             <FormGroup>
               { taskList?.target_languages_list?.map((type) => {
@@ -209,7 +209,7 @@ const FilterList = (props) => {
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
-              Status :
+              Status
             </Typography>
             <FormGroup>
               {TaskStatus?.map((type) => {
@@ -234,7 +234,7 @@ const FilterList = (props) => {
       
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography variant="body2" sx={{ mr: 5, mb:1,fontWeight: "900" }}>
-              Task Type :
+              Task Type
             </Typography>
             <FormGroup>
               {TaskTypes?.map((type) => {

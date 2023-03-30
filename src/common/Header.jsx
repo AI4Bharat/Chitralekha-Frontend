@@ -239,7 +239,7 @@ const Header = () => {
                   className={`${classes.icon} help`}
                 >
                   <Tooltip title="Task Queue Status">
-                    <HourglassBottomIcon color="primary" className={classes.icon} />
+                    <HourglassBottomIcon color="primary" className={classes.icon2}/>
                   </Tooltip>
                 </IconButton>
 

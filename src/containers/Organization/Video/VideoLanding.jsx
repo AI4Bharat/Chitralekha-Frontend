@@ -72,6 +72,10 @@ const VideoLanding = () => {
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
     dispatch(APITransport(apiObj));
+
+    return () => {
+      dispatch({ type: C.CLEAR_STATE, payload: [] });
+    };
   }, []);
 
   useEffect(() => {
@@ -267,8 +271,8 @@ const VideoLanding = () => {
                   onClick={() => handleFullscreenVideo()}
                   variant="contained"
                   style={{
-                    bottom: fullscreenVideo ? "4%" : "",
-                    right: fullscreenVideo ? "18%" : "",
+                    bottom: fullscreenVideo ? "2%" : "",
+                    right: fullscreenVideo ? "2%" : "",
                   }}
                 >
                   {fullscreenVideo ? (

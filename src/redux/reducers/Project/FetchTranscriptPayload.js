@@ -12,6 +12,12 @@ const reducer = (state = initialState, action) => {
         data: action.payload,
       };
 
+    case C.CLEAR_STATE:
+      return {
+        ...state,
+        data: action.payload,
+      };
+
     default:
       return {
         ...state,
