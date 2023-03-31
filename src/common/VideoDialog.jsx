@@ -305,7 +305,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
             <Button
               variant="contained"
-              sx={{ display: "flex", borderRadius: "8px", m: "24px auto" }}
+              sx={{ display: "flex", borderRadius: "8px", m: "24px auto 0 0" }}
               onClick={() => updateVideoHandler()}
             >
               Update Details

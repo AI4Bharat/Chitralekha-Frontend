@@ -136,7 +136,10 @@ const SettingsButtonComponent = ({
             className={classes.rightPanelBtnGrp}
             onClick={onSplitClick}
             disabled={!showPopOver}
-            sx={{ marginRight: "5px" }}
+            sx={{
+              marginRight: "5px",
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
           >
             <SplitscreenIcon />
           </IconButton>

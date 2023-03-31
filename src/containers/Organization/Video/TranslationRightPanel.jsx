@@ -297,12 +297,17 @@ const TranslationRightPanel = ({ currentIndex }) => {
             return (
               <Box
                 id={`sub_${index}`}
-                style={{ borderBottom: "1px solid grey" }}
+                style={{
+                  backgroundColor:
+                    index % 2 === 0
+                      ? "rgb(214, 234, 248)"
+                      : "rgb(233, 247, 239)",
+                }}
               >
                 <Box
                   display="flex"
                   paddingTop="16px"
-                  sx={{ paddingX: "20px", justifyContent: "space-around" }}
+                  sx={{ paddingX: "20px", justifyContent: "center" }}
                 >
                   {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -328,7 +333,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                 </Box>
 
                 <CardContent
-                  sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }}
+                  sx={{
+                    display: "flex",
+                    padding: "5px 0",
+                    borderBottom: 1,
+                    borderColor: "grey",
+                  }}
                   onClick={() => {
                     if (player) {
                       player.pause();
