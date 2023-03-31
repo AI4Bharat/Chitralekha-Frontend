@@ -21,6 +21,7 @@ const VideoLandingStyle = makeStyles({
   videoNameBox: {
     display: "flex",
     flexDirection: "row",
+    backgroundColor: "rgb(255 158 87 / 14%)",
   },
 
   videoName: {
@@ -388,8 +389,11 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     direction: "row",
     flexWrap: "wrap",
-    margin: "23.5px 0",
+    padding: "23.5px 0 29.5px 0",
     justifyContent: "center",
+    backgroundColor: "rgb(255 158 87 / 14%)",
+    borderLeft: "1px solid grey",
+    borderBottom: "1px solid grey",
   },
 
   rightPanelParentBox: {
@@ -409,7 +413,7 @@ const VideoLandingStyle = makeStyles({
   },
 
   rightPanelDivider: {
-    border: "1px solid lightgray",
+    border: "1px solid grey",
     height: "auto",
     margin: "0 5px",
   },
@@ -421,7 +425,6 @@ const VideoLandingStyle = makeStyles({
     overflowY: "scroll",
     overflowX: "hidden",
     backgroundColor: "black",
-    marginTop: "5px",
     width: "100%",
     textAlign: "center",
     boxSizing: "border-box",
@@ -438,7 +441,7 @@ const VideoLandingStyle = makeStyles({
 
   cardContent: {
     padding: "5px 0",
-    borderBottom: "2px solid",
+    borderBottom: "1px solid grey",
     alignItems: "center",
   },
 
