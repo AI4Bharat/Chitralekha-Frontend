@@ -392,8 +392,6 @@ const VideoLandingStyle = makeStyles({
     padding: "23.5px 0 29.5px 0",
     justifyContent: "center",
     backgroundColor: "rgb(255 158 87 / 14%)",
-    borderLeft: "1px solid grey",
-    borderBottom: "1px solid grey",
   },
 
   rightPanelParentBox: {
