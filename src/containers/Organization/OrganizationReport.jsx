@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { getOptions } from "../../utils/tableUtils";
+import { languagelevelStats, reportLevels, snakeToTitleCase } from "../../utils/utils";
 
 //Themes
+import tableTheme from "../../theme/tableTheme";
+import DatasetStyle from "../../styles/Dataset";
+
+//Components
 import {
   ThemeProvider,
-  Tooltip,
-  IconButton,
   Box,
   FormControl,
   InputLabel,
@@ -14,27 +18,12 @@ import {
   MenuItem,
   Grid,
 } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
-
-//Components
+import Search from "../../common/Search";
 import MUIDataTable from "mui-datatables";
-import Loader from "../../common/Spinner";
+
+//APIs
 import FetchOrganizationReportsAPI from "../../redux/actions/api/Organization/FetchOrganizationReports";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import { snakeToTitleCase } from "../../utils/utils";
-import Search from "../../common/Search";
-import DatasetStyle from "../../styles/Dataset";
-
-const reportLevels = [
-  { reportLevel: "User" },
-  { reportLevel: "Language" },
-  { reportLevel: "Project" },
-];
-
-const languagelevelStats = [
-  { lable: "Transcript", value: "transcript_stats" },
-  { lable: "Translation", value: "translation_stats" },
-];
 
 const OrganizationReport = ({}) => {
   const { id } = useParams();
@@ -169,32 +158,6 @@ const OrganizationReport = ({}) => {
     );
   };
 
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No records",
-      },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: "none",
-    search: true,
-    jumpToPage: true,
-    // customToolbar: renderToolBar,
-  };
-
   return (
     <>
       <Grid container columnSpacing={3} rowSpacing={2} mb={2}>
@@ -251,7 +214,7 @@ const OrganizationReport = ({}) => {
           title=""
           data={pageSearch()}
           columns={columns}
-          options={options}
+          options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>
     </>

@@ -1,10 +1,13 @@
 // OrgLevelTaskList
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { getOptions } from "../../utils/tableUtils";
+import UserMappedByRole from "../../utils/UserMappedByRole";
+import C from "../../redux/constants";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
@@ -15,38 +18,27 @@ import {
   ThemeProvider,
   Box,
   Grid,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
   Divider,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
   Tooltip,
   IconButton,
   Button,
-  DialogTitle,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../common/Button";
 import CustomizedSnackbars from "../../common/Snackbar";
-import Search from "../../common/Search";
+import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
+import ViewTaskDialog from "../../common/ViewTaskDialog";
+import FilterList from "../../common/FilterList";
+import ExportDialog from "../../common/ExportDialog";
+
+//Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PreviewIcon from "@mui/icons-material/Preview";
-import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../common/ViewTaskDialog";
-import Loader from "../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import UserMappedByRole from "../../utils/UserMappedByRole";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import FilterList from "../../common/FilterList";
-import C from "../../redux/constants";
 
 //Apis
 import APITransport from "../../redux/actions/apitransport/apitransport";
@@ -66,7 +58,6 @@ import FetchOrgTaskList from "../../redux/actions/api/Organization/FetchOrgTaskL
 import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
 import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
-import ExportDialog from "../../common/ExportDialog";
 import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceoverTask";
 
@@ -74,7 +65,6 @@ const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -115,11 +105,11 @@ const OrgLevelTaskList = () => {
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
+  const [options, setOptions] = useState({});
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-  const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -128,11 +118,12 @@ const OrgLevelTaskList = () => {
     (state) => state.getTranslationExportTypes.data.export_types
   );
 
-  const FetchTaskList = () => {
+  const fetchTaskList = () => {
     setLoading(true);
     const apiObj = new FetchOrgTaskList(orgId);
     dispatch(APITransport(apiObj));
   };
+
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
@@ -162,7 +153,7 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     if (orgId) {
-      FetchTaskList();
+      fetchTaskList();
     }
   }, [orgId]);
 
@@ -412,7 +403,7 @@ const OrgLevelTaskList = () => {
       });
       setOpenDialog(false);
       setLoading(false);
-      FetchTaskList();
+      fetchTaskList();
     } else {
       setOpenDialog(true);
       setDeleteMsg(resp.message);
@@ -1108,7 +1099,7 @@ const OrgLevelTaskList = () => {
       });
       setOpenDialog(false);
       setLoading(false);
-      FetchTaskList();
+      fetchTaskList();
     } else {
       setDeleteTaskid(resp.task_ids);
       setOpenDialog(true);
@@ -1167,7 +1158,7 @@ const OrgLevelTaskList = () => {
                 }}
               />
             )}
-            
+
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
@@ -1189,39 +1180,25 @@ const OrgLevelTaskList = () => {
     );
   };
 
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: loading ? <Loader /> : "No tasks assigned to you",
+  useEffect(() => {
+    let option = getOptions(loading);
+
+    option = {
+      ...option,
+      selectableRows: roles.filter((role) => role.value === userData?.role)[0]
+        ?.showSelectCheckbox
+        ? "multiple"
+        : "none",
+      selectToolbarPlacement: "none",
+      rowsSelected: rows,
+      customToolbar: renderToolBar,
+      onRowSelectionChange: (currentRow, allRow) => {
+        handleRowClick(currentRow, allRow);
       },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: roles.filter((role) => role.value === userData?.role)[0]
-      ?.showSelectCheckbox
-      ? "multiple"
-      : "none",
-    search: true,
-    jumpToPage: true,
-    selectToolbarPlacement: "none",
-    rowsSelected: rows,
-    customToolbar: renderToolBar,
-    onRowSelectionChange: (currentRow, allRow) => {
-      handleRowClick(currentRow, allRow);
-    },
-  };
+    };
+
+    setOptions(option);
+  }, [loading]);
 
   const renderSnackBar = () => {
     return (
@@ -1269,7 +1246,7 @@ const OrgLevelTaskList = () => {
         message: resp?.message,
         variant: "success",
       });
-      FetchTaskList();
+      fetchTaskList();
       setLoading(false);
       setOpenEditTaskDialog(false);
     } else {

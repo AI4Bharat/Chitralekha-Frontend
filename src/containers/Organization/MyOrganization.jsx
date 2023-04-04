@@ -1,42 +1,29 @@
 //My Organization
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { roles } from "../../utils/utils";
 
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
 import ProjectListAPI from "../../redux/actions/api/Project/ProjectList";
-import FetchUserListAPI from "../../redux/actions/api/User/FetchUserList";
-import ProjectList from "./ProjectList";
-import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
 import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers";
-
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import { roles } from "../../utils/utils";
+import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 
 //Styles
 import DatasetStyle from "../../styles/Dataset";
 
 //Components
-import {
-  Box,
-  Card,
-  CircularProgress,
-  Grid,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
 import Button from "../../common/Button";
 import UserList from "./UserList";
-import OutlinedTextField from "../../common/OutlinedTextField";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
-import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 import CustomizedSnackbars from "../../common/Snackbar";
 import Loader from "../../common/Spinner";
 import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
+import ProjectList from "./ProjectList";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -61,7 +48,6 @@ const MyOrganization = () => {
   const navigate = useNavigate();
 
   const [value, setValue] = useState(0);
-  const [organizationName, setOrganizationName] = useState("");
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("");
@@ -83,20 +69,11 @@ const MyOrganization = () => {
     dispatch(APITransport(userObj));
   };
 
-  const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
-    dispatch(APITransport(loggedInUserObj));
-  };
-
   const getProjectList = (orgId) => {
     const userObj = new ProjectListAPI(orgId);
     dispatch(APITransport(userObj));
   };
 
-  const getUserList = () => {
-    const userObj = new FetchUserListAPI();
-    dispatch(APITransport(userObj));
-  };
   const getOrganizatioUsersList = () => {
     const userObj = new FetchOrganizatioUsersAPI(id);
     dispatch(APITransport(userObj));
@@ -104,46 +81,12 @@ const MyOrganization = () => {
 
   useEffect(() => {
     getOrganizationDetails();
-    // getUserList();
-    // getLoggedInUserData()
     getOrganizatioUsersList();
   }, []);
 
   useEffect(() => {
     userData?.organization?.id && getProjectList(userData?.organization?.id);
   }, [userData]);
-
-  useEffect(() => {
-    setOrganizationName(organizationDetails?.title);
-  }, [organizationDetails]);
-
-  const handleOrganizationUpdate = async () => {
-    const userObj = new EditOrganizationDetailsAPI(
-      id,
-      organizationName,
-      organizationDetails?.email_domain_name
-    );
-    //dispatch(APITransport(userObj));
-    const res = await fetch(userObj.apiEndPoint(), {
-      method: "PUT",
-      body: JSON.stringify(userObj.getBody()),
-      headers: userObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
-  };
 
   const addNewMemberHandler = async () => {
     const data = {
@@ -199,11 +142,10 @@ const MyOrganization = () => {
         <Typography variant="h2" gutterBottom component="div">
           {organizationDetails?.title}
         </Typography>
-      
+
         {/* <Typography variant="body1" gutterBottom component="div">
           Created by : {`${organizationDetails?.created_by?.first_name}`}
         </Typography> */}
-       
       </>
     );
   };
@@ -224,10 +166,13 @@ const MyOrganization = () => {
 
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.canAddMembers && (
-            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />)}
+              <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
 
             {roles.filter((role) => role.value === userData?.role)[0]
-              ?.orgSettingVisible && (  <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />)}
+              ?.orgSettingVisible && (
+              <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
 
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.orgSettingVisible && (
@@ -303,7 +248,7 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <OrganizationReport  />
+              <OrganizationReport />
             </div>
           </Box>
         </TabPanel>
