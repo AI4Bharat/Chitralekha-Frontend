@@ -21,7 +21,7 @@ const VideoLandingStyle = makeStyles({
   videoNameBox: {
     display: "flex",
     flexDirection: "row",
-    backgroundColor: "rgb(255 158 87 / 14%)",
+    backgroundColor: "rgba(254, 191, 44, 0.1)",
   },
 
   videoName: {
@@ -389,9 +389,9 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     direction: "row",
     flexWrap: "wrap",
-    padding: "23.5px 0 29.5px 0",
+    padding: "26.5px 0",
     justifyContent: "center",
-    backgroundColor: "rgb(255 158 87 / 14%)",
+    backgroundColor: "rgba(254, 191, 44, 0.1)",
   },
 
   rightPanelParentBox: {
@@ -439,7 +439,7 @@ const VideoLandingStyle = makeStyles({
 
   cardContent: {
     padding: "5px 0",
-    borderBottom: "1px solid grey",
+    borderBottom: "1px solid lightgray",
     alignItems: "center",
   },
 
