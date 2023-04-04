@@ -1,37 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { getOptions } from "../../utils/tableUtils";
+import { Link, useParams } from "react-router-dom";
+import moment from "moment/moment";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import { useSelector } from "react-redux";
+
+//Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
-import {
-  ThemeProvider,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Tooltip,
-  IconButton,
-  Box,
-} from "@mui/material";
-import CustomButton from "../../common/Button";
+import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
-import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 import CustomizedSnackbars from "../../common/Snackbar";
-import Search from "../../common/Search";
-import moment from "moment/moment";
-import Loader from "../../common/Spinner";
 import DeleteDialog from "../../common/DeleteDialog";
-import DatasetStyle from "../../styles/Dataset";
+
+//APIs
+import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
-  const classes = DatasetStyle();
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -198,42 +188,6 @@ const ProjectList = ({ data, removeProjectList }) => {
       },
     },
   ];
-  const renderToolBar = () => {
-    return (
-      <>
-      {/* <Box className={classes.searchStyle}>
-        <Search />
-      </Box> */}
-      </>
-      
-    );
-  };
-
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No records",
-      },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: "none",
-    search: true,
-    jumpToPage: true,
-    customToolbar: renderToolBar,
-  };
 
   const renderSnackBar = () => {
     return (
@@ -252,7 +206,11 @@ const ProjectList = ({ data, removeProjectList }) => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={result} columns={columns} options={options} />
+        <MUIDataTable
+          data={result}
+          columns={columns}
+          options={getOptions(apiStatus.progress)}
+        />
       </ThemeProvider>
       {renderSnackBar()}
 

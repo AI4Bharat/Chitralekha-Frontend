@@ -1,10 +1,12 @@
+import React, { useState, useEffect }  from "react";
+import { getOptions } from "../../utils/tableUtils";
+
+//Components
 import MUIDataTable from "mui-datatables";
-import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
 import CustomizedSnackbars from "../../common/Snackbar";
+
+//APIs
 import FetchTaskQueueStatusAPI from "../../redux/actions/api/Organization/FetchTaskQueueStatus";
-import Loader from "../../common/Spinner";
 
 const TaskQueueStatus = () => {
   const [loading, setLoading] = useState(true);
@@ -67,31 +69,6 @@ const TaskQueueStatus = () => {
     fetchTaskQueueStatusList();
     return () => setTableData([]);
   }, []);
-
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: loading ? <Loader /> : "No records",
-      },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: "none",
-    search: true,
-    jumpToPage: true,
-  };
 
   const columns = [
     {
@@ -175,7 +152,7 @@ const TaskQueueStatus = () => {
         title="Tasks Queue Status"
         data={tableData}
         columns={columns}
-        options={options}
+        options={getOptions(loading)}
       />
       {renderSnackBar()}
     </div>
