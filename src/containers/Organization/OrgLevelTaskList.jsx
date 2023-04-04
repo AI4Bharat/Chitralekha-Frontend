@@ -687,6 +687,7 @@ const OrgLevelTaskList = () => {
             item.task_type_label,
             item.video_name,
             moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+            item.source_type,
             item.src_language,
             item.src_language_label,
             item.target_language,
@@ -811,6 +812,23 @@ const OrgLevelTaskList = () => {
           );
         },
       },
+    },
+    {
+      name: "source_type",
+      label: "Source Type",
+      options: {
+        filter: false,
+        sort: false,
+        display: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          style: {
+            height: "30px",
+            fontSize: "16px",
+            padding: "16px",
+          },
+        }),
+      }
     },
     {
       name: "src_language",
