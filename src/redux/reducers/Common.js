@@ -12,6 +12,7 @@ const initialState = {
   nextPage: "",
   previousPage: "",
   completedCount: 0,
+  limit: 50,
 };
 
 const reducer = (state = initialState, action) => {
@@ -73,6 +74,12 @@ const reducer = (state = initialState, action) => {
     case C.COMPLETED_COUNT: {
       let result = {...state};
       result.completedCount = action.payload;
+      return result;
+    }
+
+    case C.LIMIT: {
+      let result = {...state};
+      result.limit = action.payload;
       return result;
     }
 

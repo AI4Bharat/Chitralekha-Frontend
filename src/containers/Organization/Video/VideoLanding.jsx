@@ -39,6 +39,7 @@ import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
 import { cloneDeep } from "lodash";
+import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -93,7 +94,12 @@ const VideoLanding = () => {
           taskDetails.id,
           taskDetails.task_type
         );
+        const fullPayloadObj = new FetchFullPayloadAPI(
+          taskDetails.id,
+          taskDetails.task_type
+        );
         dispatch(APITransport(payloadObj));
+        dispatch(APITransport(fullPayloadObj));
       })();
     }
   }, [taskDetails]);
@@ -105,7 +111,7 @@ const VideoLanding = () => {
 
     const newSub = cloneDeep(sub);
 
-    dispatch(setCurrentPage(transcriptPayload?.current))
+    dispatch(setCurrentPage(transcriptPayload?.current));
     dispatch(setNextPage(transcriptPayload?.next));
     dispatch(setPreviousPage(transcriptPayload?.previous));
     dispatch(setTotalPages(transcriptPayload?.count));

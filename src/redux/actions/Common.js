@@ -69,3 +69,10 @@ export const setCompletedCount = (data) => {
     payload: data,
   };
 };
+
+export const setLimitInStore = (data) => {
+  return {
+    type: C.LIMIT,
+    payload: data,
+  }
+}

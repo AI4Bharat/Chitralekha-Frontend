@@ -28,6 +28,7 @@ import {
   onMerge,
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
+import Sub from "../../../../utils/Sub";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -57,16 +58,22 @@ export default memo(
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
+    const fullPayload = useSelector(
+      (state) => state.getTranscriptPayload.fullPayload
+    );
     const player = useSelector((state) => state.commonReducer.player);
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
     useEffect(() => {
-      setCurrentSubs(subtitles);
-    }, [subtitles, render]);
+      const sub = fullPayload?.payload?.payload?.map((item) => new Sub(item));
+      if (sub) {
+        setCurrentSubs(sub);
+      }
+    }, [fullPayload]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
-    const currentIndex = subtitles?.findIndex(
+    const currentIndex = currentSubs?.findIndex(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
