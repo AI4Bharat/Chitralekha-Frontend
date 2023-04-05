@@ -163,15 +163,19 @@ const Grab = memo(({ waveform }) => {
     [player]
   );
 
-  const onGrabUp = () => {
-    const apiObj = new FetchPayloadFromTimelineAPI(
-      taskDetails?.id,
-      taskDetails?.task_type,
-      DT.d2t(player.currentTime),
-      limit
-    );
-    dispatch(APITransport(apiObj));
+    useEffect(() => {
+      if (!grabbing) {
+        const apiObj = new FetchPayloadFromTimelineAPI(
+          taskDetails?.id,
+          taskDetails?.task_type,
+          DT.d2t(player.currentTime),
+          limit
+        );
+        dispatch(APITransport(apiObj));
+      }
+    }, [grabbing]);
 
+  const onGrabUp = () => {
     setGrabStartX(0);
     setGrabStartTime(0);
     setGrabbing(false);

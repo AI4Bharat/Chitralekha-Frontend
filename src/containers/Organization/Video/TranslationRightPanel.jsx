@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
-import { setSubtitles } from "../../../redux/actions/Common";
+import { setFullSubtitles, setSubtitles } from "../../../redux/actions/Common";
 import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
@@ -92,7 +92,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
+    const sub2 = onSubtitleDelete(index, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
@@ -105,7 +108,11 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // const selectionStart = subtitles[index].text.length;
     // const targetSelectionStart = subtitles[index].target_text.length;
     const sub = onMerge(index);
+    const sub2 = onMerge(index, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
+
     saveTranscriptHandler(false, true, sub);
     // setUndoStack([...undoStack, {
     //   type: "merge",
@@ -211,14 +218,18 @@ const TranslationRightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+  // const handleTimeChange = useCallback((value, index, type, time) => {
+  //   const sub = timeChange(value, index, type, time);
+  //   dispatch(setSubtitles(sub, C.SUBTITLES));
+  // }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
+    const sub2 = addSubtitleBox(index, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
+    
     // setUndoStack([...undoStack, {
     //   type: "add",
     //   index: index,

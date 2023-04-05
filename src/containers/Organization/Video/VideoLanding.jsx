@@ -27,6 +27,7 @@ import {
   FullScreen,
   setCompletedCount,
   setCurrentPage,
+  setFullSubtitles,
   setNextPage,
   setPreviousPage,
   setSubtitles,
@@ -62,6 +63,10 @@ const VideoLanding = () => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const fullPayload = useSelector(
+    (state) => state.getTranscriptPayload.fullPayload
+  );
+
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
@@ -103,6 +108,14 @@ const VideoLanding = () => {
       })();
     }
   }, [taskDetails]);
+
+  useEffect(() => {
+    const sub = fullPayload?.payload?.payload.map(
+      (item) => new Sub(item)
+    );
+
+    dispatch(setFullSubtitles(sub));
+  }, [fullPayload?.payload?.payload])
 
   useEffect(() => {
     const sub = transcriptPayload?.payload?.payload.map(

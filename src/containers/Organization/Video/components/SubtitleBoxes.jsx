@@ -18,7 +18,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../../redux/actions/apitransport/apitransport";
-import { setSubtitles } from "../../../../redux/actions/Common";
+import { setFullSubtitles, setSubtitles } from "../../../../redux/actions/Common";
 import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
@@ -28,7 +28,6 @@ import {
   onMerge,
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
-import Sub from "../../../../utils/Sub";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -58,19 +57,18 @@ export default memo(
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
-    const fullPayload = useSelector(
-      (state) => state.getTranscriptPayload.fullPayload
+    const fullSubtitles = useSelector(
+      (state) => state.commonReducer.fullSubtitles
     );
     const player = useSelector((state) => state.commonReducer.player);
 
     const [currentSubs, setCurrentSubs] = useState([]);
 
     useEffect(() => {
-      const sub = fullPayload?.payload?.payload?.map((item) => new Sub(item));
-      if (sub) {
-        setCurrentSubs(sub);
+      if (fullSubtitles) {
+        setCurrentSubs(fullSubtitles);
       }
-    }, [fullPayload]);
+    }, [fullSubtitles]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
     const currentIndex = currentSubs?.findIndex(
@@ -91,30 +89,49 @@ export default memo(
 
     const removeSub = useCallback((sub) => {
       const index = hasSub(sub);
+      const index2 = hasSub(sub, "full");
+
       const res = onSubtitleDelete(index);
+      const res2 = onSubtitleDelete(index2, "full");
+
       dispatch(setSubtitles(res, C.SUBTITLES));
+      dispatch(setFullSubtitles(res2));
+
       saveTranscript(taskDetails?.task_type);
     }, []);
 
     const mergeSub = useCallback((sub) => {
       const index = hasSub(sub);
+      const index2 = hasSub(sub, "full");
+
       const res = onMerge(index);
+      const res2 = onMerge(index2, "full");
+
       dispatch(setSubtitles(res, C.SUBTITLES));
+      dispatch(setFullSubtitles(res2));
+
       saveTranscript(taskDetails?.task_type);
     }, []);
 
     const updateSub = useCallback(
       (sub, obj) => {
         const index = hasSub(sub);
-        const copySub = copySubs();
+        const index2 = hasSub(sub, "full");
 
-        if (index < 0) return;
+        const copySub = [...subtitles];
+        const copySub2 = [...fullSubtitles];
+
+        if (index < 0 || index2 < 0) return;
 
         const subClone = formatSub(sub);
+
         Object.assign(subClone, obj);
+        
         if (subClone.check) {
           copySub[index] = subClone;
+          copySub2[index] = subClone;
           dispatch(setSubtitles(copySub, C.SUBTITLES));
+          dispatch(setFullSubtitles(copySub2));
         }
       },
       [hasSub, formatSub]
@@ -126,7 +143,7 @@ export default memo(
       isDroging = true;
       lastType = type;
       lastX = event.pageX;
-      lastIndex = subtitles.indexOf(sub);
+      lastIndex = fullSubtitles.indexOf(sub);
       lastTarget = $subsRef.current.children[lastIndex];
       lastWidth = parseFloat(lastTarget.style.width);
     };
@@ -149,8 +166,8 @@ export default memo(
       if (isDroging && lastTarget && lastDiffX) {
         const timeDiff = lastDiffX / gridGap / 10;
         const index = hasSub(lastSub);
-        const previou = subtitles[index - 1];
-        const next = subtitles[index + 1];
+        const previou = fullSubtitles[index - 1];
+        const next = fullSubtitles[index + 1];
 
         const startTime = magnetically(
           lastSub.startTime + timeDiff,

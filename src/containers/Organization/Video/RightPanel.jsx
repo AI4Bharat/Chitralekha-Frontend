@@ -7,9 +7,9 @@ import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript
 import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
-import { setSubtitles } from "../../../redux/actions/Common";
+import { setFullSubtitles, setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
-import TimeBoxes from "../../../common/TimeBoxes";
+// import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
@@ -96,12 +96,13 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   useEffect(() => {
-    getPayload(currentOffset, limit)
-  }, [limit])
+    getPayload(currentOffset, limit);
+  }, [limit]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
     const sub = onMerge(index);
+    const sub2 = onMerge(index, "full");
     // const timings = [{
     //   start: subtitles[index].start_time,
     //   end: subtitles[index].end_time,
@@ -110,7 +111,10 @@ const RightPanel = ({ currentIndex }) => {
     //   start: subtitles[index + 1]?.start_time,
     //   end: subtitles[index + 1]?.end_time,
     // }]
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
+
     // setUndoStack([...undoStack, {
     //   type: "merge",
     //   index: index,
@@ -131,7 +135,11 @@ const RightPanel = ({ currentIndex }) => {
 
   const onSplitClick = useCallback(() => {
     const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
+    const sub2 = onSplit(currentIndexToSplitTextBlock, selectionStart, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
+
     // setUndoStack([...undoStack, {
     //   type: "split",
     //   index: currentIndexToSplitTextBlock,
@@ -143,7 +151,11 @@ const RightPanel = ({ currentIndex }) => {
 
   const changeTranscriptHandler = useCallback((text, index) => {
     const sub = onSubtitleChange(text, index);
+    const sub2 = onSubtitleChange(text, index, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
+
     saveTranscriptHandler(false, false);
   }, []);
 
@@ -216,15 +228,19 @@ const RightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+  // const handleTimeChange = useCallback((value, index, type, time) => {
+  //   const sub = timeChange(value, index, type, time);
+  //   dispatch(setSubtitles(sub, C.SUBTITLES));
+  // }, []);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
+    const sub2 = onSubtitleDelete(index, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
+
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
@@ -235,7 +251,10 @@ const RightPanel = ({ currentIndex }) => {
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
+    const sub2 = addSubtitleBox(index, "full");
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setFullSubtitles(sub2));
     // setUndoStack([...undoStack, {
     //   type: "add",
     //   index: index,

@@ -21,6 +21,13 @@ export const setSubtitles = (data, type) => {
   };
 };
 
+export const setFullSubtitles = (data) => {
+  return {
+    type: C.FULL_SUBTITLES,
+    payload: data,
+  };
+};
+
 export const setPlayer = (data) => {
   return {
     type: C.PLAYER,
