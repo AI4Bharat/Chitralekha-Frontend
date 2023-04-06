@@ -9,7 +9,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
-import TimeBoxes from "../../../common/TimeBoxes";
+// import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
@@ -28,6 +28,7 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import Pagination from "./components/Pagination";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -95,13 +96,23 @@ const RightPanel = ({ currentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
+  const getFullPayload = () => {
+    const payloadObj = new FetchFullPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
   useEffect(() => {
-    getPayload(currentOffset, limit)
-  }, [limit])
+    getPayload(currentOffset, limit);
+  }, [limit]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
+    
     const sub = onMerge(index);
+
     // const timings = [{
     //   start: subtitles[index].start_time,
     //   end: subtitles[index].end_time,
@@ -110,7 +121,9 @@ const RightPanel = ({ currentIndex }) => {
     //   start: subtitles[index + 1]?.start_time,
     //   end: subtitles[index + 1]?.end_time,
     // }]
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+
     // setUndoStack([...undoStack, {
     //   type: "merge",
     //   index: index,
@@ -131,7 +144,9 @@ const RightPanel = ({ currentIndex }) => {
 
   const onSplitClick = useCallback(() => {
     const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+
     // setUndoStack([...undoStack, {
     //   type: "split",
     //   index: currentIndexToSplitTextBlock,
@@ -144,7 +159,8 @@ const RightPanel = ({ currentIndex }) => {
   const changeTranscriptHandler = useCallback((text, index) => {
     const sub = onSubtitleChange(text, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false);
+
+    saveTranscriptHandler(false, false, sub);
   }, []);
 
   const saveTranscriptHandler = async (
@@ -184,7 +200,10 @@ const RightPanel = ({ currentIndex }) => {
           : "",
         variant: "success",
       });
+
+      getFullPayload();
       setLoading(false);
+      
       if (isFinal) {
         setTimeout(() => {
           navigate(
@@ -216,15 +235,16 @@ const RightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+  // const handleTimeChange = useCallback((value, index, type, time) => {
+  //   const sub = timeChange(value, index, type, time);
+  //   dispatch(setSubtitles(sub, C.SUBTITLES));
+  // }, []);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
@@ -236,6 +256,7 @@ const RightPanel = ({ currentIndex }) => {
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
     // setUndoStack([...undoStack, {
     //   type: "add",
     //   index: index,

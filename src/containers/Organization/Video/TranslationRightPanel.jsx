@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
-import { setSubtitles } from "../../../redux/actions/Common";
+import { setFullSubtitles, setSubtitles } from "../../../redux/actions/Common";
 import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
@@ -29,6 +29,7 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import Pagination from "./components/Pagination";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -81,6 +82,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
       taskData.task_type,
       offset,
       lim
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
+  const getFullPayload = () => {
+    const payloadObj = new FetchFullPayloadAPI(
+      taskData.id,
+      taskData.task_type,
     );
     dispatch(APITransport(payloadObj));
   };
@@ -169,6 +178,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setLoading(false);
+      getFullPayload();
 
       setSnackbarInfo({
         open: isAutosave,
@@ -179,6 +189,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+      
       if (isFinal) {
         setTimeout(() => {
           navigate(
@@ -211,14 +222,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+  // const handleTimeChange = useCallback((value, index, type, time) => {
+  //   const sub = timeChange(value, index, type, time);
+  //   dispatch(setSubtitles(sub, C.SUBTITLES));
+  // }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    
     // setUndoStack([...undoStack, {
     //   type: "add",
     //   index: index,

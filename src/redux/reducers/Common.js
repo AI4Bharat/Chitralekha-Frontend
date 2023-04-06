@@ -4,6 +4,7 @@ const initialState = {
   fullscreen: false,
   fullscreenVideo: false,
   subtitles: [],
+  fullSubtitles: [],
   player: null,
   videoDetails: [],
   subtitlesForCheck: [],
@@ -12,6 +13,7 @@ const initialState = {
   nextPage: "",
   previousPage: "",
   completedCount: 0,
+  limit: 50,
 };
 
 const reducer = (state = initialState, action) => {
@@ -31,6 +33,12 @@ const reducer = (state = initialState, action) => {
     case C.SUBTITLES: {
       let result = state;
       result.subtitles = action.payload;
+      return result;
+    }
+
+    case C.FULL_SUBTITLES: {
+      let result = state;
+      result.fullSubtitles = action.payload;
       return result;
     }
 
@@ -73,6 +81,12 @@ const reducer = (state = initialState, action) => {
     case C.COMPLETED_COUNT: {
       let result = {...state};
       result.completedCount = action.payload;
+      return result;
+    }
+
+    case C.LIMIT: {
+      let result = {...state};
+      result.limit = action.payload;
       return result;
     }
 

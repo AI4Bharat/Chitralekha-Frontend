@@ -19,9 +19,10 @@ import CheckIcon from "@mui/icons-material/Check";
 // import UndoIcon from '@mui/icons-material/Undo';
 // import RedoIcon from '@mui/icons-material/Redo';
 import { fontMenu } from "../../../../utils/subtitleUtils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import FormatLineSpacingIcon from "@mui/icons-material/FormatLineSpacing";
+import { setLimitInStore } from "../../../../redux/actions/Common";
 
 const anchorOrigin = {
   vertical: "top",
@@ -54,6 +55,7 @@ const SettingsButtonComponent = ({
   setLimit,
 }) => {
   const classes = VideoLandingStyle();
+  const dispatch = useDispatch();
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
@@ -118,6 +120,7 @@ const SettingsButtonComponent = ({
                     checked={limit === item}
                     onChange={() => {
                       setAnchorElLimit(null);
+                      dispatch(setLimitInStore(item))
                       setLimit(item);
                     }}
                   />
