@@ -29,6 +29,7 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import Pagination from "./components/Pagination";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -85,6 +86,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
+  const getFullPayload = () => {
+    const payloadObj = new FetchFullPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
   useEffect(() => {
     getPayload(currentOffset, limit);
   }, [limit]);
@@ -92,10 +101,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
-    const sub2 = onSubtitleDelete(index, "full");
-
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    dispatch(setFullSubtitles(sub2));
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
@@ -108,11 +114,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // const selectionStart = subtitles[index].text.length;
     // const targetSelectionStart = subtitles[index].target_text.length;
     const sub = onMerge(index);
-    const sub2 = onMerge(index, "full");
-
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    dispatch(setFullSubtitles(sub2));
-
     saveTranscriptHandler(false, true, sub);
     // setUndoStack([...undoStack, {
     //   type: "merge",
@@ -176,6 +178,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setLoading(false);
+      getFullPayload();
 
       setSnackbarInfo({
         open: isAutosave,
@@ -186,6 +189,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+      
       if (isFinal) {
         setTimeout(() => {
           navigate(
@@ -225,10 +229,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
-    const sub2 = addSubtitleBox(index, "full");
 
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    dispatch(setFullSubtitles(sub2));
     
     // setUndoStack([...undoStack, {
     //   type: "add",

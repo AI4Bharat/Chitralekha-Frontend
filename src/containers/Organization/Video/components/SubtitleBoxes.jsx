@@ -18,7 +18,10 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../../redux/actions/apitransport/apitransport";
-import { setFullSubtitles, setSubtitles } from "../../../../redux/actions/Common";
+import {
+  setFullSubtitles,
+  setSubtitles,
+} from "../../../../redux/actions/Common";
 import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
@@ -28,6 +31,7 @@ import {
   onMerge,
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
+import FetchTranscriptPayloadAPI from "../../../../redux/actions/api/Project/FetchTranscriptPayload";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -61,8 +65,20 @@ export default memo(
       (state) => state.commonReducer.fullSubtitles
     );
     const player = useSelector((state) => state.commonReducer.player);
+    const limit = useSelector((state) => state.commonReducer.limit);
+    const currentPage = useSelector((state) => state.commonReducer.currentPage);
 
     const [currentSubs, setCurrentSubs] = useState([]);
+
+    const getPayload = (offset = currentPage, lim = limit) => {
+      const payloadObj = new FetchTranscriptPayloadAPI(
+        taskDetails.id,
+        taskDetails.task_type,
+        offset,
+        lim
+      );
+      dispatch(APITransport(payloadObj));
+    };
 
     useEffect(() => {
       if (fullSubtitles) {
@@ -88,49 +104,32 @@ export default memo(
     };
 
     const removeSub = useCallback((sub) => {
-      const index = hasSub(sub);
       const index2 = hasSub(sub, "full");
-
-      const res = onSubtitleDelete(index);
       const res2 = onSubtitleDelete(index2, "full");
-
-      dispatch(setSubtitles(res, C.SUBTITLES));
       dispatch(setFullSubtitles(res2));
-
       saveTranscript(taskDetails?.task_type);
     }, []);
 
     const mergeSub = useCallback((sub) => {
-      const index = hasSub(sub);
       const index2 = hasSub(sub, "full");
-
-      const res = onMerge(index);
       const res2 = onMerge(index2, "full");
-
-      dispatch(setSubtitles(res, C.SUBTITLES));
       dispatch(setFullSubtitles(res2));
-
       saveTranscript(taskDetails?.task_type);
     }, []);
 
     const updateSub = useCallback(
       (sub, obj) => {
-        const index = hasSub(sub);
         const index2 = hasSub(sub, "full");
-
-        const copySub = [...subtitles];
         const copySub2 = [...fullSubtitles];
 
-        if (index < 0 || index2 < 0) return;
+        if (index2 < 0) return;
 
         const subClone = formatSub(sub);
 
         Object.assign(subClone, obj);
-        
+
         if (subClone.check) {
-          copySub[index] = subClone;
-          copySub2[index] = subClone;
-          dispatch(setSubtitles(copySub, C.SUBTITLES));
+          copySub2[index2] = subClone;
           dispatch(setFullSubtitles(copySub2));
         }
       },
@@ -241,7 +240,7 @@ export default memo(
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, subtitles, updateSub]);
+    }, [gridGap, hasSub, fullSubtitles, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -275,7 +274,7 @@ export default memo(
           }
         }
       },
-      [subtitles, player, removeSub, updateSub]
+      [fullSubtitles, player, removeSub, updateSub]
     );
 
     const DynamicMenu = (props) => {
@@ -291,7 +290,7 @@ export default memo(
             </MenuItem>
           )}
           {trigger &&
-            trigger.parentSub !== subtitles[subtitles.length - 1] &&
+            trigger.parentSub !== fullSubtitles[fullSubtitles.length - 1] &&
             !taskDetails.task_type.includes("VOICEOVER") && (
               <MenuItem
                 className={classes.menuItem}
@@ -392,7 +391,7 @@ export default memo(
   },
   (prevProps, nextProps) => {
     return (
-      isEqual(prevProps.subtitles, nextProps.subtitles) &&
+      isEqual(prevProps.fullSubtitles, nextProps.fullSubtitles) &&
       isEqual(prevProps.render, nextProps.render) &&
       prevProps.currentTime === nextProps.currentTime
     );
