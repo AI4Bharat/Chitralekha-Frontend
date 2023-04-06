@@ -311,6 +311,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
               <Box
                 id={`sub_${index}`}
                 style={{
+                  padding: "15px",
+                  borderBottom: "1px solid lightgray",
                   backgroundColor:
                     index % 2 === 0
                       ? "rgb(214, 234, 248)"
@@ -319,8 +321,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
               >
                 <Box
                   display="flex"
-                  paddingTop="16px"
-                  sx={{ paddingX: "20px", justifyContent: "center" }}
+                  sx={{ justifyContent: "center" }}
                 >
                   {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -348,10 +349,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
                 <CardContent
                   sx={{
                     display: "flex",
-                    padding: "5px 0",
-                    borderBottom: 1,
-                    borderColor: "grey",
                   }}
+                  className={classes.cardContent}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -386,7 +385,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           3
                             ? "red"
                             : "green",
-                        left: "25px",
+                        left: "6px",
                       }}
                     >
                       {sourceLength(index)}
@@ -423,7 +422,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "25px",
+                              right: "10px",
                             }}
                           >
                             {targetLength(index)}
@@ -458,7 +457,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "25px",
+                          right: "10px",
                         }}
                       >
                         {targetLength(index)}

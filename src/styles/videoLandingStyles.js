@@ -431,15 +431,12 @@ const VideoLandingStyle = makeStyles({
 
   topBox: {
     display: "flex",
-    padding: "10px 0 0 20px",
-    width: "95%",
     justifyContent: "center",
     alignItems: "center",
   },
 
   cardContent: {
-    padding: "5px 0",
-    borderBottom: "1px solid lightgray",
+    padding: "16px 0 24px 0",
     alignItems: "center",
   },
 
@@ -448,7 +445,6 @@ const VideoLandingStyle = makeStyles({
   },
 
   customTextarea: {
-    margin: "5px 20px 15px 23px",
     padding: "16.5px 12px",
     fontSize: "1.25rem",
     fontWeight: "400",
@@ -459,7 +455,7 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
-    width: "100%",
+    width: "95%",
   },
 
   boxHighlight: {
@@ -476,8 +472,8 @@ const VideoLandingStyle = makeStyles({
     width: "30px",
     borderRadius: "50%",
     position: "absolute",
-    bottom: "-10px",
-    right: "-25px",
+    bottom: "-25px",
+    right: "10px",
     textAlign: "center",
   },
 
@@ -489,8 +485,7 @@ const VideoLandingStyle = makeStyles({
   },
 
   textAreaTransliteration: {
-    width: "80%",
-    margin: "5px 10px 15px 20px",
+    width: "85%",
     padding: "16.5px 12px",
     fontSize: "1rem",
     fontWeight: "400",

@@ -97,10 +97,7 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const getFullPayload = () => {
-    const payloadObj = new FetchFullPayloadAPI(
-      taskData.id,
-      taskData.task_type,
-    );
+    const payloadObj = new FetchFullPayloadAPI(taskData.id, taskData.task_type);
     dispatch(APITransport(payloadObj));
   };
 
@@ -110,7 +107,7 @@ const RightPanel = ({ currentIndex }) => {
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
-    
+
     const sub = onMerge(index);
 
     // const timings = [{
@@ -203,7 +200,7 @@ const RightPanel = ({ currentIndex }) => {
 
       getFullPayload();
       setLoading(false);
-      
+
       if (isFinal) {
         setTimeout(() => {
           navigate(
@@ -329,6 +326,8 @@ const RightPanel = ({ currentIndex }) => {
               <Box
                 id={`sub_${index}`}
                 style={{
+                  padding: "15px",
+                  borderBottom: "1px solid lightgray",
                   backgroundColor:
                     index % 2 === 0
                       ? "rgb(214, 234, 248)"
@@ -378,9 +377,7 @@ const RightPanel = ({ currentIndex }) => {
                         changeTranscriptHandler(text, index);
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
-                      containerStyles={{
-                        width: "90%",
-                      }}
+                      containerStyles={{}}
                       onBlur={() =>
                         setTimeout(() => {
                           setShowPopOver(false);
@@ -422,7 +419,6 @@ const RightPanel = ({ currentIndex }) => {
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
                         style={{
-                          width: "90%",
                           fontSize: fontSize,
                           height: "120px",
                         }}
@@ -436,7 +432,6 @@ const RightPanel = ({ currentIndex }) => {
                       <span
                         id="charNum"
                         className={classes.wordCount}
-                        style={{ right: "25px" }}
                       >
                         {targetLength(index)}
                       </span>
