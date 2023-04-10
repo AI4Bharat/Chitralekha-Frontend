@@ -152,16 +152,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false);
+    saveTranscriptHandler(false, false, arr);
   };
 
-  const saveTranscriptHandler = async (isFinal, isAutosave) => {
+  const saveTranscriptHandler = async (isFinal, isAutosave, subs = sourceText) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: 50,
       payload: {
-        payload: sourceText,
+        payload: subs,
       },
     };
 
@@ -496,7 +496,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false)}
+            submit={() => saveTranscriptHandler(true, false, sourceText)}
             message={"Do you want to submit the translation?"}
             loading={loading}
           />
