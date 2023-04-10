@@ -16,13 +16,11 @@ import DT from "duration-time-conversion";
 import { getKeyCode } from "../../../../utils/utils";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
 import APITransport from "../../../../redux/actions/apitransport/apitransport";
 import {
   setFullSubtitles,
   setSubtitles,
 } from "../../../../redux/actions/Common";
-import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
   copySubs,
@@ -32,6 +30,8 @@ import {
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
 import FetchTranscriptPayloadAPI from "../../../../redux/actions/api/Project/FetchTranscriptPayload";
+import SaveFullPayloadAPI from "../../../../redux/actions/api/Project/SaveFullPayload";
+import CustomizedSnackbars from "../../../../common/Snackbar";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -60,7 +60,6 @@ export default memo(
     const $subsRef = createRef();
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
-    const subtitles = useSelector((state) => state.commonReducer.subtitles);
     const fullSubtitles = useSelector(
       (state) => state.commonReducer.fullSubtitles
     );
@@ -69,6 +68,11 @@ export default memo(
     const currentPage = useSelector((state) => state.commonReducer.currentPage);
 
     const [currentSubs, setCurrentSubs] = useState([]);
+    const [snackbar, setSnackbarInfo] = useState({
+      open: false,
+      message: "",
+      variant: "success",
+    });
 
     const getPayload = (offset = currentPage, lim = limit) => {
       const payloadObj = new FetchTranscriptPayloadAPI(
@@ -91,30 +95,51 @@ export default memo(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
-    const saveTranscript = (taskType) => {
+    const saveTranscript = async (taskType, subs = fullSubtitles) => {
       const reqBody = {
         task_id: taskId,
         payload: {
-          payload: subtitles,
+          payload: subs,
         },
       };
 
-      const obj = new SaveTranscriptAPI(reqBody, taskType);
-      dispatch(APITransport(obj));
+      const obj = new SaveFullPayloadAPI(reqBody, taskType);
+      const res = await fetch(obj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(obj.getBody()),
+        headers: obj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+
+        getPayload();
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: "Failed",
+          variant: "error",
+        });
+      }
     };
 
     const removeSub = useCallback((sub) => {
       const index2 = hasSub(sub, "full");
       const res2 = onSubtitleDelete(index2, "full");
       dispatch(setFullSubtitles(res2));
-      saveTranscript(taskDetails?.task_type);
+      saveTranscript(taskDetails?.task_type, res2);
     }, []);
 
     const mergeSub = useCallback((sub) => {
       const index2 = hasSub(sub, "full");
       const res2 = onMerge(index2, "full");
       dispatch(setFullSubtitles(res2));
-      saveTranscript(taskDetails?.task_type);
+      saveTranscript(taskDetails?.task_type, res2);
     }, []);
 
     const updateSub = useCallback(
@@ -320,8 +345,23 @@ export default memo(
       className: classes.contextMenu,
     };
 
+    const renderSnackBar = () => {
+      return (
+        <CustomizedSnackbars
+          open={snackbar.open}
+          handleClose={() =>
+            setSnackbarInfo({ open: false, message: "", variant: "" })
+          }
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          variant={snackbar.variant}
+          message={snackbar.message}
+        />
+      );
+    };
+
     return (
       <div className={classes.parentSubtitleBox} ref={$blockRef}>
+        {renderSnackBar()}
         <div ref={$subsRef}>
           {currentSubs?.map((sub, key) => {
             return (

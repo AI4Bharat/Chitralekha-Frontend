@@ -128,6 +128,7 @@ export const onMerge = (index, type) => {
     index,
     2,
     newSub({
+      id: existingsourceData[index].id,
       start_time: existingsourceData[index].start_time,
       end_time: existingsourceData[index + 1].end_time,
       text: `${existingsourceData[index].text} ${
@@ -161,7 +162,7 @@ export const onSplit = (
   selectionStart,
   type,
   timings = null,
-  targetSelectionStart = null,
+  targetSelectionStart = null
 ) => {
   let subtitles;
   if (type === "full") {
@@ -429,8 +430,6 @@ export const getSubtitleRangeTranscript = () => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   if (subtitles) {
-    return `${subtitles[0]?.id + 1} - ${
-      subtitles[subtitles.length - 1]?.id + 1
-    }`;
+    return `1 - ${subtitles.length}`;
   }
 };

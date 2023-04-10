@@ -71,8 +71,14 @@ export default React.memo(
           drogEndTime > 0 &&
           drogEndTime - drogStartTime >= 0.2
         ) {
-          const index = findIndex(subtitles, drogStartTime) + 1;
-          const index2 = findIndex(fullSubtitles, drogStartTime) + 1;
+          let index, index2;
+          if(subtitles && subtitles.length || fullSubtitles.length) {
+            index = findIndex(subtitles, drogStartTime) + 1;
+            index2 = findIndex(fullSubtitles, drogStartTime) + 1;
+          } else {
+            index = 0;
+            index2 = 0;
+          }
 
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
