@@ -156,6 +156,7 @@ export default memo(
         if (subClone.check) {
           copySub2[index2] = subClone;
           dispatch(setFullSubtitles(copySub2));
+          saveTranscript(taskDetails?.task_type, copySub2);
         }
       },
       [hasSub, formatSub]
@@ -189,7 +190,7 @@ export default memo(
     const onDocumentMouseUp = useCallback(() => {
       if (isDroging && lastTarget && lastDiffX) {
         const timeDiff = lastDiffX / gridGap / 10;
-        const index = hasSub(lastSub);
+        const index = hasSub(lastSub, "full");
         const previou = fullSubtitles[index - 1];
         const next = fullSubtitles[index + 1];
 
