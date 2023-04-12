@@ -319,6 +319,7 @@ const EditProfile = () => {
                 ) : (
                   <OutlinedTextField
                     fullWidth
+                    disabled
                     name="first_name"
                     value={userDetails?.first_name}
                     InputLabelProps={{ shrink: true }}
@@ -367,6 +368,7 @@ const EditProfile = () => {
                 ) : (
                   <OutlinedTextField
                     fullWidth
+                    disabled
                     name="last_name"
                     value={userDetails?.last_name}
                     InputLabelProps={{ shrink: true }}
@@ -442,6 +444,7 @@ const EditProfile = () => {
                 ) : (
                   <OutlinedTextField
                     fullWidth
+                    disabled
                     name="last_name"
                     value={userDetails?.email}
                     InputLabelProps={{ shrink: true }}
@@ -490,6 +493,7 @@ const EditProfile = () => {
                   />
                 ) : (
                   <OutlinedTextField
+                    disabled
                     fullWidth
                     name="phone"
                     value={userDetails?.phone}
@@ -606,6 +610,7 @@ const EditProfile = () => {
                   />
                 ) : (
                   <OutlinedTextField
+                    disabled
                     required
                     fullWidth
                     name="username"
@@ -674,6 +679,7 @@ const EditProfile = () => {
                   </FormControl>
                 ) : (
                   <OutlinedTextField
+                    disabled
                     required
                     fullWidth
                     name="username"
@@ -826,7 +832,7 @@ const EditProfile = () => {
           direction="row"
           justifyContent="center"
           alignItems="center"
-          sx={{mt:7}}
+          sx={{mt:5}}
         >
           <Button
                 variant="contained"
