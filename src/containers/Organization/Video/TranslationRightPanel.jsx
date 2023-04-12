@@ -29,6 +29,7 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import Pagination from "./components/Pagination";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -81,6 +82,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
       taskData.task_type,
       offset,
       lim
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
+  const getFullPayload = () => {
+    const payloadObj = new FetchFullPayloadAPI(
+      taskData.id,
+      taskData.task_type,
     );
     dispatch(APITransport(payloadObj));
   };
@@ -143,16 +152,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false);
+    saveTranscriptHandler(false, false, arr);
   };
 
-  const saveTranscriptHandler = async (isFinal, isAutosave) => {
+  const saveTranscriptHandler = async (isFinal, isAutosave, subs = sourceText) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: 50,
       payload: {
-        payload: sourceText,
+        payload: subs,
       },
     };
 
@@ -169,6 +178,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setLoading(false);
+      getFullPayload();
 
       setSnackbarInfo({
         open: isAutosave,
@@ -179,6 +189,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+      
       if (isFinal) {
         setTimeout(() => {
           navigate(
@@ -211,14 +222,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+  // const handleTimeChange = useCallback((value, index, type, time) => {
+  //   const sub = timeChange(value, index, type, time);
+  //   dispatch(setSubtitles(sub, C.SUBTITLES));
+  // }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    
     // setUndoStack([...undoStack, {
     //   type: "add",
     //   index: index,
@@ -298,6 +311,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
               <Box
                 id={`sub_${index}`}
                 style={{
+                  padding: "15px",
+                  borderBottom: "1px solid lightgray",
                   backgroundColor:
                     index % 2 === 0
                       ? "rgb(214, 238, 255)"
@@ -306,8 +321,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
               >
                 <Box
                   display="flex"
-                  paddingTop="16px"
-                  sx={{ paddingX: "20px", justifyContent: "center" }}
+                  sx={{ justifyContent: "center" }}
                 >
                   {/* <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -339,6 +353,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     borderBottom: 1,
                     borderColor: "lightgray",
                   }}
+                  className={classes.cardContent}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -373,7 +388,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           3
                             ? "red"
                             : "green",
-                        left: "25px",
+                        left: "6px",
                       }}
                     >
                       {sourceLength(index)}
@@ -410,7 +425,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "25px",
+                              right: "10px",
                             }}
                           >
                             {targetLength(index)}
@@ -445,7 +460,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "25px",
+                          right: "10px",
                         }}
                       >
                         {targetLength(index)}
@@ -484,7 +499,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false)}
+            submit={() => saveTranscriptHandler(true, false, sourceText)}
             message={"Do you want to submit the translation?"}
             loading={loading}
           />

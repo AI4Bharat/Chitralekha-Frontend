@@ -4,16 +4,19 @@ import React, {
   memo,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import WFPlayer from "wfplayer";
 import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
-import { throttle } from "lodash";
+import { first, throttle } from "lodash";
 import Metronome from "./components/Metronome";
 import SubtitleBoxes from "./components/SubtitleBoxes";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import FetchPayloadFromTimelineAPI from "../../../redux/actions/api/Project/FetchPayloadFromTimeline";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const WaveForm = memo(
   ({ setWaveform, setRender }) => {
@@ -141,7 +144,12 @@ const Progress = memo(
 
 const Grab = memo(({ waveform }) => {
   const classes = VideoLandingStyle();
+  const dispatch = useDispatch();
+  const firstLoaded = useRef(false);
+
   const player = useSelector(state => state.commonReducer.player);
+  const limit = useSelector(state => state.commonReducer.limit);
+  const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
   const [grabStartX, setGrabStartX] = useState(0);
   const [grabStartTime, setGrabStartTime] = useState(0);
@@ -156,6 +164,20 @@ const Grab = memo(({ waveform }) => {
     },
     [player]
   );
+
+  useEffect(() => {
+    if (firstLoaded.current && !grabbing) {
+      const apiObj = new FetchPayloadFromTimelineAPI(
+        taskDetails?.id,
+        taskDetails?.task_type,
+        DT.d2t(player.currentTime),
+        limit
+      );
+      dispatch(APITransport(apiObj));
+    } else {
+      firstLoaded.current = true;
+    }
+  }, [grabbing]);
 
   const onGrabUp = () => {
     setGrabStartX(0);

@@ -39,6 +39,7 @@ import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
 import { cloneDeep } from "lodash";
+import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -61,6 +62,7 @@ const VideoLanding = () => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
@@ -105,7 +107,7 @@ const VideoLanding = () => {
 
     const newSub = cloneDeep(sub);
 
-    dispatch(setCurrentPage(transcriptPayload?.current))
+    dispatch(setCurrentPage(transcriptPayload?.current));
     dispatch(setNextPage(transcriptPayload?.next));
     dispatch(setPreviousPage(transcriptPayload?.previous));
     dispatch(setTotalPages(transcriptPayload?.count));
