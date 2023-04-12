@@ -15,12 +15,7 @@ export const formatSub = (sub) => {
 };
 
 export const hasSub = (sub, type) => {
-  let subtitles;
-  if (type === "full") {
-    subtitles = store.getState().commonReducer.fullSubtitles;
-  } else {
-    subtitles = store.getState().commonReducer.subtitles;
-  }
+  const subtitles = store.getState().commonReducer.subtitles;
 
   return subtitles.indexOf(sub);
 };
@@ -88,12 +83,7 @@ export const timeChange = (value, index, type, time) => {
 };
 
 export const addSubtitleBox = (index, type) => {
-  let subtitles;
-  if (type === "full") {
-    subtitles = store.getState().commonReducer.fullSubtitles;
-  } else {
-    subtitles = store.getState().commonReducer.subtitles;
-  }
+  const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 
@@ -107,7 +97,7 @@ export const addSubtitleBox = (index, type) => {
       end_time:
         index < subtitles.length - 1
           ? copySub[index + 1].start_time
-          : DT.d2t(duration+0.50),
+          : DT.d2t(duration + 0.5),
       text: "SUB_TEXT",
       target_text: "SUB_TEXT",
     })
@@ -117,12 +107,7 @@ export const addSubtitleBox = (index, type) => {
 };
 
 export const onMerge = (index, type) => {
-  let subtitles;
-  if (type === "full") {
-    subtitles = store.getState().commonReducer.fullSubtitles;
-  } else {
-    subtitles = store.getState().commonReducer.subtitles;
-  }
+  const subtitles = store.getState().commonReducer.subtitles;
 
   const existingsourceData = [...subtitles];
 
@@ -146,12 +131,7 @@ export const onMerge = (index, type) => {
 };
 
 export const onSubtitleDelete = (index, type) => {
-  let subtitles;
-  if (type === "full") {
-    subtitles = store.getState().commonReducer.fullSubtitles;
-  } else {
-    subtitles = store.getState().commonReducer.subtitles;
-  }
+  const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
   copySub.splice(index, 1);
@@ -166,12 +146,7 @@ export const onSplit = (
   timings = null,
   targetSelectionStart = null
 ) => {
-  let subtitles;
-  if (type === "full") {
-    subtitles = store.getState().commonReducer.fullSubtitles;
-  } else {
-    subtitles = store.getState().commonReducer.subtitles;
-  }
+  const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 
@@ -240,12 +215,7 @@ export const onSplit = (
 };
 
 export const onSubtitleChange = (text, index, type) => {
-  let subtitles;
-  if (type === "full") {
-    subtitles = store.getState().commonReducer.fullSubtitles;
-  } else {
-    subtitles = store.getState().commonReducer.subtitles;
-  }
+  const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 

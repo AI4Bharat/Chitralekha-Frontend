@@ -16,11 +16,7 @@ import DT from "duration-time-conversion";
 import { getKeyCode } from "../../../../utils/utils";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../../../redux/actions/apitransport/apitransport";
-import {
-  setFullSubtitles,
-  setSubtitles,
-} from "../../../../redux/actions/Common";
+import { setSubtitles } from "../../../../redux/actions/Common";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
   copySubs,
@@ -29,9 +25,11 @@ import {
   onMerge,
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
-import FetchTranscriptPayloadAPI from "../../../../redux/actions/api/Project/FetchTranscriptPayload";
-import SaveFullPayloadAPI from "../../../../redux/actions/api/Project/SaveFullPayload";
 import CustomizedSnackbars from "../../../../common/Snackbar";
+import C from "../../../../redux/constants";
+import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
+import FetchTranscriptPayloadAPI from "../../../../redux/actions/api/Project/FetchTranscriptPayload";
+import APITransport from "../../../../redux/actions/apitransport/apitransport";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -60,12 +58,11 @@ export default memo(
     const $subsRef = createRef();
 
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
-    const fullSubtitles = useSelector(
-      (state) => state.commonReducer.fullSubtitles
-    );
+    const subtitles = useSelector((state) => state.commonReducer.subtitles);
     const player = useSelector((state) => state.commonReducer.player);
     const limit = useSelector((state) => state.commonReducer.limit);
     const currentPage = useSelector((state) => state.commonReducer.currentPage);
+    const next = useSelector((state) => state.commonReducer.nextPage);
 
     const [currentSubs, setCurrentSubs] = useState([]);
     const [snackbar, setSnackbarInfo] = useState({
@@ -74,36 +71,40 @@ export default memo(
       variant: "success",
     });
 
-    const getPayload = (offset = currentPage, lim = limit) => {
-      const payloadObj = new FetchTranscriptPayloadAPI(
-        taskDetails.id,
-        taskDetails.task_type,
-        offset,
-        lim
-      );
-      dispatch(APITransport(payloadObj));
-    };
-
     useEffect(() => {
-      if (fullSubtitles) {
-        setCurrentSubs(fullSubtitles);
+      if (subtitles) {
+        setCurrentSubs(subtitles);
       }
-    }, [fullSubtitles]);
+    }, [subtitles]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
     const currentIndex = currentSubs?.findIndex(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
-    const saveTranscript = async (taskType, subs = fullSubtitles) => {
+    useEffect(() => {
+      if (currentIndex === subtitles.length - 1 && next) {
+        const payloadObj = new FetchTranscriptPayloadAPI(
+          taskDetails.id,
+          taskDetails.task_type,
+          next,
+          limit
+        );
+        dispatch(APITransport(payloadObj));
+      }
+    }, [currentIndex]);
+
+    const saveTranscript = async (taskType, subs = subtitles) => {
       const reqBody = {
         task_id: taskId,
+        offset: currentPage,
+        limit: limit,
         payload: {
           payload: subs,
         },
       };
 
-      const obj = new SaveFullPayloadAPI(reqBody, taskType);
+      const obj = new SaveTranscriptAPI(reqBody, taskType);
       const res = await fetch(obj.apiEndPoint(), {
         method: "POST",
         body: JSON.stringify(obj.getBody()),
@@ -117,8 +118,6 @@ export default memo(
           message: resp?.message,
           variant: "success",
         });
-
-        getPayload();
       } else {
         setSnackbarInfo({
           open: true,
@@ -129,38 +128,31 @@ export default memo(
     };
 
     const removeSub = useCallback((sub) => {
-      const index2 = hasSub(sub, "full");
-      const res2 = onSubtitleDelete(index2, "full");
-      dispatch(setFullSubtitles(res2));
-      saveTranscript(taskDetails?.task_type, res2);
+      const index = hasSub(sub);
+      const res = onSubtitleDelete(index);
+      dispatch(setSubtitles(res, C.SUBTITLES));
+      saveTranscript(taskDetails?.task_type, res);
     }, []);
 
     const mergeSub = useCallback((sub) => {
-      const index2 = hasSub(sub, "full");
-      const res2 = onMerge(index2, "full");
-      dispatch(setFullSubtitles(res2));
-      saveTranscript(taskDetails?.task_type, res2);
+      const index = hasSub(sub);
+      const res = onMerge(index);
+      dispatch(setSubtitles(res, C.SUBTITLES));
+      saveTranscript(taskDetails?.task_type, res);
     }, []);
 
-    const updateSub = useCallback(
-      (sub, obj) => {
-        const index2 = hasSub(sub, "full");
-        const copySub2 = [...fullSubtitles];
+    const updateSub = useCallback((sub, obj) => {
+      const index = hasSub(sub);
+      const copySub = [...subtitles];
 
-        if (index2 < 0) return;
+      if (index < 0) return;
 
-        const subClone = formatSub(sub);
+      Object.assign(sub, obj);
 
-        Object.assign(subClone, obj);
-
-        if (subClone.check) {
-          copySub2[index2] = subClone;
-          dispatch(setFullSubtitles(copySub2));
-          saveTranscript(taskDetails?.task_type, copySub2);
-        }
-      },
-      [hasSub, formatSub]
-    );
+      copySub[index] = sub;
+      dispatch(setSubtitles(copySub, C.SUBTITLES));
+      saveTranscript(taskDetails?.task_type, copySub);
+    }, []);
 
     const onMouseDown = (sub, event, type) => {
       lastSub = sub;
@@ -168,7 +160,7 @@ export default memo(
       isDroging = true;
       lastType = type;
       lastX = event.pageX;
-      lastIndex = fullSubtitles.indexOf(sub);
+      lastIndex = subtitles.indexOf(sub);
       lastTarget = $subsRef.current.children[lastIndex];
       lastWidth = parseFloat(lastTarget.style.width);
     };
@@ -190,9 +182,9 @@ export default memo(
     const onDocumentMouseUp = useCallback(() => {
       if (isDroging && lastTarget && lastDiffX) {
         const timeDiff = lastDiffX / gridGap / 10;
-        const index = hasSub(lastSub, "full");
-        const previou = fullSubtitles[index - 1];
-        const next = fullSubtitles[index + 1];
+        const index = hasSub(lastSub);
+        const previou = subtitles[index - 1];
+        const next = subtitles[index + 1];
 
         const startTime = magnetically(
           lastSub.startTime + timeDiff,
@@ -237,18 +229,25 @@ export default memo(
             const start_time = DT.d2t(startTime);
             const end_time = DT.d2t(endTime);
 
-            if (
-              index > 0 &&
-              startTime >= DT.t2d(previou.end_time) &&
-              endTime <= DT.t2d(next.start_time)
-            ) {
-              updateSub(lastSub, {
-                start_time,
-                end_time,
-              });
-            }
+            if (subtitles.length > 1) {
+              if (
+                index > 0 &&
+                startTime >= DT.t2d(previou.end_time) &&
+                endTime <= DT.t2d(next.start_time)
+              ) {
+                updateSub(lastSub, {
+                  start_time,
+                  end_time,
+                });
+              }
 
-            if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+              if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+                updateSub(lastSub, {
+                  start_time,
+                  end_time,
+                });
+              }
+            } else {
               updateSub(lastSub, {
                 start_time,
                 end_time,
@@ -266,7 +265,7 @@ export default memo(
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, fullSubtitles, updateSub]);
+    }, [gridGap, hasSub, subtitles, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -300,7 +299,7 @@ export default memo(
           }
         }
       },
-      [fullSubtitles, player, removeSub, updateSub]
+      [subtitles, player, removeSub, updateSub]
     );
 
     const DynamicMenu = (props) => {
@@ -316,7 +315,7 @@ export default memo(
             </MenuItem>
           )}
           {trigger &&
-            trigger.parentSub !== fullSubtitles[fullSubtitles.length - 1] &&
+            trigger.parentSub !== subtitles[subtitles.length - 1] &&
             !taskDetails.task_type.includes("VOICEOVER") && (
               <MenuItem
                 className={classes.menuItem}
@@ -432,7 +431,7 @@ export default memo(
   },
   (prevProps, nextProps) => {
     return (
-      isEqual(prevProps.fullSubtitles, nextProps.fullSubtitles) &&
+      isEqual(prevProps.subtitles, nextProps.subtitles) &&
       isEqual(prevProps.render, nextProps.render) &&
       prevProps.currentTime === nextProps.currentTime
     );

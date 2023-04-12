@@ -3,7 +3,7 @@ import DT from "duration-time-conversion";
 import isEqual from "lodash/isEqual";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setFullSubtitles, setSubtitles } from "../../../../redux/actions/Common";
+import { setSubtitles } from "../../../../redux/actions/Common";
 import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import { newSub } from "../../../../utils/subtitleUtils";
@@ -31,7 +31,6 @@ export default React.memo(
     const gridGap = document.body.clientWidth / render.gridNum;
 
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
-    const fullSubtitles = useSelector((state) => state.commonReducer.fullSubtitles);
     const player = useSelector(state => state.commonReducer.player);
 
     const getEventTime = useCallback(
@@ -71,20 +70,18 @@ export default React.memo(
           drogEndTime > 0 &&
           drogEndTime - drogStartTime >= 0.2
         ) {
-          let index, index2;
-          if(subtitles && subtitles.length || fullSubtitles.length) {
+          let index;
+
+          if(subtitles && subtitles.length) {
             index = findIndex(subtitles, drogStartTime) + 1;
-            index2 = findIndex(fullSubtitles, drogStartTime) + 1;
           } else {
             index = 0;
-            index2 = 0;
           }
 
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
 
           const copySub = [...subtitles];
-          const copySub2 = [...fullSubtitles];
 
           copySub.splice(
             index,
@@ -97,19 +94,7 @@ export default React.memo(
             })
           );
 
-          copySub2.splice(
-            index2,
-            0,
-            newSub({
-              start_time,
-              end_time,
-              text: "SUB_TEXT",
-              target_text: "SUB_TEXT",
-            })
-          );
-
           dispatch(setSubtitles(copySub, C.SUBTITLES));
-          dispatch(setFullSubtitles(copySub2));
         }
       }
       setIsDroging(false);

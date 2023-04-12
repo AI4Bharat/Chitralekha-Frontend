@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
-import { setFullSubtitles, setSubtitles } from "../../../redux/actions/Common";
+import { setSubtitles } from "../../../redux/actions/Common";
 import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
