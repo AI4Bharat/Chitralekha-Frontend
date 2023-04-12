@@ -439,14 +439,14 @@ const OrgLevelTaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[16]?.View && (
+      tableData.rowData[17]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={!tableData.rowData[11]}
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <PreviewIcon />
@@ -458,13 +458,13 @@ const OrgLevelTaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Export && (
+      tableData.rowData[17]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={!tableData.rowData[11]}
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -475,11 +475,12 @@ const OrgLevelTaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
+    console.log(tableData)
     return (
-      tableData.rowData[16]?.Edit && (
+      tableData.rowData[17]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={!tableData.rowData[11]}
+            disabled={!tableData.rowData[12]}
             onClick={() => {
               if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
@@ -500,7 +501,7 @@ const OrgLevelTaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Delete && (
+      tableData.rowData[17]?.Delete && (
         <Tooltip title="Delete">
           <IconButton
             onClick={() => handledeletetask(tableData.rowData[0], false)}
@@ -515,7 +516,7 @@ const OrgLevelTaskList = () => {
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Update && (
+      tableData.rowData[17]?.Update && (
         <Tooltip title="Edit Task Details">
           <IconButton
             color="primary"
@@ -534,7 +535,7 @@ const OrgLevelTaskList = () => {
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Preview && (
+      tableData.rowData[17]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
             color="primary"
@@ -819,6 +820,17 @@ const OrgLevelTaskList = () => {
             padding: "16px",
           },
         }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
       }
     },
     {
@@ -950,7 +962,7 @@ const OrgLevelTaskList = () => {
           return (
             <Box
               style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -978,7 +990,7 @@ const OrgLevelTaskList = () => {
           return (
             <Box
               style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}

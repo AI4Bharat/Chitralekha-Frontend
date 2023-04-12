@@ -21,7 +21,8 @@ const VideoLandingStyle = makeStyles({
   videoNameBox: {
     display: "flex",
     flexDirection: "row",
-    backgroundColor: "rgba(254, 191, 44, 0.1)",
+   // backgroundColor: "rgba(254, 191, 44, 0.1)",
+    backgroundColor:"#fcf7e9"
   },
 
   videoName: {
@@ -373,7 +374,8 @@ const VideoLandingStyle = makeStyles({
   },
 
   optionIconBtn: {
-    backgroundColor: "#fff",
+    //backgroundColor: "#fff",
+    backgroundColor:"#fcf7e9",
     borderRadius: "50%",
     marginRight: "10px",
     color: "blue",
@@ -381,7 +383,8 @@ const VideoLandingStyle = makeStyles({
       background: "grey",
     },
     "&:hover": {
-      backgroundColor: "#fff",
+     // backgroundColor: "#fff",
+     backgroundColor:"#fcf7e9"
     },
   },
 
@@ -391,7 +394,8 @@ const VideoLandingStyle = makeStyles({
     flexWrap: "wrap",
     padding: "26.5px 0",
     justifyContent: "center",
-    backgroundColor: "rgba(254, 191, 44, 0.1)",
+    // backgroundColor: "rgba(254, 191, 44, 0.1)",
+    backgroundColor:"#fcf7e9"
   },
 
   rightPanelParentBox: {

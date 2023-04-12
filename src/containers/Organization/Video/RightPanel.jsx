@@ -310,7 +310,7 @@ const RightPanel = ({ currentIndex }) => {
                 style={{
                   backgroundColor:
                     index % 2 === 0
-                      ? "rgb(214, 234, 248)"
+                      ? "rgb(214, 238, 255)"
                       : "rgb(233, 247, 239)",
                 }}
               >
