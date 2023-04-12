@@ -9,7 +9,7 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 import "../../../styles/ScrollbarStyle.css";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
-// import TimeBoxes from "../../../common/TimeBoxes";
+import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
@@ -232,10 +232,10 @@ const RightPanel = ({ currentIndex }) => {
     );
   };
 
-  // const handleTimeChange = useCallback((value, index, type, time) => {
-  //   const sub = timeChange(value, index, type, time);
-  //   dispatch(setSubtitles(sub, C.SUBTITLES));
-  // }, []);
+  const handleTimeChange = useCallback((value, index, type, time) => {
+    const sub = timeChange(value, index, type, time);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, []);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
@@ -335,12 +335,12 @@ const RightPanel = ({ currentIndex }) => {
                 }}
               >
                 <Box className={classes.topBox}>
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  /> */}
+                  />
 
                   <ButtonComponent
                     index={index}
@@ -350,12 +350,12 @@ const RightPanel = ({ currentIndex }) => {
                     addNewSubtitleBox={addNewSubtitleBox}
                   />
 
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  /> */}
+                  />
                 </Box>
 
                 <CardContent
