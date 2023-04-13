@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSubtitles } from "../../../../redux/actions/Common";
 import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import { newSub } from "../../../../utils/subtitleUtils";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -20,7 +21,7 @@ const findIndex = (subs, startTime) => {
 };
 
 export default React.memo(
-  function Component({ render, newSub, playing }) {
+  function Component({ render, playing }) {
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
