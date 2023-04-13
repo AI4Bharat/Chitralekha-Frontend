@@ -25,7 +25,7 @@ export default class ToggleMailsAPI extends API {
   getBody() {
     return {
       user_id: this.userId,
-      enable_mail: this.enableMails,
+      enable_email: this.enableMails,
     };
   }
 
