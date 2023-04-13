@@ -5,12 +5,10 @@ import { useNavigate } from "react-router-dom";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import Search from "../../common/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteDialog from "../../common/DeleteDialog";
@@ -25,7 +23,6 @@ import Loader from "../../common/Spinner";
 const OrganizationList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const classes = DatasetStyle();
 
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const searchList = useSelector((state) => state.searchList.data);
@@ -47,11 +44,12 @@ const OrganizationList = () => {
 
   useEffect(() => {
     getOrgList();
+    // eslint-disable-next-line
   }, []);
 
   const pageSearch = () => {
     return orgList?.filter((el) => {
-      if (searchList == "") {
+      if (searchList === "") {
         return el;
       } else if (el.title?.toLowerCase().includes(searchList?.toLowerCase())) {
         return el;
@@ -83,6 +81,8 @@ const OrganizationList = () => {
         el.email_domain_name?.toLowerCase().includes(searchList?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
   };
@@ -209,14 +209,6 @@ const OrganizationList = () => {
       },
     },
   ];
-
-  const renderToolBar = () => {
-    return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
-    );
-  };
 
   const options = {
     textLabels: {

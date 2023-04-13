@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 //Themes
-import { ThemeProvider, Tooltip, IconButton, Box, Switch } from "@mui/material";
+import { ThemeProvider, Tooltip, IconButton, Box } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import Search from "../../common/Search";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteDialog from "../../common/DeleteDialog";
 
 //APIs
 import FetchAllUsersAPI from "../../redux/actions/api/Admin/FetchAllUsers";
@@ -22,25 +18,20 @@ import Loader from "../../common/Spinner";
 const MemberList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const classes = DatasetStyle();
 
   const userList = useSelector((state) => state.getAllUserList.data);
   const searchList = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [statusToggle, setStatusToggle] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState("");
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const apiObj = new FetchAllUsersAPI();
     dispatch(APITransport(apiObj));
+    // eslint-disable-next-line
   }, []);
 
   const pageSearch = () => {
     return userList?.filter((el) => {
-      if (searchList == "") {
+      if (searchList === "") {
         return el;
       } else if (
         el.username?.toLowerCase().includes(searchList?.toLowerCase())
@@ -56,6 +47,8 @@ const MemberList = () => {
         el.role_label?.toLowerCase().includes(searchList?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
   };
@@ -145,14 +138,6 @@ const MemberList = () => {
         customBodyRender: (_value, tableMeta) => {
           return (
             <Box sx={{ display: "flex" }}>
-              {/* <Tooltip title={statusToggle ? `Active` : `Inactive`}>
-                <Switch
-                  checked={statusToggle}
-                  onChange={(event) => setStatusToggle(event.target.checked)}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </Tooltip> */}
-
               <Tooltip title="Edit">
                 <IconButton
                   onClick={() => navigate(`/profile/${tableMeta.rowData[0]}`)}
@@ -160,30 +145,12 @@ const MemberList = () => {
                   <EditIcon color="primary" />
                 </IconButton>
               </Tooltip>
-
-              {/* <Tooltip title="Delete">
-                <IconButton
-                  onClick={() => {
-                    setDeleteDialogOpen(true);
-                    setCurrentUserId(tableMeta.rowData[0]);
-                  }}
-                >
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip> */}
             </Box>
           );
         },
       },
     },
   ];
-  const renderToolBar = () => {
-    return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
-    );
-  };
 
   const options = {
     textLabels: {
@@ -211,23 +178,11 @@ const MemberList = () => {
     // customToolbar: renderToolBar,
   };
 
-  const handleUserDelete = (id) => {};
-
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable data={result} columns={columns} options={options} />
       </ThemeProvider>
-
-      {deleteDialogOpen && (
-        <DeleteDialog
-          openDialog={deleteDialogOpen}
-          handleClose={() => setDeleteDialogOpen(false)}
-          submit={() => handleUserDelete(currentUserId)}
-          message={`Are you sure, you want to delete this User? All the associated videos, tasks, will be deleted.`}
-          loading={loading}
-        />
-      )}
     </>
   );
 };

@@ -49,9 +49,9 @@ const AlertComponent = ({ open, message, report, onClose }) => {
               }}
             >
               <Box display="flex" flexDirection="column" backgroundColor="#fff">
-                {report?.map((item) => {
+                {report?.map((item, index) => {
                   return (
-                    <Box className={classes.contentParent}>
+                    <Box key={index} className={classes.contentParent}>
                       <Box
                         className={classes.contentTaskType}
                         style={{ width: "25%" }}

@@ -39,7 +39,6 @@ import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
 import { cloneDeep } from "lodash";
-import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -78,6 +77,7 @@ const VideoLanding = () => {
     return () => {
       dispatch({ type: C.CLEAR_STATE, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -98,6 +98,7 @@ const VideoLanding = () => {
         dispatch(APITransport(payloadObj));
       })();
     }
+    // eslint-disable-next-line
   }, [taskDetails]);
 
   useEffect(() => {
@@ -114,6 +115,8 @@ const VideoLanding = () => {
     dispatch(setSubtitlesForCheck(newSub));
     dispatch(setCompletedCount(transcriptPayload?.completed_count));
     dispatch(setSubtitles(sub, C.SUBTITLES));
+
+    // eslint-disable-next-line
   }, [transcriptPayload?.payload?.payload]);
 
   useMemo(() => {
@@ -141,26 +144,29 @@ const VideoLanding = () => {
     );
   };
 
-  const onKeyDown = (event) => {
-    const keyCode = getKeyCode(event);
+  const onKeyDown = useCallback(
+    (event) => {
+      const keyCode = getKeyCode(event);
 
-    switch (keyCode) {
-      case 32:
-        event.preventDefault();
-        if (player) {
-          if (playing) {
-            player.pause();
-          } else {
-            player.play();
+      switch (keyCode) {
+        case 32:
+          event.preventDefault();
+          if (player) {
+            if (playing) {
+              player.pause();
+            } else {
+              player.play();
+            }
           }
-        }
-        break;
-      default:
-        break;
-    }
-  };
+          break;
+        default:
+          break;
+      }
+    },
+    [player, playing]
+  );
 
-  const exitHandler = () => {
+  const exitHandler = useCallback(() => {
     if (
       !document.fullscreenElement &&
       !document.webkitIsFullScreen &&
@@ -175,7 +181,8 @@ const VideoLanding = () => {
         dispatch(FullScreen(false, C.FULLSCREEN_VIDEO));
       }
     }
-  };
+    // eslint-disable-next-line
+  }, [fullscreen, fullscreenVideo]);
 
   useEffect(() => {
     document.addEventListener("fullscreenchange", exitHandler);

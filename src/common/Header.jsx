@@ -11,11 +11,10 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import headerStyle from "../styles/header";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -28,7 +27,6 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
   const [openHelpDialog, setOpenHelpDialog] = useState(false);
 
@@ -49,6 +47,7 @@ const Header = () => {
 
   useEffect(() => {
     getLoggedInUserData();
+    // eslint-disable-next-line
   }, []);
 
   const handleOpenUserMenu = (event) => {
@@ -66,14 +65,6 @@ const Header = () => {
 
   const handleClose = () => {
     setOpenHelpDialog(false);
-  };
-
-  const handleOpenSettingsMenu = (event) => {
-    setAnchorElSettings(event.currentTarget);
-  };
-
-  const handleCloseSettingsMenu = () => {
-    setAnchorElSettings(null);
   };
 
   const handleOpenHelpMenu = (event) => {
@@ -177,9 +168,6 @@ const Header = () => {
                 justifyContent="center"
                 columnGap={2}
                 rowGap={2}
-                xs={12}
-                sm={12}
-                md={7}
               >
                 {userData?.role !== "ADMIN" && (<>
                   <Typography variant="body1">
@@ -190,7 +178,6 @@ const Header = () => {
                           ? `${classes.highlightedMenu} organizations`
                           : `${classes.headerMenu} organizations`
                       }
-                      activeClassName={classes.highlightedMenu}
                     >
                       Organizations
                     </NavLink>
@@ -203,7 +190,6 @@ const Header = () => {
                         ? `${classes.highlightedMenu} task-list`
                         : `${classes.headerMenu} task-list`
                     }
-                    activeClassName={classes.highlightedMenu}
                   >
                     Tasks
                   </NavLink>
@@ -217,7 +203,6 @@ const Header = () => {
                         ? `${classes.highlightedMenu} projects`
                         : `${classes.headerMenu} projects`
                     }
-                    activeClassName={classes.highlightedMenu}
                   >
                     Projects
                   </NavLink>
@@ -226,7 +211,6 @@ const Header = () => {
                   <NavLink
                     to="#"
                     className={`${classes.headerMenu} workspace`}
-                    activeClassName={classes.highlightedMenu}
                   >
                     Analytics
                   </NavLink>

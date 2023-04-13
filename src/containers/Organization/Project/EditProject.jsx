@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -94,6 +94,7 @@ const EditProject = () => {
 
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -342,9 +343,9 @@ const EditProject = () => {
                     );
                   }}
                 >
-                  {projectDetails?.managers?.map((item) => {
+                  {projectDetails?.managers?.map((item, index) => {
                     return (
-                      <MenuItem value={item}>
+                      <MenuItem key={index} value={item}>
                         <Checkbox checked={managers.indexOf(item) > -1} />
                         {`${item.first_name} ${item.last_name}`}
                       </MenuItem>
@@ -645,6 +646,7 @@ const EditProject = () => {
                     return (
                       <>
                         <Card
+                          key={index}
                           className={classes.taskBox}
                           style={{ backgroundColor: ColorArray[index]?.colors }}
                         >

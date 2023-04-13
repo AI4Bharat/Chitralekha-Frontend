@@ -306,7 +306,6 @@ export const placementMenu = [
 export const onUndoAction = (lastAction) => {
   const subtitles = store.getState().commonReducer.subtitles;
   if (lastAction.type === "merge") {
-    console.log(lastAction, "lastAction");
     return (
       onSplit(
         lastAction.index,

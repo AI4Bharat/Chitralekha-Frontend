@@ -74,7 +74,7 @@ const ProjectList = ({ data, removeProjectList }) => {
 
   const pageSearch = () => {
     return data?.filter((el) => {
-      if (SearchProject == "") {
+      if (SearchProject === "") {
         return el;
       } else if (
         el.title?.toLowerCase().includes(SearchProject?.toLowerCase())
@@ -92,6 +92,8 @@ const ProjectList = ({ data, removeProjectList }) => {
           .includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
   };

@@ -131,6 +131,7 @@ const TaskList = () => {
     return () => {
       dispatch({ type: C.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -152,6 +153,7 @@ const TaskList = () => {
     dispatch(APITransport(translationExportObj));
 
     FetchTaskList();
+    // eslint-disable-next-line
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
@@ -371,8 +373,6 @@ const TaskList = () => {
           // --------------------- if task type is translation, submit translation with trg lang ------------- //
           await onTranslationTaskTypeSubmit(id, rsp_data);
         }
-      } else {
-        console.log("failed");
       }
     });
   };
@@ -594,6 +594,8 @@ const TaskList = () => {
         if (selectedFilters.status.includes(value.status_label)) {
           return value;
         }
+
+        return [];
       });
     } else {
       statusFilter = taskList.tasks_list;
@@ -607,6 +609,8 @@ const TaskList = () => {
         if (selectedFilters.taskType.includes(value.task_type_label)) {
           return value;
         }
+        
+        return [];
       });
     } else {
       TaskTypefilter = statusFilter;
@@ -621,6 +625,8 @@ const TaskList = () => {
         if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
           return value;
         }
+
+        return [];
       });
     } else {
       lngResult = TaskTypefilter;
@@ -634,6 +640,8 @@ const TaskList = () => {
         if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
           return value;
         }
+        
+        return [];
       });
     } else {
       filterResult = lngResult;
@@ -650,6 +658,7 @@ const TaskList = () => {
 
   useMemo(() => {
     FilterData();
+    // eslint-disable-next-line
   }, [filterStatus, filterTaskType, selectedFilters, SearchProject]);
 
   useEffect(() => {
@@ -684,9 +693,12 @@ const TaskList = () => {
         el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else{
+        return [];
       }
     });
     setfilterData(pageSearchData);
+    // eslint-disable-next-line
   }, [SearchProject]);
 
   const result =
@@ -1229,9 +1241,9 @@ const TaskList = () => {
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
-            toolBarActions.map((item) => {
+            toolBarActions.map((item, index) => {
               return (
-                <Tooltip title={item.title} placement="bottom">
+                <Tooltip key={index} title={item.title} placement="bottom">
                   <IconButton
                     className={classes.createTaskBtn}
                     onClick={item.onClick}

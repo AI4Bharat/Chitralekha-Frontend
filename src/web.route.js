@@ -1,7 +1,5 @@
 import {
-  BrowserRouter as Router,
   HashRouter,
-  Link,
   Route,
   Routes,
   Navigate,
@@ -25,7 +23,6 @@ import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
 import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
 import EditProject from "./containers/Organization/Project/EditProject";
-import TaskList from "./containers/Organization/Project/TaskList";
 import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";

@@ -80,6 +80,8 @@ const UpdateBulkTaskDialog = ({
       );
       dispatch(APITransport(userObj));
     }
+
+    // eslint-disable-next-line    
   }, []);
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const UpdateBulkTaskDialog = ({
       );
       setUser(items[0]);
     }
+    // eslint-disable-next-line    
   }, [taskDetails, isBulk]);
 
   const submitHandler = () => {

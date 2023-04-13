@@ -4,17 +4,12 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText,
   Grid,
-  Link,
   AppBar,
   Divider,
   Avatar,
   Typography,
   Box,
-  FormControlLabel,
-  Checkbox,
-  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
@@ -105,8 +100,8 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
 
           <Box >
             <List>
-              {tabs.map((tab) => (
-                  <ListItem onClick={() => setOpenDrawer(false)}>
+              {tabs.map((tab, index) => (
+                  <ListItem key={index} onClick={() => setOpenDrawer(false)}>
                     <Typography variant="body1">
                       <NavLink
                         to=""

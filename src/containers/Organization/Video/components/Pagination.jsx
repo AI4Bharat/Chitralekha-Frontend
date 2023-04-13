@@ -96,9 +96,10 @@ const Pagination = ({
             },
           }}
         >
-          {jumpTo.map((item) => {
+          {jumpTo.map((item, index) => {
             return (
               <MenuItem
+                key={index}
                 value={item}
                 onClick={() => onClick(item)}
                 disabled={getDisbled()}

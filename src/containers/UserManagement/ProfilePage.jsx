@@ -12,7 +12,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import CustomButton from "../../common/Button";
 import Spinner from "../../common/Spinner";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
@@ -32,7 +31,6 @@ const ProfilePage = () => {
 
   const [userDetails, setUserDetails] = useState(null);
   const [enableMail, setEnableMail] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState([]);
   const [snackbarInfo, setSnackbarInfo] = useState({
     open: false,
@@ -52,13 +50,13 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getUserData();
+     // eslint-disable-next-line
   }, [id]);
 
   useEffect(() => {
     if (userData) {
       setUserDetails(userData);
       setEnableMail(userData.enable_mail)
-      setLoading(false);
     }
   }, [userData]);
 
@@ -209,9 +207,9 @@ const ProfilePage = () => {
               flexWrap="wrap"
               paddingTop="10px"
             >
-              {profile.map((item) => {
+              {profile.map((item, index) => {
                 return (
-                  <Box width="30%" padding="10px 10px 20px 10px">
+                  <Box key={index} width="30%" padding="10px 10px 20px 10px">
                     <Typography
                       variant="body1"
                       color="rgba(0, 0, 0, 0.54)"

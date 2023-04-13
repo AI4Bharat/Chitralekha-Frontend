@@ -1,7 +1,6 @@
 // OrgLevelTaskList
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -137,6 +136,7 @@ const OrgLevelTaskList = () => {
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   const supportedLanguages = useSelector(
@@ -155,6 +155,7 @@ const OrgLevelTaskList = () => {
     if (orgId) {
       fetchTaskList();
     }
+    // eslint-disable-next-line
   }, [orgId]);
 
   useEffect(() => {
@@ -171,7 +172,6 @@ const OrgLevelTaskList = () => {
     }
   }, [taskList]);
 
-  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
@@ -378,8 +378,6 @@ const OrgLevelTaskList = () => {
           // --------------------- if task type is translation, submit translation with trg lang ------------- //
           await onTranslationTaskTypeSubmit(id, rsp_data);
         }
-      } else {
-        console.log("failed");
       }
     });
   };
@@ -475,7 +473,6 @@ const OrgLevelTaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
-    console.log(tableData)
     return (
       tableData.rowData[17]?.Edit && (
         <Tooltip title="Edit">
@@ -560,6 +557,7 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     FilterData();
+    // eslint-disable-next-line
   }, [filterStatus, filterTaskType]);
 
   const FilterData = () => {
@@ -576,6 +574,8 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.status.includes(value.status_label)) {
           return value;
         }
+
+        return [];
       });
     } else {
       statusFilter = taskList.tasks_list;
@@ -589,6 +589,7 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.taskType.includes(value.task_type_label)) {
           return value;
         }
+        return [];
       });
     } else {
       TaskTypefilter = statusFilter;
@@ -603,6 +604,7 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
           return value;
         }
+        return [];
       });
     } else {
       lngResult = TaskTypefilter;
@@ -617,6 +619,7 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
           return value;
         }
+        return [];
       });
     } else {
       filterResult = lngResult;
@@ -663,9 +666,13 @@ const OrgLevelTaskList = () => {
         el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
     setfilterData(pageSearchData);
+
+    // eslint-disable-next-line
   }, [SearchProject]);
 
   const result =
@@ -1049,7 +1056,6 @@ const OrgLevelTaskList = () => {
           },
         }),
         customBodyRender: (value, tableMeta) => {
-          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}
@@ -1174,9 +1180,9 @@ const OrgLevelTaskList = () => {
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
-            toolBarActions.map((item) => {
+            toolBarActions.map((item, index) => {
               return (
-                <Tooltip title={item.title} placement="bottom">
+                <Tooltip key={index} title={item.title} placement="bottom">
                   <IconButton
                     className={classes.createTaskBtn}
                     onClick={item.onClick}
@@ -1210,6 +1216,8 @@ const OrgLevelTaskList = () => {
     };
 
     setOptions(option);
+    
+    // eslint-disable-next-line
   }, [loading]);
 
   const renderSnackBar = () => {
@@ -1274,7 +1282,6 @@ const OrgLevelTaskList = () => {
 
   const handleBulkTaskDownload = async () => {
     setOpen(false);
-    console.log(selectedBulkTaskid, "selectedBulkTaskid");
     const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
 
     const res = await fetch(apiObj.apiEndPoint(), {

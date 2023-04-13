@@ -8,7 +8,7 @@ export default class FetchProjectReportsAPI extends API {
   constructor(id,reportsLevel, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_PROJECT_REPORTS; 
-     const queryString = reportsLevel == "User" ? "get_report_users" : "get_report_languages";
+     const queryString = reportsLevel === "User" ? "get_report_users" : "get_report_languages";
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.project}${id}/${queryString}/`;
   }
 

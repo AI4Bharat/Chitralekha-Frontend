@@ -3,11 +3,10 @@ import {
   IconButton,
   Typography,
   Grid,
-  DialogTitle,
   DialogContent,
   DialogContentText
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import headerStyle from "../styles/header";

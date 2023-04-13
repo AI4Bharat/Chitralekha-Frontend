@@ -79,7 +79,7 @@ const SettingsButtonComponent = ({
         return true;
       }
 
-      if (flag && completedCount != totalPages + 2) {
+      if (flag && completedCount !== totalPages + 2) {
         return true;
       }
     }
@@ -110,9 +110,9 @@ const SettingsButtonComponent = ({
         open={Boolean(anchorElLimit)}
         onClose={() => setAnchorElLimit(null)}
       >
-        {["10", "25", "50", "100"].map((item) => {
+        {["10", "25", "50", "100"].map((item, index) => {
           return (
-            <MenuItem>
+            <MenuItem key={index}>
               <FormControlLabel
                 label={item}
                 control={

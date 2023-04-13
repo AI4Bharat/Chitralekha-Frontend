@@ -46,9 +46,6 @@ const CreatenewProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const newProjectDetails = useSelector(
-    (state) => state.getNewProjectDetails.data
-  );
   const userList = useSelector(
     (state) => state.getOrganizatioProjectManagersUser.data
   );
@@ -63,7 +60,7 @@ const CreatenewProject = () => {
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
   );
-  console.log(organizationDetails, "organizationDetails");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [managerUsername, setManagerUsername] = useState([]);
@@ -129,6 +126,7 @@ const CreatenewProject = () => {
   useEffect(() => {
     getOrganizatioUsersList();
     getSourceTypes();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -145,6 +143,7 @@ const CreatenewProject = () => {
       );
       setTranslationLanguage(items);
     }
+    // eslint-disable-next-line
   }, [organizationDetails]);
 
   const handleCreateProject = async () => {

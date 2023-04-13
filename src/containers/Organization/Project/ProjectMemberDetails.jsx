@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 //Themes
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
-import DatasetStyle from "../../../styles/Dataset";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -13,7 +12,6 @@ import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
-import Search from "../../../common/Search";
 import Loader from "../../../common/Spinner";
 import DeleteDialog from "../../../common/DeleteDialog";
 
@@ -26,7 +24,6 @@ import DeleteMemberErrorDialog from "../../../common/DeleteMemberErrorDialog";
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
-  const classes = DatasetStyle();
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -86,11 +83,12 @@ const ProjectMemberDetails = () => {
 
   useEffect(() => {
     getProjectMembers();
+    // eslint-disable-next-line
   }, []);
 
   const pageSearch = () => {
     return projectMembersList.filter((el) => {
-      if (SearchProject == "") {
+      if (SearchProject === "") {
         return el;
       } else if (
         el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
@@ -108,6 +106,8 @@ const ProjectMemberDetails = () => {
         el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
   };
@@ -219,14 +219,6 @@ const ProjectMemberDetails = () => {
       },
     },
   ];
-
-  const renderToolBar = () => {
-    return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
-    );
-  };
 
   const options = {
     textLabels: {

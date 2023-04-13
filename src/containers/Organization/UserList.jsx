@@ -19,7 +19,7 @@ const UserList = ({ data }) => {
 
   const pageSearch = () => {
     return data.filter((el) => {
-      if (SearchProject == "") {
+      if (SearchProject === "") {
         return el;
       } else if (
         el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
@@ -37,6 +37,8 @@ const UserList = ({ data }) => {
         el.role?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
   };

@@ -6,39 +6,36 @@ import { languagelevelStats, reportLevels, snakeToTitleCase } from "../../utils/
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/Dataset";
 
 //Components
 import {
   ThemeProvider,
-  Box,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Grid,
 } from "@mui/material";
-import Search from "../../common/Search";
 import MUIDataTable from "mui-datatables";
 
 //APIs
 import FetchOrganizationReportsAPI from "../../redux/actions/api/Organization/FetchOrganizationReports";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 
-const OrganizationReport = ({}) => {
+const OrganizationReport = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const classes = DatasetStyle();
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [reportsLevel, setreportsLevel] = useState("");
   const [languageLevelsStats, setlanguageLevelStats] = useState("");
-
+  const [fetchedItems, setFetchedItems] = useState("");
+  
   const apiStatus = useSelector((state) => state.apiStatus);
   const ReportData = useSelector((state) => state.getOrganizationReports?.data);
-  console.log(ReportData, "ReportDataReportData");
+
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
     const apiObj = new FetchOrganizationReportsAPI(id, event.target.value);
@@ -54,9 +51,9 @@ const OrganizationReport = ({}) => {
     let result = [];
     let tableData = projectreport.map((el) => {
       let elementArr = [];
-      Object.values(el).filter((valEle, index) => {
-        elementArr[index] = valEle.value;
-      });
+      Object.values(el).filter((valEle, index) => 
+        elementArr[index] = valEle.value
+      );
       return elementArr;
     });
 
@@ -72,27 +69,33 @@ const OrganizationReport = ({}) => {
     return result;
   };
 
-  let fetchedItems;
   useEffect(() => {
-    reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
-      ? (fetchedItems = ReportData.transcript_stats)
-      : (fetchedItems = ReportData.translation_stats);
+    let temp;
 
-    setProjectreport(fetchedItems);
+    reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
+      ? (temp = ReportData.transcript_stats)
+      : (temp = ReportData.translation_stats);
+
+    setFetchedItems(temp);
+    setProjectreport(temp);
     OrgProjectreport();
+
+    // eslint-disable-next-line
   }, [ReportData, languageLevelsStats, reportsLevel]);
 
   useEffect(() => {
-    fetchedItems = ReportData;
-    setProjectreport(fetchedItems);
+    setFetchedItems(ReportData);
+    setProjectreport(ReportData);
     OrgProjectreport();
+    
+    // eslint-disable-next-line
   }, [ReportData]);
 
   const OrgProjectreport = () => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.entries(fetchedItems[0]).map((el, i) => {
+      Object.entries(fetchedItems[0]).forEach((el, i) => {
         tempColumns.push({
           name: el[0],
           label: snakeToTitleCase(el[1].label),
@@ -115,24 +118,6 @@ const OrganizationReport = ({}) => {
         });
         tempSelected.push(el[0]);
       });
-      //   Object.values(fetchedItems).forEach((valObj, valIndex) => {
-      //     console.log("valObj --- ", valObj);
-      //     tempColumns.push({
-      //       name: valObj?.name.label,
-      //       label: snakeToTitleCase(valObj?.name.label),
-      //       options: {
-      //         filter: false,
-      //         sort: false,
-      //         align: "center",
-      //         customBodyRender: (value) => {
-      //           return value === null ? "-" : value;
-      //         },
-      //       },
-      //     });
-      //   tempSelected.push(valIndex);
-      //     // console.log(tempSelected,"tempSelectedtempSelected")
-      //   });
-      console.log("tempColumns --- ", tempColumns);
     } else {
       setProjectreport([]);
     }
@@ -148,15 +133,7 @@ const OrganizationReport = ({}) => {
       return col;
     });
     setColumns(newCols);
-  }, [selectedColumns]);
-
-  const renderToolBar = () => {
-    return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
-    );
-  };
+  }, [selectedColumns, columns]);
 
   return (
     <>
@@ -175,8 +152,8 @@ const OrganizationReport = ({}) => {
               onChange={handleChangeReportsLevel}
               sx={{ textAlign: "start" }}
             >
-              {reportLevels.map((item) => (
-                <MenuItem value={item.reportLevel}>{item.reportLevel}</MenuItem>
+              {reportLevels.map((item, index) => (
+                <MenuItem key={index} value={item.reportLevel}>{item.reportLevel}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -200,8 +177,8 @@ const OrganizationReport = ({}) => {
                 onChange={handleChangelanguageLevelStats}
                 sx={{ textAlign: "start" }}
               >
-                {languagelevelStats.map((item) => (
-                  <MenuItem value={item.value}>{item.lable}</MenuItem>
+                {languagelevelStats.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>{item.lable}</MenuItem>
                 ))}
               </Select>
             </FormControl>

@@ -1,6 +1,5 @@
 import Sub from "./Sub";
 import DT from "duration-time-conversion";
-import { useCallback } from "react";
 import store from "../redux/store/store";
 
 export function authenticateUser() {
@@ -96,7 +95,6 @@ export const roles = [
     canEditTask: false,
     canDeleteTask: false,
     ProjectReport: false,
-    organizationReport: false,
     organizationReport: false,
     canAddMembers: false,
   },
@@ -482,7 +480,6 @@ export const getMilliseconds = (timeInString) => {
   if (timeInString) {
     var a = timeInString.split(":");
     var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
-    console.log(seconds);
     return seconds;
   }
   return 0;
@@ -574,7 +571,6 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     if (durationOfCurrent <= durationOfStartTime) {
       let modifiedDuration = DT.t2d(subtitles[index].start_time);
       modifiedDuration = modifiedDuration + 1;
-      console.log("qwe ===> ",DT.t2d(subtitles[index].start_time), DT.d2t(modifiedDuration));
       newTime = DT.d2t(modifiedDuration);
     }
   }

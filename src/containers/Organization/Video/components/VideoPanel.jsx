@@ -36,6 +36,7 @@ const VideoPanel = memo(
           loop();
         });
       })();
+    // eslint-disable-next-line
     }, [setPlayer, setCurrentTime, setPlaying, $video]);
 
     const onClick = useCallback(() => {
@@ -60,7 +61,6 @@ const VideoPanel = memo(
               : videoDetails?.direct_video_url
           }
           style={{
-            width: videoDetails?.video?.audio_only ? "20%" : "",
             width: videoDetails?.video?.audio_only ? "20%" : "",
             margin:
               videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",

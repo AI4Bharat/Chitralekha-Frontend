@@ -1,6 +1,6 @@
 // Voice Over Right Panel
 
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import { CardContent, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -73,8 +73,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
-  const [data, setData] = useState(new Array());
-  const [recordAudio, setRecordAudio] = useState(new Array());
+  const [data, setData] = useState([]);
+  const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
@@ -97,6 +97,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
+    // eslint-disable-next-line
   }, [$audioRef.current]);
 
   useEffect(() => {
@@ -324,7 +325,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         base64data = reader.result;
         const encode = base64data.replace("data:audio/wav;base64,", "");
         updatedArray.audioContent = encode;
-        console.log(updatedArray, "updatedArray");
         const updatedSourceText = setAudioContent(index, encode);
         dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
       };
@@ -361,7 +361,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     reader.readAsDataURL(file);
     reader.onloadend = function () {
       base64data = reader.result;
-      console.log(base64data, "base64data");
       let encode;
       if (base64data.includes("data:audio/wav;base64,")) {
         encode = base64data.replace("data:audio/wav;base64,", "");
@@ -428,6 +427,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           {sourceText?.map((item, index) => {
             return (
               <div
+                key={index}
                 className={isDisabled(index) ? classes.disabledCard : ""}
                 style={{ borderBottom: "1px solid grey" }}
                 id={`container-${index}`}
@@ -589,7 +589,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                           style={{
                             display: isDisabled(index)
                               ? "none"
-                              : recordAudio[index] == "stop"
+                              : recordAudio[index] === "stop"
                               ? ""
                               : "none",
                             width: index === 2 ? "91%" : "",
@@ -601,7 +601,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
                         style={{
                           color: "#fff",
                           margin: "18px auto",
-                          display: recordAudio[index] == "stop" ? "none" : "",
+                          display: recordAudio[index] === "stop" ? "none" : "",
                         }}
                       >
                         Recording Audio....

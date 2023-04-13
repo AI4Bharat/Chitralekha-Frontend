@@ -1,5 +1,4 @@
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -8,7 +7,6 @@ import {
   IconButton,
   DialogTitle,
   Typography,
-  Grid,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -45,6 +43,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
             Previewdata?.data?.payload.map((el, i) => {
               return (
                 <Box
+                  key={i}
                   id={`sub_${i}`}
                   textAlign={"start"}
                   sx={{
@@ -55,7 +54,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
                     width: "90%",
                   }}
                 >
-                  {task_type == "TRANSCRIPTION_EDIT" ||
+                  {task_type === "TRANSCRIPTION_EDIT" ||
                   task_type === "TRANSCRIPTION_REVIEW"
                     ? el.text
                     : el.target_text}

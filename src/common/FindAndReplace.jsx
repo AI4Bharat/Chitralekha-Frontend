@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Slide, Box, Typography, Alert, Tooltip, IconButton } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, Grid, Box, Typography, Tooltip, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ProjectStyle from '../styles/ProjectStyle';
 import OutlinedTextField from './OutlinedTextField';
@@ -55,7 +55,7 @@ const FindAndReplace = (props) => {
     const onFindClick = () => {
         const textToFind = findValue.toLowerCase().trim()
         const indexListInDataOfTextOccurence = [];
-        subtitlesData.map((item, index) => {
+        subtitlesData.forEach((item, index) => {
             if (item[subtitleDataKey].toLowerCase().includes(textToFind)) {
                 indexListInDataOfTextOccurence.push(index);
             }
@@ -83,7 +83,7 @@ const FindAndReplace = (props) => {
     const onReplaceClick = () => {
         const currentSubtitleSource = [...subtitlesData];
         const updatedSubtitleData = [];
-        currentSubtitleSource.map((ele, index) => {
+        currentSubtitleSource.forEach((ele, index) => {
             if (foundIndices[currentFound] === index) {
                 const textToReplace = ele[subtitleDataKey].replace(new RegExp(findValue, 'gi'), replaceValue);
                 ele[subtitleDataKey] = textToReplace;
@@ -99,7 +99,7 @@ const FindAndReplace = (props) => {
     const onReplaceAllClick = () => {
         const currentSubtitleSource = [...subtitlesData];
         const updatedSubtitleData = [];
-        currentSubtitleSource.map((ele, index) => {
+        currentSubtitleSource.forEach((ele, index) => {
             if (foundIndices?.includes(index)) {
                 const textToReplace = ele[subtitleDataKey].replace(new RegExp(findValue, 'gi'), replaceValue);
                 ele[subtitleDataKey] = textToReplace;
@@ -158,6 +158,7 @@ const FindAndReplace = (props) => {
                         justifyContent="space-around"
                     >
                         <Grid
+                            item
                             md={4}
                             sx={{ margin: 2 }}
                         >
@@ -300,6 +301,7 @@ const FindAndReplace = (props) => {
                             </Grid>
                         </Grid>
                         <Grid
+                            item
                             md={7}
                             width={"100%"}
                             textAlign={"-webkit-center"}
@@ -311,6 +313,7 @@ const FindAndReplace = (props) => {
                             {subtitlesData?.map((el, i) => {
                                 return (
                                     <Box
+                                        key={i}
                                         id={`sub_${i}`}
                                         textAlign={"start"}
                                         sx={{

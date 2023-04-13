@@ -1,11 +1,9 @@
-import { Grid, Typography, Hidden, ThemeProvider, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Grid, Typography, Hidden, ThemeProvider } from "@mui/material";
 import { translate } from "../../config/localisation";
 import themeDefault from "../../theme/theme";
 import LoginStyle from "../../styles/loginStyle";
 
 export default function AppInfo() {
-  let navigate = useNavigate();
   const classes = LoginStyle();
   const routeChange = () => {
     // let path = `dashboard`;

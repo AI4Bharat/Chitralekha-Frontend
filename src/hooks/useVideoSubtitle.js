@@ -22,6 +22,8 @@ export const useVideoSubtitle = (id) => {
 
     if (!videoSubtitle.hasOwnProperty(id)) fetchVideoSubtitle();
     else setSubtitle(videoSubtitle[id]);
+
+    // eslint-disable-next-line
   }, []);
 
   return {

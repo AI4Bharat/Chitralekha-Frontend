@@ -96,6 +96,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
   useEffect(() => {
     getPayload(currentOffset, limit);
+
+    // eslint-disable-next-line
   }, [limit]);
 
   const onDelete = useCallback((index) => {
@@ -108,6 +110,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
     //   data: data,
     // }]);
     // setRedoStack([]);
+
+    // eslint-disable-next-line
   }, []);
 
   const onMergeClick = useCallback((index) => {
@@ -123,6 +127,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
     //   targetSelectionStart: targetSelectionStart,
     // }]);
     // setRedoStack([]);
+
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -225,6 +231,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    
+    // eslint-disable-next-line
   }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
@@ -237,6 +245,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
     //   index: index,
     // }]);
     // setRedoStack([]);
+
+    // eslint-disable-next-line
   }, []);
 
   // const onUndo = useCallback(() => {
@@ -309,6 +319,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           {sourceText?.map((item, index) => {
             return (
               <Box
+                key={index}
                 id={`sub_${index}`}
                 style={{
                   padding: "15px",

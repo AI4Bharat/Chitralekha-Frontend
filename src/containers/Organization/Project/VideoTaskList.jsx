@@ -2,8 +2,7 @@ import React from "react";
 import MUIDataTable from "mui-datatables";
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FetchVideoTaskListAPI from "../../../redux/actions/api/Project/FetchVideoTaskList";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
@@ -24,6 +23,7 @@ const VideoTaskList = (props) => {
 
   useEffect(() => {
     FetchVideoTaskList();
+    // eslint-disable-next-line
   }, []);
 
   const videotaskList = useSelector((state) => state.getVideoTaskList.data);

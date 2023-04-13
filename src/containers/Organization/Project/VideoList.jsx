@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { roles } from "../../../utils/utils";
-import moment from "moment";
 
 //Themes
 import DatasetStyle from "../../../styles/Dataset";
@@ -14,12 +13,11 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
-import { Box, ThemeProvider, Tooltip, IconButton, Button, Divider } from "@mui/material";
+import { Box, ThemeProvider, Tooltip, IconButton, Divider } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import Search from "../../../common/Search";
 import Loader from "../../../common/Spinner";
 import DeleteDialog from "../../../common/DeleteDialog";
 import VideoStatusTable from "../../../common/VideoStatusTable";
@@ -53,7 +51,6 @@ const VideoList = ({ data, removeVideo }) => {
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
-  const [alertType, setAlertType] = useState("");
   const [openExportDialog, setOpenExportDialog] = useState(false);
   const [exportType, setExportType] = useState("srt");
   const [videoIdForDowload, setVideoIdForDowload] = useState("");
@@ -112,6 +109,8 @@ const VideoList = ({ data, removeVideo }) => {
   useEffect(() => {
     const translationExportObj = new FetchTranslationExportTypesAPI();
     dispatch(APITransport(translationExportObj));
+
+    // eslint-disable-next-line
   }, []);
 
   const handleDownloadAll = (item) => {
@@ -174,7 +173,7 @@ const VideoList = ({ data, removeVideo }) => {
 
   const pageSearch = () => {
     return data.filter((el) => {
-      if (SearchProject == "") {
+      if (SearchProject === "") {
         return el;
       } else if (
         el.id.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
@@ -190,6 +189,8 @@ const VideoList = ({ data, removeVideo }) => {
         el.description?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
   };
@@ -272,7 +273,6 @@ const VideoList = ({ data, removeVideo }) => {
       if (isBulk) {
         setShowAlert(true);
         setAlertData(resp);
-        setAlertType("pass");
       } else {
         setSnackbarInfo({
           open: true,
@@ -286,7 +286,6 @@ const VideoList = ({ data, removeVideo }) => {
       if (isBulk) {
         setShowAlert(true);
         setAlertData(resp);
-        setAlertType("fail");
       } else {
         setSnackbarInfo({
           open: true,
@@ -465,9 +464,9 @@ const VideoList = ({ data, removeVideo }) => {
         {roles.filter((role) => role.value === userData?.role)[0]
           ?.permittedToCreateTask &&
           showCreateTaskBtn &&
-          toolBarActions.map((item) => {
+          toolBarActions.map((item, index) => {
             return (
-              <Tooltip title={item.title} placement="bottom">
+              <Tooltip key={index} title={item.title} placement="bottom">
                 <IconButton
                   className={classes.createTaskBtn}
                   onClick={item.onClick}

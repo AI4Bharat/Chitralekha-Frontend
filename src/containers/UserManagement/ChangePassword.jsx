@@ -4,27 +4,20 @@ import {
   Typography,
   InputAdornment,
   IconButton,
-  Snackbar,
-  Alert,
   Button,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import DatasetStyle from "../../styles/Dataset";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import { useEffect } from "react";
 import CustomizedSnackbars from "../../common/Snackbar"
 
 const ChangePassword = () => {
   const navigate = useNavigate();
   const classes = DatasetStyle();
-  const dispatch = useDispatch();
-  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [currentPassword, setCurrentPassword] = useState({
     value: "",
@@ -40,24 +33,12 @@ const ChangePassword = () => {
     variant: "success",
 });
 
-  // useEffect(() => {
-  //   if (apiStatus.message) {
-  //     setSnackbarInfo({
-  //       ...snackbar,
-  //       open: true,
-  //       message: apiStatus.current_password,
-  //       variant: apiStatus.error ? "error" : "Success",
-  //     });
-  //   }
-  // }, [apiStatus]);
-
   const handleChangePassword = async() => {
     let apiObj = new ChangePasswordAPI(
       newPassword.value,
       currentPassword.value
     );
 
-   // dispatch(APITransport(apiObj));
    const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
@@ -90,13 +71,6 @@ const ChangePassword = () => {
 
   const handleClickShowNewPassword = () => {
     setNewPassword({ ...newPassword, visibility: !newPassword.visibility });
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarInfo({
-      ...snackbar,
-      open: false,
-    });
   };
 
   const renderSnackBar = () => {
