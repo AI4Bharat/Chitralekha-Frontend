@@ -6,7 +6,10 @@ import {
   Button,
   Card,
   CardContent,
+  FormControlLabel,
   Grid,
+  Switch,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CustomButton from "../../common/Button";
@@ -19,6 +22,8 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
 import EditIcon from "@mui/icons-material/Edit";
 import { getProfile } from "../../utils/utils";
+import ToggleMailsAPI from "../../redux/actions/api/User/ToggleMails";
+import CustomizedSnackbars from "../../common/Snackbar";
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -26,8 +31,14 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
 
   const [userDetails, setUserDetails] = useState(null);
+  const [enableMail, setEnableMail] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState([]);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "",
+  });
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUser = useSelector(
@@ -46,6 +57,7 @@ const ProfilePage = () => {
   useEffect(() => {
     if (userData) {
       setUserDetails(userData);
+      setEnableMail(userData.enable_mail)
       setLoading(false);
     }
   }, [userData]);
@@ -56,6 +68,34 @@ const ProfilePage = () => {
       setProfile(temp);
     }
   }, [userDetails]);
+
+  const handleEmailToggle = async () => {
+    setEnableMail(!enableMail)
+    const mailObj = new ToggleMailsAPI(
+      loggedInUser.id,
+      !enableMail
+    );
+    const res = await fetch(mailObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(mailObj.getBody()),
+      headers: mailObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
 
   const renderProfileCard = () => {
     if (!userDetails || userDetails.length <= 0)
@@ -103,6 +143,25 @@ const ProfilePage = () => {
             {userDetails?.phone}
           </Typography>
         )}
+
+        {(loggedInUser.id === +id ||
+          loggedInUser.role === "ADMIN" ||
+          loggedInUser.role === "ORG_OWNER") && (
+          <Tooltip
+            title={`${
+              enableMail ? "Disable" : "Enable"
+            } daily mails`}
+            sx={{ marginLeft: "0", marginTop: "8px" }}
+          >
+            <FormControlLabel
+              control={<Switch color="primary" />}
+              label="Daily Mails"
+              labelPlacement="start"
+              checked={enableMail}
+              onChange={handleEmailToggle}
+            />
+          </Tooltip>
+        )}
       </CardContent>
     );
   };
@@ -125,7 +184,9 @@ const ProfilePage = () => {
             >
               <Typography variant="h4">Profile</Typography>
 
-              {(loggedInUser.id === +id || loggedInUser.role === "ADMIN" || loggedInUser.role === "ORG_OWNER") && (
+              {(loggedInUser.id === +id ||
+                loggedInUser.role === "ADMIN" ||
+                loggedInUser.role === "ORG_OWNER") && (
                 <Button
                   variant="outlined"
                   sx={{
@@ -173,6 +234,13 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
       </Grid>
+
+      <CustomizedSnackbars
+        {...snackbarInfo}
+        handleClose={() => setSnackbarInfo({ ...snackbarInfo, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        hide={2000}
+      />
     </Grid>
   );
 };
