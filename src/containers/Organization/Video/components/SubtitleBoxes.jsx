@@ -190,6 +190,7 @@ export default memo(
 
             if (
               index > 0 &&
+              index < subtitles.length - 1 &&
               startTime >= DT.t2d(previou.end_time) &&
               endTime <= DT.t2d(next.start_time)
             ) {
@@ -199,7 +200,25 @@ export default memo(
               });
             }
 
-            if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+            if (subtitles.length > 1 && index === 0 && endTime <= DT.t2d(next.start_time)) {
+              updateSub(lastSub, {
+                start_time,
+                end_time,
+              });
+            }
+
+            if (
+              subtitles.length > 1 && 
+              index === subtitles.length - 1 &&
+              startTime >= DT.t2d(previou.end_time)
+            ) {
+              updateSub(lastSub, {
+                start_time,
+                end_time,
+              });
+            }
+
+            if (subtitles.length === 1) {
               updateSub(lastSub, {
                 start_time,
                 end_time,
@@ -233,14 +252,14 @@ export default memo(
                 start_time: DT.d2t(sub.startTime - 0.1),
                 end_time: DT.d2t(sub.endTime - 0.1),
               });
-              player.currentTime = sub.startTime - 0.1;
+              // player.currentTime = sub.startTime - 0.1;
               break;
             case 39:
               updateSub(sub, {
                 start_time: DT.d2t(sub.startTime + 0.1),
                 end_time: DT.d2t(sub.endTime + 0.1),
               });
-              player.currentTime = sub.startTime + 0.1;
+              // player.currentTime = sub.startTime + 0.1;
               break;
             case 8:
             case 46:
