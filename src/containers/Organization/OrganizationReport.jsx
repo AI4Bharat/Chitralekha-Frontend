@@ -6,6 +6,7 @@ import { languagelevelStats, reportLevels, snakeToTitleCase } from "../../utils/
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import {
@@ -25,6 +26,7 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 const OrganizationReport = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const classes = TableStyles();
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -101,13 +103,9 @@ const OrganizationReport = () => {
             sort: false,
             align: "center",
             setCellHeaderProps: () => ({
-              style: {
-                height: "32px",
-                fontSize: "16px",
-                padding: "16px",
-              },
+              className: classes.cellHeaderProps
             }),
-            setCellProps: () => ({ style: {  height: "40px" } }),
+            setCellProps: () => ({ className: classes.cellProps }),
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },

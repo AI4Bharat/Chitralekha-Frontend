@@ -8,7 +8,12 @@ import CustomizedSnackbars from "../../common/Snackbar";
 //APIs
 import FetchTaskQueueStatusAPI from "../../redux/actions/api/Organization/FetchTaskQueueStatus";
 
+//Styles
+import TableStyles from "../../styles/TableStyles";
+
 const TaskQueueStatus = () => {
+  const classes = TableStyles();
+
   const [loading, setLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -79,7 +84,7 @@ const TaskQueueStatus = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -92,7 +97,7 @@ const TaskQueueStatus = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -104,7 +109,7 @@ const TaskQueueStatus = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -116,7 +121,7 @@ const TaskQueueStatus = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -128,7 +133,7 @@ const TaskQueueStatus = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -140,7 +145,7 @@ const TaskQueueStatus = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 //Themes
 import { ThemeProvider, Tooltip, IconButton, Box } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -18,6 +19,7 @@ import Loader from "../../common/Spinner";
 const MemberList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const classes = TableStyles();
 
   const userList = useSelector((state) => state.getAllUserList.data);
   const searchList = useSelector((state) => state.searchList.data);
@@ -82,7 +84,7 @@ const MemberList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -94,7 +96,7 @@ const MemberList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return <Box sx={{ display: "flex" }}>{value?.title}</Box>;
@@ -109,7 +111,7 @@ const MemberList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -121,7 +123,7 @@ const MemberList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -133,7 +135,7 @@ const MemberList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          className: classes.cellHeaderProps
         }),
         customBodyRender: (_value, tableMeta) => {
           return (

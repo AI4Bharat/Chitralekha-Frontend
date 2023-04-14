@@ -9,10 +9,12 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
 import moment from "moment";
 import Loader from "../../../common/Spinner";
+import TableStyles from "../../../styles/TableStyles";
 
 const VideoTaskList = (props) => {
   const dispatch = useDispatch();
   const { videoDetails } = props;
+  const classes = TableStyles();
 
   const apiStatus = useSelector((state) => state.apiStatus);
 
@@ -37,7 +39,7 @@ const VideoTaskList = (props) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -49,7 +51,7 @@ const VideoTaskList = (props) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
         customBodyRender: (value) => {
           return <Box>{`${value.first_name} ${value.last_name}`}</Box>;
@@ -64,7 +66,7 @@ const VideoTaskList = (props) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
         customBodyRender: (value) => {
           return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
@@ -80,7 +82,7 @@ const VideoTaskList = (props) => {
         align: "center",
 
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -92,7 +94,7 @@ const VideoTaskList = (props) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -104,7 +106,7 @@ const VideoTaskList = (props) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -116,7 +118,7 @@ const VideoTaskList = (props) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },

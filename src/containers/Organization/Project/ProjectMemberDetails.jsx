@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 //Themes
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
+import TableStyles from "../../../styles/TableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -24,6 +25,7 @@ import DeleteMemberErrorDialog from "../../../common/DeleteMemberErrorDialog";
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = TableStyles();
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -161,11 +163,7 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -177,11 +175,7 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -194,11 +188,7 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -210,11 +200,7 @@ const ProjectMemberDetails = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: classes.cellHeaderProps,
         }),
       },
     },

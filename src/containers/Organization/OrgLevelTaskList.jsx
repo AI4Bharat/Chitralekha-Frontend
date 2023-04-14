@@ -11,6 +11,7 @@ import C from "../../redux/constants";
 //Themes
 import tableTheme from "../../theme/tableTheme";
 import DatasetStyle from "../../styles/Dataset";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import {
@@ -63,6 +64,7 @@ import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceo
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
+  const tableClasses = TableStyles();
   const navigate = useNavigate();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
@@ -713,11 +715,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: "exclude",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
       },
     },
@@ -737,11 +735,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -764,11 +758,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -793,11 +783,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: false,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -821,11 +807,7 @@ const OrgLevelTaskList = () => {
         display: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -856,11 +838,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -891,11 +869,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -918,11 +892,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -959,11 +929,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -987,11 +953,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: true,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1022,11 +984,7 @@ const OrgLevelTaskList = () => {
         display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1049,11 +1007,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (

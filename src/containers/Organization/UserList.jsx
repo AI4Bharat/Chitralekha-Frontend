@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 //Themes, Styles
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/TableStyles";
 
 //Icons
 import PreviewIcon from "@mui/icons-material/Preview";
@@ -14,6 +15,8 @@ import MUIDataTable from "mui-datatables";
 import { getOptions } from "../../utils/tableUtils";
 
 const UserList = ({ data }) => {
+  const classes = TableStyles();
+
   const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
@@ -70,7 +73,7 @@ const UserList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -82,7 +85,7 @@ const UserList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -94,7 +97,7 @@ const UserList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -106,7 +109,7 @@ const UserList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },

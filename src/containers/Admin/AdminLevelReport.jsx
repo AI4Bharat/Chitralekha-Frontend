@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 //Themes
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -11,7 +12,6 @@ import Loader from "../../common/Spinner";
 import FetchAdminLevelReportsAPI from "../../redux/actions/api/Admin/AdminLevelReport";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import { snakeToTitleCase } from "../../utils/utils";
-import TableStyles from "../../styles/TableStyles";
 
 const AdminLevelReport = () => {
   const dispatch = useDispatch();
@@ -69,13 +69,9 @@ const AdminLevelReport = () => {
             sort: false,
             align: "center",
             setCellHeaderProps: () => ({
-              style: {
-                height: "32px",
-                fontSize: "16px",
-                padding: "16px",
-              },
+              className: classes.cellHeaderProps,
             }),
-            setCellProps: () => ({ style: { height: "40px" } }),
+            setCellProps: () => ({ className: classes.cellProps }),
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },
@@ -88,6 +84,8 @@ const AdminLevelReport = () => {
     }
     setColumns(tempColumns);
     setSelectedColumns(tempSelected);
+
+    // eslint-disable-next-line
   }, [AdminReportData]);
 
   useEffect(() => {

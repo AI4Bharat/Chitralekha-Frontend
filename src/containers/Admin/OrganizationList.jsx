@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
@@ -23,6 +24,7 @@ import Loader from "../../common/Spinner";
 const OrganizationList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const classes = TableStyles();
 
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const searchList = useSelector((state) => state.searchList.data);
@@ -103,7 +105,7 @@ const OrganizationList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -115,7 +117,7 @@ const OrganizationList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
         customBodyRender: (value) => {
           return <Box>{`${value?.first_name} ${value?.last_name}`}</Box>;
@@ -130,7 +132,7 @@ const OrganizationList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return <Box>{`${value?.first_name} ${value?.last_name}`}</Box>;
@@ -145,7 +147,7 @@ const OrganizationList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
         customBodyRender: (value) => {
           return (
@@ -164,7 +166,7 @@ const OrganizationList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -176,7 +178,7 @@ const OrganizationList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          className: classes.cellHeaderProps
         }),
         customBodyRender: (_value, tableMeta) => {
           return (

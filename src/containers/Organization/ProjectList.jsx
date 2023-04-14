@@ -6,6 +6,7 @@ import moment from "moment/moment";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/TableStyles";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,6 +23,8 @@ import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
+  const classes = TableStyles();
+
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -137,7 +140,7 @@ const ProjectList = ({ data, removeProjectList }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -149,7 +152,7 @@ const ProjectList = ({ data, removeProjectList }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -161,7 +164,7 @@ const ProjectList = ({ data, removeProjectList }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -173,7 +176,7 @@ const ProjectList = ({ data, removeProjectList }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps
         }),
       },
     },
@@ -185,7 +188,7 @@ const ProjectList = ({ data, removeProjectList }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", textAlign: "center" },
+          className: classes.cellActionHeaderProps
         }),
       },
     },

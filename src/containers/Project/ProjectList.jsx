@@ -4,8 +4,11 @@ import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
 import CustomButton from "../../common/Button";
 import { Link } from "react-router-dom";
+import TableStyles from "../../styles/TableStyles";
 
 const ProjectList = ({ data }) => {
+  const classes = TableStyles();
+
   const columns = [
     {
       name: "id",
@@ -15,7 +18,7 @@ const ProjectList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -27,7 +30,7 @@ const ProjectList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -40,7 +43,7 @@ const ProjectList = ({ data }) => {
         align: "center",
 
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -52,7 +55,7 @@ const ProjectList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
+          className: classes.cellHeaderProps,
         }),
       },
     },
@@ -64,15 +67,18 @@ const ProjectList = ({ data }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
+          className: classes.cellHeaderProps,
         }),
         customBodyRender: (_value, tableMeta) => {
           return (
-            <Link to={`/projects/${tableMeta.rowData[0]}`} style={{ textDecoration: "none" }}>
-                <CustomButton
-                    sx={{ borderRadius: 2, marginRight: 2 }}
-                    label="View"
-                />
+            <Link
+              to={`/projects/${tableMeta.rowData[0]}`}
+              style={{ textDecoration: "none" }}
+            >
+              <CustomButton
+                sx={{ borderRadius: 2, marginRight: 2 }}
+                label="View"
+              />
             </Link>
           );
         },

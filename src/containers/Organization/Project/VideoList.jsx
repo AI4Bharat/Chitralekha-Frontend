@@ -13,7 +13,13 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 //Components
-import { Box, ThemeProvider, Tooltip, IconButton, Divider } from "@mui/material";
+import {
+  Box,
+  ThemeProvider,
+  Tooltip,
+  IconButton,
+  Divider,
+} from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import VideoDialog from "../../../common/VideoDialog";
 import CreateTaskDialog from "../../../common/CreateTaskDialog";
@@ -30,9 +36,11 @@ import ExportAllDialog from "../../../common/ExportAllDialog";
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import BulkDownloadForVideoAPI from "../../../redux/actions/api/Project/BulkDownloadForVideo";
+import TableStyles from "../../../styles/TableStyles";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
+  const tableClasses = TableStyles();
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
@@ -305,12 +313,7 @@ const VideoList = ({ data, removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-            width: "60px",
-          },
+          className: tableClasses.cellVideoHeaderProps,
         }),
       },
     },
@@ -322,11 +325,7 @@ const VideoList = ({ data, removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },
@@ -338,11 +337,7 @@ const VideoList = ({ data, removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },
@@ -354,11 +349,7 @@ const VideoList = ({ data, removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },
@@ -379,11 +370,7 @@ const VideoList = ({ data, removeVideo }) => {
         display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },
@@ -395,11 +382,7 @@ const VideoList = ({ data, removeVideo }) => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },

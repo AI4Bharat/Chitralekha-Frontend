@@ -60,12 +60,14 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
+import TableStyles from "../../../styles/TableStyles";
 
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const tableClasses = TableStyles();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -739,11 +741,7 @@ const TaskList = () => {
         align: "center",
         display: "exclude",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },
@@ -763,11 +761,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -790,11 +784,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -818,11 +808,7 @@ const TaskList = () => {
         align: "center",
         display: false,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -853,11 +839,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -888,11 +870,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -915,11 +893,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -956,11 +930,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -984,11 +954,7 @@ const TaskList = () => {
         align: "center",
         display: "excluded",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1019,11 +985,7 @@ const TaskList = () => {
         display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1046,11 +1008,7 @@ const TaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (

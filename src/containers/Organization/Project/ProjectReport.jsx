@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { snakeToTitleCase } from "../../../utils/utils";
+
+//APIs
+import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 //Themes
+import tableTheme from "../../../theme/tableTheme";
+import TableStyles from "../../../styles/TableStyles";
+
+//Components
+import MUIDataTable from "mui-datatables";
+import Loader from "../../../common/Spinner";
 import {
   ThemeProvider,
   FormControl,
@@ -11,14 +22,6 @@ import {
   MenuItem,
   Grid,
 } from "@mui/material";
-import tableTheme from "../../../theme/tableTheme";
-
-//Components
-import MUIDataTable from "mui-datatables";
-import Loader from "../../../common/Spinner";
-import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { snakeToTitleCase } from "../../../utils/utils";
 
 const reportLevels = [{ reportLevel: "User" }, { reportLevel: "Language" }];
 
@@ -30,6 +33,7 @@ const languagelevelStats = [
 const ProjectReport = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
+  const classes = TableStyles();
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -109,11 +113,7 @@ const ProjectReport = () => {
             sort: false,
             align: "center",
             setCellHeaderProps: () => ({
-              style: {
-                height: "32px",
-                fontSize: "16px",
-                padding: "16px",
-              },
+              className: classes.cellHeaderProps,
             }),
             setCellProps: () => ({ style: { height: "40px" } }),
             customBodyRender: (value) => {
