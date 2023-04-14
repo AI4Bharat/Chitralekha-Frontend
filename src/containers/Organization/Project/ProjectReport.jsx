@@ -36,7 +36,6 @@ const ProjectReport = () => {
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [reportsLevel, setreportsLevel] = useState("");
   const [languageLevelsStats, setlanguageLevelStats] = useState("");
-  const [fetchedItems, setFetchedItems] = useState();
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const ProjectReportData = useSelector(
@@ -54,26 +53,22 @@ const ProjectReport = () => {
     setlanguageLevelStats(event.target.value);
   };
 
+  let fetchedItems;
   useEffect(() => {
-    let temp;
-
     reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
-      ? (temp = ProjectReportData.transcript_stats)
-      : (temp = ProjectReportData.translation_stats);
+      ? (fetchedItems = ProjectReportData.transcript_stats)
+      : (fetchedItems = ProjectReportData.translation_stats);
 
-    setFetchedItems(temp);
-    setProjectreport(temp);
+    setProjectreport(fetchedItems);
     Projectreport();
 
     // eslint-disable-next-line
   }, [ProjectReportData, languageLevelsStats, reportsLevel]);
 
   useEffect(() => {
-    let temp;
-    temp = ProjectReportData;
+    fetchedItems = ProjectReportData;
 
-    setFetchedItems(temp);
-    setProjectreport(temp);
+    setProjectreport(fetchedItems);
     Projectreport();
 
     // eslint-disable-next-line

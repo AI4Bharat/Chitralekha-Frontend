@@ -65,7 +65,7 @@ const VideoPanel = memo(
             margin:
               videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
           }}
-          poster={videoDetails?.video?.audio_only && poster}
+          poster={videoDetails?.video?.audio_only ? poster : ""}
           ref={$video}
           className={classes.videoPlayer}
         />

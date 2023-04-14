@@ -11,9 +11,12 @@ import Loader from "../../common/Spinner";
 import FetchAdminLevelReportsAPI from "../../redux/actions/api/Admin/AdminLevelReport";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import { snakeToTitleCase } from "../../utils/utils";
+import TableStyles from "../../styles/TableStyles";
 
 const AdminLevelReport = () => {
   const dispatch = useDispatch();
+  const classes = TableStyles();
+
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
