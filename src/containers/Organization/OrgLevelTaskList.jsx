@@ -475,7 +475,6 @@ const OrgLevelTaskList = () => {
   };
 
   const renderEditButton = (tableData) => {
-    console.log(tableData)
     return (
       tableData.rowData[17]?.Edit && (
         <Tooltip title="Edit">
@@ -1049,7 +1048,6 @@ const OrgLevelTaskList = () => {
           },
         }),
         customBodyRender: (value, tableMeta) => {
-          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}

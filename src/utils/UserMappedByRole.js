@@ -1,8 +1,6 @@
 import { Typography } from "@mui/material"
 
 const UserMappedByRole = (statusLabel) => {
-
-console.log(statusLabel,'statusLabel');
     if (statusLabel == "Complete") {
         return {
             name: statusLabel, name: "Complete", element: <Typography variant="caption"

@@ -38,7 +38,6 @@ const OrganizationReport = ({}) => {
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const ReportData = useSelector((state) => state.getOrganizationReports?.data);
-  console.log(ReportData, "ReportDataReportData");
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
     const apiObj = new FetchOrganizationReportsAPI(id, event.target.value);
