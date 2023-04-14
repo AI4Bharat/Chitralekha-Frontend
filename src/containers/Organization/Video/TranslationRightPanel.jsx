@@ -222,10 +222,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
     );
   };
 
-  // const handleTimeChange = useCallback((value, index, type, time) => {
-  //   const sub = timeChange(value, index, type, time);
-  //   dispatch(setSubtitles(sub, C.SUBTITLES));
-  // }, []);
+  const handleTimeChange = useCallback((value, index, type, time) => {
+    const sub = timeChange(value, index, type, time);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
@@ -323,12 +323,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                   display="flex"
                   sx={{ justifyContent: "center" }}
                 >
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  /> */}
+                  />
 
                   <ButtonComponent
                     index={index}
@@ -338,12 +338,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     addNewSubtitleBox={addNewSubtitleBox}
                   />
 
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  /> */}
+                  />
                 </Box>
 
                 <CardContent

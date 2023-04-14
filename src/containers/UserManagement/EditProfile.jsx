@@ -192,16 +192,39 @@ const EditProfile = () => {
       updateProfileReqBody.organization = organization.id;
     }
 
+    let apiObj;
     if (
       loggedInUserData.role === "ADMIN" ||
       loggedInUserData.role === "ORG_OWNER"
     ) {
-      const apiObj = new UpdateProfileAPI(updateProfileReqBody, id);
-      dispatch(APITransport(apiObj));
+      apiObj = new UpdateProfileAPI(updateProfileReqBody, id);
     } else {
-      const apiObj = new UpdateProfileAPI(updateProfileReqBody);
-      dispatch(APITransport(apiObj));
+      apiObj = new UpdateProfileAPI(updateProfileReqBody);
     }
+
+    fetch(apiObj.apiEndPoint(), {
+      method: "PATCH",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    })
+      .then(async (res) => {
+        if (!res.ok) throw await res.json();
+        else return await res.json();
+      })
+      .then((res) => {
+        setSnackbarState({
+          open: true,
+          message: res.message,
+          variant: "success",
+        });
+      })
+      .catch((err) => {
+        setSnackbarState({
+          open: true,
+          message: err.message,
+          variant: "error",
+        });
+      });
   };
 
   const handlePasswordUpdate = () => {
