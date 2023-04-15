@@ -716,7 +716,6 @@ const TaskList = () => {
             item.task_type_label,
             item.video_name,
             moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-            item.source_type,
             item.src_language,
             item.src_language_label,
             item.target_language,

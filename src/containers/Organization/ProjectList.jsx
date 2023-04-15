@@ -33,7 +33,6 @@ const ProjectList = ({ data, removeProjectList }) => {
     variant: "success",
   });
 
-  const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
   const handleok = async (id) => {
@@ -74,62 +73,32 @@ const ProjectList = ({ data, removeProjectList }) => {
     setprojectid(id);
   };
 
-  const pageSearch = () => {
-    return data?.filter((el) => {
-      if (SearchProject === "") {
-        return el;
-      } else if (
-        el.title?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.managers?.some((val) =>
-          val.email?.toLowerCase().includes(SearchProject?.toLowerCase())
-        )
-      ) {
-        return el;
-      } else if (
-        el.created_by?.username
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else {
-        return [];
-      }
-    });
-  };
+  const result = data.map((item, i) => {
+    return [
+      item.title,
+      item.managers[0]?.email,
+      moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+      `${item.created_by?.first_name} ${item.created_by?.last_name}`,
+      <div style={{ textAlign: "center" }}>
+        <Link
+          to={`/my-organization/${id}/project/${item.id}`}
+          style={{ textDecoration: "none" }}
+        >
+          <Tooltip title="View">
+            <IconButton>
+              <PreviewIcon color="primary" />
+            </IconButton>
+          </Tooltip>
+        </Link>
 
-  const result =
-    data && data.length > 0
-      ? pageSearch().map((item, i) => {
-          return [
-            item.title,
-            item.managers[0]?.email,
-            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-            `${item.created_by?.first_name} ${item.created_by?.last_name}`,
-            <div style={{ textAlign: "center" }}>
-              <Link
-                to={`/my-organization/${id}/project/${item.id}`}
-                style={{ textDecoration: "none" }}
-              >
-                <Tooltip title="View">
-                  <IconButton>
-                    <PreviewIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </Link>
-
-              <Tooltip title="Delete">
-                <IconButton onClick={() => handleDeleteProject(item.id)}>
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip>
-            </div>,
-          ];
-        })
-      : [];
-
+        <Tooltip title="Delete">
+          <IconButton onClick={() => handleDeleteProject(item.id)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </div>,
+    ];
+  });
 
   const renderSnackBar = () => {
     return (

@@ -42,7 +42,6 @@ const ProjectMemberDetails = () => {
     (state) => state.getProjectMembers.data
   );
 
-  const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const projectDetails = useSelector((state) => state.getProjectDetails.data);
@@ -87,71 +86,36 @@ const ProjectMemberDetails = () => {
     // eslint-disable-next-line
   }, []);
 
-  const pageSearch = () => {
-    return projectMembersList.filter((el) => {
-      if (SearchProject === "") {
-        return el;
-      } else if (
-        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.last_name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.email?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else {
-        return [];
-      }
-    });
-  };
-  const result =
-    projectMembersList && projectMembersList.length > 0
-      ? pageSearch().map((item, i) => {
-          return [
-            `${item.first_name} ${item.last_name}`,
-            item.email,
-            item.role,
-            // item.availability_status,
-            //roles.map((value) => (value.id === item.role ? value.type : "")),
-            <Box sx={{ display: "flex" }}>
-              <Tooltip title="View">
-                <IconButton>
-                  <Link
-                    to={`/profile/${item.id}`}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <PreviewIcon color="primary" sx={{ mt: "10px" }} />
-                  </Link>
-                </IconButton>
-              </Tooltip>
+  const result = projectMembersList.map((item, i) => {
+    return [
+      `${item.first_name} ${item.last_name}`,
+      item.email,
+      item.role,
+      <Box sx={{ display: "flex" }}>
+        <Tooltip title="View">
+          <IconButton>
+            <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
+              <PreviewIcon color="primary" sx={{ mt: "10px" }} />
+            </Link>
+          </IconButton>
+        </Tooltip>
 
-              {(projectDetails?.managers?.some(
-                (item) => item.id === userData.id
-              ) ||
-                userData.role === "ORG_OWNER") && (
-                <Tooltip title="Delete">
-                  <IconButton
-                    onClick={() => {
-                      setMemberId(item.id);
-                      setOpenDeleteDialog(true);
-                    }}
-                  >
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Box>,
-          ];
-        })
-      : [];
+        {(projectDetails?.managers?.some((item) => item.id === userData.id) ||
+          userData.role === "ORG_OWNER") && (
+          <Tooltip title="Delete">
+            <IconButton
+              onClick={() => {
+                setMemberId(item.id);
+                setOpenDeleteDialog(true);
+              }}
+            >
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Box>,
+    ];
+  });
 
   const renderSnackBar = () => {
     return (
@@ -176,7 +140,7 @@ const ProjectMemberDetails = () => {
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>
-      
+
       {renderSnackBar()}
 
       {openDeleteDialog && (

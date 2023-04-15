@@ -64,7 +64,6 @@ const VideoList = ({ data, removeVideo }) => {
   const [videoIdForDowload, setVideoIdForDowload] = useState("");
   const [videoName, setVideoName] = useState("");
 
-  const SearchProject = useSelector((state) => state.searchList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
@@ -179,88 +178,57 @@ const VideoList = ({ data, removeVideo }) => {
     }
   };
 
-  const pageSearch = () => {
-    return data.filter((el) => {
-      if (SearchProject === "") {
-        return el;
-      } else if (
-        el.id.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (el.url?.toLowerCase().includes(SearchProject?.toLowerCase())) {
-        return el;
-      } else if (
-        el.name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.description?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else {
-        return [];
-      }
-    });
-  };
+  const result = data?.map((item, i) => {
+    return [
+      item.id,
+      item.name,
+      item.url,
+      item.duration,
+      item.status,
+      item.description,
+      <>
+        <Box sx={{ display: "flex" }}>
+          {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
 
-  const result =
-    data && data.length > 0
-      ? pageSearch().map((item, i) => {
-          return [
-            item.id,
-            item.name,
-            item.url,
-            item.duration,
-            item.status,
-            item.description,
-            <>
-              <Box sx={{ display: "flex" }}>
-                {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
+          <Tooltip title="Download Related Tasks">
+            <IconButton onClick={() => handleDownloadAll(item)}>
+              <FileDownload color="primary" />
+            </IconButton>
+          </Tooltip>
 
-                <Tooltip title="Download Related Tasks">
-                  <IconButton onClick={() => handleDownloadAll(item)}>
-                    <FileDownload color="primary" />
-                  </IconButton>
-                </Tooltip>
+          <Tooltip title="View">
+            <IconButton onClick={() => handleVideoDialog(item)}>
+              <PreviewIcon color="primary" />
+            </IconButton>
+          </Tooltip>
 
-                <Tooltip title="View">
-                  <IconButton onClick={() => handleVideoDialog(item)}>
-                    <PreviewIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
+          {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
+            userData.role === "ORG_OWNER") && (
+            <Tooltip title="Create Task">
+              <IconButton
+                onClick={() => {
+                  setOpenCreateTaskDialog(true);
+                  setCurrentVideoDetails(item);
+                  setIsBulk(false);
+                }}
+              >
+                <NoteAddIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+          )}
 
-                {(projectInfo?.managers?.some(
-                  (item) => item.id === userData.id
-                ) ||
-                  userData.role === "ORG_OWNER") && (
-                  <Tooltip title="Create Task">
-                    <IconButton
-                      onClick={() => {
-                        setOpenCreateTaskDialog(true);
-                        setCurrentVideoDetails(item);
-                        setIsBulk(false);
-                      }}
-                    >
-                      <NoteAddIcon color="primary" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-
-                {(projectInfo.managers?.some(
-                  (item) => item.id === userData.id
-                ) ||
-                  userData.role === "ORG_OWNER") && (
-                  <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDeleteVideo(item.id)}>
-                      <DeleteIcon color="error" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Box>
-            </>,
-          ];
-        })
-      : [];
+          {(projectInfo.managers?.some((item) => item.id === userData.id) ||
+            userData.role === "ORG_OWNER") && (
+            <Tooltip title="Delete">
+              <IconButton onClick={() => handleDeleteVideo(item.id)}>
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+      </>,
+    ];
+  });
 
   const createTaskHandler = async (data) => {
     const apiObj = new CreateNewTaskAPI(data);
