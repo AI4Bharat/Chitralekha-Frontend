@@ -1,5 +1,6 @@
-import React, { useState, useEffect }  from "react";
-import { getOptions } from "../../utils/tableUtils";
+import React, { useState, useEffect } from "react";
+import { getColumns, getOptions } from "../../utils/tableUtils";
+import { taskQueueStatusColumns } from "../../config/tableColumns";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -8,12 +9,7 @@ import CustomizedSnackbars from "../../common/Snackbar";
 //APIs
 import FetchTaskQueueStatusAPI from "../../redux/actions/api/Organization/FetchTaskQueueStatus";
 
-//Styles
-import TableStyles from "../../styles/TableStyles";
-
 const TaskQueueStatus = () => {
-  const classes = TableStyles();
-
   const [loading, setLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -75,88 +71,12 @@ const TaskQueueStatus = () => {
     return () => setTableData([]);
   }, []);
 
-  const columns = [
-    {
-      name: "S. No",
-      label: "Seq. No.",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "task_id",
-      label: "Task Id",
-      options: {
-        display: false,
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "video_id",
-      label: "Video Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "submitter_name",
-      label: "Submitter",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "org_name",
-      label: "Organization",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "video_duration",
-      label: "Video Duration",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-  ];
-
   return (
     <div>
       <MUIDataTable
         title="Tasks Queue Status"
         data={tableData}
-        columns={columns}
+        columns={getColumns(taskQueueStatusColumns)}
         options={getOptions(loading)}
       />
       {renderSnackBar()}

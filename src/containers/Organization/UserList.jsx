@@ -5,18 +5,16 @@ import { Link } from "react-router-dom";
 //Themes, Styles
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/TableStyles";
 
 //Icons
 import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import { getOptions } from "../../utils/tableUtils";
+import { getColumns, getOptions } from "../../utils/tableUtils";
+import { usersColumns } from "../../config/tableColumns";
 
 const UserList = ({ data }) => {
-  const classes = TableStyles();
-
   const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
@@ -64,63 +62,12 @@ const UserList = ({ data }) => {
         })
       : [];
 
-  const columns = [
-    {
-      name: "name",
-      label: "Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "email",
-      label: "Email",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "role",
-      label: "Role",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-  ];
-
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={result}
-          columns={columns}
+          columns={getColumns(usersColumns)}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

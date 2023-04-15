@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { roles } from "../../../utils/utils";
+import { getColumns } from "../../../utils/tableUtils";
+import { videoListColumns } from "../../../config/tableColumns";
 
 //Themes
 import DatasetStyle from "../../../styles/Dataset";
@@ -36,11 +38,9 @@ import ExportAllDialog from "../../../common/ExportAllDialog";
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import BulkDownloadForVideoAPI from "../../../redux/actions/api/Project/BulkDownloadForVideo";
-import TableStyles from "../../../styles/TableStyles";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();
-  const tableClasses = TableStyles();
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
@@ -304,90 +304,6 @@ const VideoList = ({ data, removeVideo }) => {
     }
   };
 
-  const columns = [
-    {
-      name: "id",
-      label: "Video Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellVideoHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "name",
-      label: "Video Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "url",
-      label: "URL",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "duration",
-      label: "Duration",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "status",
-      label: "Status",
-      options: {
-        viewColumns: false,
-        display: "exclude",
-      },
-    },
-    {
-      name: "description",
-      label: "Description",
-      options: {
-        filter: false,
-        sort: false,
-        display: "exclude",
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-      },
-    },
-  ];
-
   const handleRowClick = (_currentRow, allRow) => {
     const temp = data.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
@@ -522,7 +438,11 @@ const VideoList = ({ data, removeVideo }) => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={result} columns={columns} options={options} />
+        <MUIDataTable
+          data={result}
+          columns={getColumns(videoListColumns)}
+          options={options}
+        />
       </ThemeProvider>
 
       {openExportDialog && (

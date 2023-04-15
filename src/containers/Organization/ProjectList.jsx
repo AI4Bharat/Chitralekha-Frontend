@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { getOptions } from "../../utils/tableUtils";
+import { getColumns, getOptions } from "../../utils/tableUtils";
 import { Link, useParams } from "react-router-dom";
 import moment from "moment/moment";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/TableStyles";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,10 +19,10 @@ import DeleteDialog from "../../common/DeleteDialog";
 
 //APIs
 import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
+import { projectColumns } from "../../config/tableColumns";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
-  const classes = TableStyles();
 
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
@@ -131,68 +130,6 @@ const ProjectList = ({ data, removeProjectList }) => {
         })
       : [];
 
-  const columns = [
-    {
-      name: "title",
-      label: "Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "Manager",
-      label: "Manager",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "createdAt",
-      label: "Created At",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "createdBy",
-      label: "Created By",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps
-        }),
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellActionHeaderProps
-        }),
-      },
-    },
-  ];
 
   const renderSnackBar = () => {
     return (
@@ -213,7 +150,7 @@ const ProjectList = ({ data, removeProjectList }) => {
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={result}
-          columns={columns}
+          columns={getColumns(projectColumns)}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

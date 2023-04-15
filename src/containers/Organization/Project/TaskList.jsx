@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { getDateTime, roles } from "../../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { getColumns } from "../../../utils/tableUtils";
 
 //Themes
 import tableTheme from "../../../theme/tableTheme";
@@ -61,6 +62,7 @@ import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/Gen
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
 import TableStyles from "../../../styles/TableStyles";
+import { taskListColumns } from "../../../config/tableColumns";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -611,7 +613,7 @@ const TaskList = () => {
         if (selectedFilters.taskType.includes(value.task_type_label)) {
           return value;
         }
-        
+
         return [];
       });
     } else {
@@ -642,7 +644,7 @@ const TaskList = () => {
         if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
           return value;
         }
-        
+
         return [];
       });
     } else {
@@ -695,7 +697,7 @@ const TaskList = () => {
         el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
-      } else{
+      } else {
         return [];
       }
     });
@@ -714,6 +716,7 @@ const TaskList = () => {
             item.task_type_label,
             item.video_name,
             moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+            item.source_type,
             item.src_language,
             item.src_language_label,
             item.target_language,
@@ -731,313 +734,31 @@ const TaskList = () => {
         })
       : [];
 
-  const columns = [
-    {
-      name: "id",
-      label: "Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: "exclude",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
+  const columns = getColumns(taskListColumns);
+  columns.push({
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      setCellHeaderProps: () => ({
+        className: tableClasses.cellHeaderProps,
+      }),
+      customBodyRender: (_value, tableMeta) => {
+        return (
+          <Box sx={{ display: "flex" }}>
+            {renderUpdateTaskButton(tableMeta)}
+            {renderViewButton(tableMeta)}
+            {renderEditButton(tableMeta)}
+            {renderExportButton(tableMeta)}
+            {renderPreviewButton(tableMeta)}
+            {renderDeleteButton(tableMeta)}
+          </Box>
+        );
       },
     },
-    {
-      name: "task_type",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "task_type_label",
-      label: "Task Type",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "video_name",
-      label: "Video Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "created_at",
-      label: "Created At",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: false,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "src_language",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "src_language_label",
-      label: "Source Language",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "target_language",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "target_language_label",
-      label: "Target Language",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "status_label",
-      label: "Status",
-      options: {
-        filter: true,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "user",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "is_active",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "username",
-      label: "Assignee",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "project_name",
-      label: "Project Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: "excluded",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "buttons",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "description",
-      label: "Description",
-      options: {
-        filter: false,
-        sort: false,
-        display: "exclude",
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box sx={{ display: "flex" }}>
-              {renderUpdateTaskButton(tableMeta)}
-
-              {renderViewButton(tableMeta)}
-
-              {renderEditButton(tableMeta)}
-
-              {renderExportButton(tableMeta)}
-
-              {renderPreviewButton(tableMeta)}
-
-              {renderDeleteButton(tableMeta)}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "status",
-      label: "",
-      options: {
-        display: "excluded",
-        viewColumns: false,
-      },
-    },
-  ];
+  });
 
   const handleRowClick = (_currentRow, allRow) => {
     const temp = filterData.filter((_item, index) => {

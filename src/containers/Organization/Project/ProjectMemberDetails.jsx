@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 //Themes
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import tableTheme from "../../../theme/tableTheme";
-import TableStyles from "../../../styles/TableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -13,7 +12,6 @@ import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
-import Loader from "../../../common/Spinner";
 import DeleteDialog from "../../../common/DeleteDialog";
 
 //APIs
@@ -21,11 +19,12 @@ import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemovePro
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
 import DeleteMemberErrorDialog from "../../../common/DeleteMemberErrorDialog";
+import { getColumns, getOptions } from "../../../utils/tableUtils";
+import { usersColumns } from "../../../config/tableColumns";
 
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
-  const classes = TableStyles();
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -154,88 +153,6 @@ const ProjectMemberDetails = () => {
         })
       : [];
 
-  const columns = [
-    {
-      name: "name",
-      label: "Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "email",
-      label: "Email",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps,
-        }),
-      },
-    },
-
-    {
-      name: "role",
-      label: "Role",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: classes.cellHeaderProps,
-        }),
-      },
-    },
-  ];
-
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: apiStatus.progress ? (
-          <Loader />
-        ) : (
-          "No members associated to this project"
-        ),
-      },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: "none",
-    search: true,
-    jumpToPage: true,
-    // customToolbar: renderToolBar,
-  };
-
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
@@ -253,8 +170,13 @@ const ProjectMemberDetails = () => {
   return (
     <>
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={result} columns={columns} options={options} />
+        <MUIDataTable
+          data={result}
+          columns={getColumns(usersColumns)}
+          options={getOptions(apiStatus.progress)}
+        />
       </ThemeProvider>
+      
       {renderSnackBar()}
 
       {openDeleteDialog && (

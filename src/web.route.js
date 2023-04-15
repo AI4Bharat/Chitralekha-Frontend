@@ -4,8 +4,6 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import ProjectDetails from "./containers/Project/ProjectDetails";
-import Projects from "./containers/Project/Projects";
 import MyOrganization from "./containers/Organization/MyOrganization";
 import EditProfile from "./containers/UserManagement/EditProfile";
 import Login from "./containers/UserManagement/Login";
@@ -44,16 +42,6 @@ const RootRouter = () => {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route
-          path="/projects"
-          element={ProtectedRouteWrapper(<Layout component={<Projects />} />)}
-        />
-        <Route
-          path="/projects/:id"
-          element={ProtectedRouteWrapper(
-            <Layout component={<ProjectDetails />} Backbutton={true} />
-          )}
-        />
         <Route
           path="/profile/:id"
           element={ProtectedRouteWrapper(
