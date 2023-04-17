@@ -399,10 +399,11 @@ export const getSubtitleRange = () => {
 };
 
 export const getSubtitleRangeTranscript = () => {
-  const subtitles = store.getState().commonReducer.subtitles;
+  const rangeStart = store.getState().commonReducer.rangeStart;
+  const rangeEnd = store.getState().commonReducer.rangeEnd;
 
-  if (subtitles) {
-    return `${subtitles[0].id + 1} - ${subtitles[subtitles.length - 1].id + 1}`;
+  if (rangeStart && rangeEnd) {
+    return `${rangeStart} - ${rangeEnd}`;
   }
 };
 

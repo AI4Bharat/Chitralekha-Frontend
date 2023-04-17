@@ -76,3 +76,17 @@ export const setLimitInStore = (data) => {
     payload: data,
   }
 }
+
+export const setRangeStart = (data) => {
+  return {
+    type: C.RANGE_START,
+    payload: data,
+  }
+}
+
+export const setRangeEnd = (data) => {
+  return {
+    type: C.RANGE_END,
+    payload: data,
+  }
+}
