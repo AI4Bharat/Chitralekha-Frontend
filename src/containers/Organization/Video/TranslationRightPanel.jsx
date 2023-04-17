@@ -29,7 +29,6 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import Pagination from "./components/Pagination";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -82,14 +81,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
       taskData.task_type,
       offset,
       lim
-    );
-    dispatch(APITransport(payloadObj));
-  };
-
-  const getFullPayload = () => {
-    const payloadObj = new FetchFullPayloadAPI(
-      taskData.id,
-      taskData.task_type,
     );
     dispatch(APITransport(payloadObj));
   };
@@ -178,7 +169,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setLoading(false);
-      getFullPayload();
+      getPayload();
 
       setSnackbarInfo({
         open: isAutosave,
