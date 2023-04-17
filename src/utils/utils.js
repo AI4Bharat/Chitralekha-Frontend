@@ -1,6 +1,13 @@
 import Sub from "./Sub";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
+import {
+  addNewVideo,
+  assignTasks,
+  editTranscription,
+  editTranslation,
+  editingReviewTasks,
+} from "../config/helpOptions";
 
 export function authenticateUser() {
   const access_token = localStorage.getItem("token");
@@ -755,3 +762,25 @@ export const languagelevelStats = [
   { lable: "Transcript", value: "transcript_stats" },
   { lable: "Translation", value: "translation_stats" },
 ];
+
+export const getHelpList = (tab) => {
+  switch (tab) {
+    case "label.addnewVideo":
+      return addNewVideo;
+
+    case "label.editing&ReviewTasks":
+      return editingReviewTasks;
+
+    case "label.assigntasks":
+      return assignTasks;
+
+    case "label.editTranscription":
+      return editTranscription;
+
+    case "label.editTranslation":
+      return editTranslation;
+
+    default:
+      return [];
+  }
+};

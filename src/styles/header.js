@@ -121,6 +121,7 @@ const headerStyle = makeStyles({
         
     },
     HelpGridStyle:{
+        alignItems: "center",
         display: "flex",
          marginTop: "20px",
          cursor: "pointer",
