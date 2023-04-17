@@ -402,6 +402,15 @@ export const getSubtitleRangeTranscript = () => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   if (subtitles) {
-    return `1 - ${subtitles.length}`;
+    return `${subtitles[0].id + 1} - ${subtitles[subtitles.length - 1].id + 1}`;
   }
+};
+
+export const isPlaying = (player) => {
+  return !!(
+    player.currentTime > 0 &&
+    !player.paused &&
+    !player.ended &&
+    player.readyState > 2
+  );
 };

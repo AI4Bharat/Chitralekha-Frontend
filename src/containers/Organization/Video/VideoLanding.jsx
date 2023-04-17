@@ -39,7 +39,6 @@ import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
 import { cloneDeep } from "lodash";
-import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
