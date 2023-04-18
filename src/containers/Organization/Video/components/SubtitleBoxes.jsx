@@ -21,6 +21,7 @@ import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
   copySubs,
   hasSub,
+  isPlaying,
   onMerge,
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
@@ -82,7 +83,7 @@ export default memo(
     );
 
     useEffect(() => {
-      if (currentIndex === subtitles.length - 1 && next) {
+      if (currentIndex === subtitles.length - 1 && next && isPlaying(player)) {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
           taskDetails.task_type,
@@ -91,8 +92,9 @@ export default memo(
         );
         dispatch(APITransport(payloadObj));
       }
+
     // eslint-disable-next-line
-    }, [currentIndex]);
+    }, [currentIndex, isPlaying(player)]);
 
     const saveTranscript = async (taskType, subs = subtitles) => {
       const reqBody = {

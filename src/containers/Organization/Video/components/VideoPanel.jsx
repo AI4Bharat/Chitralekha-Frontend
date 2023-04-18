@@ -2,6 +2,7 @@ import React, { createRef, memo, useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { setPlayer } from "../../../../redux/actions/Common";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import { isPlaying } from "../../../../utils/subtitleUtils";
 
 const VideoPanel = memo(
   ({ setCurrentTime, setPlaying }) => {
@@ -15,15 +16,6 @@ const VideoPanel = memo(
     const fullscreenVideo = useSelector(
       (state) => state.commonReducer.fullscreenVideo
     );
-
-    const isPlaying = ($video) => {
-      return !!(
-        $video.currentTime > 0 &&
-        !$video.paused &&
-        !$video.ended &&
-        $video.readyState > 2
-      );
-    };
 
     useEffect(() => {
       dispatch(setPlayer($video.current));

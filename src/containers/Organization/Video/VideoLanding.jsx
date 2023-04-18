@@ -29,6 +29,8 @@ import {
   setCurrentPage,
   setNextPage,
   setPreviousPage,
+  setRangeEnd,
+  setRangeStart,
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
@@ -114,6 +116,8 @@ const VideoLanding = () => {
     dispatch(setTotalPages(transcriptPayload?.count));
     dispatch(setSubtitlesForCheck(newSub));
     dispatch(setCompletedCount(transcriptPayload?.completed_count));
+    dispatch(setRangeStart(transcriptPayload?.start));
+    dispatch(setRangeEnd(transcriptPayload?.end));
     dispatch(setSubtitles(sub, C.SUBTITLES));
 
     // eslint-disable-next-line

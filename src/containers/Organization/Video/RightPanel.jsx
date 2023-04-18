@@ -28,7 +28,6 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import Pagination from "./components/Pagination";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import FetchFullPayloadAPI from "../../../redux/actions/api/Project/FetchFullPayload";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -93,11 +92,6 @@ const RightPanel = ({ currentIndex }) => {
       offset,
       lim
     );
-    dispatch(APITransport(payloadObj));
-  };
-
-  const getFullPayload = () => {
-    const payloadObj = new FetchFullPayloadAPI(taskData.id, taskData.task_type);
     dispatch(APITransport(payloadObj));
   };
 
@@ -205,7 +199,7 @@ const RightPanel = ({ currentIndex }) => {
         variant: "success",
       });
 
-      getFullPayload();
+      getPayload();
       setLoading(false);
 
       if (isFinal) {
