@@ -27,14 +27,14 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
 import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
-import ProjectStyle from "../../../styles/ProjectStyle";
+import ProjectStyle from "../../../styles/projectStyle";
 import {
   defaultTaskHandler,
   diableTargetLang,
   getDisableOption,
   MenuProps,
 } from "../../../utils/utils";
-import ColorArray from "../../../utils/getColors";
+import { colorArray } from "../../../utils/getColors";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -648,7 +648,7 @@ const EditProject = () => {
                         <Card
                           key={index}
                           className={classes.taskBox}
-                          style={{ backgroundColor: ColorArray[index]?.colors }}
+                          style={{ backgroundColor: colorArray[index]?.colors }}
                         >
                           {item.label}
                         </Card>

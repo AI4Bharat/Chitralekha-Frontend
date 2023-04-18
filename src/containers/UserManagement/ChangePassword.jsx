@@ -9,7 +9,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OutlinedTextField from "../../common/OutlinedTextField";
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";

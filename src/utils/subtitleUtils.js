@@ -82,7 +82,7 @@ export const timeChange = (value, index, type, time) => {
   return copySub;
 };
 
-export const addSubtitleBox = (index, type) => {
+export const addSubtitleBox = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
@@ -106,7 +106,7 @@ export const addSubtitleBox = (index, type) => {
   return copySub;
 };
 
-export const onMerge = (index, type) => {
+export const onMerge = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const existingsourceData = [...subtitles];
@@ -130,7 +130,7 @@ export const onMerge = (index, type) => {
   return existingsourceData;
 };
 
-export const onSubtitleDelete = (index, type) => {
+export const onSubtitleDelete = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
@@ -214,7 +214,7 @@ export const onSplit = (
   return copySub;
 };
 
-export const onSubtitleChange = (text, index, type) => {
+export const onSubtitleChange = (text, index) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];

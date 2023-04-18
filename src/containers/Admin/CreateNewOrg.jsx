@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 //Styles
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
 import {

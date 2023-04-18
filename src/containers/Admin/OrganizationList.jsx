@@ -6,7 +6,7 @@ import { adminOrgListColumns } from "../../config/tableColumns";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/TableStyles";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";

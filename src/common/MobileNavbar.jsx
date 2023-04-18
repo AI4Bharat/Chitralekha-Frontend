@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
-import headerStyle from "../styles/header";
+import headerStyle from "../styles/headerStyles";
 
 function MobileNavbar({ UserMenu, SettingsMenu }) {
   const [openDrawer, setOpenDrawer] = useState(false);

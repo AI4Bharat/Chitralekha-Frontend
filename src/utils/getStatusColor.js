@@ -32,7 +32,7 @@ const getColor = (status) => {
   return temp[0].color;
 };
 
-const UserMappedByRole = (statusLabel) => {
+const statusColor = (statusLabel) => {
   return {
     name: statusLabel,
     element: (
@@ -53,4 +53,4 @@ const UserMappedByRole = (statusLabel) => {
   };
 };
 
-export default UserMappedByRole;
+export default statusColor;

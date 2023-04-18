@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
 
 //Styles
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 
 //Components
 import {

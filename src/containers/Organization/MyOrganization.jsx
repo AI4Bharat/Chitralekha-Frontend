@@ -12,7 +12,7 @@ import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/Fetch
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
 
 //Styles
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
 import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";

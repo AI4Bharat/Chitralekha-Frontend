@@ -5,13 +5,13 @@ import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { getOptions } from "../../utils/tableUtils";
-import UserMappedByRole from "../../utils/UserMappedByRole";
 import C from "../../redux/constants";
+import statusColor from "../../utils/getStatusColor";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/Dataset";
-import TableStyles from "../../styles/TableStyles";
+import DatasetStyle from "../../styles/datasetStyle";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import {
@@ -681,7 +681,7 @@ const OrgLevelTaskList = () => {
     taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
-            item.status_label && UserMappedByRole(item.status_label)?.element;
+            item.status_label && statusColor(item.status_label)?.element;
           return [
             item.id,
             item.task_type,

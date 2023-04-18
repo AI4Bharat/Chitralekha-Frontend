@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getOptions } from "../../utils/tableUtils";
-import { languagelevelStats, reportLevels, snakeToTitleCase } from "../../utils/utils";
+import { languagelevelStats, reportLevels } from "../../config/reportConfig";
+import { snakeToTitleCase } from "../../utils/utils";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/TableStyles";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { snakeToTitleCase } from "../../../utils/utils";
+import { languagelevelStats, projectReportLevels } from "../../../config/reportConfig";
 
 //APIs
 import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
@@ -9,7 +10,7 @@ import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 //Themes
 import tableTheme from "../../../theme/tableTheme";
-import TableStyles from "../../../styles/TableStyles";
+import TableStyles from "../../../styles/tableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -22,13 +23,6 @@ import {
   MenuItem,
   Grid,
 } from "@mui/material";
-
-const reportLevels = [{ reportLevel: "User" }, { reportLevel: "Language" }];
-
-const languagelevelStats = [
-  { lable: "Transcript", value: "transcript_stats" },
-  { lable: "Translation", value: "translation_stats" },
-];
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -183,7 +177,7 @@ const ProjectReport = () => {
               onChange={handleChangeReportsLevel}
               sx={{ textAlign: "start" }}
             >
-              {reportLevels.map((item, index) => (
+              {projectReportLevels.map((item, index) => (
                 <MenuItem key={index} value={item.reportLevel}>
                   {item.reportLevel}
                 </MenuItem>

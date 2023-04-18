@@ -14,7 +14,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import OutlinedTextField from "../../../common/OutlinedTextField";
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 import CustomButton from "../../../common/Button";
 import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
 import { useDispatch, useSelector } from "react-redux";

@@ -5,7 +5,7 @@ import { getColumns } from "../../../utils/tableUtils";
 import { videoListColumns } from "../../../config/tableColumns";
 
 //Themes
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 import tableTheme from "../../../theme/tableTheme";
 
 //Icons

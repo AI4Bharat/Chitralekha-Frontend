@@ -8,7 +8,7 @@ import { getColumns } from "../../../utils/tableUtils";
 
 //Themes
 import tableTheme from "../../../theme/tableTheme";
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 
 //Components
 import {
@@ -26,7 +26,7 @@ import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import Loader from "../../../common/Spinner";
 import PreviewDialog from "../../../common/PreviewDialog";
-import UserMappedByRole from "../../../utils/UserMappedByRole";
+import statusColor from "../../../utils/getStatusColor";
 import FilterList from "../../../common/FilterList";
 import C from "../../../redux/constants";
 import DeleteDialog from "../../../common/DeleteDialog";
@@ -61,7 +61,7 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
-import TableStyles from "../../../styles/TableStyles";
+import TableStyles from "../../../styles/tableStyles";
 import { taskListColumns } from "../../../config/tableColumns";
 
 const TaskList = () => {
@@ -709,7 +709,7 @@ const TaskList = () => {
     taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
-            item.status_label && UserMappedByRole(item.status_label)?.element;
+            item.status_label && statusColor(item.status_label)?.element;
           return [
             item.id,
             item.task_type,

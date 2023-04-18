@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/ScrollbarStyle.css";
+import "../../../styles/scrollbarStyle.css";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import TimeBoxes from "../../../common/TimeBoxes";

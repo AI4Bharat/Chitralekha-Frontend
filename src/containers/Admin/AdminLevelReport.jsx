@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 //Themes
 import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/TableStyles";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";

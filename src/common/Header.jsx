@@ -9,7 +9,7 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import headerStyle from "../styles/header";
+import headerStyle from "../styles/headerStyles";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";

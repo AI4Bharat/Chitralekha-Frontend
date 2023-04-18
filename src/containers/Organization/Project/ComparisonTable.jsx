@@ -14,7 +14,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useEffect, useState } from "react";
 import { useMemo } from "react";
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 import TaskVideoDialog from "../../../common/TaskVideoDialog";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import { useDispatch, useSelector } from "react-redux";

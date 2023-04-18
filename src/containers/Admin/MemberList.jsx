@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 //Themes
 import { ThemeProvider, Tooltip, IconButton, Box } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/TableStyles";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
