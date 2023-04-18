@@ -41,6 +41,7 @@ import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
 import { cloneDeep } from "lodash";
+import { useRef } from "react";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -71,6 +72,7 @@ const VideoLanding = () => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
+  const ref = useRef(0);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -197,6 +199,15 @@ const VideoLanding = () => {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
+
+  useEffect(() => {
+      window.onbeforeunload =function (e) {
+        e.preventDefault();
+        e.returnValue = "";
+      };
+    ref.current = new Date().getTime();
+    return () => {};
+  }, []);
 
   const handleFullscreen = () => {
     const res = fullscreenUtil(document.documentElement);
