@@ -25,7 +25,7 @@ import CustomizedSnackbars from "../common/Snackbar";
 import CloseIcon from "@mui/icons-material/Close";
 
 //Styles
-import ProjectStyle from "../styles/ProjectStyle";
+import ProjectStyle from "../styles/projectStyle";
 
 //APIs
 import APITransport from "../redux/actions/apitransport/apitransport";

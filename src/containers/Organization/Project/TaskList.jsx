@@ -61,7 +61,7 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
-import TableStyles from "../../../styles/TableStyles";
+import TableStyles from "../../../styles/tableStyles";
 import { taskListColumns } from "../../../config/tableColumns";
 
 const TaskList = () => {
