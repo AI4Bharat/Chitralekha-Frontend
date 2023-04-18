@@ -25,7 +25,7 @@ import CustomizedSnackbars from "../common/Snackbar";
 import CloseIcon from "@mui/icons-material/Close";
 
 //Styles
-import ProjectStyle from "../styles/ProjectStyle";
+import ProjectStyle from "../styles/projectStyle";
 
 //APIs
 import APITransport from "../redux/actions/apitransport/apitransport";
@@ -80,6 +80,8 @@ const UpdateBulkTaskDialog = ({
       );
       dispatch(APITransport(userObj));
     }
+
+    // eslint-disable-next-line    
   }, []);
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const UpdateBulkTaskDialog = ({
       );
       setUser(items[0]);
     }
+    // eslint-disable-next-line    
   }, [taskDetails, isBulk]);
 
   const submitHandler = () => {

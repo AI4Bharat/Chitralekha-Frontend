@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/ScrollbarStyle.css";
+import "../../../styles/scrollbarStyle.css";
 import { setSubtitles } from "../../../redux/actions/Common";
 import C from "../../../redux/constants";
 import TimeBoxes from "../../../common/TimeBoxes";
@@ -97,6 +97,7 @@ const RightPanel = ({ currentIndex }) => {
 
   useEffect(() => {
     getPayload(currentOffset, limit);
+    // eslint-disable-next-line
   }, [limit]);
 
   const onMergeClick = useCallback((index) => {
@@ -122,6 +123,8 @@ const RightPanel = ({ currentIndex }) => {
     // }]);
     // setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
+
+    // eslint-disable-next-line
   }, []);
 
   const onMouseUp = (e, blockIdx) => {
@@ -145,6 +148,8 @@ const RightPanel = ({ currentIndex }) => {
     // }]);
     // setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
+
+    // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart]);
 
   const changeTranscriptHandler = useCallback((text, index) => {
@@ -152,6 +157,8 @@ const RightPanel = ({ currentIndex }) => {
     dispatch(setSubtitles(sub, C.SUBTITLES));
 
     saveTranscriptHandler(false, false, sub);
+
+    // eslint-disable-next-line
   }, []);
 
   const saveTranscriptHandler = async (
@@ -229,6 +236,8 @@ const RightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    
+    // eslint-disable-next-line
   }, []);
 
   const onDelete = useCallback((index) => {
@@ -242,6 +251,8 @@ const RightPanel = ({ currentIndex }) => {
     //   data: data,
     // }]);
     // setRedoStack([]);
+
+    // eslint-disable-next-line
   }, []);
 
   const addNewSubtitleBox = useCallback((index) => {
@@ -253,6 +264,8 @@ const RightPanel = ({ currentIndex }) => {
     //   index: index,
     // }]);
     // setRedoStack([]);
+
+    // eslint-disable-next-line
   }, []);
 
   // const onUndo = useCallback(() => {
@@ -317,7 +330,8 @@ const RightPanel = ({ currentIndex }) => {
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {subtitles?.map((item, index) => {
             return (
-              <Box
+              <Box 
+                key={index}
                 id={`sub_${index}`}
                 style={{
                   padding: "15px",

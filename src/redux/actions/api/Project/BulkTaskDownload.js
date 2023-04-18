@@ -1,6 +1,5 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
-import C from "../../../constants";
 
 export default class BulkTaskExportAPI extends API {
   constructor(exportType, taskId, timeout = 2000) {

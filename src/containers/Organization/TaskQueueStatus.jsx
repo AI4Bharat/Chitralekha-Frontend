@@ -1,5 +1,6 @@
-import React, { useState, useEffect }  from "react";
-import { getOptions } from "../../utils/tableUtils";
+import React, { useState, useEffect } from "react";
+import { getColumns, getOptions } from "../../utils/tableUtils";
+import { taskQueueStatusColumns } from "../../config/tableColumns";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -70,88 +71,12 @@ const TaskQueueStatus = () => {
     return () => setTableData([]);
   }, []);
 
-  const columns = [
-    {
-      name: "S. No",
-      label: "Seq. No.",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "task_id",
-      label: "Task Id",
-      options: {
-        display: false,
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "video_id",
-      label: "Video Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "submitter_name",
-      label: "Submitter",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "org_name",
-      label: "Organization",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "video_duration",
-      label: "Video Duration",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-  ];
-
   return (
     <div>
       <MUIDataTable
         title="Tasks Queue Status"
         data={tableData}
-        columns={columns}
+        columns={getColumns(taskQueueStatusColumns)}
         options={getOptions(loading)}
       />
       {renderSnackBar()}

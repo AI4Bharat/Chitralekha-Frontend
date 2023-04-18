@@ -77,7 +77,8 @@ const SignUp = () => {
         UserName: userInfo.username,
       });
     }
-  }, [userInfo]);
+    // eslint-disable-next-line
+  }, [userInfo]); 
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
@@ -102,6 +103,8 @@ const SignUp = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    // eslint-disable-next-line
   }, []);
 
   const handleSubmit = () => {
@@ -195,7 +198,6 @@ const SignUp = () => {
   };
 
   const handleAlreadyhaveaccount = () => {
-    console.log("navigate");
     localStorage.clear();
     navigate("/");
   };
@@ -366,8 +368,8 @@ const SignUp = () => {
               MenuProps={MenuProps}
               inputProps={{ "aria-label": "Without label" }}
             >
-              {supportedLanguages.map((item) => (
-                <MenuItem key={item} value={item}>
+              {supportedLanguages.map((item, index) => (
+                <MenuItem key={index} value={item}>
                   <Checkbox checked={values.languages.indexOf(item) > -1} />
                   <ListItemText primary={item.label} />
                 </MenuItem>

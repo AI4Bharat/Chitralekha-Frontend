@@ -1,4 +1,3 @@
-import { Add } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -43,6 +42,8 @@ const AddOrganizationMember = ({
 
   useEffect(() => {
     getUserRolesList();
+
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -86,8 +87,8 @@ const AddOrganizationMember = ({
               onChange={(event) => handleSelectField(event.target.value)}
               MenuProps={MenuProps}
             >
-              {userRoles.map((item) => {
-                return <MenuItem value={item.value}>{item.label}</MenuItem>;
+              {userRoles.map((item, index) => {
+                return <MenuItem key={index} value={item.value}>{item.label}</MenuItem>;
               })}
             </Select>
           </FormControl>

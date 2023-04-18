@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 //Styles
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
 import {
@@ -106,6 +106,8 @@ const CreateNewOrg = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+    
+    // eslint-disable-next-line
   }, []);
 
   const handleCreateProject = async () => {
@@ -193,9 +195,9 @@ const CreateNewOrg = () => {
               onChange={(event) => setOwner(event.target.value)}
               MenuProps={MenuProps}
             >
-              {orgOwnerList.map((item) => {
+              {orgOwnerList.map((item, index) => {
                 return (
-                  <MenuItem key={"1"} value={item.id}>
+                  <MenuItem key={index} value={item.id}>
                     {item.email}
                   </MenuItem>
                 );

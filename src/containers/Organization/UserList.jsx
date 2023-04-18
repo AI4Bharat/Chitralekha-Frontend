@@ -11,111 +11,33 @@ import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import { getOptions } from "../../utils/tableUtils";
+import { getColumns, getOptions } from "../../utils/tableUtils";
+import { usersColumns } from "../../config/tableColumns";
 
 const UserList = ({ data }) => {
-  const SearchProject = useSelector((state) => state.searchList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const pageSearch = () => {
-    return data.filter((el) => {
-      if (SearchProject == "") {
-        return el;
-      } else if (
-        el.first_name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.last_name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.email?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.role?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      }
-    });
-  };
-
-  const result =
-    data && data.length > 0
-      ? pageSearch().map((item, i) => {
-          return [
-            `${item.first_name} ${item.last_name}`,
-            item.email,
-            item.role,
-            <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-              <Tooltip title="View">
-                <IconButton>
-                  <PreviewIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-            </Link>,
-          ];
-        })
-      : [];
-
-  const columns = [
-    {
-      name: "name",
-      label: "Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "email",
-      label: "Email",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "role",
-      label: "Role",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px" },
-        }),
-      },
-    },
-  ];
+  const result = data.map((item, i) => {
+    return [
+      `${item.first_name} ${item.last_name}`,
+      item.email,
+      item.role,
+      <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
+        <Tooltip title="View">
+          <IconButton>
+            <PreviewIcon color="primary" />
+          </IconButton>
+        </Tooltip>
+      </Link>,
+    ];
+  });
 
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={result}
-          columns={columns}
+          columns={getColumns(usersColumns)}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

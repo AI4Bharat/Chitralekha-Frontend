@@ -64,6 +64,7 @@ const ExportDialog = ({
               >
                 {transcriptionOptions?.map((item, index) => (
                   <FormControlLabel
+                    key={index}
                     value={item}
                     control={<Radio />}
                     checked={exportTranscription === item}
@@ -84,6 +85,7 @@ const ExportDialog = ({
               >
                 {translationOptions?.map((item, index) => (
                   <FormControlLabel
+                    key={index}
                     value={item}
                     control={<Radio />}
                     checked={exportTranslation === item}

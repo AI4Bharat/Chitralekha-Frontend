@@ -10,7 +10,7 @@ import React, {
 import WFPlayer from "wfplayer";
 import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
-import { first, throttle } from "lodash";
+import { throttle } from "lodash";
 import Metronome from "./components/Metronome";
 import SubtitleBoxes from "./components/SubtitleBoxes";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
@@ -177,6 +177,8 @@ const Grab = memo(({ waveform }) => {
     } else {
       firstLoaded.current = true;
     }
+
+    // eslint-disable-next-line
   }, [grabbing]);
 
   const onGrabUp = () => {

@@ -1,17 +1,17 @@
 // OrgLevelTaskList
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { getOptions } from "../../utils/tableUtils";
-import UserMappedByRole from "../../utils/UserMappedByRole";
 import C from "../../redux/constants";
+import statusColor from "../../utils/getStatusColor";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import {
@@ -64,6 +64,7 @@ import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceo
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
+  const tableClasses = TableStyles();
   const navigate = useNavigate();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
@@ -137,6 +138,7 @@ const OrgLevelTaskList = () => {
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   const supportedLanguages = useSelector(
@@ -155,6 +157,7 @@ const OrgLevelTaskList = () => {
     if (orgId) {
       fetchTaskList();
     }
+    // eslint-disable-next-line
   }, [orgId]);
 
   useEffect(() => {
@@ -171,7 +174,6 @@ const OrgLevelTaskList = () => {
     }
   }, [taskList]);
 
-  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
@@ -378,8 +380,6 @@ const OrgLevelTaskList = () => {
           // --------------------- if task type is translation, submit translation with trg lang ------------- //
           await onTranslationTaskTypeSubmit(id, rsp_data);
         }
-      } else {
-        console.log("failed");
       }
     });
   };
@@ -559,6 +559,7 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     FilterData();
+    // eslint-disable-next-line
   }, [filterStatus, filterTaskType]);
 
   const FilterData = () => {
@@ -575,6 +576,8 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.status.includes(value.status_label)) {
           return value;
         }
+
+        return [];
       });
     } else {
       statusFilter = taskList.tasks_list;
@@ -588,6 +591,7 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.taskType.includes(value.task_type_label)) {
           return value;
         }
+        return [];
       });
     } else {
       TaskTypefilter = statusFilter;
@@ -602,6 +606,7 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
           return value;
         }
+        return [];
       });
     } else {
       lngResult = TaskTypefilter;
@@ -616,6 +621,7 @@ const OrgLevelTaskList = () => {
         if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
           return value;
         }
+        return [];
       });
     } else {
       filterResult = lngResult;
@@ -662,16 +668,20 @@ const OrgLevelTaskList = () => {
         el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
     setfilterData(pageSearchData);
+
+    // eslint-disable-next-line
   }, [SearchProject]);
 
   const result =
     taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
-            item.status_label && UserMappedByRole(item.status_label)?.element;
+            item.status_label && statusColor(item.status_label)?.element;
           return [
             item.id,
             item.task_type,
@@ -705,11 +715,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: "exclude",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
       },
     },
@@ -729,11 +735,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -756,11 +758,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -785,11 +783,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: false,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -813,11 +807,7 @@ const OrgLevelTaskList = () => {
         display: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -848,11 +838,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -883,11 +869,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -910,11 +892,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -951,11 +929,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -979,11 +953,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: true,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1014,11 +984,7 @@ const OrgLevelTaskList = () => {
         display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1041,11 +1007,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1172,9 +1134,9 @@ const OrgLevelTaskList = () => {
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
-            toolBarActions.map((item) => {
+            toolBarActions.map((item, index) => {
               return (
-                <Tooltip title={item.title} placement="bottom">
+                <Tooltip key={index} title={item.title} placement="bottom">
                   <IconButton
                     className={classes.createTaskBtn}
                     onClick={item.onClick}
@@ -1208,6 +1170,8 @@ const OrgLevelTaskList = () => {
     };
 
     setOptions(option);
+    
+    // eslint-disable-next-line
   }, [loading]);
 
   const renderSnackBar = () => {
@@ -1272,7 +1236,6 @@ const OrgLevelTaskList = () => {
 
   const handleBulkTaskDownload = async () => {
     setOpen(false);
-    console.log(selectedBulkTaskid, "selectedBulkTaskid");
     const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
 
     const res = await fetch(apiObj.apiEndPoint(), {

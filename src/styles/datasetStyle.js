@@ -65,10 +65,7 @@ const DatasetStyle = makeStyles({
     // display : 'contents',
     alignItems: "center",
   },
-  filterTypo: {
-    // marginBottom: "9px",
-    // marginRight : "20px"
-  },
+ 
   applyBtn: {
     float: "right",
     borderRadius: "20px",
@@ -207,10 +204,10 @@ const DatasetStyle = makeStyles({
     marginTop: "15px",
   },
   Typographyvalue: {
-    "&:nth-child(odd)": {
+    "&:nth-of-type(odd)": {
       backgroundColor: "#D6EAF8",
     },
-    "&:nth-child(even)": {
+    "&:nth-of-type(even)": {
       backgroundColor: "#E9F7EF",
     },
   },

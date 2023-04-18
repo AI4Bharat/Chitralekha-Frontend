@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 //Styles
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
 import {
@@ -94,6 +94,8 @@ const EditOrganizationDetails = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -123,11 +125,15 @@ const EditOrganizationDetails = () => {
       );
       setTranslationLanguage(items);
     }
+
+    // eslint-disable-next-line
   }, [orgInfo, orgOwnerList]);
 
   useEffect(() => {
     const apiObj = new FetchOrganizationDetailsAPI(orgId);
     dispatch(APITransport(apiObj));
+    
+    // eslint-disable-next-line
   }, []);
 
   const handleFieldChange = (event) => {

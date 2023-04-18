@@ -1,13 +1,9 @@
 import {
-  BrowserRouter as Router,
   HashRouter,
-  Link,
   Route,
   Routes,
   Navigate,
 } from "react-router-dom";
-import ProjectDetails from "./containers/Project/ProjectDetails";
-import Projects from "./containers/Project/Projects";
 import MyOrganization from "./containers/Organization/MyOrganization";
 import EditProfile from "./containers/UserManagement/EditProfile";
 import Login from "./containers/UserManagement/Login";
@@ -25,7 +21,6 @@ import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
 import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
 import EditProject from "./containers/Organization/Project/EditProject";
-import TaskList from "./containers/Organization/Project/TaskList";
 import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";
@@ -47,16 +42,6 @@ const RootRouter = () => {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route
-          path="/projects"
-          element={ProtectedRouteWrapper(<Layout component={<Projects />} />)}
-        />
-        <Route
-          path="/projects/:id"
-          element={ProtectedRouteWrapper(
-            <Layout component={<ProjectDetails />} Backbutton={true} />
-          )}
-        />
         <Route
           path="/profile/:id"
           element={ProtectedRouteWrapper(

@@ -30,6 +30,7 @@ const ForgotPassword = () => {
         variant: apiStatus.error ? "error" : "Success",
       });
     }
+    // eslint-disable-next-line
   }, [apiStatus]);
 
   const handleChange = (value) => {

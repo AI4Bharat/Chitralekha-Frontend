@@ -1,8 +1,7 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { Grid } from '@mui/material';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import DatasetStyle from '../styles/Dataset';
+import { Link } from 'react-router-dom';
 
 const Card = (props) => {
     const { projectObj} = props

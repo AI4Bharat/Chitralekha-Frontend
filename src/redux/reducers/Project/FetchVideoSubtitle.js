@@ -1,4 +1,3 @@
-import { getMilliseconds } from "../../../utils/utils";
 import C from "../../constants";
 
 const initalState = {
@@ -21,7 +20,6 @@ const getSubtitleAsPerId = (prevState, data) => {
 //     }
 //     return false;
 //   });
-// /  console.log(subtitle)
   let subtitleObj = { ...prevState, [id]: payload };
   return subtitleObj;
 };

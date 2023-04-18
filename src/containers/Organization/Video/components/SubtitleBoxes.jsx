@@ -20,7 +20,6 @@ import { setSubtitles } from "../../../../redux/actions/Common";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
   copySubs,
-  formatSub,
   hasSub,
   isPlaying,
   onMerge,
@@ -93,6 +92,8 @@ export default memo(
         );
         dispatch(APITransport(payloadObj));
       }
+
+    // eslint-disable-next-line
     }, [currentIndex, isPlaying(player)]);
 
     const saveTranscript = async (taskType, subs = subtitles) => {
@@ -133,6 +134,7 @@ export default memo(
       const res = onSubtitleDelete(index);
       dispatch(setSubtitles(res, C.SUBTITLES));
       saveTranscript(taskDetails?.task_type, res);
+    // eslint-disable-next-line
     }, []);
 
     const mergeSub = useCallback((sub) => {
@@ -140,6 +142,7 @@ export default memo(
       const res = onMerge(index);
       dispatch(setSubtitles(res, C.SUBTITLES));
       saveTranscript(taskDetails?.task_type, res);
+    // eslint-disable-next-line
     }, []);
 
     const updateSub = useCallback((sub, obj) => {
@@ -153,6 +156,7 @@ export default memo(
       copySub[index] = sub;
       dispatch(setSubtitles(copySub, C.SUBTITLES));
       saveTranscript(taskDetails?.task_type, copySub);
+    // eslint-disable-next-line
     }, []);
 
     const onMouseDown = (sub, event, type) => {
@@ -266,7 +270,7 @@ export default memo(
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, subtitles, updateSub]);
+    }, [gridGap, subtitles, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -300,7 +304,7 @@ export default memo(
           }
         }
       },
-      [subtitles, player, removeSub, updateSub]
+      [player, removeSub, updateSub]
     );
 
     const DynamicMenu = (props) => {

@@ -100,6 +100,8 @@ export default React.memo(
       setIsDroging(false);
       setDrogStartTime(0);
       setDrogEndTime(0);
+      
+    // eslint-disable-next-line
     }, [isDroging, drogStartTime, drogEndTime, subtitles, newSub]);
 
     useEffect(() => {

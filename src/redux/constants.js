@@ -95,7 +95,6 @@ const constants = {
 
     //Admin
     GET_ORG_OWNER_LIST: "GET_ORG_OWNER_LIST",
-    GET_USER_LIST: "GET_USER_LIST",
     GET_ADMIN_REPORTS:"GET_ADMIN_REPORTS",
 
     //clear state

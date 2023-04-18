@@ -90,6 +90,7 @@ const EditProfile = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -106,14 +107,8 @@ const EditProfile = () => {
         )
       );
     }
+    // eslint-disable-next-line
   }, [userData]);
-
-  const getRoles = () => {
-    const res = roles.filter((value) =>
-      value.value === userDetails?.role ? value.label : ""
-    );
-    return res[0]?.label;
-  };
 
   const handleFieldChange = (event) => {
     event.preventDefault();

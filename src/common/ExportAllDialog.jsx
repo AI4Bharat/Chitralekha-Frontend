@@ -57,6 +57,7 @@ const ExportAllDialog = ({
             >
               {exportOptions?.map((item, index) => (
                 <FormControlLabel
+                  key={index}
                   value={item}
                   control={<Radio />}
                   checked={exportType === item}

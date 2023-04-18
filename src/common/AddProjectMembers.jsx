@@ -1,4 +1,3 @@
-import { Add } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -11,14 +10,12 @@ import {
   Select,
   Checkbox,
   ListItemText,
-  Paper,
   Box,
   Chip,
   IconButton,
   Typography,
 } from "@mui/material";
 import React from "react";
-import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 
 const ITEM_HEIGHT = 48;
@@ -41,13 +38,6 @@ const MenuProps = {
   },
   variant: "menu",
 };
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
 
 const AddProjectMembers = ({
   open,
