@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import Loader from "../common/Spinner";
-import TableStyles from "../styles/tableStyles";
+import TableStyles from "../styles/TableStyles";
 
 export const getOptions = (loading) => {
   const options = {

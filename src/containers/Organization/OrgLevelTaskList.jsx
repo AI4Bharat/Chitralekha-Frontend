@@ -11,7 +11,7 @@ import statusColor from "../../utils/getStatusColor";
 //Themes
 import tableTheme from "../../theme/tableTheme";
 import DatasetStyle from "../../styles/datasetStyle";
-import TableStyles from "../../styles/tableStyles";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import {

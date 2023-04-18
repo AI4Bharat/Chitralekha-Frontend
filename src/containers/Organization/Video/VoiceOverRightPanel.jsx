@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/scrollbarStyle.css";
+import "../../../styles/ScrollbarStyle.css";
 import C from "../../../redux/constants";
 import {
   setCurrentPage,

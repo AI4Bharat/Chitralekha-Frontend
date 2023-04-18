@@ -1,6 +1,6 @@
 import { Alert, Box, Snackbar } from "@mui/material";
 import React from "react";
-import ProjectStyle from "../styles/projectStyle";
+import ProjectStyle from "../styles/ProjectStyle";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 

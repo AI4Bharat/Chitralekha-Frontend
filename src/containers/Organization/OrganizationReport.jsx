@@ -7,7 +7,7 @@ import { snakeToTitleCase } from "../../utils/utils";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/tableStyles";
+import TableStyles from "../../styles/TableStyles";
 
 //Components
 import {

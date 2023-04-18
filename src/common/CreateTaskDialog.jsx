@@ -23,7 +23,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
-import ProjectStyle from "../styles/projectStyle";
+import ProjectStyle from "../styles/ProjectStyle";
 import moment from "moment";
 import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
 import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";

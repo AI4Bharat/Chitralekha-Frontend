@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogContent, DialogTitle, Grid, Box, Typography, Tooltip, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import ProjectStyle from '../styles/projectStyle';
+import ProjectStyle from '../styles/ProjectStyle';
 import OutlinedTextField from './OutlinedTextField';
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';

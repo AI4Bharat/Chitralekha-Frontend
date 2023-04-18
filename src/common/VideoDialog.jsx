@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
-import ProjectStyle from "../styles/projectStyle";
+import ProjectStyle from "../styles/ProjectStyle";
 import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
 import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
 import { getTimeStamp, getMilliseconds, MenuProps } from "../utils/utils";

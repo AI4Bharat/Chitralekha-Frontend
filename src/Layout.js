@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@mui/material";
 import Header from "./common/Header";
-import GlobalStyles from "./styles/layoutStyles";
+import GlobalStyles from "./styles/LayoutStyles";
 import themeDefault from "./theme/theme";
 import BackButton from "./common/BackButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
