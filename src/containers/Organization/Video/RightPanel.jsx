@@ -155,7 +155,7 @@ const RightPanel = ({ currentIndex }) => {
   const changeTranscriptHandler = useCallback((text, index) => {
     const sub = onSubtitleChange(text, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-
+    saveTranscriptHandler(false, false, sub);
     // eslint-disable-next-line
   }, []);
 
@@ -197,7 +197,6 @@ const RightPanel = ({ currentIndex }) => {
         variant: "success",
       });
 
-      getPayload();
       setLoading(false);
 
       if (isFinal) {
@@ -234,7 +233,8 @@ const RightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    
+    saveTranscriptHandler(false, true, sub);
+
     // eslint-disable-next-line
   }, []);
 
@@ -293,6 +293,7 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true);
     getPayload(value, limit);
   };
 
@@ -328,7 +329,7 @@ const RightPanel = ({ currentIndex }) => {
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {subtitles?.map((item, index) => {
             return (
-              <Box 
+              <Box
                 key={index}
                 id={`sub_${index}`}
                 style={{
@@ -435,10 +436,7 @@ const RightPanel = ({ currentIndex }) => {
                           }, 200)
                         }
                       />
-                      <span
-                        id="charNum"
-                        className={classes.wordCount}
-                      >
+                      <span id="charNum" className={classes.wordCount}>
                         {targetLength(index)}
                       </span>
                     </div>
