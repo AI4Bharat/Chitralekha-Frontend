@@ -3,11 +3,13 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class AddProjectMembersAPI extends API {
-  constructor(projectId,data, timeout = 2000) {
+  constructor(projectId, data, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.ADD_PROJECT_MEMBERS;
     this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.project}${projectId}/add_project_members/`;
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.project
+    }${projectId}/add_project_members/`;
   }
 
   processResponse(res) {
