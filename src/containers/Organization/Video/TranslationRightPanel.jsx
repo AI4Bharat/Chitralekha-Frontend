@@ -95,6 +95,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
@@ -149,6 +150,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
+    saveTranscriptHandler(false, false, arr);
   };
 
   const saveTranscriptHandler = async (isFinal, isAutosave, subs = sourceText) => {
@@ -174,7 +176,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setLoading(false);
-      getPayload();
 
       setSnackbarInfo({
         open: isAutosave,
@@ -221,7 +222,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    
+    saveTranscriptHandler(false, true, sub);
     // eslint-disable-next-line
   }, []);
 
@@ -229,6 +230,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const sub = addSubtitleBox(index);
 
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
     
     // setUndoStack([...undoStack, {
     //   type: "add",
@@ -272,6 +274,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true);
     getPayload(value, limit);
   };
 
