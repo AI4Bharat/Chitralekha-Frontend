@@ -5,13 +5,12 @@ import { useNavigate } from "react-router-dom";
 import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
-import { Box, Card, Grid, Tab, Tabs } from "@mui/material";
-import Button from "../../common/Button";
+import { Box, Card, Grid, Tab, Tabs, Button } from "@mui/material";
 import CustomizedSnackbars from "../../common/Snackbar";
 import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
-import AdminLevelReport from "./AdminLevelReport"
+import AdminLevelReport from "./AdminLevelReport";
 
 //Apis
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
@@ -123,9 +122,12 @@ const DashBoard = () => {
           >
             <Button
               className={classes.projectButton}
-              label={"Add New Organization"}
               onClick={() => navigate(`/admin/create-new-org`)}
-            />
+              variant="contained"
+            >
+              Add New Organization
+            </Button>
+
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <OrganizationList />
             </div>
@@ -145,9 +147,12 @@ const DashBoard = () => {
           >
             <Button
               className={classes.projectButton}
-              label={"Add New Member"}
               onClick={() => setAddUserDialog(true)}
-            />
+              variant="contained"
+            >
+              Add New Member
+            </Button>
+
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <MemberList />
             </div>
@@ -170,7 +175,6 @@ const DashBoard = () => {
             </div>
           </Box>
         </TabPanel>
-        
 
         <TabPanel
           value={value}

@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import CustomButton from "../common/Button";
 import OutlinedTextField from "../common/OutlinedTextField";
 import Snackbar from "../common/Snackbar";
 import VerifyUpdateEmailAPI from "../redux/actions/api/User/VerifyUpdateEmail";
@@ -111,16 +110,21 @@ const UpdateEmailDialog = ({
         </Grid>
       </Grid>
       <DialogActions style={{ padding: 24 }}>
-        <Button onClick={handleClose}>Cancel</Button>
-        <CustomButton
-          startIcon={
-            loading && <CircularProgress size="0.8rem" color="secondary" />
-          }
-          onClick={verifyEmail}
-          label="Verify"
+        <Button sx={{ borderRadius: "8px", lineHeight: 1 }} onClick={handleClose}>
+          Cancel
+        </Button>
+
+        <Button
+          sx={{ borderRadius: "8px", lineHeight: 1 }}
           disabled={!(oldEmailCode && newEmailCode)}
-        />
+          onClick={verifyEmail}
+          variant="contained"
+        >
+          {loading && <CircularProgress size="0.8rem" color="secondary" />}
+          <span style={{ marginLeft: "10px" }}>Verify</span>
+        </Button>
       </DialogActions>
+
       <Snackbar
         {...snackbarState}
         handleClose={() => setSnackbarState({ ...snackbarState, open: false })}
