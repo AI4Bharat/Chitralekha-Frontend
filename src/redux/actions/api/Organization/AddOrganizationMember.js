@@ -7,7 +7,9 @@ export default class AddOrganizationMemberAPI extends API {
     super("POST", timeout, false);
     this.type = C.ADD_ORGANIZATION_MEMBER;
     this.data = data;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.addOrganizationMember}`;
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.addOrganizationMember
+    }`;
   }
 
   processResponse(res) {
@@ -29,7 +31,7 @@ export default class AddOrganizationMemberAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };
     return this.headers;
