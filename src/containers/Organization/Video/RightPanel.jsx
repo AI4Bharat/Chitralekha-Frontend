@@ -156,8 +156,6 @@ const RightPanel = ({ currentIndex }) => {
     const sub = onSubtitleChange(text, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
 
-    saveTranscriptHandler(false, false, sub);
-
     // eslint-disable-next-line
   }, []);
 

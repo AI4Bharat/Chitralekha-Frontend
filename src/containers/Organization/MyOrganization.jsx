@@ -15,8 +15,7 @@ import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOr
 import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
-import { Box, Card, Grid, Tab, Tabs, Typography } from "@mui/material";
-import Button from "../../common/Button";
+import { Box, Card, Grid, Tab, Tabs, Typography, Button } from "@mui/material";
 import UserList from "./UserList";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -200,11 +199,13 @@ const MyOrganization = () => {
             {userData?.role === "ORG_OWNER" && (
               <Button
                 className={classes.projectButton}
-                label={"Add New Project"}
                 onClick={() =>
                   navigate(`/my-organization/${id}/create-new-project`)
                 }
-              />
+                variant="contained"
+              >
+                Add New Project
+              </Button>
             )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectList
@@ -230,9 +231,12 @@ const MyOrganization = () => {
           >
             <Button
               className={classes.projectButton}
-              label={"Add New Member"}
               onClick={() => setAddUserDialog(true)}
-            />
+              variant="contained"
+            >
+              Add New Member
+            </Button>
+
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <UserList data={usersList} />
             </div>

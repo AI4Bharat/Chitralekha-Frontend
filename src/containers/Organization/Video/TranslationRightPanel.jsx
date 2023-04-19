@@ -149,7 +149,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false, arr);
   };
 
   const saveTranscriptHandler = async (isFinal, isAutosave, subs = sourceText) => {

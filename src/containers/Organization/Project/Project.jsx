@@ -24,8 +24,8 @@ import {
   Tabs,
   Tooltip,
   Typography,
+  Button,
 } from "@mui/material";
-import Button from "../../../common/Button";
 import CreateVideoDialog from "../../../common/CreateVideoDialog";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
@@ -367,9 +367,11 @@ const Project = () => {
               ?.permittedToCreateVideoAudio && (
               <Button
                 className={classes.projectButton}
-                label={"Create a New Video/Audio"}
                 onClick={() => setCreateVideoDialog(true)}
-              />
+                variant="contained"
+              >
+                Create a New Video/Audio
+              </Button>
             )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <VideoList
@@ -412,9 +414,11 @@ const Project = () => {
               userData.role === "ORG_OWNER") && (
               <Button
                 className={classes.projectButton}
-                label={"Add Project Members"}
                 onClick={() => setAddUserDialog(true)}
-              />
+                variant="contained"
+              >
+                Add Project Members
+              </Button>
             )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />

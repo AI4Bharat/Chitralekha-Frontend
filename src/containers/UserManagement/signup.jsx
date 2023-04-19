@@ -14,9 +14,9 @@ import {
   Box,
   Chip,
   FormControl,
+  Button,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import Button from "../../common/Button";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import LoginStyle from "../../styles/loginStyle";
 import AppInfo from "./AppInfo";
@@ -78,7 +78,7 @@ const SignUp = () => {
       });
     }
     // eslint-disable-next-line
-  }, [userInfo]); 
+  }, [userInfo]);
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
@@ -386,11 +386,11 @@ const SignUp = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Button
             fullWidth
-            label={"Submit"}
-            onClick={() => {
-              HandleSubmitValidate();
-            }}
-          />
+            onClick={() => HandleSubmitValidate()}
+            variant="contained"
+          >
+            Submit
+          </Button>
         </Grid>
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
