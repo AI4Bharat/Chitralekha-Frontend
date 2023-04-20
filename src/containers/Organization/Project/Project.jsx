@@ -45,6 +45,7 @@ import C from "../../../redux/constants";
 import AlertComponent from "../../../common/Alert";
 import { useRef } from "react";
 import UploadCSVAPI from "../../../redux/actions/api/Project/UploadCSV";
+import CSVAlertComponent from "../../../common/csvUploadFailAlert";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -72,6 +73,7 @@ const Project = () => {
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
 
@@ -263,7 +265,7 @@ const Project = () => {
       const uploadCSVObj = new UploadCSVAPI(projectId);
       const res = await fetch(uploadCSVObj.apiEndPoint(), {
         method: "POST",
-        body: JSON.stringify({ csv }),
+        body: JSON.stringify({ project_id: +projectId, csv }),
         headers: uploadCSVObj.getHeaders().headers,
       });
 
@@ -276,11 +278,8 @@ const Project = () => {
           variant: "success",
         });
       } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
+        setShowCSVAlert(true);
+        setAlertData(resp);
       }
     };
     reader.readAsBinaryString(file[0]);
@@ -422,7 +421,10 @@ const Project = () => {
                     style={{ display: "none" }}
                     ref={csvUpload}
                     accept=".csv"
-                    onChange={(event) => handeFileUpload(event.target.files)}
+                    onChange={(event) => {
+                      handeFileUpload(event.target.files);
+                      event.target.value = null;
+                    }}
                   />
                 </Button>
               </Box>
@@ -534,6 +536,15 @@ const Project = () => {
           onClose={() => setShowAlert(false)}
           message={alertData.message}
           report={alertData.detailed_report}
+        />
+      )}
+
+      {showCSVAlert && (
+        <CSVAlertComponent
+          open={showCSVAlert}
+          onClose={() => setShowCSVAlert(false)}
+          message={alertData.message}
+          report={alertData.response}
         />
       )}
     </Grid>

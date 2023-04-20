@@ -2,11 +2,11 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 
 export default class UploadCSVAPI extends API {
-  constructor(id, timeout = 2000) {
+  constructor(timeout = 2000) {
     super("POST", timeout, false);
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.video
-    }upload_csv?project_id=${id}`;
+    }upload_csv_data`;
   }
 
   processResponse(res) {
