@@ -254,30 +254,36 @@ const Project = () => {
     );
   };
 
-  const handeFileUpload = async (file) => {
-    const uploadCSVObj = new UploadCSVAPI(projectId, file);
+  const handeFileUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const csvData = reader.result;
+      const csv = btoa(csvData);
 
-    const res = await fetch(uploadCSVObj.apiEndPoint(), {
-      method: "POST",
-      body: uploadCSVObj.getFormData(),
-      headers: uploadCSVObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
+      const uploadCSVObj = new UploadCSVAPI(projectId);
+      const res = await fetch(uploadCSVObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify({ csv }),
+        headers: uploadCSVObj.getHeaders().headers,
       });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    };
+    reader.readAsBinaryString(file[0]);
   };
 
   const renderProjectDetails = () => {
