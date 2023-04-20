@@ -3,7 +3,7 @@ export const reportLevels = [
   { reportLevel: "Aggregated Language", endPoint: "get_aggregated_report_languages" },
   { reportLevel: "Project", endPoint: "get_report_projects" },
   { reportLevel: "User", endPoint: "get_report_users" },
-  // { reportLevel: "Language", endPoint: "get_report_languages" },
+  { reportLevel: "Project Language", endPoint: "get_report_languages" },
   { reportLevel: "Task", endPoint: "get_tasks_report" },
 ];
 

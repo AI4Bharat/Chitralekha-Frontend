@@ -9,6 +9,7 @@ import { isArray } from "lodash";
 //Themes
 import tableTheme from "../../theme/tableTheme";
 import TableStyles from "../../styles/tableStyles";
+import ProjectStyle from "../../styles/projectStyle";
 
 //Components
 import {
@@ -18,6 +19,7 @@ import {
   Select,
   MenuItem,
   Grid,
+  Tooltip,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 
@@ -30,6 +32,7 @@ const OrganizationReport = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const classes = TableStyles();
+  const projectClasses = ProjectStyle();
 
   const [projectReport, setProjectReport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -120,7 +123,15 @@ const OrganizationReport = () => {
               if (isArray(value)) {
                 value = value.join(", ");
               }
-              return value === null ? "-" : value;
+              return value === null ? (
+                "-"
+              ) : el[0] === "video_name" ? (
+                <Tooltip title={value}>
+                  <div className={projectClasses.reportVideoName}>{value}</div>
+                </Tooltip>
+              ) : (
+                value
+              );
             },
           },
         });
