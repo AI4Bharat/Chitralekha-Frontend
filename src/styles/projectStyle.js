@@ -310,7 +310,14 @@ const ProjectStyle = makeStyles({
     textOverflow: "ellipsis",
   },
 
-
+  reportVideoName: {
+    display: "-webkit-box",
+    maxWidth: "400px",
+    "-webkit-line-clamp": "2",
+    "-webkit-box-orient": "vertical",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  }
 });
 
 export default ProjectStyle;
