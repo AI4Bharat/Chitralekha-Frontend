@@ -598,8 +598,6 @@ const TaskList = () => {
         if (selectedFilters.status.includes(value.status_label)) {
           return value;
         }
-
-        return [];
       });
     } else {
       statusFilter = taskList.tasks_list;
@@ -613,8 +611,6 @@ const TaskList = () => {
         if (selectedFilters.taskType.includes(value.task_type_label)) {
           return value;
         }
-
-        return [];
       });
     } else {
       TaskTypefilter = statusFilter;
@@ -629,8 +625,6 @@ const TaskList = () => {
         if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
           return value;
         }
-
-        return [];
       });
     } else {
       lngResult = TaskTypefilter;
@@ -644,8 +638,6 @@ const TaskList = () => {
         if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
           return value;
         }
-
-        return [];
       });
     } else {
       filterResult = lngResult;
