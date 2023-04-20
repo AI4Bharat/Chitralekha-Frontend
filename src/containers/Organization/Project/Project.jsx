@@ -43,6 +43,8 @@ import Loader from "../../../common/Spinner";
 import ProjectReport from "./ProjectReport";
 import C from "../../../redux/constants";
 import AlertComponent from "../../../common/Alert";
+import { useRef } from "react";
+import UploadCSVAPI from "../../../redux/actions/api/Project/UploadCSV";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -65,6 +67,7 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const csvUpload = useRef();
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -251,6 +254,32 @@ const Project = () => {
     );
   };
 
+  const handeFileUpload = async (file) => {
+    const uploadCSVObj = new UploadCSVAPI(projectId, file);
+
+    const res = await fetch(uploadCSVObj.apiEndPoint(), {
+      method: "POST",
+      body: uploadCSVObj.getFormData(),
+      headers: uploadCSVObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
   const renderProjectDetails = () => {
     if (!projectInfo || projectInfo.length <= 0) {
       return <Loader />;
@@ -365,14 +394,34 @@ const Project = () => {
           >
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.permittedToCreateVideoAudio && (
-              <Button
-                className={classes.projectButton}
-                onClick={() => setCreateVideoDialog(true)}
-                variant="contained"
-              >
-                Create a New Video/Audio
-              </Button>
+              <Box display={"flex"} width={"100%"}>
+                <Button
+                  style={{ marginRight: "10px" }}
+                  className={classes.projectButton}
+                  onClick={() => setCreateVideoDialog(true)}
+                  variant="contained"
+                >
+                  Create a New Video/Audio
+                </Button>
+
+                <Button
+                  style={{ marginLeft: "10px" }}
+                  className={classes.projectButton}
+                  variant="contained"
+                  onClick={() => csvUpload.current.click()}
+                >
+                  CSV Upload
+                  <input
+                    type="file"
+                    style={{ display: "none" }}
+                    ref={csvUpload}
+                    accept=".csv"
+                    onChange={(event) => handeFileUpload(event.target.files)}
+                  />
+                </Button>
+              </Box>
             )}
+
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <VideoList
                 data={videoList}
