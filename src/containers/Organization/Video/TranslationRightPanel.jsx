@@ -89,7 +89,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     getPayload(currentOffset, limit);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
@@ -104,7 +104,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -121,7 +121,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -224,7 +224,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, true, sub);
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
@@ -239,7 +239,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {

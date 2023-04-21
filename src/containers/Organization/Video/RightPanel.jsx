@@ -98,7 +98,7 @@ const RightPanel = ({ currentIndex }) => {
   useEffect(() => {
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -125,7 +125,7 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -150,14 +150,14 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, [currentIndexToSplitTextBlock, selectionStart, limit]);
+  }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
   const changeTranscriptHandler = useCallback((text, index) => {
     const sub = onSubtitleChange(text, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, false, sub);
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -236,7 +236,7 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
@@ -251,7 +251,7 @@ const RightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
@@ -264,7 +264,7 @@ const RightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {
