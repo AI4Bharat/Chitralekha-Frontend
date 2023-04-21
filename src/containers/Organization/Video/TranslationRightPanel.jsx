@@ -52,6 +52,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -65,7 +66,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
-  const [limit, setLimit] = useState("50");
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
@@ -104,7 +104,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -121,7 +121,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -157,7 +157,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
-      limit: +limit,
+      limit: limit,
       payload: {
         payload: subs,
       },
@@ -224,7 +224,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, true, sub);
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
@@ -239,7 +239,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {
@@ -300,8 +300,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
             // onRedo={onRedo}
             // undoStack={undoStack}
             // redoStack={redoStack}
-            limit={limit}
-            setLimit={setLimit}
           />
         </Grid>
 

@@ -51,6 +51,7 @@ const RightPanel = ({ currentIndex }) => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
 
   // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -68,7 +69,6 @@ const RightPanel = ({ currentIndex }) => {
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
-  const [limit, setLimit] = useState("50");
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
@@ -125,7 +125,7 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -150,14 +150,14 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, [currentIndexToSplitTextBlock, selectionStart]);
+  }, [currentIndexToSplitTextBlock, selectionStart, limit]);
 
   const changeTranscriptHandler = useCallback((text, index) => {
     const sub = onSubtitleChange(text, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, false, sub);
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -169,7 +169,7 @@ const RightPanel = ({ currentIndex }) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
-      limit: +limit,
+      limit: limit,
       payload: {
         payload: payload,
       },
@@ -236,7 +236,7 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
@@ -251,7 +251,7 @@ const RightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
@@ -264,7 +264,7 @@ const RightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {
@@ -321,8 +321,6 @@ const RightPanel = ({ currentIndex }) => {
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
             showSplit={true}
-            limit={limit}
-            setLimit={setLimit}
           />
         </Grid>
 

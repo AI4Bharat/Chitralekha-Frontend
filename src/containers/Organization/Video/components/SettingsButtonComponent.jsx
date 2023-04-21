@@ -51,8 +51,6 @@ const SettingsButtonComponent = ({
   onSplitClick,
   showPopOver,
   showSplit,
-  limit,
-  setLimit,
 }) => {
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -69,6 +67,7 @@ const SettingsButtonComponent = ({
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
 
   const getDisbled = (flag) => {
     if (
@@ -110,7 +109,7 @@ const SettingsButtonComponent = ({
         open={Boolean(anchorElLimit)}
         onClose={() => setAnchorElLimit(null)}
       >
-        {["10", "25", "50", "100"].map((item, index) => {
+        {[10, 25, 50, 100].map((item, index) => {
           return (
             <MenuItem key={index}>
               <FormControlLabel
@@ -121,7 +120,6 @@ const SettingsButtonComponent = ({
                     onChange={() => {
                       setAnchorElLimit(null);
                       dispatch(setLimitInStore(item))
-                      setLimit(item);
                     }}
                   />
                 }
