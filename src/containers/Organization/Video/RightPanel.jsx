@@ -169,7 +169,7 @@ const RightPanel = ({ currentIndex }) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
-      limit: 50,
+      limit: limit,
       payload: {
         payload: payload,
       },
