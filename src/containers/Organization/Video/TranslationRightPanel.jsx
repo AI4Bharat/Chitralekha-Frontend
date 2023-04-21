@@ -157,7 +157,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
-      limit: limit,
+      limit: +limit,
       payload: {
         payload: subs,
       },
