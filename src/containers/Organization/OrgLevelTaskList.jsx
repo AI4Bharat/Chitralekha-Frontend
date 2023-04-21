@@ -1028,7 +1028,6 @@ const OrgLevelTaskList = () => {
           },
         }),
         customBodyRender: (value, tableMeta) => {
-          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}
