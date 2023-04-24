@@ -201,12 +201,29 @@ const VideoLanding = () => {
   }, [onKeyDown]);
 
   useEffect(() => {
-      window.onbeforeunload =function (e) {
-        e.preventDefault();
-        e.returnValue = "";
-      };
+    window.onbeforeunload = function (e) {
+      e.preventDefault();
+      e.returnValue = "";
+    };
     ref.current = new Date().getTime();
-    return () => {};
+    return () => {
+      const date = new Date().getTime();
+      const ms = date - ref.current;
+      const time_spent = Math.floor((ms / 1000) % 60);
+      fetch(
+        `https://backend.dev.chitralekha.ai4bharat.org/task/738/update_time_spent/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            // "X-CSRFToken":
+            //   "1ewvrJHgANsHaQovVuvMFmkWMcmWTYIQLkZ6dYkBZNbn1XWr6g8ojgF2TUJaE9kB",
+              Authorization: `JWT ${localStorage.getItem("token")}`
+          },
+          body: JSON.stringify({time_spent}),
+        }
+      );
+    };
   }, []);
 
   const handleFullscreen = () => {
