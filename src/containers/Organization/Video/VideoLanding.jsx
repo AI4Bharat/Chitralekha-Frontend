@@ -42,6 +42,7 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import VideoName from "./components/VideoName";
 import { cloneDeep } from "lodash";
 import { useRef } from "react";
+import UpdateTimeSpentPerTask from "../../../redux/actions/api/Project/UpdateTimeSpentPerTask";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -210,19 +211,9 @@ const VideoLanding = () => {
       const date = new Date().getTime();
       const ms = date - ref.current;
       const time_spent = Math.floor((ms / 1000) % 60);
-      fetch(
-        `https://backend.dev.chitralekha.ai4bharat.org/task/738/update_time_spent/`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            // "X-CSRFToken":
-            //   "1ewvrJHgANsHaQovVuvMFmkWMcmWTYIQLkZ6dYkBZNbn1XWr6g8ojgF2TUJaE9kB",
-              Authorization: `JWT ${localStorage.getItem("token")}`
-          },
-          body: JSON.stringify({time_spent}),
-        }
-      );
+
+      const apiObj = new UpdateTimeSpentPerTask(taskId, time_spent);
+      dispatch(APITransport(apiObj));
     };
   }, []);
 
