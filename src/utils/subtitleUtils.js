@@ -89,8 +89,6 @@ export const addSubtitleBox = (index) => {
 
   const duration = DT.t2d(copySub[index].end_time);
 
-  const duration = DT.t2d(copySub[index].end_time);
-  
   copySub.splice(
     index + 1,
     0,
