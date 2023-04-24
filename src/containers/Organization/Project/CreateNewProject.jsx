@@ -14,8 +14,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import OutlinedTextField from "../../../common/OutlinedTextField";
-import DatasetStyle from "../../../styles/Dataset";
-import CustomButton from "../../../common/Button";
+import DatasetStyle from "../../../styles/datasetStyle";
 import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
@@ -46,9 +45,6 @@ const CreatenewProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const newProjectDetails = useSelector(
-    (state) => state.getNewProjectDetails.data
-  );
   const userList = useSelector(
     (state) => state.getOrganizatioProjectManagersUser.data
   );
@@ -63,7 +59,7 @@ const CreatenewProject = () => {
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
   );
-  console.log(organizationDetails, "organizationDetails");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [managerUsername, setManagerUsername] = useState([]);
@@ -129,6 +125,7 @@ const CreatenewProject = () => {
   useEffect(() => {
     getOrganizatioUsersList();
     getSourceTypes();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -145,6 +142,7 @@ const CreatenewProject = () => {
       );
       setTranslationLanguage(items);
     }
+    // eslint-disable-next-line
   }, [organizationDetails]);
 
   const handleCreateProject = async () => {
@@ -396,7 +394,7 @@ const CreatenewProject = () => {
           <Button
             color="primary"
             variant="contained"
-            style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
+            style={{ borderRadius: "8px", margin: "0px 10px 0px 0px" }}
             onClick={() => handleCreateProject()}
             disabled={disableBtn()}
           >
@@ -406,11 +404,13 @@ const CreatenewProject = () => {
             )}
           </Button>
 
-          <CustomButton
-            label={"Cancel"}
+          <Button
+            variant="text"
+            style={{ borderRadius: "8px" }}
             onClick={() => navigate(`/my-organization/${orgId}`)}
-            buttonVariant="text"
-          />
+          >
+            Cancel
+          </Button>
         </Box>
       </Card>
     </Grid>

@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./web.route";
 import { Provider } from "react-redux";
@@ -8,18 +7,19 @@ import { StyledEngineProvider, ThemeProvider } from "@mui/material";
 import themeDefault from "./theme/theme";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import { createRoot } from "react-dom/client";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ThemeProvider theme={themeDefault}>
-        <StyledEngineProvider injectFirst>
-          <LocalizationProvider dateAdapter={AdapterMoment}>
-            <App />
-          </LocalizationProvider>
-        </StyledEngineProvider>
-      </ThemeProvider>
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById("root")
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+
+root.render(
+  <Provider store={store}>
+    <ThemeProvider theme={themeDefault}>
+      <StyledEngineProvider injectFirst>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <App />
+        </LocalizationProvider>
+      </StyledEngineProvider>
+    </ThemeProvider>
+  </Provider>
 );

@@ -2,6 +2,7 @@ import React, { createRef, memo, useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { setPlayer } from "../../../../redux/actions/Common";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import { isPlaying } from "../../../../utils/subtitleUtils";
 
 const VideoPanel = memo(
   ({ setCurrentTime, setPlaying }) => {
@@ -16,15 +17,6 @@ const VideoPanel = memo(
       (state) => state.commonReducer.fullscreenVideo
     );
 
-    const isPlaying = ($video) => {
-      return !!(
-        $video.currentTime > 0 &&
-        !$video.paused &&
-        !$video.ended &&
-        $video.readyState > 2
-      );
-    };
-
     useEffect(() => {
       dispatch(setPlayer($video.current));
       (function loop() {
@@ -36,6 +28,7 @@ const VideoPanel = memo(
           loop();
         });
       })();
+    // eslint-disable-next-line
     }, [setPlayer, setCurrentTime, setPlaying, $video]);
 
     const onClick = useCallback(() => {
@@ -61,11 +54,10 @@ const VideoPanel = memo(
           }
           style={{
             width: videoDetails?.video?.audio_only ? "20%" : "",
-            width: videoDetails?.video?.audio_only ? "20%" : "",
             margin:
               videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
           }}
-          poster={videoDetails?.video?.audio_only && poster}
+          poster={videoDetails?.video?.audio_only ? poster : ""}
           ref={$video}
           className={classes.videoPlayer}
         />

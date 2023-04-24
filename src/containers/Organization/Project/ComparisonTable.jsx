@@ -8,14 +8,13 @@ import {
   InputLabel,
   Card,
   Button,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMemo } from "react";
-import { maxHeight } from "@mui/system";
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 import TaskVideoDialog from "../../../common/TaskVideoDialog";
 import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +23,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
 import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
 import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-import Spinner from "../../../common/Spinner";
 import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
 import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -32,36 +30,37 @@ import CustomizedSnackbars from "../../../common/Snackbar";
 const ComparisonTable = () => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
+
+  const [selectedTranscriptType, setSelectTranscriptType] = useState("");
   const [loading, setLoading] = useState(false);
-  const [currentLoadingSectionIndex, setCurrentLoadingSectionIndex] = useState("");
+  const [currentLoadingSectionIndex, setCurrentLoadingSectionIndex] =
+    useState("");
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
-  const { projectId } = useParams();
 
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [selectedTranscriptType, setSelectTranscriptType] = useState("");
-
-  const taskList = useSelector((state) => state.getTaskList.data);
   const comparsionData = useSelector((state) => state.setComparisonTable.data);
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
 
-  useEffect(()=>{
-    if(comparsionData){
+  useEffect(() => {
+    if (comparsionData) {
       setLoading(false);
       setCurrentLoadingSectionIndex("");
     }
-  },[comparsionData])
-  
+  }, [comparsionData]);
+
   useEffect(() => {
-    const obj = new FetchTaskDetailsAPI(id)
+    const obj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(obj));
-  }, [])
+
+    // eslint-disable-next-line
+  }, []);
 
   const getComparisonData = () => {
     if (Object.keys(comparsionData).length) {
@@ -72,13 +71,10 @@ const ComparisonTable = () => {
     return [{ id: 0, value: "" }];
   };
   const [selectValue, setSelectValue] = useState(getComparisonData());
-  
-  const [selectTranscriptionValue, setSelectTranscriptionValue] = useState([
-    { id: 0, value: "" },
-  ]);
 
   useEffect(() => {
     setSelectValue(getComparisonData());
+    // eslint-disable-next-line
   }, [comparsionData]);
 
   const dropDown = [
@@ -96,48 +92,42 @@ const ComparisonTable = () => {
     },
   ];
 
-  let projectid;
-  let videoname;
-  useEffect(() => {
-    taskList?.map((element, index) => {
-      projectid = element.id;
-      videoname = element.video_name;
-    });
-  }, [taskList]);
-
   useEffect(() => {
     const apiObj = new FetchTaskListAPI();
     dispatch(APITransport(apiObj));
 
     const obj = new FetchTranscriptTypesAPI();
     dispatch(APITransport(obj));
+    // eslint-disable-next-line
   }, [taskDetails]);
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     let data = {};
 
-    if(selectedTranscriptType === "MANUALLY_CREATED") {
+    if (selectedTranscriptType === "MANUALLY_CREATED") {
       data = {
         type: selectedTranscriptType,
         payload: {
-          payload: []
-        }
-      }
+          payload: [],
+        },
+      };
     } else {
-      const [key, value] = Object.entries(comparsionData).find(([key]) => (selectedTranscriptType === key)) || [];
+      const [key, value] =
+        Object.entries(comparsionData).find(
+          ([key]) => selectedTranscriptType === key
+        ) || [];
 
       data = {
         type: key,
         payload: {
-          payload: value
-        }
+          payload: value,
+        },
       };
     }
-    
+
     const projectObj = new ComparisionTableAPI(taskDetails.id, data);
     //dispatch(APITransport(projectObj));
 
-    
     const res = await fetch(projectObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(projectObj.getBody()),
@@ -147,16 +137,16 @@ const ComparisonTable = () => {
     if (res.ok) {
       setSnackbarInfo({
         open: true,
-        message:  resp?.message,
+        message: resp?.message,
         variant: "success",
-      })
-      navigate(`/task/${taskDetails.id}/transcript`)
+      });
+      navigate(`/task/${taskDetails.id}/transcript`);
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "error",
-      })
+      });
     }
   };
 
@@ -173,16 +163,16 @@ const ComparisonTable = () => {
       if (res.ok) {
         setSnackbarInfo({
           open: true,
-          message:  rsp_data?.message,
+          message: rsp_data?.message,
           variant: "success",
-        })
+        });
         dispatch(setComparisonTable(rsp_data));
       } else {
         setSnackbarInfo({
           open: true,
           message: rsp_data?.message,
           variant: "error",
-        })
+        });
       }
     });
   };
@@ -192,6 +182,8 @@ const ComparisonTable = () => {
     const id = localStorage.getItem("sourceId");
     if (!!sourceTypeList && sourceTypeList.length)
       postCompareTranscriptionSource(id, sourceTypeList, 0);
+
+    // eslint-disable-next-line
   }, []);
 
   const addType = (indx) => {
@@ -275,26 +267,26 @@ const ComparisonTable = () => {
       return (
         <div className={classes.tableData}>
           {renderResult.map((el, i) => {
-            if (el.text)
-         
+            if (el.text) {
               return (
-                <>
-                <Typography className={classes.Typographyvalue}>
+                <Typography key={i} className={classes.Typographyvalue}>
                   {el.text}
                 </Typography>
-                </>
               );
+            }
+
+            return "";
           })}
         </div>
       );
     }
     return <></>;
   };
-  
+
   const renderDropDown = useMemo(() => {
     return (
       <Grid container spacing={8}>
-        {selectValue.map((select, indx) => {
+        {selectValue.map((_select, indx) => {
           return (
             <Grid key={indx} item xs={12} sm={12} md={4} lg={4} xl={4}>
               <FormControl fullWidth>
@@ -319,24 +311,34 @@ const ComparisonTable = () => {
                 </Select>
               </FormControl>
               {renderActionButton(indx)}
-              {loading && currentLoadingSectionIndex == indx ? 
-                <div 
-                  className={classes.tableData} 
-                  style={{textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column"}}
+              {loading && currentLoadingSectionIndex === indx ? (
+                <div
+                  className={classes.tableData}
+                  style={{
+                    textAlign: "center",
+                    justifyContent: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
                 >
-                  <CircularProgress sx={{alignSelf: "center"}} />
-                </div> 
-                : renderTableData(selectValue[indx]?.value)}
+                  <CircularProgress sx={{ alignSelf: "center" }} />
+                </div>
+              ) : (
+                renderTableData(selectValue[indx]?.value)
+              )}
             </Grid>
           );
         })}
       </Grid>
     );
+    // eslint-disable-next-line
   }, [selectValue]);
-  
+
   const renderTranscriptionType = useMemo(() => {
     const currentTranscriptTypes = Object.keys(comparsionData);
-    const filteredDropDown = transcriptTypes.filter(dl => currentTranscriptTypes.includes(dl.value))
+    const filteredDropDown = transcriptTypes.filter((dl) =>
+      currentTranscriptTypes.includes(dl.value)
+    );
 
     return (
       <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
@@ -363,15 +365,16 @@ const ComparisonTable = () => {
         </FormControl>
       </Grid>
     );
-  }, [selectTranscriptionValue, comparsionData, selectedTranscriptType]);
+    // eslint-disable-next-line
+  }, [comparsionData, selectedTranscriptType]);
 
   return (
     <Grid container spacing={1} style={{ alignItems: "center" }}>
       {/* {loading && <Spinner  />} */}
       {renderSnackBar()}
       <Card className={classes.orgCard}>
-        <TaskVideoDialog 
-          videoName={taskDetails.video_name} 
+        <TaskVideoDialog
+          videoName={taskDetails.video_name}
           videoUrl={taskDetails.video_url}
           projectId={taskDetails.project}
           lang={taskDetails.src_language}
@@ -381,44 +384,30 @@ const ComparisonTable = () => {
         </Grid>
         {renderDropDown}
         {Object.keys(comparsionData).length ? (
-          <Grid container  direction='row' sx={{ mb: 2, mt: 3, alignItems: "center", }}>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={12}
-              lg={1}
-              xl={1}
-            >
+          <Grid
+            container
+            direction="row"
+            sx={{ mb: 2, mt: 3, alignItems: "center" }}
+          >
+            <Grid item xs={12} sm={12} md={12} lg={1} xl={1}>
               <Typography variant="h4">Select :</Typography>
-             
-              </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={9}
-              lg={9}
-              xl={9}
-            >
-               {renderTranscriptionType}
-           </Grid>
-           
-
-           </Grid>  
+            </Grid>
+            <Grid item xs={12} sm={12} md={9} lg={9} xl={9}>
+              {renderTranscriptionType}
+            </Grid>
+          </Grid>
         ) : (
           <></>
         )}
- <Button
+        <Button
           onClick={handleSubmit}
           variant="contained"
           size="large"
-          sx={{ mt: 3,width:"120px" }}
+          sx={{ mt: 3, width: "120px" }}
           disabled={!selectValue[0]?.value}
         >
           Submit
         </Button>
-      
       </Card>
     </Grid>
   );

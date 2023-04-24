@@ -1,4 +1,4 @@
-export default {
+const endpoints = {
   //User
   signup: "/users/invite/",
   users: "/users/auth/jwt/create/",
@@ -20,7 +20,7 @@ export default {
   transcript: "/transcript/",
   translation: "/translation/",
   voiceover: "/voiceover/",
-  videoSubtitle:"/transcript/get_word_aligned_json/?video_id",
+  videoSubtitle: "/transcript/get_word_aligned_json/?video_id",
 
   //organization
   organization: "/organization/",
@@ -31,3 +31,5 @@ export default {
   //Task
   task: "/task/",
 };
+
+export default endpoints;

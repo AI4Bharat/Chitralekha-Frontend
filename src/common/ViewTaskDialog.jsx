@@ -15,12 +15,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { transcriptSelectSource } from "../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import FetchTranscriptTypesAPI from "../redux/actions/api/Project/FetchTranscriptTypes";
 import APITransport from "../redux/actions/apitransport/apitransport";
-import { useNavigate } from "react-router-dom";
 import moment from "moment/moment";
 import FetchTranslationTypesAPI from "../redux/actions/api/Project/FetchTranslationTypes";
 
@@ -28,15 +26,11 @@ const ViewTaskDialog = ({
   open,
   handleClose,
   compareHandler,
-  submitHandler,
   id,
 }) => {
   const dispatch = useDispatch();
-  let navigate = useNavigate();
   const [transcriptSource, setTranscriptSource] = useState([]);
   const [file, setFile] = useState();
-  const [openTaskVideo, setopenTaskVideo] = useState(false);
-  const [currentVideoDetails, setCurrentVideoDetails] = useState({});
 
   const [dropDownText, setdropDownText] = useState("");
 
@@ -61,6 +55,8 @@ const ViewTaskDialog = ({
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(id);
     dispatch(APITransport(apiObj));
+
+    // eslint-disable-next-line    
   }, []);
 
   useEffect(() => {
@@ -73,6 +69,7 @@ const ViewTaskDialog = ({
       const obj = new FetchTranslationTypesAPI();
       dispatch(APITransport(obj));
     }
+    // eslint-disable-next-line    
   }, [taskDetail]);
 
   return (

@@ -14,8 +14,9 @@ export const formatSub = (sub) => {
   return newSub(sub);
 };
 
-export const hasSub = (sub) => {
+export const hasSub = (sub, type) => {
   const subtitles = store.getState().commonReducer.subtitles;
+
   return subtitles.indexOf(sub);
 };
 
@@ -83,7 +84,10 @@ export const timeChange = (value, index, type, time) => {
 
 export const addSubtitleBox = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  const copySub = copySubs(subtitles);
+
+  const copySub = [...subtitles];
+
+  const duration = DT.t2d(copySub[index].end_time);
 
   const duration = DT.t2d(copySub[index].end_time);
   
@@ -95,7 +99,7 @@ export const addSubtitleBox = (index) => {
       end_time:
         index < subtitles.length - 1
           ? copySub[index + 1].start_time
-          : DT.d2t(duration+0.50),
+          : DT.d2t(duration + 0.5),
       text: "SUB_TEXT",
       target_text: "SUB_TEXT",
     })
@@ -106,12 +110,14 @@ export const addSubtitleBox = (index) => {
 
 export const onMerge = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  const existingsourceData = copySubs(subtitles);
+
+  const existingsourceData = [...subtitles];
 
   existingsourceData.splice(
     index,
     2,
     newSub({
+      id: existingsourceData[index].id,
       start_time: existingsourceData[index].start_time,
       end_time: existingsourceData[index + 1].end_time,
       text: `${existingsourceData[index].text} ${
@@ -129,15 +135,22 @@ export const onMerge = (index) => {
 export const onSubtitleDelete = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
-  const copySub = copySubs(subtitles);
+  const copySub = [...subtitles];
   copySub.splice(index, 1);
 
   return copySub;
 };
 
-export const onSplit = (currentIndex, selectionStart,  timings = null, targetSelectionStart = null) => {
+export const onSplit = (
+  currentIndex,
+  selectionStart,
+  type,
+  timings = null,
+  targetSelectionStart = null
+) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  const copySub = copySubs(subtitles);
+
+  const copySub = [...subtitles];
 
   const targetTextBlock = subtitles[currentIndex];
   const index = hasSub(subtitles[currentIndex], subtitles);
@@ -166,21 +179,21 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
       targetTextBlock.duration *
       (selectionStart / targetTextBlock.text.length)
     ).toFixed(3);
-  
+
     if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
       return;
-  
-    middleTime = DT.d2t(
-      targetTextBlock.startTime + parseFloat(splitDuration)
-    );
+
+    middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
   }
 
   copySub.splice(
     index,
     0,
     newSub({
-      start_time: middleTime ? subtitles[currentIndex].start_time : timings[0].start,
-      end_time: middleTime ??  timings[0].end,
+      start_time: middleTime
+        ? subtitles[currentIndex].start_time
+        : timings[0].start,
+      end_time: middleTime ?? timings[0].end,
       text: text1,
       ...(targetSelectionStart && { target_text: targetText1 }),
     })
@@ -191,7 +204,10 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
     0,
     newSub({
       start_time: middleTime ?? timings[1].start ?? timings[0].end,
-      end_time: middleTime || !timings[1].end ? subtitles[currentIndex].end_time :  timings[1].end,
+      end_time:
+        middleTime || !timings[1].end
+          ? subtitles[currentIndex].end_time
+          : timings[1].end,
       text: text2,
       ...(targetSelectionStart && { target_text: targetText2 }),
     })
@@ -202,7 +218,8 @@ export const onSplit = (currentIndex, selectionStart,  timings = null, targetSel
 
 export const onSubtitleChange = (text, index) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  const copySub = copySubs(subtitles);
+
+  const copySub = [...subtitles];
 
   copySub.forEach((element, i) => {
     if (index === i) {
@@ -291,7 +308,6 @@ export const placementMenu = [
 export const onUndoAction = (lastAction) => {
   const subtitles = store.getState().commonReducer.subtitles;
   if (lastAction.type === "merge") {
-    console.log(lastAction, "lastAction");
     return (
       onSplit(
         lastAction.index,
@@ -299,7 +315,8 @@ export const onUndoAction = (lastAction) => {
           ? subtitles[lastAction.index].text.length / 2
           : lastAction.selectionStart,
         lastAction.timings,
-        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+        lastAction.targetSelectionStart >=
+          subtitles[lastAction.index].target_text.length
           ? subtitles[lastAction.index].target_text.length / 2
           : lastAction.targetSelectionStart
       ) ?? subtitles
@@ -328,7 +345,8 @@ export const onRedoAction = (lastAction) => {
           ? subtitles[lastAction.index].text.length / 2
           : lastAction.selectionStart,
         lastAction.timings,
-        lastAction.targetSelectionStart >= subtitles[lastAction.index].target_text.length
+        lastAction.targetSelectionStart >=
+          subtitles[lastAction.index].target_text.length
           ? subtitles[lastAction.index].target_text.length / 2
           : lastAction.targetSelectionStart
       ) ?? subtitles
@@ -365,7 +383,7 @@ export const base64toBlob = (base64) => {
   const blobUrl = URL.createObjectURL(blob);
 
   return blobUrl;
-}
+};
 
 export const getSubtitleRange = () => {
   const subtitles = store.getState().commonReducer.subtitles;
@@ -379,4 +397,22 @@ export const getSubtitleRange = () => {
       return `${subtitles[0]?.id} - ${subtitles[0]?.id}`;
     }
   }
+};
+
+export const getSubtitleRangeTranscript = () => {
+  const rangeStart = store.getState().commonReducer.rangeStart;
+  const rangeEnd = store.getState().commonReducer.rangeEnd;
+
+  if (rangeStart && rangeEnd) {
+    return `${rangeStart} - ${rangeEnd}`;
+  }
+};
+
+export const isPlaying = (player) => {
+  return !!(
+    player.currentTime > 0 &&
+    !player.paused &&
+    !player.ended &&
+    player.readyState > 2
+  );
 };

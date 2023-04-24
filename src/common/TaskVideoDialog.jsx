@@ -14,6 +14,8 @@ const TaskVideoDialog = ({ videoName, videoUrl, projectId, lang }) => {
       projectId
     );
     dispatch(APITransport(apiObj));
+
+    // eslint-disable-next-line
   }, [videoUrl, lang, projectId]);
 
   const video = useSelector((state) => state.getVideoDetails.data);

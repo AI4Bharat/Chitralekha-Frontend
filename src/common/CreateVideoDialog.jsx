@@ -57,6 +57,7 @@ const CreateVideoDialog = ({
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+    // eslint-disable-next-line
   }, []);
 
   const supportedLanguages = useSelector(

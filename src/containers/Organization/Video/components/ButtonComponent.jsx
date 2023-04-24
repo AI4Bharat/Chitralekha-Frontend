@@ -3,7 +3,6 @@ import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from '@mui/icons-material/Delete';
-import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { memo } from "react";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import MicIcon from "@mui/icons-material/MicOutlined";
@@ -119,7 +118,7 @@ const ButtonComponent = ({
 
       {taskData.task_type.includes("VOICEOVER") &&
         transcriptPayload.source_type !== "MACHINE_GENERATED" &&
-        (recordAudio?.[index] == "stop" || recordAudio?.[index] == "" ? (
+        (recordAudio?.[index] === "stop" || recordAudio?.[index] === "" ? (
           <Tooltip title="Record Audio" placement="bottom">
             <IconButton
               style={{ display: isDisabled ? "none" : "" }}

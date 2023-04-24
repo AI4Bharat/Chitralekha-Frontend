@@ -1,10 +1,13 @@
+import React, { useState, useEffect } from "react";
+import { getColumns, getOptions } from "../../utils/tableUtils";
+import { taskQueueStatusColumns } from "../../config/tableColumns";
+
+//Components
 import MUIDataTable from "mui-datatables";
-import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
 import CustomizedSnackbars from "../../common/Snackbar";
+
+//APIs
 import FetchTaskQueueStatusAPI from "../../redux/actions/api/Organization/FetchTaskQueueStatus";
-import Loader from "../../common/Spinner";
 
 const TaskQueueStatus = () => {
   const [loading, setLoading] = useState(true);
@@ -68,114 +71,13 @@ const TaskQueueStatus = () => {
     return () => setTableData([]);
   }, []);
 
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: loading ? <Loader /> : "No records",
-      },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: "none",
-    search: true,
-    jumpToPage: true,
-  };
-
-  const columns = [
-    {
-      name: "S. No",
-      label: "Seq. No.",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "task_id",
-      label: "Task Id",
-      options: {
-        display: false,
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "video_id",
-      label: "Video Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "submitter_name",
-      label: "Submitter",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "org_name",
-      label: "Organization",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-    {
-      name: "video_duration",
-      label: "Video Duration",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: { height: "30px", fontSize: "16px", padding: "16px" },
-        }),
-      },
-    },
-  ];
-
   return (
     <div>
       <MUIDataTable
         title="Tasks Queue Status"
         data={tableData}
-        columns={columns}
-        options={options}
+        columns={getColumns(taskQueueStatusColumns)}
+        options={getOptions(loading)}
       />
       {renderSnackBar()}
     </div>
