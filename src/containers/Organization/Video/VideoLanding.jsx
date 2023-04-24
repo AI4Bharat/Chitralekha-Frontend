@@ -29,6 +29,8 @@ import {
   setCurrentPage,
   setNextPage,
   setPreviousPage,
+  setRangeEnd,
+  setRangeStart,
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
@@ -61,6 +63,7 @@ const VideoLanding = () => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
@@ -76,6 +79,7 @@ const VideoLanding = () => {
     return () => {
       dispatch({ type: C.CLEAR_STATE, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -96,6 +100,7 @@ const VideoLanding = () => {
         dispatch(APITransport(payloadObj));
       })();
     }
+    // eslint-disable-next-line
   }, [taskDetails]);
 
   useEffect(() => {
@@ -105,13 +110,17 @@ const VideoLanding = () => {
 
     const newSub = cloneDeep(sub);
 
-    dispatch(setCurrentPage(transcriptPayload?.current))
+    dispatch(setCurrentPage(transcriptPayload?.current));
     dispatch(setNextPage(transcriptPayload?.next));
     dispatch(setPreviousPage(transcriptPayload?.previous));
     dispatch(setTotalPages(transcriptPayload?.count));
     dispatch(setSubtitlesForCheck(newSub));
     dispatch(setCompletedCount(transcriptPayload?.completed_count));
+    dispatch(setRangeStart(transcriptPayload?.start));
+    dispatch(setRangeEnd(transcriptPayload?.end));
     dispatch(setSubtitles(sub, C.SUBTITLES));
+
+    // eslint-disable-next-line
   }, [transcriptPayload?.payload?.payload]);
 
   useMemo(() => {
@@ -139,26 +148,29 @@ const VideoLanding = () => {
     );
   };
 
-  const onKeyDown = (event) => {
-    const keyCode = getKeyCode(event);
+  const onKeyDown = useCallback(
+    (event) => {
+      const keyCode = getKeyCode(event);
 
-    switch (keyCode) {
-      case 32:
-        event.preventDefault();
-        if (player) {
-          if (playing) {
-            player.pause();
-          } else {
-            player.play();
+      switch (keyCode) {
+        case 32:
+          event.preventDefault();
+          if (player) {
+            if (playing) {
+              player.pause();
+            } else {
+              player.play();
+            }
           }
-        }
-        break;
-      default:
-        break;
-    }
-  };
+          break;
+        default:
+          break;
+      }
+    },
+    [player, playing]
+  );
 
-  const exitHandler = () => {
+  const exitHandler = useCallback(() => {
     if (
       !document.fullscreenElement &&
       !document.webkitIsFullScreen &&
@@ -173,7 +185,8 @@ const VideoLanding = () => {
         dispatch(FullScreen(false, C.FULLSCREEN_VIDEO));
       }
     }
-  };
+    // eslint-disable-next-line
+  }, [fullscreen, fullscreenVideo]);
 
   useEffect(() => {
     document.addEventListener("fullscreenchange", exitHandler);

@@ -19,8 +19,10 @@ import CheckIcon from "@mui/icons-material/Check";
 // import UndoIcon from '@mui/icons-material/Undo';
 // import RedoIcon from '@mui/icons-material/Redo';
 import { fontMenu } from "../../../../utils/subtitleUtils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
+import FormatLineSpacingIcon from "@mui/icons-material/FormatLineSpacing";
+import { setLimitInStore } from "../../../../redux/actions/Common";
 
 const anchorOrigin = {
   vertical: "top",
@@ -51,9 +53,11 @@ const SettingsButtonComponent = ({
   showSplit,
 }) => {
   const classes = VideoLandingStyle();
+  const dispatch = useDispatch();
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
+  const [anchorElLimit, setAnchorElLimit] = useState(null);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -63,6 +67,7 @@ const SettingsButtonComponent = ({
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
 
   const getDisbled = (flag) => {
     if (
@@ -73,7 +78,7 @@ const SettingsButtonComponent = ({
         return true;
       }
 
-      if (flag && completedCount != totalPages + 2) {
+      if (flag && completedCount !== totalPages + 2) {
         return true;
       }
     }
@@ -83,13 +88,59 @@ const SettingsButtonComponent = ({
 
   return (
     <>
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <Tooltip title="Number of Rows" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={(event) => setAnchorElLimit(event.currentTarget)}
+          >
+            <FormatLineSpacingIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      <Menu
+        sx={{ mt: "45px" }}
+        id="limit-menu"
+        anchorEl={anchorElLimit}
+        anchorOrigin={anchorOrigin}
+        keepMounted
+        transformOrigin={transformOrigin}
+        open={Boolean(anchorElLimit)}
+        onClose={() => setAnchorElLimit(null)}
+      >
+        {[10, 25, 50, 100].map((item, index) => {
+          return (
+            <MenuItem key={index}>
+              <FormControlLabel
+                label={item}
+                control={
+                  <Checkbox
+                    checked={limit === item}
+                    onChange={() => {
+                      setAnchorElLimit(null);
+                      dispatch(setLimitInStore(item))
+                    }}
+                  />
+                }
+              />
+            </MenuItem>
+          );
+        })}
+      </Menu>
+
+      <Divider orientation="vertical" className={classes.rightPanelDivider} />
+
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={onSplitClick}
             disabled={!showPopOver}
-            sx={{ marginRight: "5px" }}
+            sx={{
+              marginRight: "5px",
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
           >
             <SplitscreenIcon />
           </IconButton>

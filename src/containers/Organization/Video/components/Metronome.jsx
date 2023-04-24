@@ -70,7 +70,14 @@ export default React.memo(
           drogEndTime > 0 &&
           drogEndTime - drogStartTime >= 0.2
         ) {
-          const index = findIndex(subtitles, drogStartTime) + 1;
+          let index;
+
+          if(subtitles && subtitles.length) {
+            index = findIndex(subtitles, drogStartTime) + 1;
+          } else {
+            index = 0;
+          }
+
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
 
@@ -93,6 +100,8 @@ export default React.memo(
       setIsDroging(false);
       setDrogStartTime(0);
       setDrogEndTime(0);
+      
+    // eslint-disable-next-line
     }, [isDroging, drogStartTime, drogEndTime, subtitles, newSub]);
 
     useEffect(() => {

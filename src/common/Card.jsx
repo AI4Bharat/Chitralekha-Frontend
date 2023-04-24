@@ -2,7 +2,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Divider,
   Grid,
   Typography,
 } from "@mui/material";

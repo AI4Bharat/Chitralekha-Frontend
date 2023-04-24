@@ -12,7 +12,7 @@ import {
   Chip,
   Checkbox,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -76,6 +76,8 @@ const OrganizationSettings = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {

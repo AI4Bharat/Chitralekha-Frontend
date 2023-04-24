@@ -1,41 +1,33 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { snakeToTitleCase } from "../../../utils/utils";
+import { languagelevelStats, projectReportLevels } from "../../../config/reportConfig";
+
+//APIs
+import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 //Themes
+import tableTheme from "../../../theme/tableTheme";
+import TableStyles from "../../../styles/tableStyles";
+
+//Components
+import MUIDataTable from "mui-datatables";
+import Loader from "../../../common/Spinner";
 import {
   ThemeProvider,
-  Tooltip,
-  IconButton,
-  Box,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Grid,
 } from "@mui/material";
-import tableTheme from "../../../theme/tableTheme";
-import Search from "../../../common/Search";
 
-//Components
-import MUIDataTable from "mui-datatables";
-import Loader from "../../../common/Spinner";
-import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { snakeToTitleCase } from "../../../utils/utils";
-import DatasetStyle from "../../../styles/Dataset";
-
-const reportLevels = [{ reportLevel: "User" }, { reportLevel: "Language" }];
-
-const languagelevelStats = [
-  { lable: "Transcript", value: "transcript_stats" },
-  { lable: "Translation", value: "translation_stats" },
-];
-
-const ProjectReport = ({}) => {
+const ProjectReport = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
-  const classes = DatasetStyle();
+  const classes = TableStyles();
 
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -58,32 +50,35 @@ const ProjectReport = ({}) => {
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
   };
+
   let fetchedItems;
   useEffect(() => {
-
     reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
       ? (fetchedItems = ProjectReportData.transcript_stats)
       : (fetchedItems = ProjectReportData.translation_stats);
 
     setProjectreport(fetchedItems);
     Projectreport();
+
+    // eslint-disable-next-line
   }, [ProjectReportData, languageLevelsStats, reportsLevel]);
 
   useEffect(() => {
-
     fetchedItems = ProjectReportData;
 
     setProjectreport(fetchedItems);
     Projectreport();
+
+    // eslint-disable-next-line
   }, [ProjectReportData]);
 
   const pageSearch = () => {
     let result = [];
     let tableData = projectreport.map((el) => {
       let elementArr = [];
-      Object.values(el).filter((valEle, index) => {
-        elementArr[index] = valEle.value;
-      });
+      Object.values(el).filter(
+        (valEle, index) => (elementArr[index] = valEle.value)
+      );
       return elementArr;
     });
 
@@ -103,7 +98,7 @@ const ProjectReport = ({}) => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.entries(fetchedItems[0]).map((el, i) => {
+      Object.entries(fetchedItems[0]).forEach((el, i) => {
         tempColumns.push({
           name: el[0],
           label: snakeToTitleCase(el[1].label),
@@ -112,23 +107,12 @@ const ProjectReport = ({}) => {
             sort: false,
             align: "center",
             setCellHeaderProps: () => ({
-              style: {
-                height: "32px",
-                fontSize: "16px",
-                padding: "16px",
-              },
+              className: classes.cellHeaderProps,
             }),
-            setCellProps: () => ({ style: {  height: "40px" } }),
+            setCellProps: () => ({ style: { height: "40px" } }),
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },
-            setCellHeaderProps: () => ({
-              style: {
-                height: "30px",
-                fontSize: "16px",
-                padding: "16px",
-              },
-            }),
           },
         });
         tempSelected.push(el[0]);
@@ -148,16 +132,7 @@ const ProjectReport = ({}) => {
       return col;
     });
     setColumns(newCols);
-  }, [selectedColumns]);
-
-  const renderToolBar = () => {
-    return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
-    );
-  };
-
+  }, [selectedColumns, columns]);
 
   const options = {
     textLabels: {
@@ -182,14 +157,14 @@ const ProjectReport = ({}) => {
     selectableRows: "none",
     search: true,
     jumpToPage: true,
-   // customToolbar: renderToolBar,
+    // customToolbar: renderToolBar,
   };
 
   return (
     <>
       <Grid container columnSpacing={3} rowSpacing={2} mb={2}>
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          <FormControl fullWidth >
+          <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label" sx={{ fontSize: "18px" }}>
               Select Report Type
             </InputLabel>
@@ -200,17 +175,19 @@ const ProjectReport = ({}) => {
               label="Select Reports Level"
               value={reportsLevel}
               onChange={handleChangeReportsLevel}
-              sx={{textAlign:"start"}}
+              sx={{ textAlign: "start" }}
             >
-              {reportLevels.map((item) => (
-                <MenuItem value={item.reportLevel}>{item.reportLevel}</MenuItem>
+              {projectReportLevels.map((item, index) => (
+                <MenuItem key={index} value={item.reportLevel}>
+                  {item.reportLevel}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
           {reportsLevel === "Language" && (
-            <FormControl fullWidth >
+            <FormControl fullWidth>
               <InputLabel
                 id="demo-simple-select-label"
                 sx={{ fontSize: "18px" }}
@@ -224,10 +201,12 @@ const ProjectReport = ({}) => {
                 label="Select Task Stats"
                 value={languageLevelsStats}
                 onChange={handleChangelanguageLevelStats}
-                sx={{textAlign:"start"}}
+                sx={{ textAlign: "start" }}
               >
-                {languagelevelStats.map((item) => (
-                  <MenuItem value={item.value}>{item.lable}</MenuItem>
+                {languagelevelStats.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.lable}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -236,11 +215,7 @@ const ProjectReport = ({}) => {
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable
-          data={pageSearch()}
-          columns={columns}
-          options={options}
-        />
+        <MUIDataTable data={pageSearch()} columns={columns} options={options} />
       </ThemeProvider>
     </>
   );

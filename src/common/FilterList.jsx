@@ -6,19 +6,16 @@ import {
   Popover,
   FormGroup,
   FormControlLabel,
-  Radio,
   Box,
   Checkbox,
   Grid,
 } from "@mui/material";
-import { translate } from "../config/localisation";
-import DatasetStyle from "../styles/Dataset";
-import { snakeToTitleCase } from "../utils/utils";
+import DatasetStyle from "../styles/datasetStyle";
 import { TaskTypes, TaskStatus } from "../config/taskItems";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();
-  const { currentFilters, updateFilters, supportedLanguages,taskList } = props;
+  const { currentFilters, updateFilters, taskList } = props;
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
   const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
@@ -149,9 +146,10 @@ const FilterList = (props) => {
               Source Language
             </Typography>
             <FormGroup>
-              { taskList?.src_languages_list?.map((type) => {
+              { taskList?.src_languages_list?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={isChecked(type, "SrcLanguage")}
@@ -182,9 +180,10 @@ const FilterList = (props) => {
               Target Language
             </Typography>
             <FormGroup>
-              { taskList?.target_languages_list?.map((type) => {
+              { taskList?.target_languages_list?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}  
                     control={
                       <Checkbox
                         checked={isChecked(type, "TgtLanguage")}
@@ -212,9 +211,10 @@ const FilterList = (props) => {
               Status
             </Typography>
             <FormGroup>
-              {TaskStatus?.map((type) => {
+              {TaskStatus?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={isChecked(type.label, "status")}
@@ -237,9 +237,10 @@ const FilterList = (props) => {
               Task Type
             </Typography>
             <FormGroup>
-              {TaskTypes?.map((type) => {
+              {TaskTypes?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={isChecked(type.label, "taskType")}

@@ -6,10 +6,12 @@ import {
   Button,
   Card,
   CardContent,
+  FormControlLabel,
   Grid,
+  Switch,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import CustomButton from "../../common/Button";
 import Spinner from "../../common/Spinner";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
@@ -19,6 +21,8 @@ import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
 import EditIcon from "@mui/icons-material/Edit";
 import { getProfile } from "../../utils/utils";
+import ToggleMailsAPI from "../../redux/actions/api/User/ToggleMails";
+import CustomizedSnackbars from "../../common/Snackbar";
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -26,8 +30,13 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
 
   const [userDetails, setUserDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [enableMail, setEnableMail] = useState(false);
   const [profile, setProfile] = useState([]);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "",
+  });
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUser = useSelector(
@@ -41,12 +50,13 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getUserData();
+     // eslint-disable-next-line
   }, [id]);
 
   useEffect(() => {
     if (userData) {
       setUserDetails(userData);
-      setLoading(false);
+      setEnableMail(userData.enable_mail)
     }
   }, [userData]);
 
@@ -56,6 +66,34 @@ const ProfilePage = () => {
       setProfile(temp);
     }
   }, [userDetails]);
+
+  const handleEmailToggle = async () => {
+    setEnableMail(!enableMail)
+    const mailObj = new ToggleMailsAPI(
+      loggedInUser.id,
+      !enableMail
+    );
+    const res = await fetch(mailObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(mailObj.getBody()),
+      headers: mailObj.getHeaders().headers,
+    });
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
 
   const renderProfileCard = () => {
     if (!userDetails || userDetails.length <= 0)
@@ -103,6 +141,25 @@ const ProfilePage = () => {
             {userDetails?.phone}
           </Typography>
         )}
+
+        {(loggedInUser.id === +id ||
+          loggedInUser.role === "ADMIN" ||
+          loggedInUser.role === "ORG_OWNER") && (
+          <Tooltip
+            title={`${
+              enableMail ? "Disable" : "Enable"
+            } daily mails`}
+            sx={{ marginLeft: "0", marginTop: "8px" }}
+          >
+            <FormControlLabel
+              control={<Switch color="primary" />}
+              label="Daily Mails"
+              labelPlacement="start"
+              checked={enableMail}
+              onChange={handleEmailToggle}
+            />
+          </Tooltip>
+        )}
       </CardContent>
     );
   };
@@ -125,7 +182,9 @@ const ProfilePage = () => {
             >
               <Typography variant="h4">Profile</Typography>
 
-              {(loggedInUser.id === +id || loggedInUser.role === "ADMIN" || loggedInUser.role === "ORG_OWNER") && (
+              {(loggedInUser.id === +id ||
+                loggedInUser.role === "ADMIN" ||
+                loggedInUser.role === "ORG_OWNER") && (
                 <Button
                   variant="outlined"
                   sx={{
@@ -148,9 +207,9 @@ const ProfilePage = () => {
               flexWrap="wrap"
               paddingTop="10px"
             >
-              {profile.map((item) => {
+              {profile.map((item, index) => {
                 return (
-                  <Box width="30%" padding="10px 10px 20px 10px">
+                  <Box key={index} width="30%" padding="10px 10px 20px 10px">
                     <Typography
                       variant="body1"
                       color="rgba(0, 0, 0, 0.54)"
@@ -173,6 +232,13 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
       </Grid>
+
+      <CustomizedSnackbars
+        {...snackbarInfo}
+        handleClose={() => setSnackbarInfo({ ...snackbarInfo, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        hide={2000}
+      />
     </Grid>
   );
 };

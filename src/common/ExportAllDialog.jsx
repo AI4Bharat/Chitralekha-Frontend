@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,7 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import CustomButton from "./Button";
 import CloseIcon from "@mui/icons-material/Close";
 
 const ExportAllDialog = ({
@@ -57,6 +57,7 @@ const ExportAllDialog = ({
             >
               {exportOptions?.map((item, index) => (
                 <FormControlLabel
+                  key={index}
                   value={item}
                   control={<Radio />}
                   checked={exportType === item}
@@ -69,20 +70,22 @@ const ExportAllDialog = ({
         </DialogActions>
 
         <DialogActions>
-          <CustomButton
-            buttonVariant="standard"
+          <Button
+            variant="standard"
             onClick={handleClose}
             style={{ borderRadius: "8px" }}
-            label="Cancel"
-          />
+          >
+            Cancel
+          </Button>
 
-          <CustomButton
-            onClick={handleExport}
-            label="Export"
-            buttonVariant="contained"
-            style={{ borderRadius: "8px" }}
+          <Button
             autoFocus
-          />
+            variant="contained"
+            onClick={handleExport}
+            style={{ borderRadius: "8px" }}
+          >
+            Export
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

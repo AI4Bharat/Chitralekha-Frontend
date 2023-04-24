@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
-import ProjectStyle from "../styles/ProjectStyle";
+import ProjectStyle from "../styles/projectStyle";
 import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
 import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
 import { getTimeStamp, getMilliseconds, MenuProps } from "../utils/utils";
@@ -83,10 +83,12 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       return false;
     });
     setSubtitles(subs);
+    // eslint-disable-next-line    
   }, [time]);
 
   useEffect(() => {
     processSubtitleData();
+    // eslint-disable-next-line    
   }, [subtitles]);
 
   const getHighlightedWords = (index, currentTime, word, start, end) => {
@@ -137,6 +139,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     return () => {
       dispatch({ type: C.CLEAR_VIDEO_DETAILS });
     };
+    // eslint-disable-next-line    
   }, []);
 
   const onFullScreenChange = (status) => {
@@ -206,9 +209,10 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       btn.pause();
     }
   };
-  const onKeyDown = (e) => {
+
+  const onKeyDown = useCallback((e) => {
     var video = document.getElementById("myBtn");
-    if (e.which == 32 && e.target.id !== "description") {
+    if (e.which === 32 && e.target.id !== "description") {
       if (video.paused) {
         e.preventDefault();
         video.play();
@@ -217,7 +221,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         video.pause();
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
@@ -305,7 +309,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
             <Button
               variant="contained"
-              sx={{ display: "flex", borderRadius: "8px", m: "24px auto" }}
+              sx={{ display: "flex", borderRadius: "8px", m: "24px auto 0 0" }}
               onClick={() => updateVideoHandler()}
             >
               Update Details

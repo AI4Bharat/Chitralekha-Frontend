@@ -1,4 +1,4 @@
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 import {
   Grid,
   Typography,

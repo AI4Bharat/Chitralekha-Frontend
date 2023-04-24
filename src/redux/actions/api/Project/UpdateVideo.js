@@ -1,6 +1,5 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
-import C from "../../../constants";
 
 export default class UpdateVideoAPI extends API {
   constructor(updateData, timeout = 2000) {
