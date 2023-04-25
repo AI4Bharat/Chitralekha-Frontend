@@ -211,6 +211,8 @@ const ProjectStyle = makeStyles({
     "& .MuiInputBase-input": {
       textAlign: "center",
       color: "#fff",
+      fontSize: "1rem",
+      padding: "5px 0"
     },
     "& .MuiInput-root:after": {
       border: "none",
