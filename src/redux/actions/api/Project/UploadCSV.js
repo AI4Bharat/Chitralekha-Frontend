@@ -1,14 +1,12 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
-import C from "../../../constants";
 
-export default class FetchOrganizationReportsAPI extends API {
-  constructor(id, endPoint, timeout = 2000) {
-    super("GET", timeout, false);
-    this.type = C.GET_ORGANIZATION_REPORTS;
+export default class UploadCSVAPI extends API {
+  constructor(timeout = 2000) {
+    super("POST", timeout, false);
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.organization
-    }${id}/${endPoint}/`;
+      ENDPOINTS.video
+    }upload_csv_data`;
   }
 
   processResponse(res) {
@@ -22,7 +20,9 @@ export default class FetchOrganizationReportsAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return this.data;
+  }
 
   getHeaders() {
     this.headers = {

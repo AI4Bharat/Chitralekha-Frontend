@@ -52,6 +52,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
 
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -65,7 +66,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
-  const [limit, setLimit] = useState("50");
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
@@ -89,12 +89,13 @@ const TranslationRightPanel = ({ currentIndex }) => {
     getPayload(currentOffset, limit);
 
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
     const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
@@ -103,7 +104,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -120,7 +121,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -156,7 +157,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
-      limit: 50,
+      limit: limit,
       payload: {
         payload: subs,
       },
@@ -175,7 +176,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setLoading(false);
-      getPayload();
 
       setSnackbarInfo({
         open: isAutosave,
@@ -222,14 +222,15 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    
+    saveTranscriptHandler(false, true, sub);
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
 
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
     
     // setUndoStack([...undoStack, {
     //   type: "add",
@@ -238,7 +239,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {
@@ -273,6 +274,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true);
     getPayload(value, limit);
   };
 
@@ -298,8 +300,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
             // onRedo={onRedo}
             // undoStack={undoStack}
             // redoStack={redoStack}
-            limit={limit}
-            setLimit={setLimit}
           />
         </Grid>
 

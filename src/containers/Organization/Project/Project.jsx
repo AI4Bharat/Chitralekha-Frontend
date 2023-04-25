@@ -24,8 +24,8 @@ import {
   Tabs,
   Tooltip,
   Typography,
+  Button,
 } from "@mui/material";
-import Button from "../../../common/Button";
 import CreateVideoDialog from "../../../common/CreateVideoDialog";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
@@ -43,6 +43,9 @@ import Loader from "../../../common/Spinner";
 import ProjectReport from "./ProjectReport";
 import C from "../../../redux/constants";
 import AlertComponent from "../../../common/Alert";
+import { useRef } from "react";
+import UploadCSVAPI from "../../../redux/actions/api/Project/UploadCSV";
+import CSVAlertComponent from "../../../common/csvUploadFailAlert";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -65,10 +68,12 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const csvUpload = useRef();
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
 
@@ -251,6 +256,35 @@ const Project = () => {
     );
   };
 
+  const handeFileUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const csvData = reader.result;
+      const csv = btoa(csvData);
+
+      const uploadCSVObj = new UploadCSVAPI(projectId);
+      const res = await fetch(uploadCSVObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify({ project_id: +projectId, csv }),
+        headers: uploadCSVObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      } else {
+        setShowCSVAlert(true);
+        setAlertData(resp);
+      }
+    };
+    reader.readAsBinaryString(file[0]);
+  };
+
   const renderProjectDetails = () => {
     if (!projectInfo || projectInfo.length <= 0) {
       return <Loader />;
@@ -365,12 +399,37 @@ const Project = () => {
           >
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.permittedToCreateVideoAudio && (
-              <Button
-                className={classes.projectButton}
-                label={"Create a New Video/Audio"}
-                onClick={() => setCreateVideoDialog(true)}
-              />
+              <Box display={"flex"} width={"100%"}>
+                <Button
+                  style={{ marginRight: "10px" }}
+                  className={classes.projectButton}
+                  onClick={() => setCreateVideoDialog(true)}
+                  variant="contained"
+                >
+                  Create a New Video/Audio
+                </Button>
+
+                <Button
+                  style={{ marginLeft: "10px" }}
+                  className={classes.projectButton}
+                  variant="contained"
+                  onClick={() => csvUpload.current.click()}
+                >
+                  CSV Upload
+                  <input
+                    type="file"
+                    style={{ display: "none" }}
+                    ref={csvUpload}
+                    accept=".csv"
+                    onChange={(event) => {
+                      handeFileUpload(event.target.files);
+                      event.target.value = null;
+                    }}
+                  />
+                </Button>
+              </Box>
             )}
+
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <VideoList
                 data={videoList}
@@ -412,9 +471,11 @@ const Project = () => {
               userData.role === "ORG_OWNER") && (
               <Button
                 className={classes.projectButton}
-                label={"Add Project Members"}
                 onClick={() => setAddUserDialog(true)}
-              />
+                variant="contained"
+              >
+                Add Project Members
+              </Button>
             )}
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
@@ -475,6 +536,15 @@ const Project = () => {
           onClose={() => setShowAlert(false)}
           message={alertData.message}
           report={alertData.detailed_report}
+        />
+      )}
+
+      {showCSVAlert && (
+        <CSVAlertComponent
+          open={showCSVAlert}
+          onClose={() => setShowCSVAlert(false)}
+          message={alertData.message}
+          report={alertData.response}
         />
       )}
     </Grid>

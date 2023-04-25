@@ -1,11 +1,11 @@
 import {
+  Button,
   Card,
   CardActions,
   CardContent,
   Typography,
 } from "@mui/material";
 import React from "react";
-import CustomButton from "./Button";
 
 export const TutorialTooltip = ({
   index,
@@ -17,7 +17,7 @@ export const TutorialTooltip = ({
   skipProps,
 }) => {
   return (
-    <Card {...tooltipProps} sx={{padding: "15px", borderRadius: "10px"}}>
+    <Card {...tooltipProps} sx={{ padding: "15px", borderRadius: "10px" }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
           {step.title}
@@ -25,7 +25,7 @@ export const TutorialTooltip = ({
         <Typography variant="body2">{step.content}</Typography>
       </CardContent>
       <CardActions>
-        <CustomButton
+        <Button
           {...skipProps}
           sx={{
             backgroundColor: "transparent",
@@ -34,10 +34,12 @@ export const TutorialTooltip = ({
             marginRight: "auto",
             "&:hover": { backgroundColor: "transparent", boxShadow: "none" },
           }}
-          label="Skip"
-        />
+        >
+          Skip
+        </Button>
+
         {index > 0 && (
-          <CustomButton
+          <Button
             {...backProps}
             sx={{
               backgroundColor: "transparent",
@@ -45,14 +47,13 @@ export const TutorialTooltip = ({
               boxShadow: "none",
               "&:hover": { backgroundColor: "transparent", boxShadow: "none" },
             }}
-            label="Back"
-          />
+          >
+            Back
+          </Button>
         )}
-        <CustomButton
-          {...primaryProps}
-          sx={{ borderRadius: 2 }}
-          label={`Next (${index + 1}/${size})`}
-        />
+        <Button {...primaryProps} sx={{ borderRadius: 2 }} variant="contained">
+          {`Next (${index + 1}/${size})`}
+        </Button>
       </CardActions>
     </Card>
   );

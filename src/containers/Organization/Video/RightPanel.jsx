@@ -51,6 +51,7 @@ const RightPanel = ({ currentIndex }) => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
 
   // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
@@ -68,7 +69,6 @@ const RightPanel = ({ currentIndex }) => {
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
-  const [limit, setLimit] = useState("50");
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
@@ -98,7 +98,7 @@ const RightPanel = ({ currentIndex }) => {
   useEffect(() => {
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
-  }, [limit]);
+  }, [limit, currentOffset]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -125,7 +125,7 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -150,16 +150,14 @@ const RightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
-  }, [currentIndexToSplitTextBlock, selectionStart]);
+  }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
   const changeTranscriptHandler = useCallback((text, index) => {
     const sub = onSubtitleChange(text, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-
     saveTranscriptHandler(false, false, sub);
-
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -171,7 +169,7 @@ const RightPanel = ({ currentIndex }) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
-      limit: 50,
+      limit: limit,
       payload: {
         payload: payload,
       },
@@ -199,7 +197,6 @@ const RightPanel = ({ currentIndex }) => {
         variant: "success",
       });
 
-      getPayload();
       setLoading(false);
 
       if (isFinal) {
@@ -236,9 +233,10 @@ const RightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    
+    saveTranscriptHandler(false, true, sub);
+
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
@@ -253,7 +251,7 @@ const RightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
@@ -266,7 +264,7 @@ const RightPanel = ({ currentIndex }) => {
     // setRedoStack([]);
 
     // eslint-disable-next-line
-  }, []);
+  }, [limit, currentOffset]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {
@@ -295,6 +293,7 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true);
     getPayload(value, limit);
   };
 
@@ -322,15 +321,13 @@ const RightPanel = ({ currentIndex }) => {
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
             showSplit={true}
-            limit={limit}
-            setLimit={setLimit}
           />
         </Grid>
 
         <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
           {subtitles?.map((item, index) => {
             return (
-              <Box 
+              <Box
                 key={index}
                 id={`sub_${index}`}
                 style={{
@@ -437,10 +434,7 @@ const RightPanel = ({ currentIndex }) => {
                           }, 200)
                         }
                       />
-                      <span
-                        id="charNum"
-                        className={classes.wordCount}
-                      >
+                      <span id="charNum" className={classes.wordCount}>
                         {targetLength(index)}
                       </span>
                     </div>

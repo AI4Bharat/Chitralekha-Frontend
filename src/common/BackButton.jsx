@@ -1,15 +1,24 @@
-import { Button } from "@mui/material"
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const BackButton = ({ label, backPressNavigationPath, ...rest }) =>{
+const BackButton = ({ label, backPressNavigationPath, ...rest }) => {
   const navigate = useNavigate();
   return (
     <>
-     <Button {...rest} variant="contained" color="primary" onClick={() => backPressNavigationPath ? navigate(backPressNavigationPath) : navigate(-1)}>
-      {label}
-    </Button>
-     </>
+      <Button
+        {...rest}
+        variant="contained"
+        color="primary"
+        onClick={() =>
+          backPressNavigationPath
+            ? navigate(backPressNavigationPath)
+            : navigate(-1)
+        }
+      >
+        {label}
+      </Button>
+    </>
   );
-}
-  
-export default  BackButton;
+};
+
+export default BackButton;

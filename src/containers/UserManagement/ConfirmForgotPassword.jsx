@@ -7,11 +7,11 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Button,
 } from "@mui/material";
 import LoginStyle from "../../styles/loginStyle";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "../../common/Button";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import AppInfo from "./AppInfo";
 import Visibility from "@mui/icons-material/Visibility";
@@ -198,9 +198,11 @@ const ConfirmForgetPassword = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Button
             fullWidth
-            label={"Change Password"}
-            onClick={handleConfirmForgetPassword}
-          />
+            onClick={() => handleConfirmForgetPassword()}
+            variant="contained"
+          >
+            Change Password
+          </Button>
         </Grid>
       </Grid>
     );
