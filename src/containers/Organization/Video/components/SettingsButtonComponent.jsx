@@ -83,6 +83,15 @@ const SettingsButtonComponent = ({
       }
     }
 
+    if (
+      !taskData?.task_type?.includes("VOICEOVER") &&
+      transcriptPayload?.source_type === "MACHINE_GENERATED"
+    ) {
+      if (!transcriptPayload?.payload?.payload.length) {
+        return true;
+      }
+    }
+
     return false;
   };
 
@@ -119,7 +128,7 @@ const SettingsButtonComponent = ({
                     checked={limit === item}
                     onChange={() => {
                       setAnchorElLimit(null);
-                      dispatch(setLimitInStore(item))
+                      dispatch(setLimitInStore(item));
                     }}
                   />
                 }
