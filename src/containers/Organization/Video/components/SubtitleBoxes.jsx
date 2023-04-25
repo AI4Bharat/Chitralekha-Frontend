@@ -135,7 +135,7 @@ export default memo(
       dispatch(setSubtitles(res, C.SUBTITLES));
       saveTranscript(taskDetails?.task_type, res);
     // eslint-disable-next-line
-    }, []);
+    }, [limit, currentPage]);
 
     const mergeSub = useCallback((sub) => {
       const index = hasSub(sub);
@@ -143,7 +143,7 @@ export default memo(
       dispatch(setSubtitles(res, C.SUBTITLES));
       saveTranscript(taskDetails?.task_type, res);
     // eslint-disable-next-line
-    }, []);
+    }, [limit, currentPage]);
 
     const updateSub = useCallback((sub, obj) => {
       const index = hasSub(sub);
@@ -157,7 +157,7 @@ export default memo(
       dispatch(setSubtitles(copySub, C.SUBTITLES));
       saveTranscript(taskDetails?.task_type, copySub);
     // eslint-disable-next-line
-    }, []);
+    }, [limit, currentPage]);
 
     const onMouseDown = (sub, event, type) => {
       lastSub = sub;
