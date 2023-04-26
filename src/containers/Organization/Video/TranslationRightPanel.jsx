@@ -323,7 +323,9 @@ const TranslationRightPanel = ({ currentIndex }) => {
               >
                 <Box
                   display="flex"
-                  sx={{ justifyContent: "center" }}
+                  alignItems={"center"}
+                  justifyContent="center"
+                  sx={{ margin: "0 10px" }}
                 >
                   <TimeBoxes
                     handleTimeChange={handleTimeChange}
@@ -352,8 +354,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
                   sx={{
                     display: "flex",
                     padding: "5px 0",
-                    borderBottom: 1,
-                    borderColor: "lightgray",
                   }}
                   className={classes.cardContent}
                   onClick={() => {
