@@ -1,5 +1,5 @@
 //My Organization
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { roles } from "../../utils/utils";
@@ -10,6 +10,7 @@ import ProjectListAPI from "../../redux/actions/api/Project/ProjectList";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers";
 import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
+import UploadCSVAPI from "../../redux/actions/api/Project/UploadCSV";
 
 //Styles
 import DatasetStyle from "../../styles/datasetStyle";
@@ -23,6 +24,7 @@ import Loader from "../../common/Spinner";
 import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
+import CSVAlertComponent from "../../common/csvUploadFailAlert";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -45,6 +47,7 @@ const MyOrganization = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const csvUpload = useRef();
 
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -55,6 +58,8 @@ const MyOrganization = () => {
     message: "",
     variant: "success",
   });
+  const [showCSVAlert, setShowCSVAlert] = useState(false);
+  const [alertData, setAlertData] = useState({});
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -151,6 +156,35 @@ const MyOrganization = () => {
     );
   };
 
+  const handeFileUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const csvData = reader.result;
+      const csv = btoa(csvData);
+
+      const uploadCSVObj = new UploadCSVAPI("org");
+      const res = await fetch(uploadCSVObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify({ org_id: +id, csv }),
+        headers: uploadCSVObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      } else {
+        setShowCSVAlert(true);
+        setAlertData(resp);
+      }
+    };
+    reader.readAsBinaryString(file[0]);
+  };
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       {renderSnackBar()}
@@ -196,17 +230,41 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {userData?.role === "ORG_OWNER" && (
-              <Button
-                className={classes.projectButton}
-                onClick={() =>
-                  navigate(`/my-organization/${id}/create-new-project`)
-                }
-                variant="contained"
-              >
-                Add New Project
-              </Button>
-            )}
+            <Box display={"flex"} width={"100%"}>
+              {userData?.role === "ORG_OWNER" && (
+                <Button
+                  style={{ marginRight: "10px" }}
+                  className={classes.projectButton}
+                  onClick={() =>
+                    navigate(`/my-organization/${id}/create-new-project`)
+                  }
+                  variant="contained"
+                >
+                  Add New Project
+                </Button>
+              )}
+
+              {organizationDetails.enable_upload && (
+                <Button
+                  style={{ marginLeft: "10px" }}
+                  className={classes.projectButton}
+                  variant="contained"
+                  onClick={() => csvUpload.current.click()}
+                >
+                  Bulk Video Upload
+                  <input
+                    type="file"
+                    style={{ display: "none" }}
+                    ref={csvUpload}
+                    accept=".csv"
+                    onChange={(event) => {
+                      handeFileUpload(event.target.files);
+                      event.target.value = null;
+                    }}
+                  />
+                </Button>
+              )}
+            </Box>
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectList
                 data={projectList}
@@ -279,6 +337,15 @@ const MyOrganization = () => {
           addBtnClickHandler={addNewMemberHandler}
           selectFieldValue={newMemberRole}
           handleSelectField={setNewMemberRole}
+        />
+      )}
+
+      {showCSVAlert && (
+        <CSVAlertComponent
+          open={showCSVAlert}
+          onClose={() => setShowCSVAlert(false)}
+          message={alertData.message}
+          report={alertData.response}
         />
       )}
     </Grid>
