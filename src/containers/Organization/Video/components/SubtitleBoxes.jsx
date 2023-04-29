@@ -83,7 +83,7 @@ export default memo(
     );
 
     useEffect(() => {
-      if (currentIndex === subtitles.length - 1 && next && isPlaying(player)) {
+      if (currentIndex === subtitles?.length - 1 && next && isPlaying(player)) {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
           taskDetails.task_type,
@@ -213,6 +213,7 @@ export default memo(
               updateSub(lastSub, { start_time });
             }
           } else {
+            console.log("here");
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === "right") {
@@ -263,6 +264,7 @@ export default memo(
           }
         }
         lastTarget.style.transform = `translate(0)`;
+        lastTarget.style.width = `${width}px`;
       }
 
       lastType = "";
