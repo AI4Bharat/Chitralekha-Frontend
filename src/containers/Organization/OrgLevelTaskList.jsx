@@ -677,6 +677,7 @@ const OrgLevelTaskList = () => {
       ? filterData?.map((item, i) => {
           const status =
             item.status_label && statusColor(item.status_label)?.element;
+            console.log("item", item)
           return [
             item.id,
             item.task_type,
@@ -693,7 +694,7 @@ const OrgLevelTaskList = () => {
             item.is_active,
             `${item.user?.first_name} ${item.user?.last_name}`,
             item.project_name,
-            item.video,
+            item.time_spent,
             item.description,
             item.buttons,
           ];
@@ -951,6 +952,31 @@ const OrgLevelTaskList = () => {
           className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "time_spent",
+      label: "Time Spent",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        display: true,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps
+        }),
+        customBodyRender: (value, tableMeta) => {
+          console.log("valueee",value)
           return (
             <Box
               style={{
@@ -1280,7 +1306,7 @@ const OrgLevelTaskList = () => {
       });
     }
   };
-
+//console.log(result);
   return (
     <>
       <Grid>{renderSnackBar()}</Grid>
