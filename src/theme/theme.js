@@ -110,10 +110,10 @@ const themeDefault = createTheme({
     MuiTableRow: {
       styleOverrides: {
         root: {
-          "&:nth-child(odd)": {
+          "&:nth-of-type(odd)": {
             backgroundColor: "#D6EAF8",
           },
-          "&:nth-child(even)": {
+          "&:nth-of-type(even)": {
             backgroundColor: "#E9F7EF",
           },
           "&.MuiTableRow-hover:hover:nth-of-type(odd)": {
@@ -128,34 +128,26 @@ const themeDefault = createTheme({
         },
       },
     },
-    MUIDataTablePagination: {
+    MuiTablePagination: {
       styleOverrides: {
-        backgroundColor: "#fff",
+        select: {
+          fontSize: "0.875rem !important",
+          paddingBottom: "3px",
+        }
       },
     },
-    MUIDataTableFilterList: {
+    MUIDataTableJumpToPage: {
       styleOverrides: {
-        chip: {
-          display: "none",
-        },
-      },
+        select: {
+          fontSize: "0.875rem !important",
+          paddingBottom: "5px",
+        }
+      }
     },
     MuiMenu: {
       styleOverrides: {
         list: {
           minWidth: "210px",
-        },
-      },
-    },
-    MUIDataTableFilter: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "white",
-          width: "80%",
-          fontFamily: '"Roboto" ,sans-serif',
-        },
-        checkboxFormControl: {
-          minWidth: "200px",
         },
       },
     },
@@ -178,44 +170,6 @@ const themeDefault = createTheme({
           "@media (max-width:670px)": {
             padding: "0px",
             paddingLeft: "9px",
-          },
-        },
-      },
-    },
-    MUIDataTable: {
-      styleOverrides: {
-        paper: {
-          minHeight: "674px",
-          boxShadow: "0px 0px 2px #00000029",
-          border: "0",
-        },
-        responsiveBase: {
-          minHeight: "560px",
-        },
-      },
-    },
-    MUIDataTableToolbar: {
-      styleOverrides: {
-        filterPaper: {
-          width: "310px",
-        },
-        MuiButton: {
-          root: {
-            display: "none",
-          },
-        },
-      },
-    },
-    MUIDataTableBodyCell: {
-      styleOverrides: {
-        root: {
-          padding: ".5rem .5rem .5rem .8rem",
-          textTransform: "capitalize",
-        },
-
-        stackedParent: {
-          "@media (max-width: 400px)": {
-            display: "table-row",
           },
         },
       },
@@ -452,7 +406,7 @@ const themeDefault = createTheme({
     MuiSelect: {
       styleOverrides: {
         select: {
-          fontSize: "0.875rem",
+          fontSize: "1.25rem",
         }
       }
     },

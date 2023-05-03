@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -40,9 +39,9 @@ const ConfirmErrorDialog = ({ openDialog, handleClose, message, response }) => {
                       height: "60px",
                     }}
                   >
-                    {headers.map((item) => {
+                    {headers.map((item, index) => {
                       return (
-                        <TableCell sx={{ padding: "6px 16px" }}>
+                        <TableCell key={index} sx={{ padding: "6px 16px" }}>
                           {item}
                         </TableCell>
                       );
@@ -50,9 +49,10 @@ const ConfirmErrorDialog = ({ openDialog, handleClose, message, response }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {response.map((item) => {
+                  {response.map((item, index) => {
                     return (
                       <TableRow
+                        key={index}
                         style={{
                           backgroundColor: "rgba(254, 191, 44, 0.1)",
                           height: "60px",

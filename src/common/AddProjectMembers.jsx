@@ -1,4 +1,3 @@
-import { Add } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -9,18 +8,15 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
   Checkbox,
   ListItemText,
-  ListItemIcon,
-  Paper,
   Box,
   Chip,
+  IconButton,
+  Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { roles } from "../utils/utils";
-import { styled } from "@mui/material/styles";
-import DatasetStyle from "../styles/Dataset";
+import React from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -42,13 +38,6 @@ const MenuProps = {
   },
   variant: "menu",
 };
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
 
 const AddProjectMembers = ({
   open,
@@ -59,24 +48,31 @@ const AddProjectMembers = ({
   handleSelectField,
   managerNames,
 }) => {
-  const classes = DatasetStyle();
-
   return (
     <Dialog
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}
+      maxWidth={"sm"}
       fullWidth
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">{title}</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">{title}</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleUserDialogClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
         <FormControl fullWidth>
-          <InputLabel id="mutiple-select-label">Add project members</InputLabel>
+          <InputLabel id="mutiple-select-label">Select</InputLabel>
           <Select
             labelId="mutiple-select-label"
-            label="mutiple-select-label"
+            label="Select"
             multiple
             value={selectFieldValue}
             onChange={(event) => handleSelectField(event.target.value)}
@@ -101,12 +97,11 @@ const AddProjectMembers = ({
 
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
         <Button onClick={handleUserDialogClose} sx={{ borderRadius: "8px" }}>
-          Close
+          Cancel
         </Button>
 
         <Button
           autoFocus
-          endIcon={<Add />}
           variant="contained"
           sx={{ marginLeft: "10px", borderRadius: "8px" }}
           onClick={() => {
@@ -114,7 +109,7 @@ const AddProjectMembers = ({
             handleUserDialogClose();
           }}
         >
-          Add Member
+          Add
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,11 +1,7 @@
-import { Box,Grid,Tab, Card,Tabs, Typography, Divider } from '@mui/material'
-import React from 'react'
-import { useState } from 'react'
+import { Box, Tab, Typography, Divider, Tabs } from '@mui/material'
 import ChangePassword from "./ChangePassword";
 import EditProfile from "./EditProfile";
-import {useSelector} from "react-redux";
-
-
+import React, { useState, useEffect } from "react";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;

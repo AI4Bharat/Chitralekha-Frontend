@@ -29,9 +29,9 @@ const VideoStatusTable = ({ headers, status }) => {
                       height: "60px",
                     }}
                   >
-                    {headers.map((item) => {
+                    {headers.map((item, index) => {
                       return (
-                        <TableCell sx={{ padding: "6px 16px" }}>
+                        <TableCell key={index} sx={{ padding: "6px 16px" }}>
                           {item}
                         </TableCell>
                       );
@@ -39,9 +39,10 @@ const VideoStatusTable = ({ headers, status }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {status.map((item) => {
+                  {status.map((item, index) => {
                     return (
                       <TableRow
+                        key={index}
                         style={{
                           backgroundColor: "rgba(254, 191, 44, 0.1)",
                           height: "60px",

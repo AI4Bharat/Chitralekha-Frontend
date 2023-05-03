@@ -1,6 +1,5 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
-import C from "../../../constants";
 
 export default class EditBulkTaskDetailAPI extends API {
   constructor(updateData, id, timeout = 2000) {

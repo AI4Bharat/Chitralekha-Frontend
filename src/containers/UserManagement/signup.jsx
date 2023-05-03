@@ -14,9 +14,9 @@ import {
   Box,
   Chip,
   FormControl,
+  Button,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import Button from "../../common/Button";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import LoginStyle from "../../styles/loginStyle";
 import AppInfo from "./AppInfo";
@@ -77,6 +77,7 @@ const SignUp = () => {
         UserName: userInfo.username,
       });
     }
+    // eslint-disable-next-line
   }, [userInfo]);
 
   const handleClickShowPassword = () => {
@@ -102,6 +103,8 @@ const SignUp = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    // eslint-disable-next-line
   }, []);
 
   const handleSubmit = () => {
@@ -195,7 +198,6 @@ const SignUp = () => {
   };
 
   const handleAlreadyhaveaccount = () => {
-    console.log("navigate");
     localStorage.clear();
     navigate("/");
   };
@@ -366,8 +368,8 @@ const SignUp = () => {
               MenuProps={MenuProps}
               inputProps={{ "aria-label": "Without label" }}
             >
-              {supportedLanguages.map((item) => (
-                <MenuItem key={item} value={item}>
+              {supportedLanguages.map((item, index) => (
+                <MenuItem key={index} value={item}>
                   <Checkbox checked={values.languages.indexOf(item) > -1} />
                   <ListItemText primary={item.label} />
                 </MenuItem>
@@ -384,11 +386,11 @@ const SignUp = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Button
             fullWidth
-            label={"Submit"}
-            onClick={() => {
-              HandleSubmitValidate();
-            }}
-          />
+            onClick={() => HandleSubmitValidate()}
+            variant="contained"
+          >
+            Submit
+          </Button>
         </Grid>
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

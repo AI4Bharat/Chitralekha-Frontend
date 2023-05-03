@@ -1,5 +1,4 @@
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -8,7 +7,6 @@ import {
   IconButton,
   DialogTitle,
   Typography,
-  Grid,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,11 +25,8 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
       aria-describedby="alert-dialog-description"
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      {/* <DialogTitle id="responsive-dialog-title" display="flex"> */}
-      <Grid sx={{ display: "flex", mt: 1 }}>
-        <Typography sx={{ ml: 4 }} variant="h4" align="center">
-          Subtitles
-        </Typography>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">Subtitles</Typography>{" "}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -39,8 +34,8 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
         >
           <CloseIcon />
         </IconButton>
-      </Grid>
-      {/* </DialogTitle> */}
+      </DialogTitle>
+
       <DialogContent sx={{ height: "410px" }}>
         <DialogContentText id="alert-dialog-description">
           {Previewdata?.data?.payload &&
@@ -48,6 +43,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
             Previewdata?.data?.payload.map((el, i) => {
               return (
                 <Box
+                  key={i}
                   id={`sub_${i}`}
                   textAlign={"start"}
                   sx={{
@@ -58,7 +54,7 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
                     width: "90%",
                   }}
                 >
-                  {task_type == "TRANSCRIPTION_EDIT" ||
+                  {task_type === "TRANSCRIPTION_EDIT" ||
                   task_type === "TRANSCRIPTION_REVIEW"
                     ? el.text
                     : el.target_text}

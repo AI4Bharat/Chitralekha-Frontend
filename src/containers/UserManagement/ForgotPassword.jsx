@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Typography, Link, Snackbar, Alert } from "@mui/material";
-import Button from "../../common/Button";
+import { Grid, Typography, Link, Snackbar, Alert, Button } from "@mui/material";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import AppInfo from "./AppInfo";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,6 +29,7 @@ const ForgotPassword = () => {
         variant: apiStatus.error ? "error" : "Success",
       });
     }
+    // eslint-disable-next-line
   }, [apiStatus]);
 
   const handleChange = (value) => {
@@ -95,9 +95,11 @@ const ForgotPassword = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Button
             fullWidth
-            label={"Send link"}
-            onClick={handleForgotPassword}
-          />
+            onClick={() => handleForgotPassword()}
+            variant="contained"
+          >
+            Send link
+          </Button>
         </Grid>
       </Grid>
     );

@@ -6,19 +6,16 @@ import {
   Popover,
   FormGroup,
   FormControlLabel,
-  Radio,
   Box,
   Checkbox,
   Grid,
 } from "@mui/material";
-import { translate } from "../config/localisation";
-import DatasetStyle from "../styles/Dataset";
-import { snakeToTitleCase } from "../utils/utils";
+import DatasetStyle from "../styles/datasetStyle";
 import { TaskTypes, TaskStatus } from "../config/taskItems";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();
-  const { currentFilters, updateFilters, supportedLanguages,taskList } = props;
+  const { currentFilters, updateFilters, taskList } = props;
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
   const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
@@ -146,12 +143,13 @@ const FilterList = (props) => {
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
-              Source Language :
+              Source Language
             </Typography>
             <FormGroup>
-              { taskList?.src_languages_list?.map((type) => {
+              { taskList?.src_languages_list?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={isChecked(type, "SrcLanguage")}
@@ -179,12 +177,13 @@ const FilterList = (props) => {
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
-              Target Language :
+              Target Language
             </Typography>
             <FormGroup>
-              { taskList?.target_languages_list?.map((type) => {
+              { taskList?.target_languages_list?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}  
                     control={
                       <Checkbox
                         checked={isChecked(type, "TgtLanguage")}
@@ -209,12 +208,13 @@ const FilterList = (props) => {
               sx={{ mr: 5,mb:1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
-              Status :
+              Status
             </Typography>
             <FormGroup>
-              {TaskStatus?.map((type) => {
+              {TaskStatus?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={isChecked(type.label, "status")}
@@ -234,12 +234,13 @@ const FilterList = (props) => {
       
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography variant="body2" sx={{ mr: 5, mb:1,fontWeight: "900" }}>
-              Task Type :
+              Task Type
             </Typography>
             <FormGroup>
-              {TaskTypes?.map((type) => {
+              {TaskTypes?.map((type, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox
                         checked={isChecked(type.label, "taskType")}

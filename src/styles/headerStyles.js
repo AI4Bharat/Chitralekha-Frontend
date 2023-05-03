@@ -1,5 +1,4 @@
 import { makeStyles } from '@mui/styles';
-import { padding } from '@mui/system';
 
 const headerStyle = makeStyles({
     parentContainer: {
@@ -43,7 +42,6 @@ const headerStyle = makeStyles({
     },
     headerMenu : {
         textDecoration : "none",
-        borderRadius: "inherit",
         backgroundColor: "transparent",
         padding : "12px ",
         color: "black",
@@ -52,7 +50,7 @@ const headerStyle = makeStyles({
         fontFamily: "Roboto", 
         fontWeight: 500,
         letterSpacing: "0.5px",
-        borderRadius:12,
+        borderRadius: 12,
         '&:hover': {
             backgroundColor: "#E0E0E0",
             boxShadow: "none",
@@ -62,14 +60,13 @@ const headerStyle = makeStyles({
     highlightedMenu : {
         backgroundColor: "#E0E0E0",
         textDecoration : "none",
-        borderRadius: "inherit",
         padding : "12px ",
         color: "black",
         boxShadow: "none",
         fontSize: "19px",
         fontFamily: "Roboto", 
         fontWeight: 500,
-        borderRadius:12,
+        borderRadius: 12,
         letterSpacing: "0.5px",
         '&:hover': {
             backgroundColor: "#E0E0E0",
@@ -108,6 +105,10 @@ const headerStyle = makeStyles({
         color: "rgba(0, 0, 0, 0.54) !important",
         fontSize: "2.25rem !important",
     },
+    icon2: {
+        color: "rgba(0, 0, 0, 0.54) !important",
+        fontSize: "2rem !important",
+    },
     ArticleIconStyle:{
           // backgroundColor: "#D3E4F7",
           borderRadius: "35px",
@@ -120,6 +121,7 @@ const headerStyle = makeStyles({
         
     },
     HelpGridStyle:{
+        alignItems: "center",
         display: "flex",
          marginTop: "20px",
          cursor: "pointer",

@@ -1,12 +1,11 @@
-import { InputBase, ThemeProvider, Grid } from "@mui/material";
+import { InputBase, Grid } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useRef, useState } from "react";
-import themeDefault from "../theme/tableTheme";
-import DatasetStyle from "../styles/Dataset";
-import { useDispatch, useSelector } from "react-redux";
+import DatasetStyle from "../styles/datasetStyle";
+import { useDispatch } from "react-redux";
 import SearchList from "../redux/actions/api/Project/Search";
 
-const Search = (props) => {
+const Search = () => {
   const ref = useRef(null);
   const classes = DatasetStyle();
   const dispatch = useDispatch();
@@ -20,6 +19,7 @@ const Search = (props) => {
 
   useEffect(() => {
     dispatch(SearchList(""));
+    // eslint-disable-next-line
   }, []);
 
   const handleChangeName = (value) => {

@@ -1,4 +1,3 @@
-import { Add } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -6,16 +5,19 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import FetchUserRolesAPI from "../redux/actions/api/User/FetchUsersRoles";
 import { MenuProps } from "../utils/utils";
+import CloseIcon from "@mui/icons-material/Close";
 
 const AddOrganizationMember = ({
   open,
@@ -40,6 +42,8 @@ const AddOrganizationMember = ({
 
   useEffect(() => {
     getUserRolesList();
+
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -47,11 +51,21 @@ const AddOrganizationMember = ({
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}
+      maxWidth={"sm"}
       fullWidth
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">{title}</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">{title}</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleUserDialogClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent style={{ paddingTop: 4 }}>
         <TextField
           label={textFieldLabel}
@@ -73,8 +87,8 @@ const AddOrganizationMember = ({
               onChange={(event) => handleSelectField(event.target.value)}
               MenuProps={MenuProps}
             >
-              {userRoles.map((item) => {
-                return <MenuItem value={item.value}>{item.label}</MenuItem>;
+              {userRoles.map((item, index) => {
+                return <MenuItem key={index} value={item.value}>{item.label}</MenuItem>;
               })}
             </Select>
           </FormControl>
@@ -85,12 +99,11 @@ const AddOrganizationMember = ({
 
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
         <Button onClick={handleUserDialogClose} sx={{ borderRadius: "8px" }}>
-          Close
+          Cancel
         </Button>
 
         <Button
           autoFocus
-          endIcon={<Add />}
           variant="contained"
           sx={{ marginLeft: "10px", borderRadius: "8px" }}
           onClick={() => {
@@ -99,7 +112,7 @@ const AddOrganizationMember = ({
           }}
           disabled={textFieldLabel || selectFieldValue ? false : true}
         >
-          Add Member
+          Add
         </Button>
       </DialogActions>
     </Dialog>

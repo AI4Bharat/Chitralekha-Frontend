@@ -12,6 +12,9 @@ const initialState = {
   nextPage: "",
   previousPage: "",
   completedCount: 0,
+  limit: 50,
+  rangeStart: 0,
+  rangeEnd: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -41,41 +44,66 @@ const reducer = (state = initialState, action) => {
     }
 
     case C.SUBTITLES_FOR_CHECK: {
-      let result = {...state};
+      let result = { ...state };
       result.subtitlesForCheck = action.payload;
       return result;
     }
 
     case C.TOTAL_PAGES: {
-      let result = {...state};
+      let result = { ...state };
       result.totalPages = action.payload;
       return result;
     }
 
     case C.CURRENT_PAGE: {
-      let result = {...state};
+      let result = { ...state };
       result.currentPage = action.payload;
       return result;
     }
 
     case C.NEXT_PAGE: {
-      let result = {...state};
+      let result = { ...state };
       result.nextPage = action.payload;
       return result;
     }
 
     case C.PREVIOUS_PAGE: {
-      let result = {...state};
+      let result = { ...state };
       result.previousPage = action.payload;
       return result;
     }
 
     case C.COMPLETED_COUNT: {
-      let result = {...state};
+      let result = { ...state };
       result.completedCount = action.payload;
       return result;
     }
 
+    case C.LIMIT: {
+      let result = { ...state };
+      result.limit = action.payload;
+      return result;
+    }
+
+    case C.CLEAR_STATE:
+      return {
+        ...state,
+        subtitles: action.payload,
+        player: null,
+        fullscreen: false,
+        fullscreenVideo: false,
+      };
+
+    case C.RANGE_START: {
+      let result = { ...state };
+      result.rangeStart = action.payload;
+      return result;
+    }
+    case C.RANGE_END: {
+      let result = { ...state };
+      result.rangeEnd = action.payload;
+      return result;
+    }
     default:
       return {
         ...state,

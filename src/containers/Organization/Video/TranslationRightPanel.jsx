@@ -2,19 +2,20 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid } from "@mui/material";
+import { CardContent, Grid, useMediaQuery } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/ScrollbarStyle.css";
+import "../../../styles/scrollbarStyle.css";
 import C from "../../../redux/constants";
 import { setSubtitles } from "../../../redux/actions/Common";
 import TimeBoxes from "../../../common/TimeBoxes";
 import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
+  getSubtitleRangeTranscript,
   onMerge,
   onSubtitleDelete,
   timeChange,
@@ -25,19 +26,34 @@ import ButtonComponent from "./components/ButtonComponent";
 import { memo } from "react";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import VideoLandingStyle from "../../../styles/videoLandingStyles";
+import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
+import Pagination from "./components/Pagination";
+import APITransport from "../../../redux/actions/apitransport/apitransport";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const xl = useMediaQuery("(min-width:1800px)");
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
-  const player = useSelector(state => state.commonReducer.player);
-  
+  const player = useSelector((state) => state.commonReducer.player);
+  const totalPages = useSelector((state) => state.commonReducer.totalPages);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const next = useSelector((state) => state.commonReducer.nextPage);
+  const previous = useSelector((state) => state.commonReducer.previousPage);
+  const completedCount = useSelector(
+    (state) => state.commonReducer.completedCount
+  );
+  const transcriptPayload = useSelector(
+    (state) => state.getTranscriptPayload.data
+  );
+  const limit = useSelector((state) => state.commonReducer.limit);
+
   const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -49,20 +65,46 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
+  const [currentOffset, setCurrentOffset] = useState(1);
   // const [undoStack, setUndoStack] = useState([]);
   // const [redoStack, setRedoStack] = useState([]);
 
+  useEffect(() => {
+    if (currentPage) {
+      setCurrentOffset(currentPage);
+    }
+  }, [currentPage]);
+
+  const getPayload = (offset = currentOffset, lim = limit) => {
+    const payloadObj = new FetchTranscriptPayloadAPI(
+      taskData.id,
+      taskData.task_type,
+      offset,
+      lim
+    );
+    dispatch(APITransport(payloadObj));
+  };
+
+  useEffect(() => {
+    getPayload(currentOffset, limit);
+
+    // eslint-disable-next-line
+  }, [limit, currentOffset]);
+
   const onDelete = useCallback((index) => {
     // const data = subtitles[index];
-    const sub = onSubtitleDelete(index); 
+    const sub = onSubtitleDelete(index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
     // setUndoStack([...undoStack, {
     //   type: "delete",
     //   index: index,
     //   data: data,
     // }]);
     // setRedoStack([]);
-  }, []);
+
+    // eslint-disable-next-line
+  }, [limit, currentOffset]);
 
   const onMergeClick = useCallback((index) => {
     // const selectionStart = subtitles[index].text.length;
@@ -77,7 +119,9 @@ const TranslationRightPanel = ({ currentIndex }) => {
     //   targetSelectionStart: targetSelectionStart,
     // }]);
     // setRedoStack([]);
-  }, []);
+
+    // eslint-disable-next-line
+  }, [limit, currentOffset]);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -106,14 +150,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false);
+    saveTranscriptHandler(false, false, arr);
   };
 
-  const saveTranscriptHandler = async (isFinal, isAutosave) => {
+  const saveTranscriptHandler = async (isFinal, isAutosave, subs = sourceText) => {
     const reqBody = {
       task_id: taskId,
+      offset: currentOffset,
+      limit: limit,
       payload: {
-        payload: sourceText,
+        payload: subs,
       },
     };
 
@@ -140,6 +186,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+      
       if (isFinal) {
         setTimeout(() => {
           navigate(
@@ -175,17 +222,24 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const handleTimeChange = useCallback((value, index, type, time) => {
     const sub = timeChange(value, index, type, time);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-  }, []);
+    saveTranscriptHandler(false, true, sub);
+    // eslint-disable-next-line
+  }, [limit, currentOffset]);
 
   const addNewSubtitleBox = useCallback((index) => {
     const sub = addSubtitleBox(index);
+
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, true, sub);
+    
     // setUndoStack([...undoStack, {
     //   type: "add",
     //   index: index,
     // }]);
     // setRedoStack([]);
-  }, []);
+
+    // eslint-disable-next-line
+  }, [limit, currentOffset]);
 
   // const onUndo = useCallback(() => {
   //   if (undoStack.length > 0) {
@@ -219,11 +273,19 @@ const TranslationRightPanel = ({ currentIndex }) => {
     return 0;
   };
 
+  const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true);
+    getPayload(value, limit);
+  };
+
   return (
     <>
       {renderSnackBar()}
 
-      <Box className={classes.rightPanelParentBox}>
+      <Box
+        className={classes.rightPanelParentBox}
+        style={{ position: "relative" }}
+      >
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
@@ -247,18 +309,30 @@ const TranslationRightPanel = ({ currentIndex }) => {
         >
           {sourceText?.map((item, index) => {
             return (
-              <Box id={`sub_${index}`} style={{borderBottom: "1px solid grey"}}>
+              <Box
+                key={index}
+                id={`sub_${index}`}
+                style={{
+                  padding: "15px",
+                  borderBottom: "1px solid lightgray",
+                  backgroundColor:
+                    index % 2 === 0
+                      ? "rgb(214, 238, 255)"
+                      : "rgb(233, 247, 239)",
+                }}
+              >
                 <Box
                   display="flex"
-                  paddingTop="16px"
-                  sx={{ paddingX: "20px", justifyContent: "space-around" }}
+                  alignItems={"center"}
+                  justifyContent="center"
+                  sx={{ margin: "0 10px" }}
                 >
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.start_time}
                     index={index}
                     type={"startTime"}
-                  /> */}
+                  />
 
                   <ButtonComponent
                     index={index}
@@ -268,16 +342,20 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     addNewSubtitleBox={addNewSubtitleBox}
                   />
 
-                  {/* <TimeBoxes
+                  <TimeBoxes
                     handleTimeChange={handleTimeChange}
                     time={item.end_time}
                     index={index}
                     type={"endTime"}
-                  /> */}
+                  />
                 </Box>
 
                 <CardContent
-                  sx={{ display: "flex", padding: "5px 0", borderBottom: 2 }}
+                  sx={{
+                    display: "flex",
+                    padding: "5px 0",
+                  }}
+                  className={classes.cardContent}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -312,7 +390,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           3
                             ? "red"
                             : "green",
-                        left: "25px",
+                        left: "6px",
                       }}
                     >
                       {sourceLength(index)}
@@ -349,7 +427,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "25px",
+                              right: "10px",
                             }}
                           >
                             {targetLength(index)}
@@ -384,7 +462,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "25px",
+                          right: "10px",
                         }}
                       >
                         {targetLength(index)}
@@ -397,11 +475,33 @@ const TranslationRightPanel = ({ currentIndex }) => {
           })}
         </Box>
 
+        <Box
+          className={classes.paginationBox}
+          style={{
+            ...(!xl && {
+              bottom: "-11%",
+            }),
+          }}
+        >
+          <Pagination
+            range={getSubtitleRangeTranscript()}
+            rows={totalPages}
+            previous={previous}
+            next={next}
+            onClick={onNavigationClick}
+            jumpTo={[...Array(transcriptPayload?.total_pages)].map(
+              (_, index) => index + 1
+            )}
+            completedCount={completedCount}
+            current={currentPage}
+          />
+        </Box>
+
         {openConfirmDialog && (
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false)}
+            submit={() => saveTranscriptHandler(true, false, sourceText)}
             message={"Do you want to submit the translation?"}
             loading={loading}
           />

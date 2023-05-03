@@ -4,16 +4,13 @@ import {
   Typography,
   InputAdornment,
   IconButton,
-  Snackbar,
-  Alert,
   Button,
   TextField,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import OutlinedTextField from "../../common/OutlinedTextField";
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
@@ -27,8 +24,6 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 const ChangePassword = () => {
   const navigate = useNavigate();
   const classes = DatasetStyle();
-  const dispatch = useDispatch();
-  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [currentPassword, setCurrentPassword] = useState({
     value: "",
@@ -93,13 +88,6 @@ const ChangePassword = () => {
 
   const handleClickShowNewPassword = () => {
     setNewPassword({ ...newPassword, visibility: !newPassword.visibility });
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarInfo({
-      ...snackbar,
-      open: false,
-    });
   };
 
   const renderSnackBar = () => {

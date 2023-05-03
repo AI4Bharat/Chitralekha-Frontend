@@ -4,10 +4,11 @@ import { useParams } from "react-router-dom";
 import { getDateTime, roles } from "../../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { getColumns } from "../../../utils/tableUtils";
 
 //Themes
 import tableTheme from "../../../theme/tableTheme";
-import DatasetStyle from "../../../styles/Dataset";
+import DatasetStyle from "../../../styles/datasetStyle";
 
 //Components
 import {
@@ -17,6 +18,7 @@ import {
   Tooltip,
   IconButton,
   Button,
+  Divider,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -24,7 +26,7 @@ import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
 import ViewTaskDialog from "../../../common/ViewTaskDialog";
 import Loader from "../../../common/Spinner";
 import PreviewDialog from "../../../common/PreviewDialog";
-import UserMappedByRole from "../../../utils/UserMappedByRole";
+import statusColor from "../../../utils/getStatusColor";
 import FilterList from "../../../common/FilterList";
 import C from "../../../redux/constants";
 import DeleteDialog from "../../../common/DeleteDialog";
@@ -59,12 +61,15 @@ import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/Fetch
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
+import TableStyles from "../../../styles/tableStyles";
+import { taskListColumns } from "../../../config/tableColumns";
 
 const TaskList = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
+  const tableClasses = TableStyles();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -130,6 +135,7 @@ const TaskList = () => {
     return () => {
       dispatch({ type: C.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -151,6 +157,7 @@ const TaskList = () => {
     dispatch(APITransport(translationExportObj));
 
     FetchTaskList();
+    // eslint-disable-next-line
   }, []);
 
   const taskList = useSelector((state) => state.getTaskList.data);
@@ -184,9 +191,7 @@ const TaskList = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      const task = taskList.tasks_list.filter(
-        (task) => task.id === id
-      )[0];
+      const task = taskList.tasks_list.filter((task) => task.id === id)[0];
 
       const link = document.createElement("a");
       link.href = resp.azure_url;
@@ -293,7 +298,7 @@ const TaskList = () => {
       const task = taskList.tasks_list.filter(
         (task) => task.id === taskdata
       )[0];
-      
+
       let newBlob;
       if (exportTranscription === "docx") {
         newBlob = new Blob([resp], {
@@ -372,8 +377,6 @@ const TaskList = () => {
           // --------------------- if task type is translation, submit translation with trg lang ------------- //
           await onTranslationTaskTypeSubmit(id, rsp_data);
         }
-      } else {
-        console.log("failed");
       }
     });
   };
@@ -651,6 +654,7 @@ const TaskList = () => {
 
   useMemo(() => {
     FilterData();
+    // eslint-disable-next-line
   }, [filterStatus, filterTaskType, selectedFilters, SearchProject]);
 
   useEffect(() => {
@@ -685,16 +689,19 @@ const TaskList = () => {
         el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
     setfilterData(pageSearchData);
+    // eslint-disable-next-line
   }, [SearchProject]);
 
   const result =
     taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
-            item.status_label && UserMappedByRole(item.status_label)?.element;
+            item.status_label && statusColor(item.status_label)?.element;
           return [
             item.id,
             item.task_type,
@@ -718,357 +725,31 @@ const TaskList = () => {
         })
       : [];
 
-  const columns = [
-    {
-      name: "id",
-      label: "#",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: "exclude",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
+  const columns = getColumns(taskListColumns);
+  columns.push({
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      setCellHeaderProps: () => ({
+        className: tableClasses.cellHeaderProps,
+      }),
+      customBodyRender: (_value, tableMeta) => {
+        return (
+          <Box sx={{ display: "flex" }}>
+            {renderUpdateTaskButton(tableMeta)}
+            {renderViewButton(tableMeta)}
+            {renderEditButton(tableMeta)}
+            {renderExportButton(tableMeta)}
+            {renderPreviewButton(tableMeta)}
+            {renderDeleteButton(tableMeta)}
+          </Box>
+        );
       },
     },
-    {
-      name: "task_type",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "task_type_label",
-      label: "Task Type",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "video_name",
-      label: "Video Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "created_at",
-      label: "Created At",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: false,
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "src_language",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "src_language_label",
-      label: "Source Language",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "target_language",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "target_language_label",
-      label: "Target Language",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "status_label",
-      label: "Status",
-      options: {
-        filter: true,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "user",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "is_active",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "username",
-      label: "Assignee",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "project_name",
-      label: "Project Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: "excluded",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "buttons",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "description",
-      label: "Description",
-      options: {
-        filter: false,
-        sort: false,
-        display: "exclude",
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box sx={{ display: "flex" }}>
-              {renderUpdateTaskButton(tableMeta)}
-
-              {renderViewButton(tableMeta)}
-
-              {renderEditButton(tableMeta)}
-
-              {renderExportButton(tableMeta)}
-
-              {renderPreviewButton(tableMeta)}
-
-              {renderDeleteButton(tableMeta)}
-            </Box>
-          );
-        },
-      },
-    },
-    {
-      name: "status",
-      label: "",
-      options: {
-        display: "excluded",
-        viewColumns: false,
-      },
-    },
-  ];
+  });
 
   const handleRowClick = (_currentRow, allRow) => {
     const temp = filterData.filter((_item, index) => {
@@ -1190,7 +871,7 @@ const TaskList = () => {
         const taskIds = currentSelectedTasks.map((item) => item.id);
         handleBulkDelete(taskIds, false);
       },
-      style: { backgroundColor: "red" },
+      style: { color: "#d32f2f" },
     },
     {
       title: "Bulk Task Dowload",
@@ -1213,18 +894,26 @@ const TaskList = () => {
           </Tooltip>
         </Button>
 
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          className={classes.searchStyle}
-        >
+        <div style={{ display: "inline", verticalAlign: "middle" }}>
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn && (
+              <Divider
+                orientation="vertical"
+                sx={{
+                  display: "inline",
+                  margin: "0 10px",
+                  borderColor: "rgba(0, 0, 0, 0.54)",
+                }}
+              />
+            )}
+
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
-            toolBarActions.map((item) => {
+            toolBarActions.map((item, index) => {
               return (
-                <Tooltip title={item.title} placement="bottom">
+                <Tooltip key={index} title={item.title} placement="bottom">
                   <IconButton
                     className={classes.createTaskBtn}
                     onClick={item.onClick}
@@ -1235,9 +924,7 @@ const TaskList = () => {
                 </Tooltip>
               );
             })}
-
-          {/* <Search /> */}
-        </Box>
+        </div>
       </>
     );
   };

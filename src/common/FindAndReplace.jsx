@@ -1,6 +1,6 @@
-import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Slide, Box, Typography, Alert, Tooltip, IconButton } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, Grid, Box, Typography, Tooltip, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import ProjectStyle from '../styles/ProjectStyle';
+import ProjectStyle from '../styles/projectStyle';
 import OutlinedTextField from './OutlinedTextField';
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';
@@ -10,10 +10,6 @@ import FindReplaceIcon from '@mui/icons-material/FindReplace';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSubtitles } from '../redux/actions/Common';
 import C from "../redux/constants";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
 
 const FindAndReplace = (props) => {
     const classes = ProjectStyle();
@@ -59,7 +55,7 @@ const FindAndReplace = (props) => {
     const onFindClick = () => {
         const textToFind = findValue.toLowerCase().trim()
         const indexListInDataOfTextOccurence = [];
-        subtitlesData.map((item, index) => {
+        subtitlesData.forEach((item, index) => {
             if (item[subtitleDataKey].toLowerCase().includes(textToFind)) {
                 indexListInDataOfTextOccurence.push(index);
             }
@@ -87,7 +83,7 @@ const FindAndReplace = (props) => {
     const onReplaceClick = () => {
         const currentSubtitleSource = [...subtitlesData];
         const updatedSubtitleData = [];
-        currentSubtitleSource.map((ele, index) => {
+        currentSubtitleSource.forEach((ele, index) => {
             if (foundIndices[currentFound] === index) {
                 const textToReplace = ele[subtitleDataKey].replace(new RegExp(findValue, 'gi'), replaceValue);
                 ele[subtitleDataKey] = textToReplace;
@@ -103,7 +99,7 @@ const FindAndReplace = (props) => {
     const onReplaceAllClick = () => {
         const currentSubtitleSource = [...subtitlesData];
         const updatedSubtitleData = [];
-        currentSubtitleSource.map((ele, index) => {
+        currentSubtitleSource.forEach((ele, index) => {
             if (foundIndices?.includes(index)) {
                 const textToReplace = ele[subtitleDataKey].replace(new RegExp(findValue, 'gi'), replaceValue);
                 ele[subtitleDataKey] = textToReplace;
@@ -117,7 +113,7 @@ const FindAndReplace = (props) => {
 
     return (
         <>
-            <Tooltip title="Find?Replace" placement="bottom">
+            <Tooltip title="Find/Replace" placement="bottom">
                 <IconButton
                     sx={{
                         backgroundColor: "#2C2799",
@@ -136,35 +132,22 @@ const FindAndReplace = (props) => {
 
             <Dialog
                 open={showFindReplaceModel}
-                TransitionComponent={Transition}
                 onClose={handleCloseModel}
                 aria-labelledby="responsive-dialog-title"
                 maxWidth={"lg"}
                 PaperProps={{ style: { borderRadius: "10px" } }}
                 >
-                <Grid
-                    display="flex"
-                    justifyContent={"space-between"}
-                    sx={{ backgroundImage: "linear-gradient(to right, #f1f1f1, #ffffff)", width: "100%", paddingX: 1 }}
-                >
-                    <Grid item sx={{ alignSelf: "center" }}><DialogTitle
-                    >Find and Replace</DialogTitle>
-                    </Grid>
-                    <Grid item><Button
-                        variant="outlined"
+                     <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+                        <Typography variant="h4">Find and Replace</Typography>{" "}
+                        <IconButton
+                        aria-label="close"
                         onClick={handleCloseModel}
-                        sx={{
-                            color: "#000",
-                            border: "none",
-                            height: "60px",
-                            "&:hover": {
-                                border: "none"
-                            }
-                        }}
-                    >
-                        <CloseIcon />
-                    </Button></Grid>
-                </Grid>
+                        sx={{ marginLeft: "auto" }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+
                 <DialogContent
                     sx={{ overflow: "hidden", position: "unset", overscrollBehavior: "none" }}
                 >
@@ -175,8 +158,9 @@ const FindAndReplace = (props) => {
                         justifyContent="space-around"
                     >
                         <Grid
+                            item
                             md={4}
-                            sx={{ marginTop: 2 }}
+                            sx={{ margin: 2 }}
                         >
                             {transliterationLang !== "en" ? (
                                 <IndicTransliterate
@@ -238,6 +222,7 @@ const FindAndReplace = (props) => {
                                     className={classes.findBtn}
                                     disabled={!findValue}
                                     onClick={onFindClick}
+                                    style={{ width: "auto" }}
                                 >
                                     Find
                                 </Button>
@@ -300,6 +285,7 @@ const FindAndReplace = (props) => {
                                     className={classes.findBtn}
                                     disabled={!replaceValue}
                                     onClick={onReplaceClick}
+                                    style={{ width: "auto" }}
                                 >
                                     Replace
                                 </Button>
@@ -315,7 +301,8 @@ const FindAndReplace = (props) => {
                             </Grid>
                         </Grid>
                         <Grid
-                            md={8}
+                            item
+                            md={7}
                             width={"100%"}
                             textAlign={"-webkit-center"}
                             height={window.innerHeight * 0.7}
@@ -326,10 +313,11 @@ const FindAndReplace = (props) => {
                             {subtitlesData?.map((el, i) => {
                                 return (
                                     <Box
+                                        key={i}
                                         id={`sub_${i}`}
                                         textAlign={"start"}
                                         sx={{
-                                            marginY: 2, padding: 2, border: "1px solid #000000", borderRadius: 2, width: "50%",
+                                            marginY: 2, padding: 2, border: "1px solid #000000", borderRadius: 2, width: "75%",
                                             backgroundColor: foundIndices.includes(i) ? foundIndices[currentFound] === i ? "yellow" : "black" : "#ffffff",
                                             color: foundIndices.includes(i) ? foundIndices[currentFound] === i ? "red" : "#ffffff" : "black",
                                         }}

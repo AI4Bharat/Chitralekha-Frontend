@@ -37,7 +37,8 @@ const tableTheme = createTheme({
     MUIDataTableToolbar: {
       styleOverrides: {
         left: {
-          flex: 0,
+          width: "fit-content",
+          flex: "none"
         },
         root:{
           height:"30px"

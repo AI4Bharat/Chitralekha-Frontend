@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -6,11 +7,13 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
+  IconButton,
   Radio,
   RadioGroup,
+  Typography,
 } from "@mui/material";
 import React from "react";
-import CustomButton from "./Button";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ExportAllDialog = ({
   open,
@@ -19,7 +22,7 @@ const ExportAllDialog = ({
   exportType,
   handleExportRadioButton,
   handleExport,
-  loading
+  loading,
 }) => {
   return (
     <Dialog
@@ -29,7 +32,16 @@ const ExportAllDialog = ({
       aria-describedby="alert-dialog-description"
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">Export Subtitles</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4">Export Subtitles</Typography>{" "}
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
       <DialogContent>
         <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
@@ -45,6 +57,7 @@ const ExportAllDialog = ({
             >
               {exportOptions?.map((item, index) => (
                 <FormControlLabel
+                  key={index}
                   value={item}
                   control={<Radio />}
                   checked={exportType === item}
@@ -57,19 +70,22 @@ const ExportAllDialog = ({
         </DialogActions>
 
         <DialogActions>
-          <CustomButton
-            buttonVariant="standard"
+          <Button
+            variant="standard"
             onClick={handleClose}
-            label="Cancel"
-          />
-
-          <CustomButton
-            onClick={handleExport}
-            label="Export"
-            buttonVariant="contained"
             style={{ borderRadius: "8px" }}
+          >
+            Cancel
+          </Button>
+
+          <Button
             autoFocus
-          />
+            variant="contained"
+            onClick={handleExport}
+            style={{ borderRadius: "8px" }}
+          >
+            Export
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

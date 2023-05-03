@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSubtitles } from "../../../../redux/actions/Common";
 import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import { newSub } from "../../../../utils/subtitleUtils";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -20,7 +21,7 @@ const findIndex = (subs, startTime) => {
 };
 
 export default React.memo(
-  function Component({ render, newSub, playing }) {
+  function Component({ render, playing }) {
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
@@ -69,7 +70,14 @@ export default React.memo(
           drogEndTime > 0 &&
           drogEndTime - drogStartTime >= 0.2
         ) {
-          const index = findIndex(subtitles, drogStartTime) + 1;
+          let index;
+
+          if(subtitles && subtitles.length) {
+            index = findIndex(subtitles, drogStartTime) + 1;
+          } else {
+            index = 0;
+          }
+
           const start_time = DT.d2t(drogStartTime);
           const end_time = DT.d2t(drogEndTime);
 
@@ -92,6 +100,8 @@ export default React.memo(
       setIsDroging(false);
       setDrogStartTime(0);
       setDrogEndTime(0);
+      
+    // eslint-disable-next-line
     }, [isDroging, drogStartTime, drogEndTime, subtitles, newSub]);
 
     useEffect(() => {

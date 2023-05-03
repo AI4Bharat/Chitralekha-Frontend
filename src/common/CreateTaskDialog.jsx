@@ -7,21 +7,23 @@ import {
   DialogTitle,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import CustomizedSnackbars from "../common/Snackbar";
+import CloseIcon from "@mui/icons-material/Close";
 
 //APIs
 import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
 import APITransport from "../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
-import ProjectStyle from "../styles/ProjectStyle";
+import ProjectStyle from "../styles/projectStyle";
 import moment from "moment";
 import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
 import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
@@ -50,7 +52,6 @@ const CreateTaskDialog = ({
     (state) => state.getSupportedLanguages.data
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
-  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
@@ -60,11 +61,6 @@ const CreateTaskDialog = ({
   const [date, setDate] = useState(moment().format());
   const [allowedTaskType, setAllowedTaskType] = useState("");
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
 
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
@@ -78,6 +74,8 @@ const CreateTaskDialog = ({
 
     const bulkTaskObj = new FetchBulkTaskTypeAPI();
     dispatch(APITransport(bulkTaskObj));
+
+    // eslint-disable-next-line
   }, []);
 
   const submitHandler = () => {
@@ -98,7 +96,7 @@ const CreateTaskDialog = ({
 
   const selectTaskTypeHandler = (event) => {
     setTaskType(event.target.value);
-    
+
     if (!isBulk) {
       setShowAllowedTaskList(true);
 
@@ -133,20 +131,6 @@ const CreateTaskDialog = ({
     dispatch(APITransport(obj));
   };
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   const disableBtn = () => {
     if (!taskType || !allowedTaskType) {
       return true;
@@ -159,16 +143,36 @@ const CreateTaskDialog = ({
     return false;
   };
 
+  const handleClear = () => {
+    setTaskType("");
+    setLanguage("");
+    setAllowedTaskType("");
+    setUser("");
+    setDescription("");
+    setPriority("");
+    setDate(moment().format());
+  };
+
   return (
     <Dialog
       fullWidth={true}
       open={open}
       onClose={handleUserDialogClose}
       close
-      maxWidth={"md"}
+      maxWidth={"sm"}
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
-      <DialogTitle variant="h4">Create New Task</DialogTitle>
+      <DialogTitle variant="h4" display="flex" alignItems={"center"}>
+        <Typography variant="h4"> Create New Task</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleUserDialogClose}
+          sx={{ marginLeft: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent style={{ paddingTop: 4 }}>
         <Grid
           container
@@ -320,10 +324,24 @@ const CreateTaskDialog = ({
           </Box>
         </Grid>
       </DialogContent>
+
       <DialogActions style={{ padding: "24px 24px 24px 0" }}>
-        <Button autoFocus onClick={handleUserDialogClose}>
-          Close
+        <Button
+          sx={{ borderRadius: "8px" }}
+          autoFocus
+          onClick={handleUserDialogClose}
+        >
+          Cancel
         </Button>
+
+        <Button
+          variant="outlined"
+          sx={{ borderRadius: 2 }}
+          onClick={() => handleClear()}
+        >
+          Clear
+        </Button>
+
         <Button
           autoFocus
           variant="contained"

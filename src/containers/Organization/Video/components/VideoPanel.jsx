@@ -1,7 +1,8 @@
-import React, { createRef, memo, useCallback, useEffect } from "react";
+import React, { createRef, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPlayer } from "../../../../redux/actions/Common";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
+import { isPlaying } from "../../../../utils/subtitleUtils";
 
 const VideoPanel = memo(
   ({ setCurrentTime, setPlaying }) => {
@@ -9,19 +10,12 @@ const VideoPanel = memo(
     const dispatch = useDispatch();
     const $video = createRef();
 
+    const [poster, setPoster] = useState("play.png");
+
     const videoDetails = useSelector((state) => state.getVideoDetails.data);
     const fullscreenVideo = useSelector(
       (state) => state.commonReducer.fullscreenVideo
     );
-
-    const isPlaying = ($video) => {
-      return !!(
-        $video.currentTime > 0 &&
-        !$video.paused &&
-        !$video.ended &&
-        $video.readyState > 2
-      );
-    };
 
     useEffect(() => {
       dispatch(setPlayer($video.current));
@@ -34,20 +28,23 @@ const VideoPanel = memo(
           loop();
         });
       })();
+    // eslint-disable-next-line
     }, [setPlayer, setCurrentTime, setPlaying, $video]);
 
     const onClick = useCallback(() => {
       if ($video.current) {
         if (isPlaying($video.current)) {
           $video.current.pause();
+          setPoster("play.png");
         } else {
           $video.current.play();
+          setPoster("pause.png");
         }
       }
     }, [$video]);
 
     return (
-      <div className={classes.videoPlayerParent}>
+      <div className={classes.videoPlayerParent} style={{display: videoDetails?.video?.audio_only ? "flex" : ""}}>
         <video
           onClick={onClick}
           src={
@@ -57,11 +54,10 @@ const VideoPanel = memo(
           }
           style={{
             width: videoDetails?.video?.audio_only ? "20%" : "",
-            width: videoDetails?.video?.audio_only ? "20%" : "",
             margin:
               videoDetails?.video?.audio_only || fullscreenVideo ? "auto" : "",
           }}
-          poster={videoDetails?.video?.audio_only && "playpause.png"}
+          poster={videoDetails?.video?.audio_only ? poster : ""}
           ref={$video}
           className={classes.videoPlayer}
         />

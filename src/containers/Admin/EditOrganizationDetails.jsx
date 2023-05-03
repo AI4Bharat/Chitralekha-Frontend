@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 //Styles
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
 import {
@@ -20,7 +20,6 @@ import {
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../common/Snackbar";
 import OutlinedTextField from "../../common/OutlinedTextField";
-import CustomButton from "../../common/Button";
 
 //APIs
 import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
@@ -94,6 +93,8 @@ const EditOrganizationDetails = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
+
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -123,11 +124,15 @@ const EditOrganizationDetails = () => {
       );
       setTranslationLanguage(items);
     }
+
+    // eslint-disable-next-line
   }, [orgInfo, orgOwnerList]);
 
   useEffect(() => {
     const apiObj = new FetchOrganizationDetailsAPI(orgId);
     dispatch(APITransport(apiObj));
+
+    // eslint-disable-next-line
   }, []);
 
   const handleFieldChange = (event) => {
@@ -363,7 +368,7 @@ const EditOrganizationDetails = () => {
           <Button
             color="primary"
             variant="contained"
-            style={{ borderRadius: 6, margin: "0px 20px 0px 0px" }}
+            style={{ borderRadius: "8px", margin: "0px 10px 0px 0px" }}
             onClick={() => handleOrgUpdate()}
             disabled={orgDetails.title && owner ? false : true}
           >
@@ -373,11 +378,13 @@ const EditOrganizationDetails = () => {
             )}
           </Button>
 
-          <CustomButton
-            buttonVariant="text"
-            label={"Cancel"}
+          <Button
+            variant="text"
+            style={{ borderRadius: "8px" }}
             onClick={() => navigate(`/admin`)}
-          />
+          >
+            Cancel
+          </Button>
         </Box>
       </Card>
     </Grid>

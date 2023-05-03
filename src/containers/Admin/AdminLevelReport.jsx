@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 //Themes
-import { ThemeProvider, Grid, Box } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import tableTheme from "../../theme/tableTheme";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -11,12 +12,11 @@ import Loader from "../../common/Spinner";
 import FetchAdminLevelReportsAPI from "../../redux/actions/api/Admin/AdminLevelReport";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import { snakeToTitleCase } from "../../utils/utils";
-import Search from "../../common/Search";
-import DatasetStyle from "../../styles/Dataset";
 
-const AdminLevelReport = ({}) => {
+const AdminLevelReport = () => {
   const dispatch = useDispatch();
-  const classes = DatasetStyle();
+  const classes = TableStyles();
+
   const [projectreport, setProjectreport] = useState([]);
   const [columns, setColumns] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -28,15 +28,16 @@ const AdminLevelReport = ({}) => {
   useEffect(() => {
     const apiObj = new FetchAdminLevelReportsAPI();
     dispatch(APITransport(apiObj));
+    // eslint-disable-next-line
   }, []);
 
   const pageSearch = () => {
     let result = [];
     let tableData = projectreport.map((el) => {
       let elementArr = [];
-      Object.values(el).filter((valEle, index) => {
-        elementArr[index] = valEle.value;
-      });
+      Object.values(el).filter(
+        (valEle, index) => (elementArr[index] = valEle.value)
+      );
       return elementArr;
     });
 
@@ -59,7 +60,7 @@ const AdminLevelReport = ({}) => {
     let tempColumns = [];
     let tempSelected = [];
     if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.entries(fetchedItems[0]).map((el, i) => {
+      Object.entries(fetchedItems[0]).forEach((el, i) => {
         tempColumns.push({
           name: el[0],
           label: snakeToTitleCase(el[1].label),
@@ -68,13 +69,9 @@ const AdminLevelReport = ({}) => {
             sort: false,
             align: "center",
             setCellHeaderProps: () => ({
-              style: {
-                height: "35px",
-                fontSize: "16px",
-                padding: "16px",
-              },
+              className: classes.cellHeaderProps,
             }),
-            setCellProps: () => ({ style: {  height: "40px" } }),
+            setCellProps: () => ({ className: classes.cellProps }),
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },
@@ -87,6 +84,8 @@ const AdminLevelReport = ({}) => {
     }
     setColumns(tempColumns);
     setSelectedColumns(tempSelected);
+
+    // eslint-disable-next-line
   }, [AdminReportData]);
 
   useEffect(() => {
@@ -97,15 +96,9 @@ const AdminLevelReport = ({}) => {
       return col;
     });
     setColumns(newCols);
-  }, [selectedColumns]);
 
-  const renderToolBar = () => {
-    return (
-      <Box className={classes.searchStyle}>
-        <Search />
-      </Box>
-    );
-  };
+    // eslint-disable-next-line
+  }, [selectedColumns]);
 
   const options = {
     textLabels: {
@@ -130,7 +123,6 @@ const AdminLevelReport = ({}) => {
     selectableRows: "none",
     search: true,
     jumpToPage: true,
-    // customToolbar: renderToolBar,
   };
 
   return (

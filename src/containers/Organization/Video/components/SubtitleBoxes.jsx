@@ -16,18 +16,20 @@ import DT from "duration-time-conversion";
 import { getKeyCode } from "../../../../utils/utils";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
-import APITransport from "../../../../redux/actions/apitransport/apitransport";
 import { setSubtitles } from "../../../../redux/actions/Common";
-import C from "../../../../redux/constants";
 import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
   copySubs,
-  formatSub,
   hasSub,
+  isPlaying,
   onMerge,
   onSubtitleDelete,
 } from "../../../../utils/subtitleUtils";
+import CustomizedSnackbars from "../../../../common/Snackbar";
+import C from "../../../../redux/constants";
+import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
+import FetchTranscriptPayloadAPI from "../../../../redux/actions/api/Project/FetchTranscriptPayload";
+import APITransport from "../../../../redux/actions/apitransport/apitransport";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -58,60 +60,104 @@ export default memo(
     const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
     const player = useSelector((state) => state.commonReducer.player);
+    const limit = useSelector((state) => state.commonReducer.limit);
+    const currentPage = useSelector((state) => state.commonReducer.currentPage);
+    const next = useSelector((state) => state.commonReducer.nextPage);
 
     const [currentSubs, setCurrentSubs] = useState([]);
+    const [snackbar, setSnackbarInfo] = useState({
+      open: false,
+      message: "",
+      variant: "success",
+    });
 
     useEffect(() => {
-      setCurrentSubs(subtitles);
-    }, [subtitles, render]);
+      if (subtitles) {
+        setCurrentSubs(subtitles);
+      }
+    }, [subtitles]);
 
     const gridGap = document.body.clientWidth / render.gridNum;
-    const currentIndex = subtitles?.findIndex(
+    const currentIndex = currentSubs?.findIndex(
       (item) => item.startTime <= currentTime && item.endTime > currentTime
     );
 
-    const saveTranscript = (taskType) => {
+    useEffect(() => {
+      if (currentIndex === subtitles.length - 1 && next && isPlaying(player)) {
+        const payloadObj = new FetchTranscriptPayloadAPI(
+          taskDetails.id,
+          taskDetails.task_type,
+          next,
+          limit
+        );
+        dispatch(APITransport(payloadObj));
+      }
+
+    // eslint-disable-next-line
+    }, [currentIndex, isPlaying(player)]);
+
+    const saveTranscript = async (taskType, subs = subtitles) => {
       const reqBody = {
         task_id: taskId,
+        offset: currentPage,
+        limit: limit,
         payload: {
-          payload: subtitles,
+          payload: subs,
         },
       };
 
       const obj = new SaveTranscriptAPI(reqBody, taskType);
-      dispatch(APITransport(obj));
+      const res = await fetch(obj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(obj.getBody()),
+        headers: obj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: "Failed",
+          variant: "error",
+        });
+      }
     };
 
     const removeSub = useCallback((sub) => {
       const index = hasSub(sub);
       const res = onSubtitleDelete(index);
       dispatch(setSubtitles(res, C.SUBTITLES));
-      saveTranscript(taskDetails?.task_type);
-    }, []);
+      saveTranscript(taskDetails?.task_type, res);
+    // eslint-disable-next-line
+    }, [limit, currentPage]);
 
     const mergeSub = useCallback((sub) => {
       const index = hasSub(sub);
       const res = onMerge(index);
       dispatch(setSubtitles(res, C.SUBTITLES));
-      saveTranscript(taskDetails?.task_type);
-    }, []);
+      saveTranscript(taskDetails?.task_type, res);
+    // eslint-disable-next-line
+    }, [limit, currentPage]);
 
-    const updateSub = useCallback(
-      (sub, obj) => {
-        const index = hasSub(sub);
-        const copySub = copySubs();
+    const updateSub = useCallback((sub, obj) => {
+      const index = hasSub(sub);
+      const copySub = [...subtitles];
 
-        if (index < 0) return;
+      if (index < 0) return;
 
-        const subClone = formatSub(sub);
-        Object.assign(subClone, obj);
-        if (subClone.check) {
-          copySub[index] = subClone;
-          dispatch(setSubtitles(copySub, C.SUBTITLES));
-        }
-      },
-      [hasSub, formatSub]
-    );
+      Object.assign(sub, obj);
+
+      copySub[index] = sub;
+      dispatch(setSubtitles(copySub, C.SUBTITLES));
+      saveTranscript(taskDetails?.task_type, copySub);
+    // eslint-disable-next-line
+    }, [limit, currentPage]);
 
     const onMouseDown = (sub, event, type) => {
       lastSub = sub;
@@ -188,18 +234,25 @@ export default memo(
             const start_time = DT.d2t(startTime);
             const end_time = DT.d2t(endTime);
 
-            if (
-              index > 0 &&
-              startTime >= DT.t2d(previou.end_time) &&
-              endTime <= DT.t2d(next.start_time)
-            ) {
-              updateSub(lastSub, {
-                start_time,
-                end_time,
-              });
-            }
+            if (subtitles.length > 1) {
+              if (
+                index > 0 &&
+                startTime >= DT.t2d(previou.end_time) &&
+                endTime <= DT.t2d(next.start_time)
+              ) {
+                updateSub(lastSub, {
+                  start_time,
+                  end_time,
+                });
+              }
 
-            if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+              if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+                updateSub(lastSub, {
+                  start_time,
+                  end_time,
+                });
+              }
+            } else {
               updateSub(lastSub, {
                 start_time,
                 end_time,
@@ -217,7 +270,7 @@ export default memo(
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, subtitles, updateSub]);
+    }, [gridGap, subtitles, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -233,14 +286,14 @@ export default memo(
                 start_time: DT.d2t(sub.startTime - 0.1),
                 end_time: DT.d2t(sub.endTime - 0.1),
               });
-              player.currentTime = sub.startTime - 0.1;
+              // player.currentTime = sub.startTime - 0.1;
               break;
             case 39:
               updateSub(sub, {
                 start_time: DT.d2t(sub.startTime + 0.1),
                 end_time: DT.d2t(sub.endTime + 0.1),
               });
-              player.currentTime = sub.startTime + 0.1;
+              // player.currentTime = sub.startTime + 0.1;
               break;
             case 8:
             case 46:
@@ -251,7 +304,7 @@ export default memo(
           }
         }
       },
-      [subtitles, player, removeSub, updateSub]
+      [player, removeSub, updateSub]
     );
 
     const DynamicMenu = (props) => {
@@ -297,8 +350,23 @@ export default memo(
       className: classes.contextMenu,
     };
 
+    const renderSnackBar = () => {
+      return (
+        <CustomizedSnackbars
+          open={snackbar.open}
+          handleClose={() =>
+            setSnackbarInfo({ open: false, message: "", variant: "" })
+          }
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          variant={snackbar.variant}
+          message={snackbar.message}
+        />
+      );
+    };
+
     return (
       <div className={classes.parentSubtitleBox} ref={$blockRef}>
+        {renderSnackBar()}
         <div ref={$subsRef}>
           {currentSubs?.map((sub, key) => {
             return (

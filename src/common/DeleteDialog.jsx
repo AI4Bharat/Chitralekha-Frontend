@@ -10,7 +10,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import React from "react";
 import Loader from "./Spinner";
@@ -36,8 +35,8 @@ const DeleteDialog = ({
     >
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          <Typography variant="body1"> {message}</Typography>
-
+          {message}
+          
           {deleteResponse && (
             <TableRow
               style={{
@@ -55,9 +54,9 @@ const DeleteDialog = ({
                           height: "60px",
                         }}
                       >
-                        {headers.map((item) => {
+                        {headers.map((item, index) => {
                           return (
-                            <TableCell sx={{ padding: "6px 16px" }}>
+                            <TableCell key={index} sx={{ padding: "6px 16px" }}>
                               {item}
                             </TableCell>
                           );
@@ -65,9 +64,10 @@ const DeleteDialog = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {deleteResponse.map((item) => {
+                      {deleteResponse.map((item, index) => {
                         return (
                           <TableRow
+                            key={index}
                             style={{
                               backgroundColor: "rgba(254, 191, 44, 0.1)",
                               height: "60px",
@@ -94,7 +94,7 @@ const DeleteDialog = ({
         <Button
           variant="text"
           onClick={handleClose}
-          sx={{ lineHeight: "1", borderRadius: "6px" }}
+          sx={{ lineHeight: "1", borderRadius: "8px" }}
         >
           Cancel
         </Button>

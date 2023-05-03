@@ -1,52 +1,44 @@
 // OrgLevelTaskList
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
 import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { getOptions } from "../../utils/tableUtils";
+import C from "../../redux/constants";
+import statusColor from "../../utils/getStatusColor";
 
 //Themes
 import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/Dataset";
+import DatasetStyle from "../../styles/datasetStyle";
+import TableStyles from "../../styles/tableStyles";
 
 //Components
 import {
   ThemeProvider,
   Box,
   Grid,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
   Divider,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
   Tooltip,
   IconButton,
   Button,
-  DialogTitle,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomButton from "../../common/Button";
 import CustomizedSnackbars from "../../common/Snackbar";
-import Search from "../../common/Search";
+import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
+import ViewTaskDialog from "../../common/ViewTaskDialog";
+import FilterList from "../../common/FilterList";
+import ExportDialog from "../../common/ExportDialog";
+
+//Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PreviewIcon from "@mui/icons-material/Preview";
-import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../common/ViewTaskDialog";
-import Loader from "../../common/Spinner";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import UserMappedByRole from "../../utils/UserMappedByRole";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import FilterList from "../../common/FilterList";
-import C from "../../redux/constants";
 
 //Apis
 import APITransport from "../../redux/actions/apitransport/apitransport";
@@ -66,15 +58,14 @@ import FetchOrgTaskList from "../../redux/actions/api/Organization/FetchOrgTaskL
 import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
 import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
-import ExportDialog from "../../common/ExportDialog";
 import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceoverTask";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
+  const tableClasses = TableStyles();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -115,11 +106,11 @@ const OrgLevelTaskList = () => {
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
+  const [options, setOptions] = useState({});
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-  const apiStatus = useSelector((state) => state.apiStatus);
   const orgId = userData?.organization?.id;
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -128,11 +119,12 @@ const OrgLevelTaskList = () => {
     (state) => state.getTranslationExportTypes.data.export_types
   );
 
-  const FetchTaskList = () => {
+  const fetchTaskList = () => {
     setLoading(true);
     const apiObj = new FetchOrgTaskList(orgId);
     dispatch(APITransport(apiObj));
   };
+
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
@@ -146,6 +138,7 @@ const OrgLevelTaskList = () => {
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
+    // eslint-disable-next-line
   }, []);
 
   const supportedLanguages = useSelector(
@@ -162,8 +155,9 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     if (orgId) {
-      FetchTaskList();
+      fetchTaskList();
     }
+    // eslint-disable-next-line
   }, [orgId]);
 
   useEffect(() => {
@@ -180,7 +174,6 @@ const OrgLevelTaskList = () => {
     }
   }, [taskList]);
 
-  const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
@@ -202,9 +195,7 @@ const OrgLevelTaskList = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      const task = taskList.tasks_list.filter(
-        (task) => task.id === id
-      )[0];
+      const task = taskList.tasks_list.filter((task) => task.id === id)[0];
 
       const link = document.createElement("a");
       link.href = resp.azure_url;
@@ -389,8 +380,6 @@ const OrgLevelTaskList = () => {
           // --------------------- if task type is translation, submit translation with trg lang ------------- //
           await onTranslationTaskTypeSubmit(id, rsp_data);
         }
-      } else {
-        console.log("failed");
       }
     });
   };
@@ -414,7 +403,7 @@ const OrgLevelTaskList = () => {
       });
       setOpenDialog(false);
       setLoading(false);
-      FetchTaskList();
+      fetchTaskList();
     } else {
       setOpenDialog(true);
       setDeleteMsg(resp.message);
@@ -450,14 +439,14 @@ const OrgLevelTaskList = () => {
 
   const renderViewButton = (tableData) => {
     return (
-      tableData.rowData[16]?.View && (
+      tableData.rowData[17]?.View && (
         <Tooltip title="View">
           <IconButton
             onClick={() => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={!tableData.rowData[11]}
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <PreviewIcon />
@@ -469,13 +458,13 @@ const OrgLevelTaskList = () => {
 
   const renderExportButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Export && (
+      tableData.rowData[17]?.Export && (
         <Tooltip title="Export">
           <IconButton
             onClick={() =>
               handleClickOpen(tableData.rowData[0], tableData.rowData[1])
             }
-            disabled={!tableData.rowData[11]}
+            disabled={!tableData.rowData[12]}
             color="primary"
           >
             <FileDownloadIcon />
@@ -487,10 +476,10 @@ const OrgLevelTaskList = () => {
 
   const renderEditButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Edit && (
+      tableData.rowData[17]?.Edit && (
         <Tooltip title="Edit">
           <IconButton
-            disabled={!tableData.rowData[11]}
+            disabled={!tableData.rowData[12]}
             onClick={() => {
               if (tableData.rowData[1].includes("TRANSCRIPTION")) {
                 navigate(`/task/${tableData.rowData[0]}/transcript`);
@@ -511,7 +500,7 @@ const OrgLevelTaskList = () => {
 
   const renderDeleteButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Delete && (
+      tableData.rowData[17]?.Delete && (
         <Tooltip title="Delete">
           <IconButton
             onClick={() => handledeletetask(tableData.rowData[0], false)}
@@ -526,7 +515,7 @@ const OrgLevelTaskList = () => {
 
   const renderUpdateTaskButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Update && (
+      tableData.rowData[17]?.Update && (
         <Tooltip title="Edit Task Details">
           <IconButton
             color="primary"
@@ -545,7 +534,7 @@ const OrgLevelTaskList = () => {
 
   const renderPreviewButton = (tableData) => {
     return (
-      tableData.rowData[16]?.Preview && (
+      tableData.rowData[17]?.Preview && (
         <Tooltip title="Preview">
           <IconButton
             color="primary"
@@ -570,6 +559,7 @@ const OrgLevelTaskList = () => {
 
   useEffect(() => {
     FilterData();
+    // eslint-disable-next-line
   }, [filterStatus, filterTaskType]);
 
   const FilterData = () => {
@@ -673,22 +663,27 @@ const OrgLevelTaskList = () => {
         el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
       ) {
         return el;
+      } else {
+        return [];
       }
     });
     setfilterData(pageSearchData);
+
+    // eslint-disable-next-line
   }, [SearchProject]);
 
   const result =
     taskList.tasks_list && taskList.tasks_list.length > 0
       ? filterData?.map((item, i) => {
           const status =
-            item.status_label && UserMappedByRole(item.status_label)?.element;
+            item.status_label && statusColor(item.status_label)?.element;
           return [
             item.id,
             item.task_type,
             item.task_type_label,
             item.video_name,
             moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+            item.source_type,
             item.src_language,
             item.src_language_label,
             item.target_language,
@@ -708,18 +703,14 @@ const OrgLevelTaskList = () => {
   const columns = [
     {
       name: "id",
-      label: "#",
+      label: "Id",
       options: {
         filter: false,
         sort: false,
         align: "center",
         display: "exclude",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
       },
     },
@@ -739,11 +730,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -766,11 +753,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -795,11 +778,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: false,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -813,6 +792,30 @@ const OrgLevelTaskList = () => {
           );
         },
       },
+    },
+    {
+      name: "source_type",
+      label: "Source Type",
+      options: {
+        filter: false,
+        sort: false,
+        display: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps
+        }),
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <Box
+              style={{
+                color: tableMeta.rowData[12] ? "" : "grey",
+              }}
+            >
+              {value}
+            </Box>
+          );
+        },
+      }
     },
     {
       name: "src_language",
@@ -830,11 +833,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -865,11 +864,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -892,11 +887,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -933,17 +924,13 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
               style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -961,17 +948,13 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: true,
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
             <Box
               style={{
-                color: tableMeta.rowData[11] ? "" : "grey",
+                color: tableMeta.rowData[12] ? "" : "grey",
               }}
             >
               {value}
@@ -996,11 +979,7 @@ const OrgLevelTaskList = () => {
         display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1023,14 +1002,9 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          style: {
-            height: "30px",
-            fontSize: "16px",
-            padding: "16px",
-          },
+          className: tableClasses.cellHeaderProps
         }),
         customBodyRender: (value, tableMeta) => {
-          // console.log("tableMeta ------ ", tableMeta);
           return (
             <Box sx={{ display: "flex" }}>
               {renderUpdateTaskButton(tableMeta)}
@@ -1092,7 +1066,7 @@ const OrgLevelTaskList = () => {
       });
       setOpenDialog(false);
       setLoading(false);
-      FetchTaskList();
+      fetchTaskList();
     } else {
       setDeleteTaskid(resp.task_ids);
       setOpenDialog(true);
@@ -1115,7 +1089,7 @@ const OrgLevelTaskList = () => {
       title: "Bulk Task Delete",
       icon: <DeleteIcon />,
       onClick: () => {},
-      style: { backgroundColor: "red" },
+      style: { color: "#d32f2f" },
     },
     {
       title: "Bulk Task Dowload",
@@ -1138,18 +1112,26 @@ const OrgLevelTaskList = () => {
           </Tooltip>
         </Button>
 
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          className={classes.searchStyle}
-        >
+        <div style={{ display: "inline", verticalAlign: "middle" }}>
+          {roles.filter((role) => role.value === userData?.role)[0]
+            ?.permittedToCreateTask &&
+            showEditTaskBtn && (
+              <Divider
+                orientation="vertical"
+                sx={{
+                  display: "inline",
+                  margin: "0 10px",
+                  borderColor: "rgba(0, 0, 0, 0.54)",
+                }}
+              />
+            )}
+
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
             showEditTaskBtn &&
-            toolBarActions.map((item) => {
+            toolBarActions.map((item, index) => {
               return (
-                <Tooltip title={item.title} placement="bottom">
+                <Tooltip key={index} title={item.title} placement="bottom">
                   <IconButton
                     className={classes.createTaskBtn}
                     onClick={item.onClick}
@@ -1160,46 +1142,32 @@ const OrgLevelTaskList = () => {
                 </Tooltip>
               );
             })}
-
-          {/* <Search /> */}
-        </Box>
+        </div>
       </>
     );
   };
 
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: loading ? <Loader /> : "No tasks assigned to you",
+  useEffect(() => {
+    let option = getOptions(loading);
+
+    option = {
+      ...option,
+      selectableRows: roles.filter((role) => role.value === userData?.role)[0]
+        ?.showSelectCheckbox
+        ? "multiple"
+        : "none",
+      selectToolbarPlacement: "none",
+      rowsSelected: rows,
+      customToolbar: renderToolBar,
+      onRowSelectionChange: (currentRow, allRow) => {
+        handleRowClick(currentRow, allRow);
       },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: roles.filter((role) => role.value === userData?.role)[0]
-      ?.showSelectCheckbox
-      ? "multiple"
-      : "none",
-    search: true,
-    jumpToPage: true,
-    selectToolbarPlacement: "none",
-    rowsSelected: rows,
-    customToolbar: renderToolBar,
-    onRowSelectionChange: (currentRow, allRow) => {
-      handleRowClick(currentRow, allRow);
-    },
-  };
+    };
+
+    setOptions(option);
+    
+    // eslint-disable-next-line
+  }, [loading]);
 
   const renderSnackBar = () => {
     return (
@@ -1247,7 +1215,7 @@ const OrgLevelTaskList = () => {
         message: resp?.message,
         variant: "success",
       });
-      FetchTaskList();
+      fetchTaskList();
       setLoading(false);
       setOpenEditTaskDialog(false);
     } else {
@@ -1263,7 +1231,6 @@ const OrgLevelTaskList = () => {
 
   const handleBulkTaskDownload = async () => {
     setOpen(false);
-    console.log(selectedBulkTaskid, "selectedBulkTaskid");
     const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
 
     const res = await fetch(apiObj.apiEndPoint(), {

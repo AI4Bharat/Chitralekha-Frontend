@@ -1,12 +1,5 @@
-import {
-  Box,
-  Grid,
-  Link,
-  ThemeProvider,
-  Button,
-  Typography,
-} from "@mui/material";
-import { useState, useEffect } from "react";
+import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "../../config/localisation";
 import LoginStyle from "../../styles/loginStyle";
@@ -52,18 +45,20 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
-  const keyPress = (e) => {
+  const keyPress = useCallback((e) => {
     if (e.code === "Enter") {
       if (!isPressed) {
         setIsPressed(true);
         createToken();
       }
     }
-  };
 
-  const keyRelease = () => {
+    // eslint-disable-next-line
+  }, []);
+
+  const keyRelease = useCallback(() => {
     setIsPressed(false);
-  };
+  }, []);
 
   const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDataAPI();
@@ -78,6 +73,8 @@ const Login = () => {
         navigate(`/my-organization/${userInfo?.organization?.id}`);
       }
     }
+
+    // eslint-disable-next-line
   }, [userData]);
 
   useEffect(() => {

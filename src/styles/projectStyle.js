@@ -211,6 +211,8 @@ const ProjectStyle = makeStyles({
     "& .MuiInputBase-input": {
       textAlign: "center",
       color: "#fff",
+      fontSize: "1rem",
+      padding: "5px 0"
     },
     "& .MuiInput-root:after": {
       border: "none",
@@ -266,10 +268,8 @@ const ProjectStyle = makeStyles({
     padding: "10px",
     color: "rgba(73, 124, 39)",
     backgroundColor: "rgba(45, 191, 56 ,0.3 )",
-    width: "20%",
     margin: "10px",
     fontWeight: "600",
-    padding: "10px",
     borderRadius: "15px",
     textAlign: "center",
   },
@@ -312,7 +312,14 @@ const ProjectStyle = makeStyles({
     textOverflow: "ellipsis",
   },
 
-
+  reportVideoName: {
+    display: "-webkit-box",
+    maxWidth: "400px",
+    "-webkit-line-clamp": "2",
+    "-webkit-box-orient": "vertical",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  }
 });
 
 export default ProjectStyle;
