@@ -100,7 +100,7 @@ const Progress = memo(({ waveform, currentTime, subtitle = [] }) => {
     },
 
     // eslint-disable-next-line
-    [player, waveform]
+    [player, waveform, limit]
   );
 
   const onGrabDown = useCallback(
