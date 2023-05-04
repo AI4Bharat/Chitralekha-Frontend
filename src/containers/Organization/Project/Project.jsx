@@ -262,7 +262,7 @@ const Project = () => {
       const csvData = reader.result;
       const csv = btoa(csvData);
 
-      const uploadCSVObj = new UploadCSVAPI(projectId);
+      const uploadCSVObj = new UploadCSVAPI("project");
       const res = await fetch(uploadCSVObj.apiEndPoint(), {
         method: "POST",
         body: JSON.stringify({ project_id: +projectId, csv }),
@@ -415,7 +415,7 @@ const Project = () => {
                   variant="contained"
                   onClick={() => csvUpload.current.click()}
                 >
-                  CSV Upload
+                  Bulk Video Upload
                   <input
                     type="file"
                     style={{ display: "none" }}
