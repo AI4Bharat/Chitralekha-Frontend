@@ -5,7 +5,7 @@ export default class UploadCSVAPI extends API {
   constructor(type = "project", timeout = 2000) {
     super("POST", timeout, false);
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.video}${
-      type === "project" ? "upload_csv_data" : "enable_org_csv_upload"
+      type === "project" ? "upload_csv_data" : "upload_csv_org"
     }`;
   }
 

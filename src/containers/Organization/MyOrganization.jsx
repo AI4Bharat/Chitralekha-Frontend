@@ -1,5 +1,5 @@
 //My Organization
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { roles } from "../../utils/utils";
@@ -232,37 +232,39 @@ const MyOrganization = () => {
           >
             <Box display={"flex"} width={"100%"}>
               {userData?.role === "ORG_OWNER" && (
-                <Button
-                  style={{ marginRight: "10px" }}
-                  className={classes.projectButton}
-                  onClick={() =>
-                    navigate(`/my-organization/${id}/create-new-project`)
-                  }
-                  variant="contained"
-                >
-                  Add New Project
-                </Button>
-              )}
+                <Fragment>
+                  <Button
+                    style={{ marginRight: "10px" }}
+                    className={classes.projectButton}
+                    onClick={() =>
+                      navigate(`/my-organization/${id}/create-new-project`)
+                    }
+                    variant="contained"
+                  >
+                    Add New Project
+                  </Button>
 
-              {organizationDetails.enable_upload && (
-                <Button
-                  style={{ marginLeft: "10px" }}
-                  className={classes.projectButton}
-                  variant="contained"
-                  onClick={() => csvUpload.current.click()}
-                >
-                  Bulk Video Upload
-                  <input
-                    type="file"
-                    style={{ display: "none" }}
-                    ref={csvUpload}
-                    accept=".csv"
-                    onChange={(event) => {
-                      handeFileUpload(event.target.files);
-                      event.target.value = null;
-                    }}
-                  />
-                </Button>
+                  {organizationDetails.enable_upload && (
+                    <Button
+                      style={{ marginLeft: "10px" }}
+                      className={classes.projectButton}
+                      variant="contained"
+                      onClick={() => csvUpload.current.click()}
+                    >
+                      Bulk Video Upload
+                      <input
+                        type="file"
+                        style={{ display: "none" }}
+                        ref={csvUpload}
+                        accept=".csv"
+                        onChange={(event) => {
+                          handeFileUpload(event.target.files);
+                          event.target.value = null;
+                        }}
+                      />
+                    </Button>
+                  )}
+                </Fragment>
               )}
             </Box>
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
