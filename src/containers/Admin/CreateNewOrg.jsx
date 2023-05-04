@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-//Styles
-import DatasetStyle from "../../styles/datasetStyle";
-
 //Components
 import {
   Card,
@@ -16,10 +13,11 @@ import {
   Chip,
   Checkbox,
   Button,
+  InputLabel,
+  TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import CustomizedSnackbars from "../../common/Snackbar";
-import OutlinedTextField from "../../common/OutlinedTextField";
 import Loader from "../../common/Spinner";
 
 //APIs
@@ -43,7 +41,6 @@ const MenuProps = {
 };
 
 const CreateNewOrg = () => {
-  const classes = DatasetStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -105,11 +102,11 @@ const CreateNewOrg = () => {
 
     const langObj = new FetchSupportedLanguagesAPI();
     dispatch(APITransport(langObj));
-    
+
     // eslint-disable-next-line
   }, []);
 
-  const handleCreateProject = async () => {
+  const handleCreateOrganization = async () => {
     setLoading(true);
     const reqBody = {
       title,
@@ -167,162 +164,158 @@ const CreateNewOrg = () => {
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       {renderSnackBar()}
-      <Card className={classes.workspaceCard}>
-        <Typography variant="h2" gutterBottom component="div">
-          Create New Organization
-        </Typography>
-
-        <Box>
-          <Typography gutterBottom component="div" label="Required">
-            Title*
-          </Typography>
-          <OutlinedTextField
-            fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required">
-            Owner
-          </Typography>
-          <FormControl fullWidth>
-            <Select
-              id="demo-multiple-name"
-              value={owner}
-              onChange={(event) => setOwner(event.target.value)}
-              MenuProps={MenuProps}
-            >
-              {orgOwnerList.map((item, index) => {
-                return (
-                  <MenuItem key={index} value={item.id}>
-                    {item.email}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required" multiline>
-            Email Domain Name
-          </Typography>
-          <OutlinedTextField
-            fullWidth
-            value={emailDomainName}
-            onChange={(e) => setEmailDomainName(e.target.value)}
-          />
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required">
-            Select Transcription Source
-          </Typography>
-          <FormControl fullWidth>
-            <Select
-              id="transcript-source-type"
-              value={transcriptSourceType}
-              onChange={(event) => setTranscriptSourceType(event.target.value)}
-              MenuProps={MenuProps}
-            >
-              {transcriptTypes.map((item, index) => (
-                <MenuItem key={index} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required">
-            Select Translation Source
-          </Typography>
-          <FormControl fullWidth>
-            <Select
-              id="translation-source-type"
-              value={translationSourceType}
-              onChange={(event) => setTranslationSourceType(event.target.value)}
-              MenuProps={MenuProps}
-            >
-              {translationTypes.map((item, index) => (
-                <MenuItem key={index} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required">
-            Select Voiceover Source
-          </Typography>
-          <FormControl fullWidth>
-            <Select
-              id="Voiceover-source-type"
-              value={voiceOverSourceType}
-              onChange={(event) => setVoiceOverSourceType(event.target.value)}
-              MenuProps={MenuProps}
-            >
-              {translationTypes.map((item, index) => (
-                <MenuItem key={index} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography gutterBottom component="div" label="Required">
-            Default Workflow
-          </Typography>
-          <FormControl fullWidth>
-            <Select
-              multiple
-              id="translation-source-type"
-              value={defaultTask}
-              onChange={(event) => setDefaultTask(event.target.value)}
-              MenuProps={MenuProps}
-              renderValue={(selected) => {
-                selected.sort((a, b) => a.id - b.id);
-                return (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {selected.map((value) => {
-                      return <Chip key={value.value} label={value.label} />;
-                    })}
-                  </Box>
-                );
-              }}
-            >
-              {bulkTaskTypes.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  <Checkbox checked={defaultTask.indexOf(item) > -1} />
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        {defaultTask.filter((item) => item.value.includes("TRANSLATION"))
-          .length > 0 && (
-          <Box width={"100%"} sx={{ mt: 3 }}>
-            <Typography gutterBottom component="div" label="Required">
-              Select Translation Language
+      <Card
+        sx={{
+          width: "100%",
+          minHeight: 500,
+          padding: 5,
+          border: 0,
+        }}
+      >
+        <Grid container spacing={4}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            lg={12}
+            xl={12}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <Typography variant="h3" align="center">
+              Create New Organization
             </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <TextField
+              variant="outlined"
+              fullWidth
+              label="Title"
+              name="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
             <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Owner</InputLabel>
               <Select
-                fullWidth
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={owner}
+                label="Owner"
+                onChange={(event) => setOwner(event.target.value)}
+                MenuProps={MenuProps}
+              >
+                {orgOwnerList.map((item, index) => {
+                  return (
+                    <MenuItem key={index} value={item.id}>
+                      {item.email}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <TextField
+              variant="outlined"
+              fullWidth
+              label="Email Domain Name"
+              name="emailDomainName"
+              value={emailDomainName}
+              onChange={(e) => setEmailDomainName(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <FormControl fullWidth>
+              <InputLabel id="translation-source-type">
+                Select Transcription Source
+              </InputLabel>
+              <Select
+                labelId="translation-source-type"
+                id="translation-source-type_select"
+                value={transcriptSourceType}
+                label="Select Transcription Source"
+                MenuProps={MenuProps}
+                onChange={(event) =>
+                  setTranscriptSourceType(event.target.value)
+                }
+              >
+                {transcriptTypes.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <FormControl fullWidth>
+              <InputLabel id="translation-source-type">
+                Select Translation Source
+              </InputLabel>
+              <Select
+                labelId="translation-source-type"
+                id="translation-source-type_select"
+                value={translationSourceType}
+                label="Select Transcription Source"
+                MenuProps={MenuProps}
+                onChange={(event) =>
+                  setTranslationSourceType(event.target.value)
+                }
+              >
+                {translationTypes.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <FormControl fullWidth>
+              <InputLabel id="translation-source-type">
+                Select Voiceover Source
+              </InputLabel>
+              <Select
+                labelId="translation-source-type"
+                id="translation-source-type_select"
+                value={voiceOverSourceType}
+                label="Select Voiceover Source"
+                MenuProps={MenuProps}
+                onChange={(event) => setVoiceOverSourceType(event.target.value)}
+              >
+                {translationTypes.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <FormControl fullWidth>
+              <InputLabel id="default_workflow">Default Workflow</InputLabel>
+              <Select
                 multiple
-                value={translationLanguage}
-                onChange={(event) => setTranslationLanguage(event.target.value)}
-                style={{ zIndex: "0" }}
-                inputProps={{ "aria-label": "Without label" }}
+                labelId="default_workflow"
+                id="default_workflow_select"
+                value={defaultTask}
+                label="Default Workflow"
+                onChange={(event) => setDefaultTask(event.target.value)}
+                MenuProps={MenuProps}
                 renderValue={(selected) => {
+                  selected.sort((a, b) => a.id - b.id);
                   return (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                       {selected.map((value) => {
@@ -332,41 +325,75 @@ const CreateNewOrg = () => {
                   );
                 }}
               >
-                {supportedLanguages?.map((item, index) => (
+                {bulkTaskTypes.map((item, index) => (
                   <MenuItem key={index} value={item}>
-                    <Checkbox
-                      checked={translationLanguage.indexOf(item) > -1}
-                    />
+                    <Checkbox checked={defaultTask.indexOf(item) > -1} />
                     {item.label}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-          </Box>
-        )}
+          </Grid>
 
-        <Box sx={{ mt: 3 }}>
-          <Button
-            color="primary"
-            variant="contained"
-            style={{ borderRadius: "8px", margin: "0px 10px 0px 0px" }}
-            onClick={() => handleCreateProject()}
-            disabled={disableBtn()}
-          >
-            Create Organization{" "}
-            {loading && (
-              <Loader size={20} margin="0 0 0 10px" color="secondary" />
-            )}
-          </Button>
+          {defaultTask.filter((item) => item.value.includes("TRANSLATION"))
+            .length > 0 && (
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <FormControl fullWidth>
+                <InputLabel id="targetlanguages">
+                  Select Translation Language
+                </InputLabel>
+                <Select
+                  multiple
+                  labelId="targetlanguages"
+                  id="targetlanguages_select"
+                  value={translationLanguage}
+                  name="targetlanguages"
+                  label="Target Languages"
+                  onChange={(e) => setTranslationLanguage(e.target.value)}
+                  MenuProps={MenuProps}
+                  renderValue={(selected) => {
+                    return (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => {
+                          return <Chip key={value.value} label={value.label} />;
+                        })}
+                      </Box>
+                    );
+                  }}
+                >
+                  {supportedLanguages?.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      <Checkbox
+                        checked={translationLanguage.indexOf(item) > -1}
+                      />
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
 
-          <Button
-            variant="text"
-            style={{ borderRadius: "8px" }}
-            onClick={() => navigate(`/admin`)}
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            style={{ padding: 32 }}
           >
-            Cancel
-          </Button>
-        </Box>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => handleCreateOrganization()}
+              style={{ borderRadius: "8px" }}
+              disabled={disableBtn()}
+            >
+              Create Organization{" "}
+              {loading && (
+                <Loader size={20} margin="0 0 0 10px" color="secondary" />
+              )}
+            </Button>
+          </Grid>
+        </Grid>
       </Card>
     </Grid>
   );
