@@ -50,7 +50,7 @@ const CSVAlertComponent = ({ open, message, report, onClose }) => {
                     <Box
                       key={index}
                       className={classes.contentParent}
-                      style={{ textAlign: "center" }}
+                      style={{ textAlign: "center", minWidth: "500px" }}
                     >
                       <Box
                         className={classes.content2}
