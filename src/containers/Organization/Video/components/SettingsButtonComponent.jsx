@@ -19,10 +19,10 @@ import CheckIcon from "@mui/icons-material/Check";
 // import UndoIcon from '@mui/icons-material/Undo';
 // import RedoIcon from '@mui/icons-material/Redo';
 import { fontMenu } from "../../../../utils/subtitleUtils";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
-import FormatLineSpacingIcon from "@mui/icons-material/FormatLineSpacing";
-import { setLimitInStore } from "../../../../redux/actions/Common";
+// import FormatLineSpacingIcon from "@mui/icons-material/FormatLineSpacing";
+// import { setLimitInStore } from "../../../../redux/actions/Common";
 
 const anchorOrigin = {
   vertical: "top",
@@ -53,11 +53,11 @@ const SettingsButtonComponent = ({
   showSplit,
 }) => {
   const classes = VideoLandingStyle();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
-  const [anchorElLimit, setAnchorElLimit] = useState(null);
+  // const [anchorElLimit, setAnchorElLimit] = useState(null);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -67,7 +67,7 @@ const SettingsButtonComponent = ({
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
-  const limit = useSelector((state) => state.commonReducer.limit);
+  // const limit = useSelector((state) => state.commonReducer.limit);
 
   const getDisbled = (flag) => {
     if (
@@ -97,7 +97,7 @@ const SettingsButtonComponent = ({
 
   return (
     <>
-      {!taskData?.task_type?.includes("VOICEOVER") && (
+      {/* {!taskData?.task_type?.includes("VOICEOVER") && (
         <Tooltip title="Number of Rows" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
@@ -138,7 +138,7 @@ const SettingsButtonComponent = ({
         })}
       </Menu>
 
-      <Divider orientation="vertical" className={classes.rightPanelDivider} />
+      <Divider orientation="vertical" className={classes.rightPanelDivider} /> */}
 
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
