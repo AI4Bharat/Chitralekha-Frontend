@@ -391,6 +391,24 @@ export const taskListColumns = [
     },
   },
   {
+    name: "time_spent",
+    label: "Time Spent",
+    options: {
+      customBodyRender: (value, tableMeta) => {
+        return (
+          <Box
+            style={{
+              color: tableMeta.rowData[11] ? "" : "grey",
+            }}
+          >
+            {value}
+          </Box>
+        );
+      },
+    },
+  },
+  
+  {
     name: "buttons",
     label: "",
     options: {

@@ -717,7 +717,7 @@ const TaskList = () => {
             item.is_active,
             `${item.user?.first_name} ${item.user?.last_name}`,
             item.project_name,
-            item.video,
+            item.time_spent,
             item.description,
             item.buttons,
             item.status,
