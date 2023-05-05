@@ -1,8 +1,8 @@
 import { Box, Tab, Typography, Tabs } from "@mui/material";
-import ChangePassword from "./ChangePassword";
 import EditProfile from "./EditProfile";
 import React, { useState } from "react";
 import LoginStyle from "../../styles/loginStyle";
+import LoginAndSecurity from "./LoginAndSecurity";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,7 +46,7 @@ const ProfilePage = () => {
           <EditProfile />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          <ChangePassword />
+          <LoginAndSecurity />
         </TabPanel>
       </Box>
     </>

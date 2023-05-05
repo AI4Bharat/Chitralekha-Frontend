@@ -110,7 +110,6 @@ const LoginStyle = makeStyles({
 
   editProfileParentCard: {
     width: "100%",
-    minHeight: 500,
     borderRadius: "5px",
     marginBottom: "50px",
   },
@@ -138,6 +137,11 @@ const LoginStyle = makeStyles({
   ChangePasswordSubText:{
     color: "gray", 
     fontSize:"18px"
+  },
+
+  loginSecurityGrid: {
+    flexDirection: "column",
+    margin: "25px 0",
   }
 })
 
