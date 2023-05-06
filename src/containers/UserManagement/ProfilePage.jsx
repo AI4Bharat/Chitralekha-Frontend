@@ -3,6 +3,7 @@ import EditProfile from "./EditProfile";
 import React, { useState } from "react";
 import LoginStyle from "../../styles/loginStyle";
 import LoginAndSecurity from "./LoginAndSecurity";
+import Notifications from "./Notifications";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -38,6 +39,7 @@ const ProfilePage = () => {
         <Tabs value={tabValue} onChange={handleTabChange}>
           <Tab label="Profile" className={classes.profileTabs} />
           <Tab label="Login & security" className={classes.profileTabs} />
+          <Tab label="Notifications" className={classes.profileTabs} />
         </Tabs>
       </Box>
 
@@ -47,6 +49,9 @@ const ProfilePage = () => {
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
           <LoginAndSecurity />
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
+          <Notifications />
         </TabPanel>
       </Box>
     </>

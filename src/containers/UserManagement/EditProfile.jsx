@@ -22,7 +22,6 @@ import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
 import {
   MenuProps,
   availability,
-  profileOptions,
   roles,
 } from "../../utils/utils";
 import UpdateEmailAPI from "../../redux/actions/api/User/UpdateEmail";
@@ -33,6 +32,7 @@ import { Box } from "@mui/system";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
 import EditIcon from "@mui/icons-material/Edit";
 import LoginStyle from "../../styles/loginStyle";
+import { profileOptions } from "../../config/profileConfigs";
 
 const EditProfile = () => {
   const classes = LoginStyle();
