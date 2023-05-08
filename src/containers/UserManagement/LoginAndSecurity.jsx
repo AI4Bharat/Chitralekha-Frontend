@@ -9,8 +9,8 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { Box } from "@mui/system";
 import LoginStyle from "../../styles/loginStyle";
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import DraftsIcon from "@mui/icons-material/Drafts";
+// import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+// import DraftsIcon from "@mui/icons-material/Drafts";
 import ChangePassword from "./ChangePassword";
 
 const LoginAndSecurity = () => {
@@ -23,30 +23,30 @@ const LoginAndSecurity = () => {
   });
 
   const loginSecurityConfig = [
-    {
-      title: "Email",
-      name: "email",
-      subTitle: "Changes Your Email",
-      icon: <DraftsIcon fontSize="large" />,
-      onClick: () =>
-        setArrowDownRightIcon((prev) => ({
-          ...prev,
-          email: !arrowDownRightIcon.email,
-        })),
-      component: <></>,
-    },
-    {
-      title: "Phone Number",
-      name: "phone",
-      subTitle: "Change Your Phone Number",
-      icon: <LocalPhoneIcon fontSize="large" />,
-      onClick: () =>
-        setArrowDownRightIcon((prev) => ({
-          ...prev,
-          phone: !arrowDownRightIcon.phone,
-        })),
-      component: <></>,
-    },
+    // {
+    //   title: "Email",
+    //   name: "email",
+    //   subTitle: "Changes Your Email",
+    //   icon: <DraftsIcon fontSize="large" />,
+    //   onClick: () =>
+    //     setArrowDownRightIcon((prev) => ({
+    //       ...prev,
+    //       email: !arrowDownRightIcon.email,
+    //     })),
+    //   component: <></>,
+    // },
+    // {
+    //   title: "Phone Number",
+    //   name: "phone",
+    //   subTitle: "Change Your Phone Number",
+    //   icon: <LocalPhoneIcon fontSize="large" />,
+    //   onClick: () =>
+    //     setArrowDownRightIcon((prev) => ({
+    //       ...prev,
+    //       phone: !arrowDownRightIcon.phone,
+    //     })),
+    //   component: <></>,
+    // },
     {
       title: "Change password",
       name: "password",
