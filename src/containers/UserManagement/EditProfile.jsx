@@ -389,9 +389,9 @@ const EditProfile = () => {
         <Grid
           container
           direction="row"
-          justifyContent="center"
+          justifyContent="flex-end"
           alignItems="center"
-          sx={{ my: 5 }}
+          sx={{ my: 5, px: "9.5%" }}
         >
           <Button
             variant="contained"
