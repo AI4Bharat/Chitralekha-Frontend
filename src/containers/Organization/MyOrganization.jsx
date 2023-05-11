@@ -109,6 +109,8 @@ const MyOrganization = () => {
     });
     const resp = await res.json();
     if (res.ok) {
+      setNewMemberName("");
+      setNewMemberRole("");
       setSnackbarInfo({
         open: true,
         message: resp?.message,
@@ -116,6 +118,8 @@ const MyOrganization = () => {
       });
       getOrganizatioUsersList();
     } else {
+      setNewMemberName("");
+      setNewMemberRole("");
       setSnackbarInfo({
         open: true,
         message: resp?.message,

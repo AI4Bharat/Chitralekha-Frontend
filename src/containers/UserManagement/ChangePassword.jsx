@@ -1,23 +1,22 @@
 import {
-  Card,
-  Grid,
-  Typography,
-  InputAdornment,
-  IconButton,
+  Box,
   Button,
+  Grid,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import OutlinedTextField from "../../common/OutlinedTextField";
-import DatasetStyle from "../../styles/datasetStyle";
+import React from "react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useState } from "react";
+import LoginStyle from "../../styles/loginStyle";
+import CustomizedSnackbars from "../../common/Snackbar";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
-import CustomizedSnackbars from "../../common/Snackbar"
 
 const ChangePassword = () => {
-  const navigate = useNavigate();
-  const classes = DatasetStyle();
+  const classes = LoginStyle();
 
   const [currentPassword, setCurrentPassword] = useState({
     value: "",
@@ -31,15 +30,15 @@ const ChangePassword = () => {
     open: false,
     message: "",
     variant: "success",
-});
+  });
 
-  const handleChangePassword = async() => {
+  const handleChangePassword = async () => {
     let apiObj = new ChangePasswordAPI(
       newPassword.value,
       currentPassword.value
     );
 
-   const res = await fetch(apiObj.apiEndPoint(), {
+    const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
       body: JSON.stringify(apiObj.getBody()),
       headers: apiObj.getHeaders().headers,
@@ -50,16 +49,14 @@ const ChangePassword = () => {
         open: true,
         message: resp?.current_password,
         variant: "success",
-      })
-
+      });
     } else {
       setSnackbarInfo({
         open: true,
         message: resp?.current_password,
         variant: "error",
-      })
+      });
     }
-
   };
 
   const handleClickShowCurrentPassword = () => {
@@ -76,142 +73,114 @@ const ChangePassword = () => {
   const renderSnackBar = () => {
     return (
       <CustomizedSnackbars
-      open={snackbar.open}
-      handleClose={() =>
+        open={snackbar.open}
+        handleClose={() =>
           setSnackbarInfo({ open: false, message: "", variant: "" })
-      }
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      variant={snackbar.variant}
-      message={[snackbar.message]}
-  />
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
     );
   };
 
   return (
-    <>
-      <Grid container direction="row">
-        {renderSnackBar()}
-        <Card className={classes.workspaceCard}>
-          <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Typography variant="h2" gutterBottom component="div">
-                Change Password
-              </Typography>
-            </Grid>
+    <Grid container className={classes.loginSecurityGrid}>
+      {renderSnackBar()}
+      <Box
+        display="flex"
+        width="100%"
+        alignItems="center"
+        justifyContent="center"
+        margin="10px"
+      >
+        <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+          <Typography variant="h6" textAlign="center">
+            New Password
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+          <TextField
+            fullWidth
+            type={newPassword.visibility ? "text" : "password"}
+            value={newPassword.value}
+            onChange={(e) =>
+              setNewPassword({
+                ...newPassword,
+                value: e.target.value,
+              })
+            }
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClickShowNewPassword}>
+                    {newPassword.visibility ? (
+                      <Visibility />
+                    ) : (
+                      <VisibilityOff />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Box>
 
-            <Grid container direction="row">
-              <Grid
-                items
-                xs={12}
-                sm={12}
-                md={12}
-                lg={12}
-                xl={12}
-                className={classes.projectsettingGrid}
-              >
-                <Typography gutterBottom component="div" label="Required">
-                  New Password*:
-                </Typography>
-              </Grid>
-              <Grid item md={12} lg={12} xl={12} sm={12} xs={12}>
-                <OutlinedTextField
-                  fullWidth
-                  placeholder="Enter New Password"
-                  type={newPassword.visibility ? "text" : "password"}
-                  value={newPassword.value}
-                  onChange={(e) =>
-                    setNewPassword({ ...newPassword, value: e.target.value })
-                  }
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowNewPassword}>
-                          {newPassword.visibility ? (
-                            <Visibility />
-                          ) : (
-                            <VisibilityOff />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
+      <Box
+        display="flex"
+        width="100%"
+        alignItems="center"
+        justifyContent="center"
+        margin="10px"
+      >
+        <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+          <Typography variant="h6" textAlign="center">
+            Current Password
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+          <TextField
+            fullWidth
+            type={currentPassword.visibility ? "text" : "password"}
+            value={currentPassword.value}
+            onChange={(e) =>
+              setCurrentPassword({
+                ...currentPassword,
+                value: e.target.value,
+              })
+            }
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClickShowCurrentPassword}>
+                    {currentPassword.visibility ? (
+                      <Visibility />
+                    ) : (
+                      <VisibilityOff />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Box>
 
-            <Grid
-              className={classes.projectsettingGrid}
-              items
-              xs={12}
-              sm={12}
-              md={12}
-              lg={12}
-              xl={12}
-            >
-              <Typography gutterBottom component="div">
-                Current Password*:
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={12} lg={12} xl={12} sm={12}>
-              <OutlinedTextField
-                fullWidth
-                placeholder="Enter Current Password"
-                type={currentPassword.visibility ? "text" : "password"}
-                value={currentPassword.value}
-                onChange={(e) =>
-                  setCurrentPassword({
-                    ...currentPassword,
-                    value: e.target.value,
-                  })
-                }
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleClickShowCurrentPassword}>
-                        {currentPassword.visibility ? (
-                          <Visibility />
-                        ) : (
-                          <VisibilityOff />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid
-              className={classes.projectsettingGrid}
-              item
-              xs={12}
-              md={12}
-              lg={12}
-              xl={12}
-              sm={12}
-              sx={{ mt: 2 }}
-            >
-              <Button
-                autoFocus
-                variant="contained"
-                sx={{ borderRadius: "8px" }}
-                onClick={() => handleChangePassword()}
-                disabled={
-                  newPassword.value && currentPassword.value ? false : true
-                }
-              >
-                Submit
-              </Button>
-
-              <Button
-                onClick={() => navigate(`/projects`)}
-                sx={{ borderRadius: "8px", ml: 2 }}
-              >
-                Close
-              </Button>
-            </Grid>
-          </Grid>
-        </Card>
-      </Grid>
-    </>
+      <Box>
+        <Grid container direction="row" justifyContent="center" sx={{ my: 2 }}>
+          <Button
+            autoFocus
+            variant="contained"
+            sx={{ borderRadius: "8px" }}
+            onClick={() => handleChangePassword()}
+            disabled={newPassword.value && currentPassword.value ? false : true}
+          >
+            Submit
+          </Button>
+        </Grid>
+      </Box>
+    </Grid>
   );
 };
 

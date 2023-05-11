@@ -83,7 +83,10 @@ export default memo(
     );
 
     useEffect(() => {
-      if (currentIndex === subtitles?.length - 1 && next && isPlaying(player)) {
+      const isLastSub =
+        player.currentTime > subtitles[subtitles?.length - 1]?.endTime;
+
+      if (next && isPlaying(player) && isLastSub) {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
           taskDetails.task_type,
@@ -93,7 +96,7 @@ export default memo(
         dispatch(APITransport(payloadObj));
       }
 
-    // eslint-disable-next-line
+      // eslint-disable-next-line
     }, [currentIndex, isPlaying(player)]);
 
     const saveTranscript = async (taskType, subs = subtitles) => {
@@ -129,35 +132,44 @@ export default memo(
       }
     };
 
-    const removeSub = useCallback((sub) => {
-      const index = hasSub(sub);
-      const res = onSubtitleDelete(index);
-      dispatch(setSubtitles(res, C.SUBTITLES));
-      saveTranscript(taskDetails?.task_type, res);
-    // eslint-disable-next-line
-    }, [limit, currentPage]);
+    const removeSub = useCallback(
+      (sub) => {
+        const index = hasSub(sub);
+        const res = onSubtitleDelete(index);
+        dispatch(setSubtitles(res, C.SUBTITLES));
+        saveTranscript(taskDetails?.task_type, res);
+      },
+      // eslint-disable-next-line
+      [limit, currentPage]
+    );
 
-    const mergeSub = useCallback((sub) => {
-      const index = hasSub(sub);
-      const res = onMerge(index);
-      dispatch(setSubtitles(res, C.SUBTITLES));
-      saveTranscript(taskDetails?.task_type, res);
-    // eslint-disable-next-line
-    }, [limit, currentPage]);
+    const mergeSub = useCallback(
+      (sub) => {
+        const index = hasSub(sub);
+        const res = onMerge(index);
+        dispatch(setSubtitles(res, C.SUBTITLES));
+        saveTranscript(taskDetails?.task_type, res);
+      },
+      // eslint-disable-next-line
+      [limit, currentPage]
+    );
 
-    const updateSub = useCallback((sub, obj) => {
-      const index = hasSub(sub);
-      const copySub = [...subtitles];
+    const updateSub = useCallback(
+      (sub, obj) => {
+        const index = hasSub(sub);
+        const copySub = [...subtitles];
 
-      if (index < 0) return;
+        if (index < 0) return;
 
-      Object.assign(sub, obj);
+        Object.assign(sub, obj);
 
-      copySub[index] = sub;
-      dispatch(setSubtitles(copySub, C.SUBTITLES));
-      saveTranscript(taskDetails?.task_type, copySub);
-    // eslint-disable-next-line
-    }, [limit, currentPage]);
+        copySub[index] = sub;
+        dispatch(setSubtitles(copySub, C.SUBTITLES));
+        saveTranscript(taskDetails?.task_type, copySub);
+      },
+      // eslint-disable-next-line
+      [limit, currentPage]
+    );
 
     const onMouseDown = (sub, event, type) => {
       lastSub = sub;
@@ -306,6 +318,7 @@ export default memo(
           }
         }
       },
+      // eslint-disable-next-line
       [player, removeSub, updateSub]
     );
 

@@ -407,14 +407,6 @@ export const taskListColumns = [
       },
     },
   },
-  
-  {
-    name: "buttons",
-    label: "",
-    options: {
-      display: "excluded",
-    },
-  },
   {
     name: "description",
     label: "Description",
@@ -431,6 +423,13 @@ export const taskListColumns = [
           </Box>
         );
       },
+    },
+  },
+  {
+    name: "buttons",
+    label: "",
+    options: {
+      display: "excluded",
     },
   },
   {

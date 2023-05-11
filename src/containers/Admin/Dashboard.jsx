@@ -75,12 +75,14 @@ const DashBoard = () => {
     const resp = await res.json();
 
     if (res.ok) {
+      setNewMemberEmail("");
       setSnackbarInfo({
         open: true,
         message: resp?.message,
         variant: "success",
       });
     } else {
+      setNewMemberEmail("");
       setSnackbarInfo({
         open: true,
         message: resp?.message,

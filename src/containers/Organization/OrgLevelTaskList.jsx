@@ -990,13 +990,6 @@ const OrgLevelTaskList = () => {
       },
     },
     {
-      name: "buttons",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
       name: "description",
       label: "Description",
       options: {
@@ -1018,6 +1011,13 @@ const OrgLevelTaskList = () => {
             </Box>
           );
         },
+      },
+    },
+    {
+      name: "buttons",
+      label: "",
+      options: {
+        display: "excluded",
       },
     },
     {

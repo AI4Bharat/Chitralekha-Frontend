@@ -769,6 +769,7 @@ const TaskList = () => {
       : [];
 
   const columns = getColumns(taskListColumns);
+  console.log(columns,'columns');
   columns.push({
     name: "Action",
     label: "Actions",
