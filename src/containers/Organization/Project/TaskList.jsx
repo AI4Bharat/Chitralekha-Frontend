@@ -1173,7 +1173,7 @@ const TaskList = () => {
         <UploadAlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
-          // message={bulkSubtitleAlertData.message[0]}
+          message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
         />
       )}

@@ -32,38 +32,29 @@ const UploadAlertComponent = ({ open, message, report, onClose }) => {
         {report?.length > 0 && (
           <Box>
             <Box className={classes.headerParent}>
-              <Box className={classes.header} style={{ width: "28%" }}>
-                Task Id
-              </Box>
-              <Box className={classes.header} style={{ width: "28%" }}>
-                Task Type
-              </Box>
+              <Box className={classes.header}>Video Name</Box>
+              <Box className={classes.header}>Task Type</Box>
               <Box className={classes.header}>Status</Box>
-              <Box className={classes.header} style={{ width: "50%" }}>
-                Message
-              </Box>
+              <Box className={classes.header}>Message</Box>
             </Box>
 
             <Box
               style={{
                 maxHeight: "200px",
-                overflowY:
-                report?.length > 3 ? "scroll" : "",
+                overflowY: report?.length > 3 ? "scroll" : "",
               }}
             >
               <Box display="flex" flexDirection="column" backgroundColor="#fff">
                 {report?.map((item, index) => {
                   return (
                     <Box key={index} className={classes.contentParent}>
-                      <Box
-                        className={classes.contentTaskType}
-                        style={{ width: "25%" }}
-                      >
+                      <Box className={classes.content}>{item.video_name}</Box>
+                      <Box className={classes.contentTaskType}>
                         {item.task_type}
                       </Box>
                       <Box className={classes.contentStatus}>
                         <Box className={classes.contentStatusTop}>
-                          {item.language_pair}
+                          {`${item.source_language} - ${item.target_language}`}
                         </Box>
                         <Box>
                           {item.status === "Fail" ? (
@@ -73,7 +64,7 @@ const UploadAlertComponent = ({ open, message, report, onClose }) => {
                           )}
                         </Box>
                       </Box>
-                      <Box className={classes.content2}>{item.message}</Box>
+                      <Box className={classes.content}>{item.message}</Box>
                     </Box>
                   );
                 })}
