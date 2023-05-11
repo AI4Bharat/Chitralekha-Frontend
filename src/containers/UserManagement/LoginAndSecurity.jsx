@@ -101,7 +101,7 @@ const LoginAndSecurity = () => {
                 </Box>
               </Grid>
 
-              <Grid item xs={1} sm={1} md={1} lg={1} xl={1}>
+              <Grid item xs={1} sm={1} md={1} lg={1} xl={1} onClick={item.onClick}>
                 {arrowDownRightIcon[item.name] ? (
                   <ArrowRightIcon fontSize="large" sx={{ mt: 2 }} />
                 ) : (
