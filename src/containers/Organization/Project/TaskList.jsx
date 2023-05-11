@@ -65,6 +65,7 @@ import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoi
 import TableStyles from "../../../styles/tableStyles";
 import { taskListColumns } from "../../../config/tableColumns";
 import UploadToYoutubeAPI from "../../../redux/actions/api/Project/UploadToYoutube";
+import UploadAlertComponent from "../../../common/UploadAlertComponent";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -112,6 +113,8 @@ const TaskList = () => {
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
+  const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
+  const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -480,6 +483,9 @@ const TaskList = () => {
         message: resp?.message,
         variant: "success",
       });
+
+      setBulkSubtitleAlert(true);
+      setBulkSubtitleAlertData(resp);
     } else {
       setSnackbarInfo({
         open: true,
@@ -574,7 +580,7 @@ const TaskList = () => {
         <Tooltip title="Upload Subtitles to Youtube">
           <IconButton
             color="primary"
-            onClick={() => handleUploadSubtitle(tableData.rowData[0])}
+            onClick={() => handleUploadSubtitle([tableData.rowData[0]])}
           >
             <UploadIcon />
           </IconButton>
@@ -769,7 +775,6 @@ const TaskList = () => {
       : [];
 
   const columns = getColumns(taskListColumns);
-  console.log(columns,'columns');
   columns.push({
     name: "Action",
     label: "Actions",
@@ -925,6 +930,14 @@ const TaskList = () => {
         setOpen(true);
         setTasktype("TRANSLATION_EDIT");
         setIsBulkTaskDownload(true);
+      },
+      style: { marginRight: "auto" },
+    },
+    {
+      title: "Bulk Subtitle Upload",
+      icon: <UploadIcon />,
+      onClick: () => {
+        handleUploadSubtitle(selectedBulkTaskid.split(","));
       },
       style: { marginRight: "auto" },
     },
@@ -1153,6 +1166,15 @@ const TaskList = () => {
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
+        />
+      )}
+
+      {bulkSubtitleAlert && (
+        <UploadAlertComponent
+          open={bulkSubtitleAlert}
+          onClose={() => setBulkSubtitleAlert(false)}
+          // message={bulkSubtitleAlertData.message[0]}
+          report={bulkSubtitleAlertData}
         />
       )}
     </>

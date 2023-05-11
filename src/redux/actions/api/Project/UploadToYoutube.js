@@ -22,7 +22,7 @@ export default class UploadToYoutubeAPI extends API {
   }
 
   getBody() {
-    return { task_id: this.taskId };
+    return { task_ids: this.taskId };
   }
 
   getHeaders() {
