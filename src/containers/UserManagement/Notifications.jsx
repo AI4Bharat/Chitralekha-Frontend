@@ -64,7 +64,7 @@ const Notifications = () => {
     {
       title: "Daily Emails",
       name: "dailyEmail",
-      label: "Daily Mails",
+      label: "Enable daily emails for all the activities",
       tooltipTitle: `${
         formFields.dailyEmails ? "Disable" : "Enable"
       } daily mails`,
@@ -99,9 +99,13 @@ const Notifications = () => {
         {notificationOptions.map((element) => {
           return (
             <Grid className={classes.editProfileParentGrid} container>
-              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                <Typography variant="h6" textAlign="center">
-                  {element.title}
+              <Grid item xs={12} sm={12} md={3} lg={4} xl={4}>
+                <Typography variant="h6">{element.title}</Typography>
+                <Typography
+                  variant="body1"
+                  className={classes.ChangePasswordSubText}
+                >
+                  {element.label}
                 </Typography>
               </Grid>
 

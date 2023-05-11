@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  FormHelperText,
   Grid,
   IconButton,
   InputAdornment,
@@ -18,14 +19,6 @@ import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
 const ChangePassword = () => {
   const classes = LoginStyle();
 
-  const [currentPassword, setCurrentPassword] = useState({
-    value: "",
-    visibility: false,
-  });
-  const [newPassword, setNewPassword] = useState({
-    value: "",
-    visibility: false,
-  });
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -41,31 +34,40 @@ const ChangePassword = () => {
     newPassword: false,
     confirmPassword: false,
   });
+  const [error, setError] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
 
   const handleChangePassword = async () => {
-    let apiObj = new ChangePasswordAPI(
-      newPassword.value,
-      currentPassword.value
-    );
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.current_password,
-        variant: "success",
-      });
+    if (formFields.newPassword !== formFields.confirmPassword) {
+      setError({ ...error, confirmPassword: true });
     } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.current_password,
-        variant: "error",
+      let apiObj = new ChangePasswordAPI(
+        formFields.newPassword,
+        formFields.currentPassword
+      );
+
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
       });
+      const resp = await res.json();
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.current_password,
+          variant: "success",
+        });
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.current_password,
+          variant: "error",
+        });
+      }
     }
   };
 
@@ -162,6 +164,11 @@ const ChangePassword = () => {
                   ),
                 }}
               />
+              {error[item.name] && (
+                <FormHelperText error={true}>
+                  New Password and Confirm Password must match.
+                </FormHelperText>
+              )}
             </Grid>
           </Box>
         );
@@ -188,6 +195,11 @@ const ChangePassword = () => {
             variant="contained"
             sx={{ borderRadius: "8px" }}
             onClick={() => handleChangePassword()}
+            disabled={
+              !formFields.newPassword ||
+              !formFields.currentPassword ||
+              !formFields.confirmPassword
+            }
           >
             Submit
           </Button>
