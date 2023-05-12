@@ -478,12 +478,6 @@ const TaskList = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-
       setBulkSubtitleAlert(true);
       setBulkSubtitleAlertData(resp);
     } else {

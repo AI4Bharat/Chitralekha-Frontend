@@ -262,7 +262,7 @@ const EditProject = () => {
   }, []);
 
   const handleGoogleLogin = () => {
-    GoogleAuth.current.signIn().then(() => {
+    GoogleAuth.current.signIn().then(async () => {
       const token = GoogleAuth.current.currentUser.get().getAuthResponse();
 
       const data = {
@@ -275,7 +275,27 @@ const EditProject = () => {
       };
 
       const tokenObj = new StoreAccessTokenAPI(data);
-      dispatch(APITransport(tokenObj));
+      const res = await fetch(tokenObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(tokenObj.getBody()),
+        headers: tokenObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
     });
   };
 
@@ -619,21 +639,25 @@ const EditProject = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <Button
-                fullWidth
-                variant="outlined"
-                sx={{
-                  borderRadius: "4px",
-                  py: "31px",
-                  color: "#000",
-                  borderColor: "rgba(118, 118, 118, 0.3)",
-                }}
-                onClick={() => handleGoogleLogin()}
-              >
-                Allow Subtitle Upload
-              </Button>
-            </Grid>
+            {projectDetails?.managers?.some(
+              (item) => item.id === userData.id
+            ) && (
+              <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "4px",
+                    py: "31px",
+                    color: "#000",
+                    borderColor: "rgba(118, 118, 118, 0.3)",
+                  }}
+                  onClick={() => handleGoogleLogin()}
+                >
+                  Allow Subtitle Upload
+                </Button>
+              </Grid>
+            )}
 
             <Grid container direction="row" padding="32px 0 0 32px">
               <TextField
