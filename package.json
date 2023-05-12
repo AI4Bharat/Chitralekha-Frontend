@@ -16,6 +16,7 @@
     "audio-react-recorder": "^1.0.4",
     "axios": "^1.1.3",
     "duration-time-conversion": "^1.0.6",
+    "gapi-script": "^1.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mui-datatables": "^4.2.2",
