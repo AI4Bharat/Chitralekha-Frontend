@@ -33,7 +33,7 @@ const UploadAlertComponent = ({ open, message, report, onClose }) => {
           <Box>
             <Box className={classes.headerParent}>
               <Box className={classes.header}>Video Name</Box>
-              <Box className={classes.header}>Task Type</Box>
+              <Box className={classes.header}>Language</Box>
               <Box className={classes.header}>Status</Box>
               <Box className={classes.header}>Message</Box>
             </Box>
@@ -49,12 +49,16 @@ const UploadAlertComponent = ({ open, message, report, onClose }) => {
                   return (
                     <Box key={index} className={classes.contentParent}>
                       <Box className={classes.content}>{item.video_name}</Box>
-                      <Box className={classes.contentTaskType}>
-                        {item.task_type}
+                      <Box className={classes.content}>
+                        {`${
+                          item.task_type.includes("TRANSLATION")
+                            ? item.target_language
+                            : item.source_language
+                        }`}
                       </Box>
                       <Box className={classes.contentStatus}>
                         <Box className={classes.contentStatusTop}>
-                          {`${item.source_language} - ${item.target_language}`}
+                          {item.status}
                         </Box>
                         <Box>
                           {item.status === "Fail" ? (

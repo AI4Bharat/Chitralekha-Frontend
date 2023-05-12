@@ -266,7 +266,7 @@ const ProjectStyle = makeStyles({
   content: {
     padding: "20px",
     textAlign: "center",
-    width: "175px",
+    width: "160px",
   },
 
   contentTaskType: {
