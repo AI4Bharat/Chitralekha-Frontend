@@ -136,7 +136,7 @@ const LoginStyle = makeStyles({
 
   ChangePasswordSubText:{
     color: "gray", 
-    fontSize:"18px"
+    fontSize:"16px"
   },
 
   loginSecurityGrid: {

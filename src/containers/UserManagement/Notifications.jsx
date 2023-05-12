@@ -98,9 +98,9 @@ const Notifications = () => {
       <Card className={classes.editProfileParentCard}>
         {notificationOptions.map((element) => {
           return (
-            <Grid className={classes.editProfileParentGrid} container>
+            <Grid container sx={{p: "40px", justifyContent: "center"}}>
               <Grid item xs={12} sm={12} md={3} lg={4} xl={4}>
-                <Typography variant="h6">{element.title}</Typography>
+                <Typography variant="body1">{element.title}</Typography>
                 <Typography
                   variant="body1"
                   className={classes.ChangePasswordSubText}

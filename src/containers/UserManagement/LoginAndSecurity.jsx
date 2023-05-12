@@ -91,9 +91,9 @@ const LoginAndSecurity = () => {
               >
                 <Box>{item.icon}</Box>
                 <Box sx={{ ml: 1 }}>
-                  <Typography variant="h6">{item.title}</Typography>
+                  <Typography variant="body1">{item.title}</Typography>
                   <Typography
-                    variant="body1"
+                    variant="body2"
                     className={classes.ChangePasswordSubText}
                   >
                     {item.subTitle}

@@ -15,6 +15,7 @@ import { useState } from "react";
 import LoginStyle from "../../styles/loginStyle";
 import CustomizedSnackbars from "../../common/Snackbar";
 import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
+import { checkPassword } from "../../utils/utils";
 
 const ChangePassword = () => {
   const classes = LoginStyle();
@@ -43,6 +44,8 @@ const ChangePassword = () => {
   const handleChangePassword = async () => {
     if (formFields.newPassword !== formFields.confirmPassword) {
       setError({ ...error, confirmPassword: true });
+    } else if (!checkPassword(formFields.newPassword)) {
+      setError({ ...error, newPassword: true });
     } else {
       let apiObj = new ChangePasswordAPI(
         formFields.newPassword,
@@ -58,13 +61,13 @@ const ChangePassword = () => {
       if (res.ok) {
         setSnackbarInfo({
           open: true,
-          message: resp?.current_password,
+          message: resp?.message,
           variant: "success",
         });
       } else {
         setSnackbarInfo({
           open: true,
-          message: resp?.current_password,
+          message: resp?.message,
           variant: "error",
         });
       }
@@ -89,14 +92,17 @@ const ChangePassword = () => {
     {
       title: "Current Password",
       name: "currentPassword",
+      error: "",
     },
     {
       title: "New Password",
       name: "newPassword",
+      error: `Minimum length is 8 characters with combination of uppercase, lowercase, number and a special character`,
     },
     {
       title: "Confirm Password",
       name: "confirmPassword",
+      error: "New Password and Confirm Password must match.",
     },
   ];
 
@@ -108,6 +114,12 @@ const ChangePassword = () => {
     });
 
     setVisibility({
+      currentPassword: false,
+      newPassword: false,
+      confirmPassword: false,
+    });
+
+    setError({
       currentPassword: false,
       newPassword: false,
       confirmPassword: false,
@@ -128,7 +140,7 @@ const ChangePassword = () => {
             margin="10px"
           >
             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-              <Typography variant="h6" textAlign="center">
+              <Typography variant="body1" textAlign="center">
                 {item.title}
               </Typography>
             </Grid>
@@ -165,9 +177,7 @@ const ChangePassword = () => {
                 }}
               />
               {error[item.name] && (
-                <FormHelperText error={true}>
-                  New Password and Confirm Password must match.
-                </FormHelperText>
+                <FormHelperText error={true}>{item.error}</FormHelperText>
               )}
             </Grid>
           </Box>

@@ -524,3 +524,8 @@ export const getHelpList = (tab) => {
       return [];
   }
 };
+
+export const checkPassword = (str) => {
+  const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  return regex.test(str);
+};
