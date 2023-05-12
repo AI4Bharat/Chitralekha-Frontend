@@ -38,7 +38,7 @@ const ProfilePage = () => {
       <Box sx={{ mb: 2 }}>
         <Tabs value={tabValue} onChange={handleTabChange}>
           <Tab label="General" className={classes.profileTabs} />
-          <Tab label="Login & security" className={classes.profileTabs} />
+          <Tab label="Login & Security" className={classes.profileTabs} />
           <Tab label="Notifications" className={classes.profileTabs} />
         </Tabs>
       </Box>
