@@ -792,6 +792,8 @@ const TaskList = () => {
       });
       setOpenDialog(false);
       setLoading(false);
+      setRows([]);
+      setShowEditTaskBtn(false);
       FetchTaskList();
     } else {
       setDeleteTaskid(resp.task_ids);
