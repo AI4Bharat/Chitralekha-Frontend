@@ -109,13 +109,13 @@ const Header = () => {
         navigate(`/profile/${userData?.id}`);
       },
     },
-    {
-      name: "Change Password",
-      onClick: () => {
-        handleCloseUserMenu();
-        navigate(`/profile/${userData?.id}/change-password`);
-      },
-    },
+    // {
+    //   name: "Change Password",
+    //   onClick: () => {
+    //     handleCloseUserMenu();
+    //     navigate(`/profile/${userData?.id}/change-password`);
+    //   },
+    // },
     {
       name: "Logout",
       onClick: () => {
