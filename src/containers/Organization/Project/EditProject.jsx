@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -35,6 +35,8 @@ import {
   MenuProps,
 } from "../../../utils/utils";
 import { colorArray } from "../../../utils/getColors";
+import { gapi } from "gapi-script";
+import StoreAccessTokenAPI from "../../../redux/actions/api/Project/StoreAccessToken";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -241,6 +243,40 @@ const EditProject = () => {
     const { dTask, lang } = defaultTaskHandler(task);
     setDefaultTask(dTask);
     setTranslationLanguage(lang);
+  };
+
+  let GoogleAuth = useRef();
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client
+        .init({
+          clientId: process.env.REACT_APP_CLIENT_ID,
+          scope: process.env.REACT_APP_SCOPE,
+        })
+        .then(function () {
+          GoogleAuth.current = gapi.auth2.getAuthInstance();
+        });
+    };
+
+    gapi.load("client:auth2", initClient);
+  }, []);
+
+  const handleGoogleLogin = () => {
+    GoogleAuth.current.signIn().then(() => {
+      const token = GoogleAuth.current.currentUser.get().getAuthResponse();
+
+      const data = {
+        project_id: +projectId,
+        auth_token: {
+          client_id: process.env.REACT_APP_CLIENT_ID,
+          refresh_token: token.access_token,
+          client_secret: process.env.REACT_APP_CLIENT_SECRET,
+        },
+      };
+
+      const tokenObj = new StoreAccessTokenAPI(data);
+      dispatch(APITransport(tokenObj));
+    });
   };
 
   return (
@@ -581,6 +617,22 @@ const EditProject = () => {
                   ))}
                 </Select>
               </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{
+                  borderRadius: "4px",
+                  py: "31px",
+                  color: "#000",
+                  borderColor: "rgba(118, 118, 118, 0.3)",
+                }}
+                onClick={() => handleGoogleLogin()}
+              >
+                Allow Subtitle Upload
+              </Button>
             </Grid>
 
             <Grid container direction="row" padding="32px 0 0 32px">

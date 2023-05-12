@@ -27,6 +27,7 @@ const endpoints = {
 
   //Project
   project: "/project/",
+  youtube: "/youtube/",
 
   //Task
   task: "/task/",
