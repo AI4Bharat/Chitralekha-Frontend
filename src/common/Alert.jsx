@@ -6,12 +6,12 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 const AlertComponent = ({ open, message, report, onClose }) => {
   const classes = ProjectStyle();
-
+console.log(report,'report');
   return (
     <Snackbar
       open={open}
-      autoHideDuration={3000}
-      onClose={onClose}
+      // autoHideDuration={3000}
+      // onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert
@@ -60,7 +60,11 @@ const AlertComponent = ({ open, message, report, onClose }) => {
                       </Box>
                       <Box className={classes.contentStatus}>
                         <Box className={classes.contentStatusTop}>
-                          {item.language_pair}
+                        {
+                          item.task_type.includes("Translation")
+                            ? `${item.source_language} - ${item.target_language}`
+                            : item.source_language
+                        }
                         </Box>
                         <Box>
                           {item.status === "Fail" ? (
