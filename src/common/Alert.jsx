@@ -6,12 +6,12 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 const AlertComponent = ({ open, message, report, onClose }) => {
   const classes = ProjectStyle();
-console.log(report,'report');
+
   return (
     <Snackbar
       open={open}
-      // autoHideDuration={3000}
-      // onClose={onClose}
+      autoHideDuration={3000}
+      onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert

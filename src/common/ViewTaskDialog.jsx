@@ -21,6 +21,7 @@ import FetchTranscriptTypesAPI from "../redux/actions/api/Project/FetchTranscrip
 import APITransport from "../redux/actions/apitransport/apitransport";
 import moment from "moment/moment";
 import FetchTranslationTypesAPI from "../redux/actions/api/Project/FetchTranslationTypes";
+import ImportSubtitlesAPI from "../redux/actions/api/Project/ImportSubtitles";
 
 const ViewTaskDialog = ({
   open,
@@ -72,6 +73,11 @@ const ViewTaskDialog = ({
     // eslint-disable-next-line    
   }, [taskDetail]);
 
+  const uploadFileHandler = () => {
+    const apiObj = new ImportSubtitlesAPI(id, file);
+    dispatch(APITransport(apiObj));
+  }
+
   return (
     <>
       <Dialog
@@ -110,44 +116,49 @@ const ViewTaskDialog = ({
             )}
           </Box>
 
-          <Box display="flex" sx={{ mb: 4 }}>
-            <Typography
-              variant="h5"
-              width={"20%"}
-              style={{ marginTop: "12px" }}
-            >
-              Select :
-            </Typography>
-            <FormControl style={{ width: "70%" }}>
-              <InputLabel id="select-transcription-source">
-                {" "}
-                {dropDownText} Source
-              </InputLabel>
-              <Select
-                fullWidth
-                width="100%"
-                labelId="select-transcription-source"
-                multiple
-                value={transcriptSource}
-                onChange={handleChange}
-                input={
-                  <OutlinedInput label={`Select ${dropDownText} Source`} />
-                }
-                renderValue={(selected) => selected.join(", ")}
-                style={{ zIndex: 0 }}
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                {transcriptTranslationType.map((item, index) => (
-                  <MenuItem key={index} value={item.label}>
-                    <Checkbox
-                      checked={transcriptSource.indexOf(item.label) > -1}
-                    />
-                    <ListItemText primary={item.label} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+          {
+            !taskDetail.source_type.includes("Manually Uploaded") && (
+              <Box display="flex" sx={{ mb: 4 }}>
+                <Typography
+                  variant="h5"
+                  width={"20%"}
+                  style={{ marginTop: "12px" }}
+                >
+                  Select :
+                </Typography>
+                <FormControl style={{ width: "70%" }}>
+                  <InputLabel id="select-transcription-source">
+                    {" "}
+                    {dropDownText} Source
+                  </InputLabel>
+                  <Select
+                    fullWidth
+                    width="100%"
+                    labelId="select-transcription-source"
+                    multiple
+                    value={transcriptSource}
+                    onChange={handleChange}
+                    input={
+                      <OutlinedInput label={`Select ${dropDownText} Source`} />
+                    }
+                    renderValue={(selected) => selected.join(", ")}
+                    style={{ zIndex: 0 }}
+                    inputProps={{ "aria-label": "Without label" }}
+                  >
+                    {transcriptTranslationType.map((item, index) => (
+                      <MenuItem key={index} value={item.label}>
+                        <Checkbox
+                          checked={transcriptSource.indexOf(item.label) > -1}
+                        />
+                        <ListItemText primary={item.label} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            )
+          }
+
 
           {/* <Box display="flex" sx={{ mb: 3 }}>
             <Typography variant="h5" width={"25%"}>
@@ -190,7 +201,7 @@ const ViewTaskDialog = ({
             </FormControl>
           </Box> */}
 
-          {transcriptSource.includes("Manually Uploaded") && (
+          {(transcriptSource.includes("Manually Uploaded") || taskDetail.source_type.includes("Manually Uploaded")) && (
             <Box display="flex" sx={{ mb: 3 }} alignItems="center">
               <Typography variant="h5" width={"25%"}>
                 Upload SRT:
@@ -237,24 +248,36 @@ const ViewTaskDialog = ({
           >
             Cancel
           </Button>
-          {taskDetail.task_type === "TRANSCRIPTION_EDIT" && (
-            <Button
-              variant="contained"
-              sx={{ borderRadius: 2 }}
-              onClick={() => compareHandler(id, transcriptSource, false)}
-            >
-              Compare
-            </Button>
-          )}
-          {taskDetail.task_type === "TRANSLATION_EDIT" && (
-            <Button
-              variant="contained"
-              sx={{ borderRadius: 2 }}
-              onClick={() => compareHandler(id, transcriptSource, true)}
-            >
-              Submit
-            </Button>
-          )}
+          {
+            taskDetail.source_type.includes("Manually uploaded") ?
+              (<Button
+                variant="contained"
+                sx={{ borderRadius: 2 }}
+                onClick={() => uploadFileHandler()}
+              >
+                Upload
+              </Button>)
+              : (<>
+                {taskDetail.task_type === "TRANSCRIPTION_EDIT" && (
+                  <Button
+                    variant="contained"
+                    sx={{ borderRadius: 2 }}
+                    onClick={() => compareHandler(id, transcriptSource, false)}
+                  >
+                    Compare
+                  </Button>
+                )}
+                {taskDetail.task_type === "TRANSLATION_EDIT" && (
+                  <Button
+                    variant="contained"
+                    sx={{ borderRadius: 2 }}
+                    onClick={() => compareHandler(id, transcriptSource, true)}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </>)}
+
         </DialogActions>
       </Dialog>
     </>
