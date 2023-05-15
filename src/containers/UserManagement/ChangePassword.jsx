@@ -16,9 +16,11 @@ import LoginStyle from "../../styles/loginStyle";
 import CustomizedSnackbars from "../../common/Snackbar";
 import { checkPassword } from "../../utils/utils";
 import UpdateMyPasswordAPI from "../../redux/actions/api/User/UpdateMyPassword";
+import { useParams } from "react-router-dom";
 
 const ChangePassword = () => {
   const classes = LoginStyle();
+  const { id } = useParams();
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -48,6 +50,7 @@ const ChangePassword = () => {
       setError({ ...error, newPassword: true });
     } else {
       let apiObj = new UpdateMyPasswordAPI(
+        id,
         formFields.newPassword,
         formFields.currentPassword
       );

@@ -2,11 +2,12 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 
 export default class UpdateMyPasswordAPI extends API {
-  constructor(newPassword, currentPassword, timeout = 2000) {
+  constructor(id, newPassword, currentPassword, timeout = 2000) {
     super("PATCH", timeout, false);
     this.newPassword = newPassword;
     this.currentPassword = currentPassword;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.changePassword}`;
+    this.id = id;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.getUserDetails}${id}/update_my_password/`;
   }
 
   processResponse(res) {
