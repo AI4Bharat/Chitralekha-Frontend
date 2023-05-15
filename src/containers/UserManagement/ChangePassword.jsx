@@ -14,8 +14,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import LoginStyle from "../../styles/loginStyle";
 import CustomizedSnackbars from "../../common/Snackbar";
-import ChangePasswordAPI from "../../redux/actions/api/User/ChangePassword";
 import { checkPassword } from "../../utils/utils";
+import UpdateMyPasswordAPI from "../../redux/actions/api/User/UpdateMyPassword";
 
 const ChangePassword = () => {
   const classes = LoginStyle();
@@ -47,13 +47,13 @@ const ChangePassword = () => {
     } else if (!checkPassword(formFields.newPassword)) {
       setError({ ...error, newPassword: true });
     } else {
-      let apiObj = new ChangePasswordAPI(
+      let apiObj = new UpdateMyPasswordAPI(
         formFields.newPassword,
         formFields.currentPassword
       );
 
       const res = await fetch(apiObj.apiEndPoint(), {
-        method: "POST",
+        method: "PATCH",
         body: JSON.stringify(apiObj.getBody()),
         headers: apiObj.getHeaders().headers,
       });
