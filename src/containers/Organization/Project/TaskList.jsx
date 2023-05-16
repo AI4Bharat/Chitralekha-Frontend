@@ -781,7 +781,7 @@ const TaskList = () => {
       }),
       customBodyRender: (_value, tableMeta) => {
         return (
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {renderUploadButton(tableMeta)}
             {renderUpdateTaskButton(tableMeta)}
             {renderViewButton(tableMeta)}

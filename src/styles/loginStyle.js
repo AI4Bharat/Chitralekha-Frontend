@@ -142,6 +142,10 @@ const LoginStyle = makeStyles({
   loginSecurityGrid: {
     flexDirection: "column",
     margin: "40px 0 0 0",
+  },
+
+  inputProfile: {
+    fontSize: "1rem",
   }
 })
 

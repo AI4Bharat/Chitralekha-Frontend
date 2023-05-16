@@ -271,6 +271,7 @@ const EditProfile = () => {
         onChange={handleFieldChange}
         disabled={!canEdit[name]}
         InputProps={{
+          className: classes.inputProfile,
           endAdornment: name === "email" && enableVerifyEmail && (
             <InputAdornment position="end">
               <Button
@@ -302,6 +303,11 @@ const EditProfile = () => {
           MenuProps={MenuProps}
           onChange={handleFieldChange}
           disabled={getDisabledOption(name, canEdit[name])}
+          sx={{
+            "& .MuiSelect-select": {
+              fontSize: "1rem !important",
+            },
+          }}
           renderValue={(selected) => {
             if (multiple) {
               return (
@@ -359,7 +365,7 @@ const EditProfile = () => {
           return (
             <Grid className={classes.editProfileParentGrid} container>
               <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                <Typography variant="body1">{element.title}</Typography>
+                <Typography variant="body1" sx={{fontSize: "1rem"}}>{element.title}</Typography>
               </Grid>
 
               <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>

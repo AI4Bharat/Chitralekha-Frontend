@@ -143,7 +143,7 @@ const ChangePassword = () => {
             margin="10px"
           >
             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-              <Typography variant="body1" textAlign="center">
+              <Typography variant="body1" sx={{fontSize: "1rem"}}>
                 {item.title}
               </Typography>
             </Grid>
@@ -159,6 +159,7 @@ const ChangePassword = () => {
                   })
                 }
                 InputProps={{
+                  className: classes.inputProfile,
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -197,7 +198,7 @@ const ChangePassword = () => {
           <Button
             autoFocus
             variant="outlined"
-            sx={{ borderRadius: "8px", mr: 2 }}
+            sx={{ borderRadius: "8px", mr: 2, fontSize: "16px" }}
             onClick={() => handleClearFields()}
           >
             Clear
@@ -206,7 +207,7 @@ const ChangePassword = () => {
           <Button
             autoFocus
             variant="contained"
-            sx={{ borderRadius: "8px" }}
+            sx={{ borderRadius: "8px", fontSize: "16px" }}
             onClick={() => handleChangePassword()}
             disabled={
               !formFields.newPassword ||
