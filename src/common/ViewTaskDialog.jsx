@@ -117,7 +117,7 @@ const ViewTaskDialog = ({
           </Box>
 
           {
-            !taskDetail.source_type.includes("Manually Uploaded") && (
+            !taskDetail?.source_type?.includes("Manually Uploaded") && (
               <Box display="flex" sx={{ mb: 4 }}>
                 <Typography
                   variant="h5"
@@ -201,7 +201,7 @@ const ViewTaskDialog = ({
             </FormControl>
           </Box> */}
 
-          {(transcriptSource.includes("Manually Uploaded") || taskDetail.source_type.includes("Manually Uploaded")) && (
+          {(transcriptSource.includes("Manually Uploaded") || taskDetail?.source_type?.includes("Manually Uploaded")) && (
             <Box display="flex" sx={{ mb: 3 }} alignItems="center">
               <Typography variant="h5" width={"25%"}>
                 Upload SRT:
@@ -249,7 +249,7 @@ const ViewTaskDialog = ({
             Cancel
           </Button>
           {
-            taskDetail.source_type.includes("Manually uploaded") ?
+            taskDetail?.source_type?.includes("Manually uploaded") ?
               (<Button
                 variant="contained"
                 sx={{ borderRadius: 2 }}
