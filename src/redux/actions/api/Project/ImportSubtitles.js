@@ -3,7 +3,7 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 
 export default class ImportSubtitlesAPI extends API {
   constructor(id, file, timeout = 2000) {
-    super("POST", timeout, false);
+    super("MULTIPART", timeout, false);
     this.id = id;
     this.file = file;
     this.endpoint = `${super.apiEndPointAuto()}${
@@ -22,7 +22,7 @@ export default class ImportSubtitlesAPI extends API {
     return this.endpoint;
   }
 
-  getFormData() {
+  getFormData () {
     const data = new FormData();
     data.append("subtitles", this.file);
 

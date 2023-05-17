@@ -47,6 +47,15 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
   const TranslationTypes = useSelector(
     (state) => state.getTranslationTypes.data
   );
+  const importApiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    setSnackbarInfo({
+      open: true,
+      variant: importApiStatus?.error ? "error" : "success",
+      message: importApiStatus.message,
+    });
+  }, [importApiStatus]);
 
   const transcriptTranslationType =
     taskDetail.task_type === "TRANSCRIPTION_EDIT"
@@ -75,28 +84,7 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
 
   const uploadFileHandler = async () => {
     const apiObj = new ImportSubtitlesAPI(id, file);
-    // dispatch(APITransport(apiObj));
-
-    fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: apiObj.getFormData(),
-    }).then(async (res) => {
-      let resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    });
+    dispatch(APITransport(apiObj));
   };
 
   const renderSnackBar = () => {
