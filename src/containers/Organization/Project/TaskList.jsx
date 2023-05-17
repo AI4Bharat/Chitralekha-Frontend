@@ -40,6 +40,7 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import UploadIcon from "@mui/icons-material/Upload";
 
 //Apis
 import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
@@ -63,6 +64,8 @@ import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownlo
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
 import TableStyles from "../../../styles/tableStyles";
 import { taskListColumns } from "../../../config/tableColumns";
+import UploadToYoutubeAPI from "../../../redux/actions/api/Project/UploadToYoutube";
+import UploadAlertComponent from "../../../common/UploadAlertComponent";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -110,6 +113,8 @@ const TaskList = () => {
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
+  const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
+  const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -461,6 +466,29 @@ const TaskList = () => {
     }
   };
 
+  const handleUploadSubtitle = async (id) => {
+    const apiObj = new UploadToYoutubeAPI(id);
+
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setBulkSubtitleAlert(true);
+      setBulkSubtitleAlertData(resp);
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
+  };
+
   const renderViewButton = (tableData) => {
     return (
       tableData.rowData[16]?.View && (
@@ -470,7 +498,6 @@ const TaskList = () => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <PreviewIcon />
@@ -534,6 +561,21 @@ const TaskList = () => {
             color="error"
           >
             <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      )
+    );
+  };
+
+  const renderUploadButton = (tableData) => {
+    return (
+      tableData.rowData[16]?.Upload && (
+        <Tooltip title="Upload Subtitles to Youtube">
+          <IconButton
+            color="primary"
+            onClick={() => handleUploadSubtitle([tableData.rowData[0]])}
+          >
+            <UploadIcon />
           </IconButton>
         </Tooltip>
       )
@@ -738,7 +780,8 @@ const TaskList = () => {
       }),
       customBodyRender: (_value, tableMeta) => {
         return (
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            {renderUploadButton(tableMeta)}
             {renderUpdateTaskButton(tableMeta)}
             {renderViewButton(tableMeta)}
             {renderEditButton(tableMeta)}
@@ -882,6 +925,14 @@ const TaskList = () => {
         setOpen(true);
         setTasktype("TRANSLATION_EDIT");
         setIsBulkTaskDownload(true);
+      },
+      style: { marginRight: "auto" },
+    },
+    {
+      title: "Bulk Subtitle Upload",
+      icon: <UploadIcon />,
+      onClick: () => {
+        handleUploadSubtitle(selectedBulkTaskid.split(","));
       },
       style: { marginRight: "auto" },
     },
@@ -1045,6 +1096,8 @@ const TaskList = () => {
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
           id={currentTaskDetails[0]}
+          snackbar={snackbar} 
+          setSnackbarInfo={setSnackbarInfo}
         />
       )}
 
@@ -1110,6 +1163,15 @@ const TaskList = () => {
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
+        />
+      )}
+
+      {bulkSubtitleAlert && (
+        <UploadAlertComponent
+          open={bulkSubtitleAlert}
+          onClose={() => setBulkSubtitleAlert(false)}
+          message={bulkSubtitleAlertData.message}
+          report={bulkSubtitleAlertData}
         />
       )}
     </>

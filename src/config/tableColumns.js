@@ -399,6 +399,7 @@ export const taskListColumns = [
           <Box
             style={{
               color: tableMeta.rowData[11] ? "" : "grey",
+              textAlign: "right"
             }}
           >
             {value}

@@ -4,7 +4,7 @@ import ProjectStyle from "../styles/projectStyle";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
-const AlertComponent = ({ open, message, report, onClose }) => {
+const UploadAlertComponent = ({ open, message, report, onClose }) => {
   const classes = ProjectStyle();
 
   return (
@@ -32,39 +32,33 @@ const AlertComponent = ({ open, message, report, onClose }) => {
         {report?.length > 0 && (
           <Box>
             <Box className={classes.headerParent}>
-              <Box className={classes.header} style={{ width: "28%" }}>
-                Task Type
-              </Box>
+              <Box className={classes.header}>Video Name</Box>
+              <Box className={classes.header}>Language</Box>
               <Box className={classes.header}>Status</Box>
-              <Box className={classes.header} style={{ width: "50%" }}>
-                Message
-              </Box>
+              <Box className={classes.header}>Message</Box>
             </Box>
 
             <Box
               style={{
                 maxHeight: "200px",
-                overflowY:
-                report?.length > 3 ? "scroll" : "",
+                overflowY: report?.length > 3 ? "scroll" : "",
               }}
             >
               <Box display="flex" flexDirection="column" backgroundColor="#fff">
                 {report?.map((item, index) => {
                   return (
                     <Box key={index} className={classes.contentParent}>
-                      <Box
-                        className={classes.contentTaskType}
-                        style={{ width: "25%" }}
-                      >
-                        {item.task_type}
+                      <Box className={classes.content}>{item.video_name}</Box>
+                      <Box className={classes.content}>
+                        {`${
+                          item.task_type.includes("TRANSLATION")
+                            ? item.target_language
+                            : item.source_language
+                        }`}
                       </Box>
                       <Box className={classes.contentStatus}>
                         <Box className={classes.contentStatusTop}>
-                        {
-                          item.task_type.includes("Translation")
-                            ? `${item.source_language} - ${item.target_language}`
-                            : item.source_language
-                        }
+                          {item.status}
                         </Box>
                         <Box>
                           {item.status === "Fail" ? (
@@ -74,7 +68,7 @@ const AlertComponent = ({ open, message, report, onClose }) => {
                           )}
                         </Box>
                       </Box>
-                      <Box className={classes.content2}>{item.message}</Box>
+                      <Box className={classes.content}>{item.message}</Box>
                     </Box>
                   );
                 })}
@@ -87,4 +81,4 @@ const AlertComponent = ({ open, message, report, onClose }) => {
   );
 };
 
-export default AlertComponent;
+export default UploadAlertComponent;

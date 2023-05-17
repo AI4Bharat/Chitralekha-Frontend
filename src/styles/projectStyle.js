@@ -257,10 +257,16 @@ const ProjectStyle = makeStyles({
   },
 
   header: {
-    width: "30%",
     fontWeight: "600",
-    padding: "10px",
+    padding: "20px",
     textAlign: "center",
+    width: "135px",
+  },
+
+  content: {
+    padding: "20px",
+    textAlign: "center",
+    width: "160px",
   },
 
   contentTaskType: {
@@ -299,6 +305,7 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#F8F8FA !important",
     color: "rgba(0, 0, 0, 0.87)",
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    alignItems: "center"
   },
 
   message: {

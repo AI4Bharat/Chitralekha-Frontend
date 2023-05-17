@@ -88,7 +88,11 @@ const AddOrganizationMember = ({
               MenuProps={MenuProps}
             >
               {userRoles.map((item, index) => {
-                return <MenuItem key={index} value={item.value}>{item.label}</MenuItem>;
+                return (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                );
               })}
             </Select>
           </FormControl>
@@ -98,7 +102,14 @@ const AddOrganizationMember = ({
       </DialogContent>
 
       <DialogActions style={{ padding: "0 24px 24px 0" }}>
-        <Button onClick={handleUserDialogClose} sx={{ borderRadius: "8px" }}>
+        <Button
+          onClick={() => {
+            handleUserDialogClose();
+            handleTextField("");
+            handleSelectField("");
+          }}
+          sx={{ borderRadius: "8px" }}
+        >
           Cancel
         </Button>
 

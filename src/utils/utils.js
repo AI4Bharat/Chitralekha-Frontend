@@ -194,6 +194,17 @@ export const roles = [
   },
 ];
 
+export const availability = [
+  {
+    label: "true",
+    value: 1,
+  },
+  {
+    label: "false",
+    value: 0,
+  },
+];
+
 export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
   const editable = document.activeElement.getAttribute("contenteditable");
@@ -512,4 +523,9 @@ export const getHelpList = (tab) => {
     default:
       return [];
   }
+};
+
+export const checkPassword = (str) => {
+  const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  return regex.test(str);
 };

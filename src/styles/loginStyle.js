@@ -101,7 +101,52 @@ const LoginStyle = makeStyles({
         flexWrap: "wrap",
         width: "100%",
       },
-     
+  
+  profileTabs: {
+    fontSize: 17,
+    fontWeight: "700",
+    marginRight: "28px !important",
+  },
+
+  editProfileParentCard: {
+    width: "100%",
+    borderRadius: "5px",
+    marginBottom: "50px",
+  },
+
+  editProfileParentGrid: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottom: "1px solid rgb(224 224 224)",
+    padding: "24px",
+  },
+
+  editProfileBtn: {
+    borderRadius: "5px",
+    lineHeight: "1px",
+    fontSize: "16px",
+    float: "right",
+    width: "120px",
+  },
+
+  editIcon: {
+    width: "15px",
+    marginRight: "5px",
+  },
+
+  ChangePasswordSubText:{
+    color: "gray", 
+    fontSize:"16px"
+  },
+
+  loginSecurityGrid: {
+    flexDirection: "column",
+    margin: "40px 0 0 0",
+  },
+
+  inputProfile: {
+    fontSize: "1rem",
+  }
 })
 
 export default  LoginStyle

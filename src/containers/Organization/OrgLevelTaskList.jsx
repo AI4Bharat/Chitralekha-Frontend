@@ -1330,6 +1330,8 @@ const OrgLevelTaskList = () => {
 
           // }}
           id={currentTaskDetails[0]}
+          snackbar={snackbar} 
+          setSnackbarInfo={setSnackbarInfo}
         />
       )}
 
