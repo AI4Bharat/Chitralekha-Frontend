@@ -498,7 +498,6 @@ const TaskList = () => {
               setOpenViewTaskDialog(true);
               setCurrentTaskDetails(tableData.rowData);
             }}
-            disabled={!tableData.rowData[11]}
             color="primary"
           >
             <PreviewIcon />
