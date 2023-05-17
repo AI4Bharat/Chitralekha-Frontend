@@ -24,15 +24,17 @@ import FetchTranslationTypesAPI from "../redux/actions/api/Project/FetchTranslat
 import ImportSubtitlesAPI from "../redux/actions/api/Project/ImportSubtitles";
 import CustomizedSnackbars from "./Snackbar";
 
-const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
+const ViewTaskDialog = ({
+  open,
+  handleClose,
+  compareHandler,
+  id,
+  snackbar,
+  setSnackbarInfo,
+}) => {
   const dispatch = useDispatch();
   const [transcriptSource, setTranscriptSource] = useState([]);
   const [file, setFile] = useState();
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [dropDownText, setdropDownText] = useState("");
 
   const handleChange = (event) => {
@@ -85,6 +87,10 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
   const uploadFileHandler = async () => {
     const apiObj = new ImportSubtitlesAPI(id, file);
     dispatch(APITransport(apiObj));
+
+    setTimeout(() => {
+      handleClose();
+    }, 1000);
   };
 
   const renderSnackBar = () => {

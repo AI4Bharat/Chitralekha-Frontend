@@ -1096,6 +1096,8 @@ const TaskList = () => {
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
           id={currentTaskDetails[0]}
+          snackbar={snackbar} 
+          setSnackbarInfo={setSnackbarInfo}
         />
       )}
 
