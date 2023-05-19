@@ -46,6 +46,7 @@ import AlertComponent from "../../../common/Alert";
 import { useRef } from "react";
 import UploadCSVAPI from "../../../redux/actions/api/Project/UploadCSV";
 import CSVAlertComponent from "../../../common/csvUploadFailAlert";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -416,6 +417,17 @@ const Project = () => {
                   onClick={() => csvUpload.current.click()}
                 >
                   Bulk Video Upload
+                  <Tooltip title="Download sample CSV">
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("here");
+                      }}
+                      sx={{ color: "white" }}
+                    >
+                      <InfoOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
                   <input
                     type="file"
                     style={{ display: "none" }}
