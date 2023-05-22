@@ -6,6 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import {
   Checkbox,
   FormControl,
+  FormHelperText,
   InputLabel,
   ListItemText,
   MenuItem,
@@ -31,6 +32,7 @@ const ViewTaskDialog = ({
   id,
   snackbar,
   setSnackbarInfo,
+  fetchTaskList,
 }) => {
   const dispatch = useDispatch();
   const [transcriptSource, setTranscriptSource] = useState([]);
@@ -50,7 +52,7 @@ const ViewTaskDialog = ({
     (state) => state.getTranslationTypes.data
   );
   const importApiStatus = useSelector((state) => state.apiStatus);
-
+  console.log(taskDetail, "taskDetail");
   useEffect(() => {
     setSnackbarInfo({
       open: true,
@@ -89,6 +91,7 @@ const ViewTaskDialog = ({
     dispatch(APITransport(apiObj));
 
     setTimeout(() => {
+      fetchTaskList();
       handleClose();
     }, 1000);
   };
@@ -268,6 +271,16 @@ const ViewTaskDialog = ({
           )}
         </DialogContent>
         <DialogActions style={{ padding: "24px" }}>
+          {taskDetail?.source_type?.includes("Manually Uploaded") &&
+            taskDetail?.is_active && (
+              <Box sx={{ marginRight: "auto" }}>
+                <Typography variant="body2" fontWeight={"bold"}>
+                  *Subtitles have already been added, uploading new file will
+                  overwrite existing one.
+                </Typography>
+              </Box>
+            )}
+
           <Button
             autoFocus
             variant="contained"
