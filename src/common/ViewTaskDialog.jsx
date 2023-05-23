@@ -24,15 +24,18 @@ import FetchTranslationTypesAPI from "../redux/actions/api/Project/FetchTranslat
 import ImportSubtitlesAPI from "../redux/actions/api/Project/ImportSubtitles";
 import CustomizedSnackbars from "./Snackbar";
 
-const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
+const ViewTaskDialog = ({
+  open,
+  handleClose,
+  compareHandler,
+  id,
+  snackbar,
+  setSnackbarInfo,
+  fetchTaskList,
+}) => {
   const dispatch = useDispatch();
   const [transcriptSource, setTranscriptSource] = useState([]);
   const [file, setFile] = useState();
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [dropDownText, setdropDownText] = useState("");
 
   const handleChange = (event) => {
@@ -55,6 +58,8 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
       variant: importApiStatus?.error ? "error" : "success",
       message: importApiStatus.message,
     });
+    
+    // eslint-disable-next-line
   }, [importApiStatus]);
 
   const transcriptTranslationType =
@@ -85,6 +90,11 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
   const uploadFileHandler = async () => {
     const apiObj = new ImportSubtitlesAPI(id, file);
     dispatch(APITransport(apiObj));
+
+    setTimeout(() => {
+      fetchTaskList();
+      handleClose();
+    }, 1000);
   };
 
   const renderSnackBar = () => {
@@ -262,6 +272,16 @@ const ViewTaskDialog = ({ open, handleClose, compareHandler, id }) => {
           )}
         </DialogContent>
         <DialogActions style={{ padding: "24px" }}>
+          {taskDetail?.source_type?.includes("Manually Uploaded") &&
+            taskDetail?.is_active && (
+              <Box sx={{ marginRight: "auto" }}>
+                <Typography variant="body2" fontWeight={"bold"}>
+                  *Subtitles have already been added, uploading new file will
+                  overwrite existing one.
+                </Typography>
+              </Box>
+            )}
+
           <Button
             autoFocus
             variant="contained"

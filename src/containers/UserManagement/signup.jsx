@@ -46,6 +46,7 @@ const SignUp = () => {
   const [values, setValues] = useState({
     UserName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     firstName: "",
@@ -64,10 +65,12 @@ const SignUp = () => {
     firstName: false,
     lastName: false,
     email: false,
+    phone: false,
     password: false,
     confirmPassword: false,
     languages: false,
   });
+  const [phoneErrorText, setPhoneErrorText] = useState("");
 
   useEffect(() => {
     if (userInfo.email) {
@@ -93,8 +96,18 @@ const SignUp = () => {
   };
 
   const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-    setError({ ...error, [prop]: false });
+    if (prop === "phone") {
+      const regex = /^[0-9\b]+$/;
+      const test = regex.test(event.target.value);
+
+      if (event.target.value === "" || test) {
+        setValues({ ...values, [prop]: event.target.value });
+        setError({ ...error, [prop]: false });
+      }
+    } else {
+      setValues({ ...values, [prop]: event.target.value });
+      setError({ ...error, [prop]: false });
+    }
   };
 
   useEffect(() => {
@@ -114,6 +127,7 @@ const SignUp = () => {
       username: values.UserName,
       email: values.email,
       password: values.password,
+      phone: values.phone,
       first_name: values.firstName,
       last_name: values.lastName,
       languages: values.languages.map((item) => item.label),
@@ -146,6 +160,7 @@ const SignUp = () => {
             UserName: "",
             email: "",
             password: "",
+            phone: "",
             confirmPassword: "",
             firstName: "",
             lastName: "",
@@ -179,6 +194,12 @@ const SignUp = () => {
   const HandleSubmitValidate = () => {
     if (!ValidateEmail(values.email)) {
       setError({ ...error, email: true });
+    } else if (values.phone === "") {
+      setError({ ...error, phone: true });
+      setPhoneErrorText("Please enter a phone number");
+    } else if (values.phone.length === 10) {
+      setError({ ...error, phone: true });
+      setPhoneErrorText("Please enter a valid phone number");
     } else if (values.UserName === "") {
       setError({ ...error, userName: true });
     } else if (values.firstName === "") {
@@ -236,6 +257,18 @@ const SignUp = () => {
             error={error.email ? true : false}
             value={values.email}
             helperText={error.email ? "Invalid email" : ""}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <OutlinedTextField
+            fullWidth
+            name="phone"
+            placeholder="Enter your Phone Number."
+            onChange={handleChange("phone")}
+            error={error.phone ? true : false}
+            value={values.phone}
+            helperText={error.phone ? phoneErrorText : ""}
           />
         </Grid>
 
