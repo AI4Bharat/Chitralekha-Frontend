@@ -108,7 +108,7 @@ const OrgLevelTaskList = () => {
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
   const [options, setOptions] = useState({});
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(10);
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
