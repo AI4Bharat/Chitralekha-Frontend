@@ -6,7 +6,6 @@ import DialogContent from "@mui/material/DialogContent";
 import {
   Checkbox,
   FormControl,
-  FormHelperText,
   InputLabel,
   ListItemText,
   MenuItem,
@@ -52,13 +51,15 @@ const ViewTaskDialog = ({
     (state) => state.getTranslationTypes.data
   );
   const importApiStatus = useSelector((state) => state.apiStatus);
-  console.log(taskDetail, "taskDetail");
+
   useEffect(() => {
     setSnackbarInfo({
       open: true,
       variant: importApiStatus?.error ? "error" : "success",
       message: importApiStatus.message,
     });
+    
+    // eslint-disable-next-line
   }, [importApiStatus]);
 
   const transcriptTranslationType =

@@ -421,7 +421,9 @@ const Project = () => {
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log("here");
+                        window.location.assign(
+                          `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
+                        );
                       }}
                       sx={{ color: "white" }}
                     >
