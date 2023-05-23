@@ -54,12 +54,12 @@ import clearComparisonTable from "../../redux/actions/api/Project/ClearCompariso
 import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
 import DeleteDialog from "../../common/DeleteDialog";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchOrgTaskList from "../../redux/actions/api/Organization/FetchOrgTaskList";
 import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
 import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
 import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceoverTask";
+import FetchPaginatedOrgTaskListAPI from "../../redux/actions/api/Organization/FetchPaginatedOrgTaskList";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
@@ -107,6 +107,8 @@ const OrgLevelTaskList = () => {
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
   const [options, setOptions] = useState({});
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -121,7 +123,7 @@ const OrgLevelTaskList = () => {
 
   const fetchTaskList = () => {
     setLoading(true);
-    const apiObj = new FetchOrgTaskList(orgId);
+    const apiObj = new FetchPaginatedOrgTaskListAPI(orgId, offset + 1, limit);
     dispatch(APITransport(apiObj));
   };
 
@@ -158,7 +160,7 @@ const OrgLevelTaskList = () => {
       fetchTaskList();
     }
     // eslint-disable-next-line
-  }, [orgId]);
+  }, [orgId, offset, limit]);
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
@@ -677,7 +679,7 @@ const OrgLevelTaskList = () => {
       ? filterData?.map((item, i) => {
           const status =
             item.status_label && statusColor(item.status_label)?.element;
-            console.log("item", item)
+          console.log("item", item);
           return [
             item.id,
             item.task_type,
@@ -711,7 +713,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: "exclude",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
       },
     },
@@ -731,7 +733,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -754,7 +756,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -779,7 +781,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: false,
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -803,7 +805,7 @@ const OrgLevelTaskList = () => {
         display: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -816,7 +818,7 @@ const OrgLevelTaskList = () => {
             </Box>
           );
         },
-      }
+      },
     },
     {
       name: "src_language",
@@ -834,7 +836,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -865,7 +867,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -888,7 +890,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -925,7 +927,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -949,7 +951,7 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: true,
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -973,10 +975,10 @@ const OrgLevelTaskList = () => {
         align: "center",
         display: true,
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
-          console.log("valueee",value)
+          console.log("valueee", value);
           return (
             <Box
               style={{
@@ -998,7 +1000,7 @@ const OrgLevelTaskList = () => {
         display: "exclude",
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1028,7 +1030,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps
+          className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
           return (
@@ -1183,15 +1185,30 @@ const OrgLevelTaskList = () => {
         ? "multiple"
         : "none",
       selectToolbarPlacement: "none",
+      serverSide: true,
+      page: offset,
       rowsSelected: rows,
+      rowsPerPage: limit,
+      count: taskList.total_count,
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
       },
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case "changePage":
+            setOffset(tableState.page);
+            break;
+          case "changeRowsPerPage":
+            setLimit(tableState.rowsPerPage);
+            break;
+          default:
+        }
+      },
     };
 
     setOptions(option);
-    
+
     // eslint-disable-next-line
   }, [loading]);
 
@@ -1306,7 +1323,7 @@ const OrgLevelTaskList = () => {
       });
     }
   };
-//console.log(result);
+  //console.log(result);
   return (
     <>
       <Grid>{renderSnackBar()}</Grid>
