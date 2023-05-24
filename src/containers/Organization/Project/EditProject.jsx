@@ -279,6 +279,7 @@ const EditProject = () => {
         });
       }
     },
+    scope: process.env.REACT_APP_SCOPE,
     flow: 'auth-code',
   });
 
