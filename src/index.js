@@ -8,6 +8,7 @@ import themeDefault from "./theme/theme";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { createRoot } from "react-dom/client";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
@@ -17,7 +18,9 @@ root.render(
     <ThemeProvider theme={themeDefault}>
       <StyledEngineProvider injectFirst>
         <LocalizationProvider dateAdapter={AdapterMoment}>
-          <App />
+          <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENT_ID}>
+            <App />
+          </GoogleOAuthProvider>
         </LocalizationProvider>
       </StyledEngineProvider>
     </ThemeProvider>

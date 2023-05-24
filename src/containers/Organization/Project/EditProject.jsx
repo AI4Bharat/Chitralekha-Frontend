@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -35,8 +35,8 @@ import {
   MenuProps,
 } from "../../../utils/utils";
 import { colorArray } from "../../../utils/getColors";
-import { gapi } from "gapi-script";
 import StoreAccessTokenAPI from "../../../redux/actions/api/Project/StoreAccessToken";
+import { useGoogleLogin } from '@react-oauth/google';
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -245,31 +245,13 @@ const EditProject = () => {
     setTranslationLanguage(lang);
   };
 
-  let GoogleAuth = useRef();
-  useEffect(() => {
-    const initClient = () => {
-      gapi.client
-        .init({
-          clientId: process.env.REACT_APP_CLIENT_ID,
-          scope: process.env.REACT_APP_SCOPE,
-        })
-        .then(function () {
-          GoogleAuth.current = gapi.auth2.getAuthInstance();
-        });
-    };
-
-    gapi.load("client:auth2", initClient);
-  }, []);
-
-  const handleGoogleLogin = () => {
-    GoogleAuth.current.signIn().then(async () => {
-      const token = GoogleAuth.current.currentUser.get().getAuthResponse();
-
-      const data = {
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (response) => {
+        const data = {
         project_id: +projectId,
         auth_token: {
           client_id: process.env.REACT_APP_CLIENT_ID,
-          refresh_token: token.access_token,
+          refresh_token: response.code,
           client_secret: process.env.REACT_APP_CLIENT_SECRET,
         },
       };
@@ -296,8 +278,9 @@ const EditProject = () => {
           variant: "error",
         });
       }
-    });
-  };
+    },
+    flow: 'auth-code',
+  });
 
   return (
     <>
