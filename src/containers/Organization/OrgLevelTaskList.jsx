@@ -679,7 +679,6 @@ const OrgLevelTaskList = () => {
       ? filterData?.map((item, i) => {
           const status =
             item.status_label && statusColor(item.status_label)?.element;
-          console.log("item", item);
           return [
             item.id,
             item.task_type,
@@ -1185,26 +1184,26 @@ const OrgLevelTaskList = () => {
         ? "multiple"
         : "none",
       selectToolbarPlacement: "none",
-      serverSide: true,
-      page: offset,
+      // serverSide: true,
+      // page: offset,
       rowsSelected: rows,
-      rowsPerPage: limit,
-      count: taskList.total_count,
+      // rowsPerPage: limit,
+      // count: taskList.total_count,
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
       },
-      onTableChange: (action, tableState) => {
-        switch (action) {
-          case "changePage":
-            setOffset(tableState.page);
-            break;
-          case "changeRowsPerPage":
-            setLimit(tableState.rowsPerPage);
-            break;
-          default:
-        }
-      },
+      // onTableChange: (action, tableState) => {
+      //   switch (action) {
+      //     case "changePage":
+      //       setOffset(tableState.page);
+      //       break;
+      //     case "changeRowsPerPage":
+      //       setLimit(tableState.rowsPerPage);
+      //       break;
+      //     default:
+      //   }
+      // },
     };
 
     setOptions(option);
@@ -1323,7 +1322,7 @@ const OrgLevelTaskList = () => {
       });
     }
   };
-  //console.log(result);
+
   return (
     <>
       <Grid>{renderSnackBar()}</Grid>

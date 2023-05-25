@@ -9,7 +9,8 @@ export default class FetchPaginatedOrgTaskListAPI extends API {
     this.id = id;
     this.offset = offset;
     this.limit = limit;
-    this.getTargetEndpoint = `${ENDPOINTS.organization}${id}/list_org_tasks/?limit=${this.limit}&offset=${this.offset}`;
+    this.getTargetEndpoint = `${ENDPOINTS.organization}${this.id}/list_org_tasks/`
+    // this.getTargetEndpoint = `${ENDPOINTS.organization}${id}/list_org_tasks/?limit=${this.limit}&offset=${this.offset}`;
     this.endpoint = `${super.apiEndPointAuto()}${this.getTargetEndpoint}`;
   }
 
