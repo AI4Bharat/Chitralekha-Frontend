@@ -225,7 +225,6 @@ export default memo(
               updateSub(lastSub, { start_time });
             }
           } else {
-            console.log("here");
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === "right") {
@@ -395,11 +394,6 @@ export default memo(
                     render.padding * gridGap +
                     (sub.startTime - render.beginTime) * gridGap * 10,
                   width: (sub.endTime - sub.startTime) * gridGap * 10,
-                }}
-                onClick={() => {
-                  if (player.duration >= sub.startTime) {
-                    player.currentTime = sub.startTime + 0.001;
-                  }
                 }}
               >
                 <ContextMenuTrigger
