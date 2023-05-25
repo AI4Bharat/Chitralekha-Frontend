@@ -16,7 +16,17 @@ import UploadCSVAPI from "../../redux/actions/api/Project/UploadCSV";
 import DatasetStyle from "../../styles/datasetStyle";
 
 //Components
-import { Box, Card, Grid, Tab, Tabs, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Card,
+  Grid,
+  Tab,
+  Tabs,
+  Typography,
+  Button,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
 import UserList from "./UserList";
 import AddOrganizationMember from "../../common/AddOrganizationMember";
 import CustomizedSnackbars from "../../common/Snackbar";
@@ -25,6 +35,7 @@ import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import CSVAlertComponent from "../../common/csvUploadFailAlert";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -256,6 +267,19 @@ const MyOrganization = () => {
                       onClick={() => csvUpload.current.click()}
                     >
                       Bulk Video Upload
+                      <Tooltip title="Download sample CSV">
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.assign(
+                              `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
+                            );
+                          }}
+                          sx={{ color: "white" }}
+                        >
+                          <InfoOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
                       <input
                         type="file"
                         style={{ display: "none" }}

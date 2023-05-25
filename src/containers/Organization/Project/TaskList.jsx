@@ -1098,6 +1098,7 @@ const TaskList = () => {
           id={currentTaskDetails[0]}
           snackbar={snackbar} 
           setSnackbarInfo={setSnackbarInfo}
+          fetchTaskList={FetchTaskList}
         />
       )}
 
