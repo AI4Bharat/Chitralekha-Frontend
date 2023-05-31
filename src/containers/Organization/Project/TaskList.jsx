@@ -115,6 +115,7 @@ const TaskList = () => {
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
   const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
   const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
+  const [uploadLoading, setUploadLoading] = useState([]);
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -466,7 +467,11 @@ const TaskList = () => {
     }
   };
 
-  const handleUploadSubtitle = async (id) => {
+  const handleUploadSubtitle = async (id, rowIndex) => {
+    const loadingArray = [...uploadLoading];
+    loadingArray[rowIndex] = true;
+    setUploadLoading(loadingArray);
+
     const apiObj = new UploadToYoutubeAPI(id);
 
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -480,7 +485,13 @@ const TaskList = () => {
     if (res.ok) {
       setBulkSubtitleAlert(true);
       setBulkSubtitleAlertData(resp);
+
+      loadingArray[rowIndex] = false;
+      setUploadLoading(loadingArray);
     } else {
+      loadingArray[rowIndex] = false;
+      setUploadLoading(loadingArray);
+
       setSnackbarInfo({
         open: true,
         message: resp?.message,
@@ -568,17 +579,20 @@ const TaskList = () => {
   };
 
   const renderUploadButton = (tableData) => {
-    return (
-      tableData.rowData[16]?.Upload && (
-        <Tooltip title="Upload Subtitles to Youtube">
-          <IconButton
-            color="primary"
-            onClick={() => handleUploadSubtitle([tableData.rowData[0]])}
-          >
-            <UploadIcon />
-          </IconButton>
-        </Tooltip>
-      )
+    return tableData.rowData[16]?.Upload &&
+      uploadLoading[tableData.rowIndex] ? (
+      <Loader size={25} margin="8px" />
+    ) : (
+      <Tooltip title="Upload Subtitles to Youtube">
+        <IconButton
+          color="primary"
+          onClick={() =>
+            handleUploadSubtitle([tableData.rowData[0]], tableData.rowIndex)
+          }
+        >
+          <UploadIcon />
+        </IconButton>
+      </Tooltip>
     );
   };
 
@@ -780,7 +794,13 @@ const TaskList = () => {
       }),
       customBodyRender: (_value, tableMeta) => {
         return (
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
             {renderUploadButton(tableMeta)}
             {renderUpdateTaskButton(tableMeta)}
             {renderViewButton(tableMeta)}
@@ -1096,7 +1116,7 @@ const TaskList = () => {
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
           id={currentTaskDetails[0]}
-          snackbar={snackbar} 
+          snackbar={snackbar}
           setSnackbarInfo={setSnackbarInfo}
           fetchTaskList={FetchTaskList}
         />
