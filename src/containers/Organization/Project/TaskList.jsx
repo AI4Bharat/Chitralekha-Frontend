@@ -95,6 +95,7 @@ const TaskList = () => {
   const [loading, setLoading] = useState(false);
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState([]);
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
@@ -597,6 +598,7 @@ const TaskList = () => {
   };
 
   const renderUpdateTaskButton = (tableData) => {
+    console.log(tableData.rowData,'tableData.rowData');
     return (
       tableData.rowData[16]?.Update && (
         <Tooltip title="Edit Task Details">
@@ -604,6 +606,7 @@ const TaskList = () => {
             color="primary"
             onClick={() => {
               setSelectedTaskId(tableData.rowData[0]);
+              setSelectedTaskDetails(tableData.rowData);
               setOpenEditTaskDialog(true);
               setIsBulk(false);
             }}
@@ -777,6 +780,7 @@ const TaskList = () => {
             item.description,
             item.buttons,
             item.status,
+            item.video,
           ];
         })
       : [];
@@ -1162,6 +1166,7 @@ const TaskList = () => {
           handleUpdateTask={(data) => handleUpdateTask(data)}
           currentSelectedTasks={currentSelectedTasks}
           selectedTaskId={selectedTaskId}
+          selectedTaskDetails={selectedTaskDetails}
           loading={loading}
           isBulk={isBulk}
         />
