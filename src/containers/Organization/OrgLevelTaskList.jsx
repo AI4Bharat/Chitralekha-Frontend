@@ -1,5 +1,5 @@
 // OrgLevelTaskList
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
@@ -29,6 +29,7 @@ import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
 import ViewTaskDialog from "../../common/ViewTaskDialog";
 import FilterList from "../../common/FilterList";
 import ExportDialog from "../../common/ExportDialog";
+import TableSearchPopover from "../../common/TableSearchPopover";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -39,6 +40,7 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PreviewDialog from "../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import SearchIcon from "@mui/icons-material/Search";
 
 //Apis
 import APITransport from "../../redux/actions/apitransport/apitransport";
@@ -109,8 +111,14 @@ const OrgLevelTaskList = () => {
   const [options, setOptions] = useState({});
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [searchAnchor, setSearchAnchor] = useState(null);
+  const [searchedCol, setSearchedCol] = useState({});
+  const [searchedColumn, setSearchedColumn] = useState({});
+  const [columnDisplay, setColumnDisplay] = useState(false);
 
+  const searchOpen = Boolean(searchAnchor);
   const popoverOpen = Boolean(anchorEl);
+
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
@@ -702,7 +710,36 @@ const OrgLevelTaskList = () => {
         })
       : [];
 
-  const columns = [
+  const handleShowSearch = (col, event) => {
+    setSearchAnchor(event.currentTarget);
+    setSearchedCol({
+      label: col.label,
+      name: col.name,
+    });
+
+    if(col.name === "description") {
+      setColumnDisplay(true)
+    }
+  };
+
+  const CustomTableHeader = (col) => {
+    return (
+      <>
+        <Box className={tableClasses.customTableHeader}>
+          {col.label}
+          <IconButton
+            sx={{ borderRadius: "100%" }}
+            onClick={(e) => handleShowSearch(col, e)}
+          >
+            <SearchIcon id={col.name + "_btn"} />
+          </IconButton>
+        </Box>
+      </>
+    );
+  };
+
+  const columns = useMemo(() => 
+  [
     {
       name: "id",
       label: "Id",
@@ -754,6 +791,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
           className: tableClasses.cellHeaderProps,
         }),
@@ -770,7 +808,6 @@ const OrgLevelTaskList = () => {
         },
       },
     },
-
     {
       name: "created_at",
       label: "Created At",
@@ -925,6 +962,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         align: "center",
+        customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
           className: tableClasses.cellHeaderProps,
         }),
@@ -977,7 +1015,6 @@ const OrgLevelTaskList = () => {
           className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
-          console.log("valueee", value);
           return (
             <Box
               style={{
@@ -996,8 +1033,9 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: "exclude",
+        display: columnDisplay,
         align: "center",
+        customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
           className: tableClasses.cellHeaderProps,
         }),
@@ -1050,7 +1088,9 @@ const OrgLevelTaskList = () => {
         },
       },
     },
-  ];
+  ],
+  [CustomTableHeader, columnDisplay],
+);
 
   const handleRowClick = (_currentRow, allRow) => {
     const temp = filterData.filter((_item, index) => {
@@ -1209,7 +1249,7 @@ const OrgLevelTaskList = () => {
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [loading]);
+  }, [loading, rows]);
 
   const renderSnackBar = () => {
     return (
@@ -1346,7 +1386,7 @@ const OrgLevelTaskList = () => {
 
           // }}
           id={currentTaskDetails[0]}
-          snackbar={snackbar} 
+          snackbar={snackbar}
           setSnackbarInfo={setSnackbarInfo}
           fetchTaskList={fetchTaskList}
         />
@@ -1415,6 +1455,17 @@ const OrgLevelTaskList = () => {
           currentFilters={selectedFilters}
           supportedLanguages={supportedLanguages}
           taskList={taskList}
+        />
+      )}
+
+      {searchOpen && (
+        <TableSearchPopover
+          open={searchOpen}
+          anchorEl={searchAnchor}
+          handleClose={() => setSearchAnchor(null)}
+          updateFilters={setSearchedColumn}
+          currentFilters={searchedColumn}
+          searchedCol={searchedCol}
         />
       )}
     </>

@@ -23,6 +23,15 @@ const TableStyles = makeStyles({
   cellProps: {
     height: "40px",
   },
+
+  customTableHeader: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    columnGap: "5px",
+    flexGrow: "1",
+    alignItems: "center",
+  },
 });
 
 export default TableStyles;
