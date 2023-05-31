@@ -21,6 +21,7 @@ const UserList = ({ data }) => {
     return [
       `${item.first_name} ${item.last_name}`,
       item.email,
+      item.languages.join(", "),
       item.role,
       <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
         <Tooltip title="View">
