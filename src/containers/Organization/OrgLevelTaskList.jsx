@@ -30,6 +30,7 @@ import ViewTaskDialog from "../../common/ViewTaskDialog";
 import FilterList from "../../common/FilterList";
 import ExportDialog from "../../common/ExportDialog";
 import TableSearchPopover from "../../common/TableSearchPopover";
+import DeleteDialog from "../../common/DeleteDialog";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -54,7 +55,6 @@ import CompareTranscriptionSource from "../../redux/actions/api/Project/CompareT
 import setComparisonTable from "../../redux/actions/api/Project/SetComparisonTableData";
 import clearComparisonTable from "../../redux/actions/api/Project/ClearComparisonTable";
 import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
-import DeleteDialog from "../../common/DeleteDialog";
 import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
 import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
 import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
@@ -90,6 +90,11 @@ const OrgLevelTaskList = () => {
   const [loading, setLoading] = useState(false);
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState({
+    taskType: "",
+    videoId: "",
+    targetLang: "",
+  });
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
@@ -102,9 +107,6 @@ const OrgLevelTaskList = () => {
     SrcLanguage: [],
     TgtLanguage: [],
   });
-  const [filterData, setfilterData] = useState([]);
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterTaskType, setFilterTaskType] = useState(" ");
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
@@ -128,10 +130,48 @@ const OrgLevelTaskList = () => {
   const translationExportTypes = useSelector(
     (state) => state.getTranslationExportTypes.data.export_types
   );
+  const taskList = useSelector((state) => state.getOrgTaskList.data);
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.data
+  );
 
   const fetchTaskList = () => {
     setLoading(true);
-    const apiObj = new FetchPaginatedOrgTaskListAPI(orgId, offset + 1, limit);
+
+    const search = {
+      video_name: searchedColumn?.video_name,
+      description: searchedColumn?.description,
+      assignee: searchedColumn?.username,
+    };
+
+    const filter = {
+      task_type: selectedFilters?.taskType,
+      status: selectedFilters?.status,
+      src_language: selectedFilters?.SrcLanguage,
+      target_language: selectedFilters?.TgtLanguage,
+    };
+
+    const searchRequest = Object.entries(search).reduce((acc, [key, value]) => {
+      if (value) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    const filterRequest = Object.entries(filter).reduce((acc, [key, value]) => {
+      if (value.length > 0) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    const apiObj = new FetchPaginatedOrgTaskListAPI(
+      orgId,
+      offset + 1,
+      limit,
+      searchRequest,
+      filterRequest
+    );
     dispatch(APITransport(apiObj));
   };
 
@@ -148,35 +188,22 @@ const OrgLevelTaskList = () => {
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
+
     // eslint-disable-next-line
   }, []);
-
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
-  );
-
-  useEffect(() => {
-    const statusData = selectedFilters?.status?.map((el) => el);
-    setFilterStatus(statusData.toString());
-
-    const taskTypeData = selectedFilters?.taskType?.map((el) => el);
-    setFilterTaskType(taskTypeData.toString());
-  }, [selectedFilters.status, selectedFilters?.taskType]);
 
   useEffect(() => {
     if (orgId) {
       fetchTaskList();
     }
+
     // eslint-disable-next-line
-  }, [orgId, offset, limit]);
+  }, [orgId, offset, limit, searchedColumn, selectedFilters]);
 
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
   }, []);
-
-  const taskList = useSelector((state) => state.getOrgTaskList.data);
-  const SearchProject = useSelector((state) => state.searchList.data);
 
   useEffect(() => {
     if (taskList.tasks_list) {
@@ -188,6 +215,7 @@ const OrgLevelTaskList = () => {
     setOpen(false);
     setAnchorEl(null);
   };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setOpenPreviewDialog(false);
@@ -355,6 +383,7 @@ const OrgLevelTaskList = () => {
   const handleClickRadioButton = (e) => {
     setExportTranscription(e.target.value);
   };
+
   const handleClickRadioButtonTranslation = (e) => {
     setexportTranslation(e.target.value);
   };
@@ -531,6 +560,11 @@ const OrgLevelTaskList = () => {
             color="primary"
             onClick={() => {
               setSelectedTaskId(tableData.rowData[0]);
+              setSelectedTaskDetails({
+                taskType: tableData.rowData[1],
+                videoId: tableData.rowData[18],
+                targetLang: tableData.rowData[8],
+              });
               setOpenEditTaskDialog(true);
               setIsBulk(false);
             }}
@@ -563,152 +597,31 @@ const OrgLevelTaskList = () => {
     );
   };
 
-  useEffect(() => {
-    setfilterData(taskList.tasks_list);
-  }, [taskList.tasks_list]);
-
-  useEffect(() => {
-    FilterData();
-    // eslint-disable-next-line
-  }, [filterStatus, filterTaskType]);
-
-  const FilterData = () => {
-    let statusFilter = [];
-    let filterResult = [];
-    let lngResult = [];
-    let TaskTypefilter = [];
-    if (
-      selectedFilters &&
-      selectedFilters.hasOwnProperty("status") &&
-      selectedFilters.status.length > 0
-    ) {
-      statusFilter = taskList.tasks_list.filter((value) => {
-        if (selectedFilters.status.includes(value.status_label)) {
-          return value;
-        }
-      });
-    } else {
-      statusFilter = taskList.tasks_list;
-    }
-    if (
-      selectedFilters &&
-      selectedFilters.hasOwnProperty("taskType") &&
-      selectedFilters.taskType.length > 0
-    ) {
-      TaskTypefilter = statusFilter.filter((value) => {
-        if (selectedFilters.taskType.includes(value.task_type_label)) {
-          return value;
-        }
-      });
-    } else {
-      TaskTypefilter = statusFilter;
-    }
-
-    if (
-      selectedFilters &&
-      selectedFilters.hasOwnProperty("SrcLanguage") &&
-      selectedFilters.SrcLanguage.length > 0
-    ) {
-      lngResult = TaskTypefilter.filter((value) => {
-        if (selectedFilters.SrcLanguage.includes(value.src_language_label)) {
-          return value;
-        }
-      });
-    } else {
-      lngResult = TaskTypefilter;
-    }
-
-    if (
-      selectedFilters &&
-      selectedFilters.hasOwnProperty("TgtLanguage") &&
-      selectedFilters.TgtLanguage.length > 0
-    ) {
-      filterResult = lngResult.filter((value) => {
-        if (selectedFilters.TgtLanguage.includes(value.target_language_label)) {
-          return value;
-        }
-      });
-    } else {
-      filterResult = lngResult;
-    }
-    taskList.filteredData = filterResult;
-
-    setSelectedBulkTaskId("");
-    setRows([]);
-    setShowEditTaskBtn(false);
-
-    setfilterData(filterResult);
-    return taskList.tasks_list;
-  };
-
-  useEffect(() => {
-    const pageSearchData = taskList.tasks_list?.filter((el) => {
-      if (SearchProject === "") {
-        return el;
-      } else if (
-        el.id.toString()?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.task_type?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.video_name?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.src_language_label
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.target_language_label
-          ?.toLowerCase()
-          .includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else if (
-        el.status_label?.toLowerCase().includes(SearchProject?.toLowerCase())
-      ) {
-        return el;
-      } else {
-        return [];
-      }
-    });
-    setfilterData(pageSearchData);
-
-    // eslint-disable-next-line
-  }, [SearchProject]);
-
-  const result =
-    taskList.tasks_list && taskList.tasks_list.length > 0
-      ? filterData?.map((item, i) => {
-          const status =
-            item.status_label && statusColor(item.status_label)?.element;
-          return [
-            item.id,
-            item.task_type,
-            item.task_type_label,
-            item.video_name,
-            moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-            item.source_type,
-            item.src_language,
-            item.src_language_label,
-            item.target_language,
-            item.target_language_label,
-            status ? status : item.status_label,
-            item.user,
-            item.is_active,
-            `${item.user?.first_name} ${item.user?.last_name}`,
-            item.project_name,
-            item.time_spent,
-            item.description,
-            item.buttons,
-          ];
-        })
-      : [];
+  const result = taskList?.tasks_list
+    ? taskList.tasks_list.map((item) => {
+        return [
+          item.id,
+          item.task_type,
+          item.task_type_label,
+          item.video_name,
+          moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
+          item.source_type,
+          item.src_language,
+          item.src_language_label,
+          item.target_language,
+          item.target_language_label,
+          statusColor(item.status_label)?.element,
+          item.user,
+          item.is_active,
+          `${item.user?.first_name} ${item.user?.last_name}`,
+          item.project_name,
+          item.time_spent,
+          item.description,
+          item.buttons,
+          item.video
+        ];
+      })
+    : [];
 
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
@@ -717,8 +630,8 @@ const OrgLevelTaskList = () => {
       name: col.name,
     });
 
-    if(col.name === "description") {
-      setColumnDisplay(true)
+    if (col.name === "description") {
+      setColumnDisplay(true);
     }
   };
 
@@ -738,362 +651,364 @@ const OrgLevelTaskList = () => {
     );
   };
 
-  const columns = useMemo(() => 
-  [
-    {
-      name: "id",
-      label: "Id",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: "exclude",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-      },
-    },
-    {
-      name: "task_type",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "task_type_label",
-      label: "Task Type",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+  const columns = useMemo(
+    () => [
+      {
+        name: "id",
+        label: "Id",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          display: "exclude",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
         },
       },
-    },
-    {
-      name: "video_name",
-      label: "Video Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "task_type",
+        label: "",
+        options: {
+          display: "excluded",
+          filter: true,
         },
       },
-    },
-    {
-      name: "created_at",
-      label: "Created At",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: false,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "task_type_label",
+        label: "Task Type",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "source_type",
-      label: "Source Type",
-      options: {
-        filter: false,
-        sort: false,
-        display: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "video_name",
+        label: "Video Name",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          customHeadLabelRender: CustomTableHeader,
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "src_language",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "src_language_label",
-      label: "Source Language",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "created_at",
+        label: "Created At",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          display: false,
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "target_language",
-      label: "",
-      options: {
-        display: "excluded",
-        filter: true,
-      },
-    },
-    {
-      name: "target_language_label",
-      label: "Target Language",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "source_type",
+        label: "Source Type",
+        options: {
+          filter: false,
+          sort: false,
+          display: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "status_label",
-      label: "Status",
-      options: {
-        filter: true,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "src_language",
+        label: "",
+        options: {
+          display: "excluded",
+          filter: true,
         },
       },
-    },
-    {
-      name: "user",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "is_active",
-      label: "",
-      options: {
-        display: "excluded",
-      },
-    },
-    {
-      name: "username",
-      label: "Assignee",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "src_language_label",
+        label: "Source Language",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "project_name",
-      label: "Project Name",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: true,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "target_language",
+        label: "",
+        options: {
+          display: "excluded",
+          filter: true,
         },
       },
-    },
-    {
-      name: "time_spent",
-      label: "Time Spent",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        display: true,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "target_language_label",
+        label: "Target Language",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "description",
-      label: "Description",
-      options: {
-        filter: false,
-        sort: false,
-        display: columnDisplay,
-        align: "center",
-        customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box
-              style={{
-                color: tableMeta.rowData[12] ? "" : "grey",
-              }}
-            >
-              {value}
-            </Box>
-          );
+      {
+        name: "status_label",
+        label: "Status",
+        options: {
+          filter: true,
+          sort: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
         },
       },
-    },
-    {
-      name: "buttons",
-      label: "",
-      options: {
-        display: "excluded",
+      {
+        name: "user",
+        label: "",
+        options: {
+          display: "excluded",
+        },
       },
-    },
-    {
-      name: "Action",
-      label: "Actions",
-      options: {
-        filter: false,
-        sort: false,
-        align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
-        customBodyRender: (value, tableMeta) => {
-          return (
-            <Box sx={{ display: "flex" }}>
-              {renderUpdateTaskButton(tableMeta)}
+      {
+        name: "is_active",
+        label: "",
+        options: {
+          display: "excluded",
+        },
+      },
+      {
+        name: "username",
+        label: "Assignee",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          customHeadLabelRender: CustomTableHeader,
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
+        },
+      },
+      {
+        name: "project_name",
+        label: "Project Name",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          display: true,
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
+        },
+      },
+      {
+        name: "time_spent",
+        label: "Time Spent",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          display: true,
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
+        },
+      },
+      {
+        name: "description",
+        label: "Description",
+        options: {
+          filter: false,
+          sort: false,
+          display: columnDisplay,
+          align: "center",
+          customHeadLabelRender: CustomTableHeader,
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box
+                style={{
+                  color: tableMeta.rowData[12] ? "" : "grey",
+                }}
+              >
+                {value}
+              </Box>
+            );
+          },
+        },
+      },
+      {
+        name: "buttons",
+        label: "",
+        options: {
+          display: "excluded",
+        },
+      },
+      {
+        name: "Action",
+        label: "Actions",
+        options: {
+          filter: false,
+          sort: false,
+          align: "center",
+          setCellHeaderProps: () => ({
+            className: tableClasses.cellHeaderProps,
+          }),
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <Box sx={{ display: "flex" }}>
+                {renderUpdateTaskButton(tableMeta)}
 
-              {renderViewButton(tableMeta)}
+                {renderViewButton(tableMeta)}
 
-              {renderEditButton(tableMeta)}
+                {renderEditButton(tableMeta)}
 
-              {renderExportButton(tableMeta)}
+                {renderExportButton(tableMeta)}
 
-              {renderPreviewButton(tableMeta)}
+                {renderPreviewButton(tableMeta)}
 
-              {renderDeleteButton(tableMeta)}
-            </Box>
-          );
+                {renderDeleteButton(tableMeta)}
+              </Box>
+            );
+          },
         },
       },
-    },
-  ],
-  [CustomTableHeader, columnDisplay],
-);
+    ],
+
+    // eslint-disable-next-line
+    [CustomTableHeader, columnDisplay]
+  );
 
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = filterData.filter((_item, index) => {
+    const temp = taskList?.tasks_list?.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
@@ -1224,6 +1139,7 @@ const OrgLevelTaskList = () => {
         ? "multiple"
         : "none",
       selectToolbarPlacement: "none",
+      search: false,
       serverSide: true,
       page: offset,
       rowsSelected: rows,
@@ -1431,6 +1347,7 @@ const OrgLevelTaskList = () => {
           handleUserDialogClose={() => setOpenEditTaskDialog(false)}
           handleUpdateTask={(data) => handleUpdateTask(data)}
           currentSelectedTasks={currentSelectedTasks}
+          selectedTaskDetails={selectedTaskDetails}
           selectedTaskId={selectedTaskId}
           loading={loading}
           isBulk={isBulk}
