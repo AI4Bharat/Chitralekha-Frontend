@@ -83,9 +83,9 @@ const UpdateBulkTaskDialog = ({
     if (!isBulk && selectedTaskDetails) {
       const userObj = new FetchProjectMembersAPI(
         projectId,
-        selectedTaskDetails[1],
-        selectedTaskDetails[18],
-        selectedTaskDetails[7]
+        selectedTaskDetails.taskType,
+        selectedTaskDetails.videoId,
+        selectedTaskDetails.targetLang
       );
       dispatch(APITransport(userObj));
     }

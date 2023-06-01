@@ -16,6 +16,7 @@ import { TaskTypes, TaskStatus } from "../config/taskItems";
 const FilterList = (props) => {
   const classes = DatasetStyle();
   const { currentFilters, updateFilters, taskList } = props;
+
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
   const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
@@ -24,6 +25,7 @@ const FilterList = (props) => {
   const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
     currentFilters.TgtLanguage
   );
+
   const handleChange = (e) => {
     updateFilters({
       ...currentFilters,
@@ -35,13 +37,6 @@ const FilterList = (props) => {
     props.handleClose();
   };
 
-  //   const handleChangeCheckbox = (event) =>{
-  //     if (event.target.value === selectedStatus) {
-  //         setSelectedStatus("");
-  //       } else {
-  //         setSelectedStatus(event.target.value);
-  //       }
-  //   }
   const handleDatasetChange = (e) => {
     if (e.target.checked) setSelectedType([...selectedType, e.target.name]);
     else {
@@ -54,6 +49,7 @@ const FilterList = (props) => {
       }
     }
   };
+
   const handleStatusChange = (e) => {
     if (e.target.checked) setSelectedStatus([...selectedStatus, e.target.name]);
     else {
@@ -112,8 +108,8 @@ const FilterList = (props) => {
     updateFilters({
       taskType: [],
       status: [],
-      SrcLanguage :[],
-      TgtLanguage:[],
+      SrcLanguage: [],
+      TgtLanguage: [],
     });
     props.handleClose();
   };
@@ -135,77 +131,75 @@ const FilterList = (props) => {
         }}
       >
         <Grid container className={classes.filterContainer}>
-        {taskList?.src_languages_list && taskList?.src_languages_list.length > 0 && (
-          <>
+          {taskList?.src_languages_list.length > 0 && (
+            <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+              <Typography
+                variant="body2"
+                sx={{ mr: 5, mb: 1, fontWeight: "900" }}
+                className={classes.filterTypo}
+              >
+                Source Language
+              </Typography>
+              <FormGroup>
+                {taskList?.src_languages_list?.map((type, index) => {
+                  return (
+                    <FormControlLabel
+                      key={index}
+                      control={
+                        <Checkbox
+                          checked={isChecked(type, "SrcLanguage")}
+                          onChange={(e) => handleSrcLanguageChange(e)}
+                          name={type}
+                        />
+                      }
+                      label={type}
+                      sx={{
+                        fontSize: "1rem",
+                      }}
+                    />
+                  );
+                })}
+              </FormGroup>
+            </Grid>
+          )}
+
+          {
+            taskList?.target_languages_list.length > 0 && (
+              <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                <Typography
+                  variant="body2"
+                  sx={{ mr: 5, mb: 1, fontWeight: "900" }}
+                  className={classes.filterTypo}
+                >
+                  Target Language
+                </Typography>
+                <FormGroup>
+                  {taskList?.target_languages_list?.map((type, index) => {
+                    return (
+                      <FormControlLabel
+                        key={index}
+                        control={
+                          <Checkbox
+                            checked={isChecked(type, "TgtLanguage")}
+                            onChange={(e) => handleTgtLanguageChange(e)}
+                            name={type}
+                          />
+                        }
+                        label={type}
+                        sx={{
+                          fontSize: "1rem",
+                        }}
+                      />
+                    );
+                  })}
+                </FormGroup>
+              </Grid>
+            )}
+
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
               variant="body2"
-              sx={{ mr: 5,mb:1, fontWeight: "900" }}
-              className={classes.filterTypo}
-            >
-              Source Language
-            </Typography>
-            <FormGroup>
-              { taskList?.src_languages_list?.map((type, index) => {
-                return (
-                  <FormControlLabel
-                    key={index}
-                    control={
-                      <Checkbox
-                        checked={isChecked(type, "SrcLanguage")}
-                        onChange={(e) => handleSrcLanguageChange(e)}
-                        name={type}
-                      />
-                    }
-                    label={type}
-                    sx={{
-                      fontSize: "1rem",
-                    }}
-                  />
-                );
-              })}
-            </FormGroup>
-          </Grid>
-          </>
-           )} 
-         
-        {taskList?.target_languages_list && taskList?.target_languages_list.length > 0 && (
-          <>
-           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-            <Typography
-              variant="body2"
-              sx={{ mr: 5,mb:1, fontWeight: "900" }}
-              className={classes.filterTypo}
-            >
-              Target Language
-            </Typography>
-            <FormGroup>
-              { taskList?.target_languages_list?.map((type, index) => {
-                return (
-                  <FormControlLabel
-                    key={index}  
-                    control={
-                      <Checkbox
-                        checked={isChecked(type, "TgtLanguage")}
-                        onChange={(e) => handleTgtLanguageChange(e)}
-                        name={type}
-                      />
-                    }
-                    label={type}
-                    sx={{
-                      fontSize: "1rem",
-                    }}
-                  />
-                );
-              })}
-            </FormGroup>
-          </Grid>  
-          </> ) }
-       
-          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-            <Typography
-              variant="body2"
-              sx={{ mr: 5,mb:1, fontWeight: "900" }}
+              sx={{ mr: 5, mb: 1, fontWeight: "900" }}
               className={classes.filterTypo}
             >
               Status
@@ -217,9 +211,9 @@ const FilterList = (props) => {
                     key={index}
                     control={
                       <Checkbox
-                        checked={isChecked(type.label, "status")}
+                        checked={isChecked(type.value, "status")}
                         onChange={(e) => handleStatusChange(e)}
-                        name={type.label}
+                        name={type.value}
                       />
                     }
                     label={type.label}
@@ -231,9 +225,12 @@ const FilterList = (props) => {
               })}
             </FormGroup>
           </Grid>
-      
+
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-            <Typography variant="body2" sx={{ mr: 5, mb:1,fontWeight: "900" }}>
+            <Typography
+              variant="body2"
+              sx={{ mr: 5, mb: 1, fontWeight: "900" }}
+            >
               Task Type
             </Typography>
             <FormGroup>
@@ -243,9 +240,9 @@ const FilterList = (props) => {
                     key={index}
                     control={
                       <Checkbox
-                        checked={isChecked(type.label, "taskType")}
+                        checked={isChecked(type.value, "taskType")}
                         onChange={(e) => handleDatasetChange(e)}
-                        name={type.label}
+                        name={type.value}
                         color="primary"
                       />
                     }
@@ -256,7 +253,9 @@ const FilterList = (props) => {
             </FormGroup>
           </Grid>
         </Grid>
+
         <Divider />
+
         <Box
           sx={{
             display: "flex",
@@ -273,9 +272,9 @@ const FilterList = (props) => {
             size="small"
             className={classes.clearAllBtn}
           >
-            {" "}
             Clear All
           </Button>
+
           <Button
             onClick={handleChange}
             variant="contained"
@@ -283,7 +282,6 @@ const FilterList = (props) => {
             size="small"
             className={classes.clearAllBtn}
           >
-            {" "}
             Apply
           </Button>
         </Box>
