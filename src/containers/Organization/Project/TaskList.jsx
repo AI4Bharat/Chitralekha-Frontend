@@ -584,8 +584,8 @@ const TaskList = () => {
   };
 
   const renderUploadButton = (tableData) => {
-    return tableData.rowData[16]?.Upload &&
-      uploadLoading[tableData.rowIndex] ? (
+    return (tableData.rowData[16]?.Upload &&
+      (uploadLoading[tableData.rowIndex] ? (
       <Loader size={25} margin="8px" />
     ) : (
       <Tooltip title="Upload Subtitles to Youtube">
@@ -598,10 +598,12 @@ const TaskList = () => {
           <UploadIcon />
         </IconButton>
       </Tooltip>
-    );
+      )
+    ));
   };
 
   const renderUpdateTaskButton = (tableData) => {
+    console.log(tableData.rowData,'tableData.rowData');
     return (
       tableData.rowData[16]?.Update && (
         <Tooltip title="Edit Task Details">
