@@ -41,6 +41,7 @@ const UpdateBulkTaskDialog = ({
   loading,
   handleUpdateTask,
   selectedTaskId,
+  selectedTaskDetails,
   isBulk,
 }) => {
   const { projectId } = useParams();
@@ -73,15 +74,23 @@ const UpdateBulkTaskDialog = ({
     if (!isBulk) {
       const taskObj = new FetchTaskDetailsAPI(selectedTaskId);
       dispatch(APITransport(taskObj));
+    }
 
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    if (!isBulk && selectedTaskDetails) {
       const userObj = new FetchProjectMembersAPI(
         projectId,
-        taskDetails.task_type
+        selectedTaskDetails[1],
+        selectedTaskDetails[18],
+        selectedTaskDetails[7]
       );
       dispatch(APITransport(userObj));
     }
 
-    // eslint-disable-next-line    
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -95,8 +104,8 @@ const UpdateBulkTaskDialog = ({
       );
       setUser(items[0]);
     }
-    // eslint-disable-next-line    
-  }, [taskDetails, isBulk]);
+    // eslint-disable-next-line
+  }, [taskDetails, isBulk, projectMembers]);
 
   const submitHandler = () => {
     const data = {
