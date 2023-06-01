@@ -127,7 +127,12 @@ const CreateTaskDialog = ({
   const selectAllowedTaskHandler = (value) => {
     setAllowedTaskType(value);
 
-    const obj = new FetchProjectMembersAPI(projectId, value);
+    const obj = new FetchProjectMembersAPI(
+      projectId,
+      value,
+      videoDetails.id,
+      language
+    );
     dispatch(APITransport(obj));
   };
 
@@ -151,6 +156,24 @@ const CreateTaskDialog = ({
     setDescription("");
     setPriority("");
     setDate(moment().format());
+  };
+
+  const isAssignUserDropdownDisabled = () => {
+    if (!taskType) {
+      return true;
+    }
+
+    if (taskType === "TRANSCRIPTION") {
+      if (!allowedTaskType) {
+        return true;
+      }
+    } else {
+      if (!allowedTaskType || !language) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   return (
@@ -270,6 +293,7 @@ const CreateTaskDialog = ({
                 onChange={(event) => setUser(event.target.value)}
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
+                disabled={isAssignUserDropdownDisabled()}
               >
                 {projectMembers.map((item, index) => (
                   <MenuItem key={index} value={item}>

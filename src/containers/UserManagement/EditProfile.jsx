@@ -19,11 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../redux/actions/apitransport/apitransport";
 import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
 import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
-import {
-  MenuProps,
-  availability,
-  roles,
-} from "../../utils/utils";
+import { MenuProps, availability, roles } from "../../utils/utils";
 import UpdateEmailAPI from "../../redux/actions/api/User/UpdateEmail";
 import UpdateProfileAPI from "../../redux/actions/api/User/UpdateProfile";
 import { useParams } from "react-router-dom";
@@ -365,7 +361,9 @@ const EditProfile = () => {
           return (
             <Grid className={classes.editProfileParentGrid} container>
               <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                <Typography variant="body1" sx={{fontSize: "1rem"}}>{element.title}</Typography>
+                <Typography variant="body1" sx={{ fontSize: "1rem" }}>
+                  {element.title}
+                </Typography>
               </Grid>
 
               <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
@@ -378,37 +376,42 @@ const EditProfile = () => {
                     )}
               </Grid>
 
-              <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                <Button
-                  variant="outlined"
-                  className={classes.editProfileBtn}
-                  onClick={() => handleFieldEdit(element.name)}
-                >
-                  <EditIcon className={classes.editIcon} />
-                  Edit
-                </Button>
-              </Grid>
+              {(loggedInUserData.id === +id ||
+                loggedInUserData.role === "ADMIN") && (
+                <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                  <Button
+                    variant="outlined"
+                    className={classes.editProfileBtn}
+                    onClick={() => handleFieldEdit(element.name)}
+                  >
+                    <EditIcon className={classes.editIcon} />
+                    Edit
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           );
         })}
 
-        <Grid
-          container
-          direction="row"
-          justifyContent="flex-end"
-          alignItems="center"
-          sx={{ my: 5, px: "9.75%" }}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            sx={{ borderRadius: "8px", width: "180px" }}
-            className={classes.editProfileBtn}
+        {(loggedInUserData.id === +id || loggedInUserData.role === "ADMIN") && (
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            sx={{ my: 5, px: "9.75%" }}
           >
-            Submit
-          </Button>
-        </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              sx={{ borderRadius: "8px", width: "180px" }}
+              className={classes.editProfileBtn}
+            >
+              Submit
+            </Button>
+          </Grid>
+        )}
       </Card>
 
       <Snackbar

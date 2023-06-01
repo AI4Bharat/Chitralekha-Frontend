@@ -34,6 +34,10 @@ export const usersColumns = [
     label: "Email",
   },
   {
+    name: "languages",
+    label: "Languages",
+  },
+  {
     name: "role",
     label: "Role",
   },
