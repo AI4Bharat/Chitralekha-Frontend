@@ -197,7 +197,7 @@ const SignUp = () => {
     } else if (values.phone === "") {
       setError({ ...error, phone: true });
       setPhoneErrorText("Please enter a phone number");
-    } else if (values.phone.length === 10) {
+    } else if (values.phone.length !== 10) {
       setError({ ...error, phone: true });
       setPhoneErrorText("Please enter a valid phone number");
     } else if (values.UserName === "") {
