@@ -88,6 +88,12 @@ const OrgLevelTaskList = () => {
   const [loading, setLoading] = useState(false);
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState({
+    taskType: "",
+    videoId: "",
+    targetLang: "",
+  });
+  const [selectedProjectId, setSelectedProjectId] = useState("");
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
@@ -523,6 +529,12 @@ const OrgLevelTaskList = () => {
             color="primary"
             onClick={() => {
               setSelectedTaskId(tableData.rowData[0]);
+              setSelectedTaskDetails({
+                taskType: tableData.rowData[1],
+                videoId: tableData.rowData[18],
+                targetLang: tableData.rowData[8],
+              });
+              setSelectedProjectId(tableData.rowData[19]);
               setOpenEditTaskDialog(true);
               setIsBulk(false);
             }}
@@ -698,6 +710,8 @@ const OrgLevelTaskList = () => {
             item.time_spent,
             item.description,
             item.buttons,
+            item.video,
+            item.project,
           ];
         })
       : [];
@@ -1016,6 +1030,13 @@ const OrgLevelTaskList = () => {
     },
     {
       name: "buttons",
+      label: "",
+      options: {
+        display: "excluded",
+      },
+    },
+    {
+      name: "project",
       label: "",
       options: {
         display: "excluded",
@@ -1346,7 +1367,7 @@ const OrgLevelTaskList = () => {
 
           // }}
           id={currentTaskDetails[0]}
-          snackbar={snackbar} 
+          snackbar={snackbar}
           setSnackbarInfo={setSnackbarInfo}
           fetchTaskList={fetchTaskList}
         />
@@ -1394,6 +1415,8 @@ const OrgLevelTaskList = () => {
           selectedTaskId={selectedTaskId}
           loading={loading}
           isBulk={isBulk}
+          selectedTaskDetails={selectedTaskDetails}
+          projectId={selectedProjectId}
         />
       )}
 
