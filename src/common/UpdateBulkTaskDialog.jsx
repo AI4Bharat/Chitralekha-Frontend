@@ -43,8 +43,8 @@ const UpdateBulkTaskDialog = ({
   selectedTaskId,
   selectedTaskDetails,
   isBulk,
+  projectId,
 }) => {
-  const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = ProjectStyle();
 
