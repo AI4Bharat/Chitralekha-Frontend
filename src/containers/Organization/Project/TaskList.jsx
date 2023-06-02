@@ -663,7 +663,7 @@ const TaskList = () => {
       selectedFilters.status.length > 0
     ) {
       statusFilter = taskList.tasks_list.filter((value) => {
-        if (selectedFilters.status.includes(value.status_label)) {
+        if (selectedFilters.status.includes(value.status)) {
           return value;
         }
       });
@@ -676,7 +676,7 @@ const TaskList = () => {
       selectedFilters.taskType.length > 0
     ) {
       TaskTypefilter = statusFilter.filter((value) => {
-        if (selectedFilters.taskType.includes(value.task_type_label)) {
+        if (selectedFilters.taskType.includes(value.task_type)) {
           return value;
         }
       });
