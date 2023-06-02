@@ -33,7 +33,6 @@ import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTyp
 import Loader from "./Spinner";
 import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
 import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
-import { useParams } from "react-router";
 
 const UpdateBulkTaskDialog = ({
   open,
@@ -43,8 +42,8 @@ const UpdateBulkTaskDialog = ({
   selectedTaskId,
   selectedTaskDetails,
   isBulk,
+  projectId,
 }) => {
-  const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = ProjectStyle();
 

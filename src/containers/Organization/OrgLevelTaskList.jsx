@@ -95,6 +95,7 @@ const OrgLevelTaskList = () => {
     videoId: "",
     targetLang: "",
   });
+  const [selectedProjectId, setSelectedProjectId] = useState("");
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
@@ -565,6 +566,7 @@ const OrgLevelTaskList = () => {
                 videoId: tableData.rowData[18],
                 targetLang: tableData.rowData[8],
               });
+              setSelectedProjectId(tableData.rowData[19])
               setOpenEditTaskDialog(true);
               setIsBulk(false);
             }}
@@ -618,12 +620,13 @@ const OrgLevelTaskList = () => {
           item.time_spent,
           item.description,
           item.buttons,
-          item.video
+          item.video,
+          item.project,
         ];
       })
     : [];
 
-  const handleShowSearch = (col, event) => {
+    const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     setSearchedCol({
       label: col.label,
@@ -967,6 +970,13 @@ const OrgLevelTaskList = () => {
       },
       {
         name: "buttons",
+        label: "",
+        options: {
+          display: "excluded",
+        },
+      },
+      {
+        name: "project",
         label: "",
         options: {
           display: "excluded",
@@ -1351,6 +1361,7 @@ const OrgLevelTaskList = () => {
           selectedTaskId={selectedTaskId}
           loading={loading}
           isBulk={isBulk}
+          projectId={selectedProjectId}
         />
       )}
 

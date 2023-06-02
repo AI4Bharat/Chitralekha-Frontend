@@ -1178,6 +1178,7 @@ const TaskList = () => {
           selectedTaskDetails={selectedTaskDetails}
           loading={loading}
           isBulk={isBulk}
+          projectId={projectId}
         />
       )}
 
