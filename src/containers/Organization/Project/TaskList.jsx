@@ -636,8 +636,8 @@ const TaskList = () => {
                 videoId: tableData.rowData[18],
                 targetLang: tableData.rowData[7],
               });
-              setOpenEditTaskDialog(true);
               setIsBulk(false);
+              setOpenEditTaskDialog(true);
             }}
           >
             <AppRegistrationIcon />

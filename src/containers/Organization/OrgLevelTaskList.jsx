@@ -566,7 +566,7 @@ const OrgLevelTaskList = () => {
                 videoId: tableData.rowData[18],
                 targetLang: tableData.rowData[8],
               });
-              setSelectedProjectId(tableData.rowData[19])
+              setSelectedProjectId(tableData.rowData[19]);
               setOpenEditTaskDialog(true);
               setIsBulk(false);
             }}
