@@ -66,6 +66,7 @@ import TableStyles from "../../../styles/tableStyles";
 import { taskListColumns } from "../../../config/tableColumns";
 import UploadToYoutubeAPI from "../../../redux/actions/api/Project/UploadToYoutube";
 import UploadAlertComponent from "../../../common/UploadAlertComponent";
+import UploadFormatDialog from "../../../common/UploadFormatDialog";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -121,6 +122,10 @@ const TaskList = () => {
   const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
   const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
   const [uploadLoading, setUploadLoading] = useState([]);
+  const [openUploadDialog, setOpenUploadDialog] = useState(false);
+  const [uploadTaskId, setUploadTaskId] = useState("");
+  const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
+  const [uploadExportType, setUploadExportType] = useState("srt");
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -472,12 +477,13 @@ const TaskList = () => {
     }
   };
 
-  const handleUploadSubtitle = async (id, rowIndex) => {
+  const handleUploadSubtitle = async (id, rowIndex, exportType = "srt") => {
+    setOpenUploadDialog(false);
     const loadingArray = [...uploadLoading];
     loadingArray[rowIndex] = true;
     setUploadLoading(loadingArray);
 
-    const apiObj = new UploadToYoutubeAPI(id);
+    const apiObj = new UploadToYoutubeAPI(id, exportType);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "POST",
@@ -503,6 +509,12 @@ const TaskList = () => {
         variant: "error",
       });
     }
+  };
+
+  const handleOpenSubtitleUploadDialog = (id, rowIndex) => {
+    setOpenUploadDialog(true);
+    setUploadTaskId(id);
+    setUploadTaskRowIndex(rowIndex);
   };
 
   const renderViewButton = (tableData) => {
@@ -584,26 +596,34 @@ const TaskList = () => {
   };
 
   const renderUploadButton = (tableData) => {
-    return (tableData.rowData[16]?.Upload &&
+    return (
+      tableData.rowData[16]?.Upload &&
       (uploadLoading[tableData.rowIndex] ? (
-      <Loader size={25} margin="8px" />
-    ) : (
-      <Tooltip title="Upload Subtitles to Youtube">
-        <IconButton
-          color="primary"
-          onClick={() =>
-            handleUploadSubtitle([tableData.rowData[0]], tableData.rowIndex)
-          }
-        >
-          <UploadIcon />
-        </IconButton>
-      </Tooltip>
-      )
-    ));
+        <Loader size={25} margin="8px" />
+      ) : (
+        <Tooltip title="Upload Subtitles to Youtube">
+          <IconButton
+            color="primary"
+            onClick={() =>
+              tableData.rowData[1].includes("TRANSCRIPTION")
+                ? handleOpenSubtitleUploadDialog(
+                    [tableData.rowData[0]],
+                    tableData.rowIndex
+                  )
+                : handleUploadSubtitle(
+                    [tableData.rowData[0]],
+                    tableData.rowIndex
+                  )
+            }
+          >
+            <UploadIcon />
+          </IconButton>
+        </Tooltip>
+      ))
+    );
   };
 
   const renderUpdateTaskButton = (tableData) => {
-    console.log(tableData.rowData,'tableData.rowData');
     return (
       tableData.rowData[16]?.Update && (
         <Tooltip title="Edit Task Details">
@@ -1208,6 +1228,22 @@ const TaskList = () => {
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+        />
+      )}
+
+      {openUploadDialog && (
+        <UploadFormatDialog
+          open={openUploadDialog}
+          handleClose={() => setOpenUploadDialog(false)}
+          uploadExportType={uploadExportType}
+          setUploadExportType={setUploadExportType}
+          handleSubtitleUpload={() =>
+            handleUploadSubtitle(
+              uploadTaskId,
+              uploadTaskRowIndex,
+              uploadExportType
+            )
+          }
         />
       )}
     </>
