@@ -991,7 +991,6 @@ const OrgLevelTaskList = () => {
           className: tableClasses.cellHeaderProps,
         }),
         customBodyRender: (value, tableMeta) => {
-          console.log("valueee", value);
           return (
             <Box
               style={{

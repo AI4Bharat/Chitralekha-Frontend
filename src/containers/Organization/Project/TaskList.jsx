@@ -95,7 +95,11 @@ const TaskList = () => {
   const [loading, setLoading] = useState(false);
   const [isBulk, setIsBulk] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState("");
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState([]);
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState({
+    taskType: "",
+    videoId: "",
+    targetLang: "",
+  });
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
   const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
@@ -599,7 +603,6 @@ const TaskList = () => {
   };
 
   const renderUpdateTaskButton = (tableData) => {
-    console.log(tableData.rowData,'tableData.rowData');
     return (
       tableData.rowData[16]?.Update && (
         <Tooltip title="Edit Task Details">
@@ -607,9 +610,13 @@ const TaskList = () => {
             color="primary"
             onClick={() => {
               setSelectedTaskId(tableData.rowData[0]);
-              setSelectedTaskDetails(tableData.rowData);
-              setOpenEditTaskDialog(true);
+              setSelectedTaskDetails({
+                taskType: tableData.rowData[1],
+                videoId: tableData.rowData[18],
+                targetLang: tableData.rowData[7],
+              });
               setIsBulk(false);
+              setOpenEditTaskDialog(true);
             }}
           >
             <AppRegistrationIcon />
@@ -1170,6 +1177,7 @@ const TaskList = () => {
           selectedTaskDetails={selectedTaskDetails}
           loading={loading}
           isBulk={isBulk}
+          projectId={projectId}
         />
       )}
 
