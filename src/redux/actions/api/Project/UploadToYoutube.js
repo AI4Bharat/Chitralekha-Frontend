@@ -2,9 +2,10 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 
 export default class UploadToYoutubeAPI extends API {
-  constructor(taskId, timeout = 2000) {
+  constructor(taskId, exportType, timeout = 2000) {
     super("POST", timeout, false);
     this.taskId = taskId;
+    this.exportType = exportType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.youtube
     }upload_to_youtube`;
@@ -22,7 +23,7 @@ export default class UploadToYoutubeAPI extends API {
   }
 
   getBody() {
-    return { task_ids: this.taskId };
+    return { task_ids: this.taskId, export_type: this.exportType };
   }
 
   getHeaders() {
