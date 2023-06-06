@@ -61,7 +61,7 @@ const AlertComponent = ({ open, message, report, onClose }) => {
                       <Box className={classes.contentStatus}>
                         <Box className={classes.contentStatusTop}>
                         {
-                          item.task_type.includes("Translation")
+                          !item.task_type.includes("Transcription")
                             ? `${item.source_language} - ${item.target_language}`
                             : item.source_language
                         }
