@@ -142,7 +142,6 @@ export const onSubtitleDelete = (index) => {
 export const onSplit = (
   currentIndex,
   selectionStart,
-  type,
   timings = null,
   targetSelectionStart = null
 ) => {
@@ -305,56 +304,57 @@ export const placementMenu = [
 
 export const onUndoAction = (lastAction) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  if (lastAction.type === "merge") {
-    return (
-      onSplit(
-        lastAction.index,
-        lastAction.selectionStart >= subtitles[lastAction.index].text.length
-          ? subtitles[lastAction.index].text.length / 2
-          : lastAction.selectionStart,
-        lastAction.timings,
-        lastAction.targetSelectionStart >=
-          subtitles[lastAction.index].target_text.length
-          ? subtitles[lastAction.index].target_text.length / 2
-          : lastAction.targetSelectionStart
-      ) ?? subtitles
-    );
-  } else if (lastAction.type === "split") {
-    return onMerge(lastAction.index) ?? subtitles;
-  } else if (lastAction.type === "delete") {
-    const copySub = copySubs(subtitles);
-    copySub.splice(lastAction.index, 0, lastAction.data);
-    return copySub;
-  } else if (lastAction.type === "add") {
-    return onSubtitleDelete(lastAction.index + 1);
+
+  const { type, index, selectionStart, targetSelectionStart, timings, data } =
+    lastAction;
+
+  switch (type) {
+    case "merge":
+      return (
+        onSplit(index, selectionStart, timings, targetSelectionStart) ||
+        subtitles
+      );
+
+    case "split":
+      return onMerge(index) || subtitles;
+
+    case "delete":
+      const copySub = copySubs();
+      copySub.splice(index, 0, data);
+      return copySub;
+
+    case "add":
+      return onSubtitleDelete(index + 1);
+
+    default:
+      return subtitles;
   }
-  return subtitles;
 };
 
 export const onRedoAction = (lastAction) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  if (lastAction.type === "merge") {
-    return onMerge(lastAction.index) ?? subtitles;
-  } else if (lastAction.type === "split") {
-    return (
-      onSplit(
-        lastAction.index,
-        lastAction.selectionStart >= subtitles[lastAction.index].text.length
-          ? subtitles[lastAction.index].text.length / 2
-          : lastAction.selectionStart,
-        lastAction.timings,
-        lastAction.targetSelectionStart >=
-          subtitles[lastAction.index].target_text.length
-          ? subtitles[lastAction.index].target_text.length / 2
-          : lastAction.targetSelectionStart
-      ) ?? subtitles
-    );
-  } else if (lastAction.type === "delete") {
-    return onSubtitleDelete(lastAction.index);
-  } else if (lastAction.type === "add") {
-    return addSubtitleBox(lastAction.index);
+  const { type, index, selectionStart, targetSelectionStart, timings } =
+    lastAction;
+
+  switch (type) {
+    case "merge":
+      return onMerge(index) || subtitles;
+
+    case "split":
+      return (
+        onSplit(index, selectionStart, timings, targetSelectionStart) ||
+        subtitles
+      );
+
+    case "delete":
+      return onSubtitleDelete(index);
+
+    case "add":
+      return addSubtitleBox(index);
+
+    default:
+      return subtitles;
   }
-  return subtitles;
 };
 
 export const setAudioContent = (index, audio) => {
@@ -413,4 +413,38 @@ export const isPlaying = (player) => {
     !player.ended &&
     player.readyState > 2
   );
+};
+
+export const getSelectionStart = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  return subtitles[index].text.length;
+};
+
+export const getTargetSelectionStart = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  return subtitles[index].target_text.length;
+};
+
+export const getTimings = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
+  const timings = [
+    {
+      start: subtitles[index].start_time,
+      end: subtitles[index].end_time,
+    },
+    {
+      start: subtitles[index + 1]?.start_time,
+      end: subtitles[index + 1]?.end_time,
+    },
+  ];
+
+  return timings;
+};
+
+export const getItemForDelete = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const data = subtitles[index];
+
+  return data;
 };
