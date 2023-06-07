@@ -19,8 +19,11 @@ import {
   onSubtitleChange,
   onSubtitleDelete,
   timeChange,
-  // onUndoAction,
-  // onRedoAction,
+  onUndoAction,
+  onRedoAction,
+  getSelectionStart,
+  getTimings,
+  getItemForDelete,
 } from "../../../utils/subtitleUtils";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
@@ -28,6 +31,7 @@ import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import Pagination from "./components/Pagination";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
+import { useRef } from "react";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -53,7 +57,6 @@ const RightPanel = ({ currentIndex }) => {
   );
   const limit = useSelector((state) => state.commonReducer.limit);
 
-  // const [sourceText, setSourceText] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
@@ -69,8 +72,8 @@ const RightPanel = ({ currentIndex }) => {
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
-  // const [undoStack, setUndoStack] = useState([]);
-  // const [redoStack, setRedoStack] = useState([]);
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
 
   useEffect(() => {
     if (currentPage) {
@@ -95,37 +98,40 @@ const RightPanel = ({ currentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
+  const prevOffsetRef = useRef(currentOffset);
   useEffect(() => {
+    if (prevOffsetRef.current !== currentOffset) {
+      setUndoStack([]);
+      setRedoStack([]);
+      prevOffsetRef.current = currentOffset
+    }
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
   }, [limit, currentOffset]);
 
-  const onMergeClick = useCallback((index) => {
-    // const selectionStart = subtitles[index].text.length;
+  const onMergeClick = useCallback(
+    (index) => {
+      const selectionStart = getSelectionStart(index);
+      const timings = getTimings(index);
 
-    const sub = onMerge(index);
+      setUndoStack((prevState) => [
+        ...prevState,
+        {
+          type: "merge",
+          index: index,
+          timings,
+          selectionStart,
+        },
+      ]);
+      setRedoStack([]);
 
-    // const timings = [{
-    //   start: subtitles[index].start_time,
-    //   end: subtitles[index].end_time,
-    // },
-    // {
-    //   start: subtitles[index + 1]?.start_time,
-    //   end: subtitles[index + 1]?.end_time,
-    // }]
-
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-
-    // setUndoStack([...undoStack, {
-    //   type: "merge",
-    //   index: index,
-    //   selectionStart: selectionStart,
-    // }]);
-    // setRedoStack([]);
-    saveTranscriptHandler(false, true, sub);
-
+      const sub = onMerge(index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, true, sub);
+    },
     // eslint-disable-next-line
-  }, [limit, currentOffset]);
+    [limit, currentOffset]
+  );
 
   const onMouseUp = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
@@ -137,27 +143,33 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const onSplitClick = useCallback(() => {
+    setUndoStack((prevState) => [
+      ...prevState,
+      {
+        type: "split",
+        index: currentIndexToSplitTextBlock,
+        selectionStart
+      },
+    ]);
+    setRedoStack([]);
+
     const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
-
     dispatch(setSubtitles(sub, C.SUBTITLES));
-
-    // setUndoStack([...undoStack, {
-    //   type: "split",
-    //   index: currentIndexToSplitTextBlock,
-    //   selectionStart: selectionStart,
-    // }]);
-    // setRedoStack([]);
     saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
-  const changeTranscriptHandler = useCallback((text, index) => {
-    const sub = onSubtitleChange(text, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false, sub);
+  const changeTranscriptHandler = useCallback(
+    (text, index) => {
+      const sub = onSubtitleChange(text, index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, false, sub);
+    },
+
     // eslint-disable-next-line
-  }, [limit, currentOffset]);
+    [limit, currentOffset]
+  );
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -230,62 +242,89 @@ const RightPanel = ({ currentIndex }) => {
     );
   };
 
-  const handleTimeChange = useCallback((value, index, type, time) => {
-    const sub = timeChange(value, index, type, time);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, true, sub);
+  const handleTimeChange = useCallback(
+    (value, index, type, time) => {
+      const sub = timeChange(value, index, type, time);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, true, sub);
+    },
+    // eslint-disable-next-line
+    [limit, currentOffset]
+  );
+
+  const onDelete = useCallback(
+    (index) => {
+      setUndoStack((prevState) => [
+        ...prevState,
+        {
+          type: "delete",
+          index: index,
+          data: getItemForDelete(index),
+        },
+      ]);
+      setRedoStack([]);
+
+      const sub = onSubtitleDelete(index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, false, sub);
+    },
+    // eslint-disable-next-line
+    [limit, currentOffset]
+  );
+
+  const addNewSubtitleBox = useCallback(
+    (index) => {
+      const sub = addSubtitleBox(index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      saveTranscriptHandler(false, false, sub);
+
+      setUndoStack((prevState) => [
+        ...prevState,
+        {
+          type: "add",
+          index: index,
+        },
+      ]);
+      setRedoStack([]);
+    },
+    // eslint-disable-next-line
+    [limit, currentOffset]
+  );
+
+  const onUndo = useCallback(() => {
+    if (undoStack.length > 0) {
+      //getting last last action performed by user
+      const lastAction = undoStack[undoStack.length - 1];
+
+      // modifing subtitles based on last action
+      const sub = onUndoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+
+      //removing the last action from undo and putting in redo stack
+      setUndoStack(undoStack.slice(0, undoStack.length - 1));
+      setRedoStack((prevState) => [...prevState, lastAction]);
+    }
 
     // eslint-disable-next-line
-  }, [limit, currentOffset]);
+  }, [undoStack, redoStack]);
 
-  const onDelete = useCallback((index) => {
-    // const data = subtitles[index];
-    const sub = onSubtitleDelete(index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false, sub);
-    // setUndoStack([...undoStack, {
-    //   type: "delete",
-    //   index: index,
-    //   data: data,
-    // }]);
-    // setRedoStack([]);
+  const onRedo = useCallback(() => {
+    if (redoStack.length > 0) {
+      //getting last last action performed by user
+      const lastAction = redoStack[redoStack.length - 1];
 
-    // eslint-disable-next-line
-  }, [limit, currentOffset]);
+      // modifing subtitles based on last action
+      const sub = onRedoAction(lastAction);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
 
-  const addNewSubtitleBox = useCallback((index) => {
-    const sub = addSubtitleBox(index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false, sub);
-    // setUndoStack([...undoStack, {
-    //   type: "add",
-    //   index: index,
-    // }]);
-    // setRedoStack([]);
+      //removing the last action from redo and putting in undo stack
+      setRedoStack(redoStack.slice(0, redoStack.length - 1));
+      setUndoStack((prevState) => [...prevState, lastAction]);
+    }
 
     // eslint-disable-next-line
-  }, [limit, currentOffset]);
-
-  // const onUndo = useCallback(() => {
-  //   if (undoStack.length > 0) {
-  //     const lastAction = undoStack[undoStack.length - 1];
-  //     const sub = onUndoAction(lastAction);
-  //     dispatch(setSubtitles(sub, C.SUBTITLES));
-  //     setUndoStack(undoStack.slice(0, undoStack.length - 1));
-  //     setRedoStack([...redoStack, lastAction]);
-  //   }
-  // }, [undoStack, redoStack]);
-
-  // const onRedo = useCallback(() => {
-  //   if (redoStack.length > 0) {
-  //     const lastAction = redoStack[redoStack.length - 1];
-  //     const sub = onRedoAction(lastAction);
-  //     dispatch(setSubtitles(sub, C.SUBTITLES));
-  //     setRedoStack(redoStack.slice(0, redoStack.length - 1));
-  //     setUndoStack([...undoStack, lastAction]);
-  //   }
-  // }, [undoStack, redoStack]);
-
+  }, [undoStack, redoStack]);
+  console.log(redoStack, "redoStack");
   const targetLength = (index) => {
     if (subtitles[index]?.text.trim() !== "")
       return subtitles[index]?.text.trim().split(" ").length;
@@ -314,10 +353,10 @@ const RightPanel = ({ currentIndex }) => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
-            // onUndo={onUndo}
-            // onRedo={onRedo}
-            // undoStack={undoStack}
-            // redoStack={redoStack}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            undoStack={undoStack}
+            redoStack={redoStack}
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
             showSplit={true}
