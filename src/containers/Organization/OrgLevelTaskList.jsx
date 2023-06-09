@@ -55,7 +55,6 @@ import CompareTranscriptionSource from "../../redux/actions/api/Project/CompareT
 import setComparisonTable from "../../redux/actions/api/Project/SetComparisonTableData";
 import clearComparisonTable from "../../redux/actions/api/Project/ClearComparisonTable";
 import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
-import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
 import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
 import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
@@ -132,9 +131,6 @@ const OrgLevelTaskList = () => {
     (state) => state.getTranslationExportTypes.data.export_types
   );
   const taskList = useSelector((state) => state.getOrgTaskList.data);
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
-  );
 
   const fetchTaskList = () => {
     setLoading(true);
@@ -177,9 +173,6 @@ const OrgLevelTaskList = () => {
   };
 
   useEffect(() => {
-    const langObj = new FetchSupportedLanguagesAPI();
-    dispatch(APITransport(langObj));
-
     const transcriptExportObj = new FetchTranscriptExportTypesAPI();
     dispatch(APITransport(transcriptExportObj));
 
@@ -1381,7 +1374,6 @@ const OrgLevelTaskList = () => {
           handleClose={handleClose}
           updateFilters={setsSelectedFilters}
           currentFilters={selectedFilters}
-          supportedLanguages={supportedLanguages}
           taskList={taskList}
         />
       )}

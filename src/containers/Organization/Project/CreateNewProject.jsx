@@ -112,7 +112,7 @@ const CreatenewProject = () => {
     const bulkTaskObj = new FetchBulkTaskTypeAPI();
     dispatch(APITransport(bulkTaskObj));
 
-    const langObj = new FetchSupportedLanguagesAPI();
+    const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
 
     const orgObj = new FetchOrganizatioUsersAPI(orgId);
