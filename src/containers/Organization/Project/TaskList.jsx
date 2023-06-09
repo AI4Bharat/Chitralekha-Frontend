@@ -58,7 +58,6 @@ import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreview
 import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptExportTypes";
 import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
 import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
-import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
@@ -144,10 +143,6 @@ const TaskList = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    const langObj = new FetchSupportedLanguagesAPI();
-    dispatch(APITransport(langObj));
-
     return () => {
       dispatch({ type: C.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };

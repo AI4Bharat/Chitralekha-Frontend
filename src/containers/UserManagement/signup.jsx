@@ -114,7 +114,7 @@ const SignUp = () => {
     const apiObj = new FetchInviteUserInfoAPI(invitecode);
     dispatch(APITransport(apiObj));
 
-    const langObj = new FetchSupportedLanguagesAPI();
+    const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
 
     // eslint-disable-next-line
