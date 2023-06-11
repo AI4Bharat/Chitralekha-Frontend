@@ -69,3 +69,90 @@ export const getColumns = (config) => {
 
   return columns;
 };
+
+export const userReportDataParser = (data) => {
+  const displayData = [];
+  const dataInTable = [];
+
+  data.forEach((element) => {
+    dataInTable.push(element.data.slice(0, 7));
+  });
+
+  for (const item of dataInTable) {
+    const [_, secondElement, ...rest] = item;
+
+    const index = displayData.findIndex((arr) => {
+      return arr[1] === secondElement;
+    });
+
+    if (index === -1) {
+      displayData.push([_, secondElement, ...rest]);
+    } else {
+      for (let i = 0; i < rest.length; i++) {
+        if (typeof rest[i] === "number") {
+          displayData[index][i + 2] += rest[i];
+        }
+      }
+
+      displayData[index][4] = +(
+        (displayData[index][3] / displayData[index][2]) *
+        100
+      ).toFixed(2);
+
+      displayData[index][5] = item[5];
+    }
+  }
+  
+  displayData.forEach(element => {
+    element.push("-")
+  })
+  
+  const response = displayData.map((item, index) => {
+    return {
+      data: item,
+      dataIndex: index,
+    };
+  });
+
+  return { response, displayData };
+};
+
+export const transcriptLanguageReportDataParser = (data) => {
+  const displayData = [];
+  const dataInTable = [];
+
+  data.forEach((element) => {
+    dataInTable.push(element.data.slice(0, 2));
+  });
+
+  for (const item of dataInTable) {
+    const [firstElement, ...rest] = item;
+
+    const index = displayData.findIndex((arr) => {
+      return arr[0] === firstElement;
+    });
+
+    if (index === -1) {
+      displayData.push([firstElement, ...rest]);
+    } else {
+      for (let i = 0; i < rest.length; i++) {
+        if (typeof rest[i] === "number") {
+          displayData[index][i + 1] += rest[i];
+        }
+      }
+    }
+  }
+  
+  displayData.forEach(element => {
+    element.push("-")
+  })
+
+  const response = displayData.map((item, index) => {
+    return {
+      data: item,
+      dataIndex: index,
+    };
+  });
+
+  return { response, displayData };
+};
