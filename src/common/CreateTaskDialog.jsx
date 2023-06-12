@@ -69,14 +69,19 @@ const CreateTaskDialog = ({
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
 
-    const langObj = new FetchSupportedLanguagesAPI();
-    dispatch(APITransport(langObj));
-
     const bulkTaskObj = new FetchBulkTaskTypeAPI();
     dispatch(APITransport(bulkTaskObj));
 
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (taskType.length) {
+      const langObj = new FetchSupportedLanguagesAPI(taskType);
+      dispatch(APITransport(langObj));
+    }
+    // eslint-disable-next-line
+  }, [taskType]);
 
   const submitHandler = () => {
     const obj = {

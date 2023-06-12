@@ -101,7 +101,7 @@ const EditProfile = () => {
     getLoggedInUserData();
     getOrgList();
 
-    const langObj = new FetchSupportedLanguagesAPI();
+    const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
     // eslint-disable-next-line
   }, []);

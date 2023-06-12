@@ -11,10 +11,11 @@ import {
   Box,
   Chip,
   Checkbox,
+  Tooltip,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -36,7 +37,8 @@ import {
 } from "../../../utils/utils";
 import { colorArray } from "../../../utils/getColors";
 import StoreAccessTokenAPI from "../../../redux/actions/api/Project/StoreAccessToken";
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from "@react-oauth/google";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -82,7 +84,7 @@ const EditProject = () => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
     dispatch(APITransport(apiObj));
 
-    const langObj = new FetchSupportedLanguagesAPI();
+    const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
 
     const bulkTaskObj = new FetchBulkTaskTypeAPI();
@@ -247,7 +249,7 @@ const EditProject = () => {
 
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
-        const data = {
+      const data = {
         project_id: +projectId,
         auth_token: {
           client_id: process.env.REACT_APP_CLIENT_ID,
@@ -280,8 +282,22 @@ const EditProject = () => {
       }
     },
     scope: process.env.REACT_APP_SCOPE,
-    flow: 'auth-code',
+    flow: "auth-code",
   });
+
+  const toolTip = () => {
+    return (
+      <Typography sx={{ fontSize: "14px" }}>
+        The supported languages for 'Voice Over' task might be different than
+        the supported languages for Translation Tasks. Please make the choice
+        accordingly.{" "}
+        <a href="https://github.com/AI4Bharat/Chitralekha/wiki" target="blank" rel="noreferer">
+          Click here
+        </a>{" "}
+        to see all the supported languages.
+      </Typography>
+    );
+  };
 
   return (
     <>
@@ -533,14 +549,27 @@ const EditProject = () => {
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
-                <InputLabel id="targetlanguages">Target Languages</InputLabel>
+                <InputLabel id="targetlanguages">
+                  <Box display="flex" alignItems="center">
+                    <Box sx={{ mr: 1 }}>Target Languages</Box>
+                    <Tooltip arrow title={toolTip()} placement="top">
+                      <InfoOutlinedIcon />
+                    </Tooltip>
+                  </Box>
+                </InputLabel>
+
                 <Select
                   multiple
                   labelId="targetlanguages"
                   id="targetlanguages_select"
                   value={translationLanguage}
                   name="targetlanguages"
-                  label="Target Languages"
+                  label={
+                    <Fragment>
+                      Target Languages
+                      <InfoOutlinedIcon />
+                    </Fragment>
+                  }
                   onChange={(e) => setTranslationLanguage(e.target.value)}
                   MenuProps={MenuProps}
                   disabled={diableTargetLang(defaultTask)}
