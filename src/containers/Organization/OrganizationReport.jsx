@@ -25,12 +25,15 @@ import {
   MenuItem,
   Grid,
   Tooltip,
+  Button,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 
 //APIs
 import FetchOrganizationReportsAPI from "../../redux/actions/api/Organization/FetchOrganizationReports";
 import APITransport from "../../redux/actions/apitransport/apitransport";
+import ColumnSelector from "../../common/ColumnSelector";
 
 const OrganizationReport = () => {
   const { id } = useParams();
@@ -43,6 +46,11 @@ const OrganizationReport = () => {
   const [languageLevelsStats, setlanguageLevelStats] = useState("");
   const [options, setOptions] = useState();
   const [tableData, setTableData] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [originalTableData, setOriginalTableData] = useState([]);
+
+  const openSelector = Boolean(anchorEl);
+
   const apiStatus = useSelector((state) => state.apiStatus);
   const reportData = useSelector((state) => state.getOrganizationReports?.data);
   const SearchProject = useSelector((state) => state.searchList.data);
@@ -87,6 +95,7 @@ const OrganizationReport = () => {
   const OrgProjectReport = (rawData) => {
     let tempColumns = [];
     let tempSelected = [];
+
     if (rawData.length > 0 && rawData[0]) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
@@ -97,6 +106,7 @@ const OrganizationReport = () => {
             sort: false,
             align: "center",
             display: el[1].display ? "exclude" : "true",
+            viewColumns: el[1].viewColumns === false ? el[1].viewColumns : true,
             setCellHeaderProps: () => ({
               className: classes.cellHeaderProps,
             }),
@@ -148,41 +158,58 @@ const OrganizationReport = () => {
       });
 
       setTableData(result);
+      setOriginalTableData(result);
     }
   };
 
-  const handleTableChange = (action, tableState) => {
-    console.log(action, tableState, "tableState.");
-    const projectObject = tableState.columns.find((obj) => {
-      return obj.name === "project";
-    });
+  const handleTableChange = (columnName, data, tableName) => {
+    if (tableName === "User" && columnName === "project") {
+      setOriginalTableData(data);
 
-    if (projectObject && projectObject.display === "false") {
-      const { response, displayData } = userReportDataParser(
-        tableState.displayData
-      );
-
-      tableState.displayData = response;
-      tableState.data = response;
+      const displayData = userReportDataParser(data);
       setTableData(displayData);
     }
 
-    const transcriptLanguageObject = tableState.columns.find((obj) => {
-      return obj.name === "language";
-    });
-
-    if (
-      transcriptLanguageObject &&
-      transcriptLanguageObject.display === "false"
-    ) {
-      const { response, displayData } = transcriptLanguageReportDataParser(
-        tableState.displayData
-      );
+    if (tableName === "Project Language" && columnName === "language") {
+      setOriginalTableData(data);
       
-      tableState.displayData = response;
-      tableState.data = response;
+      const displayData = transcriptLanguageReportDataParser(data);
       setTableData(displayData);
     }
+  };
+
+  const handleColumnSelection = (e) => {
+    const selectedColumns = [...columns];
+
+    selectedColumns.forEach((element) => {
+      if (element.name === e.target.name) {
+        if (
+          element.options.display === "false" ||
+          element.options.display === "exclude"
+        ) {
+          element.options.display = "true";
+          setTableData(originalTableData);
+        } else {
+          element.options.display = "false";
+          handleTableChange(e.target.name, tableData, reportsLevel);
+        }
+      }
+    });
+
+    setColumns(selectedColumns);
+  };
+
+  const renderToolBar = () => {
+    return (
+      <Button
+        style={{ minWidth: "25px" }}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+      >
+        <Tooltip title={"View Column"}>
+          <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+        </Tooltip>
+      </Button>
+    );
   };
 
   useEffect(() => {
@@ -190,8 +217,8 @@ const OrganizationReport = () => {
 
     option = {
       ...option,
-      onTableChange: (action, tableState) =>
-        handleTableChange(action, tableState),
+      viewColumns: false,
+      customToolbar: renderToolBar,
     };
 
     setOptions(option);
@@ -259,6 +286,16 @@ const OrganizationReport = () => {
           options={options}
         />
       </ThemeProvider>
+
+      {openSelector && (
+        <ColumnSelector
+          anchorEl={anchorEl}
+          open={openSelector}
+          handleClose={() => setAnchorEl(null)}
+          columns={columns}
+          handleColumnSelection={handleColumnSelection}
+        />
+      )}
     </>
   );
 };

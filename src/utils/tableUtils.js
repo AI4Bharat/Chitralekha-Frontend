@@ -70,13 +70,8 @@ export const getColumns = (config) => {
   return columns;
 };
 
-export const userReportDataParser = (data) => {
+export const userReportDataParser = (dataInTable) => {
   const displayData = [];
-  const dataInTable = [];
-
-  data.forEach((element) => {
-    dataInTable.push(element.data.slice(0, 7));
-  });
 
   for (const item of dataInTable) {
     const [_, secondElement, ...rest] = item;
@@ -102,28 +97,16 @@ export const userReportDataParser = (data) => {
       displayData[index][5] = item[5];
     }
   }
-  
-  displayData.forEach(element => {
-    element.push("-")
-  })
-  
-  const response = displayData.map((item, index) => {
-    return {
-      data: item,
-      dataIndex: index,
-    };
+
+  displayData.forEach((element) => {
+    element.push("-");
   });
 
-  return { response, displayData };
+  return displayData;
 };
 
-export const transcriptLanguageReportDataParser = (data) => {
+export const transcriptLanguageReportDataParser = (dataInTable) => {
   const displayData = [];
-  const dataInTable = [];
-
-  data.forEach((element) => {
-    dataInTable.push(element.data.slice(0, 2));
-  });
 
   for (const item of dataInTable) {
     const [firstElement, ...rest] = item;
@@ -142,17 +125,10 @@ export const transcriptLanguageReportDataParser = (data) => {
       }
     }
   }
-  
-  displayData.forEach(element => {
-    element.push("-")
-  })
 
-  const response = displayData.map((item, index) => {
-    return {
-      data: item,
-      dataIndex: index,
-    };
+  displayData.forEach((element) => {
+    element.push("-");
   });
 
-  return { response, displayData };
+  return displayData;
 };
