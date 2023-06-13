@@ -728,7 +728,7 @@ const EditProject = () => {
                   padding="40px"
                   margin="32px 0 0 32px"
                   alignItems="center"
-                  justifyContent="space-around"
+                  justifyContent="center"
                   border="1px solid #eaeaea"
                 >
                   {defaultTask.map((item, index) => {
