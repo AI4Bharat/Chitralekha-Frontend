@@ -20,9 +20,9 @@ const TableStyles = makeStyles({
     width: "60px",
   },
 
-  cellProps: {
-    height: "40px",
-  },
+  // cellProps: {
+  //   height: "40px",
+  // },
 
   customTableHeader: {
     display: "flex",
