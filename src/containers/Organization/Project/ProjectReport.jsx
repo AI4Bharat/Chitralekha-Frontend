@@ -109,7 +109,7 @@ const ProjectReport = () => {
             setCellHeaderProps: () => ({
               className: classes.cellHeaderProps,
             }),
-            setCellProps: () => ({ style: { height: "40px" } }),
+            // setCellProps: () => ({ style: { height: "40px" } }),
             customBodyRender: (value) => {
               return value === null ? "-" : value;
             },
