@@ -291,7 +291,7 @@ const EditProject = () => {
         The supported languages for 'Voice Over' task might be different than
         the supported languages for Translation Tasks. Please make the choice
         accordingly.{" "}
-        <a href="#" target="blank" rel="noreferer">
+        <a href="https://github.com/AI4Bharat/Chitralekha/wiki" target="blank" rel="noreferer">
           Click here
         </a>{" "}
         to see all the supported languages.
