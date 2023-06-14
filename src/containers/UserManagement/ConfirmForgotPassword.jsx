@@ -11,19 +11,17 @@ import {
 } from "@mui/material";
 import LoginStyle from "../../styles/loginStyle";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import OutlinedTextField from "../../common/OutlinedTextField";
 import AppInfo from "./AppInfo";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
 import ConfirmForgotPasswordAPI from "../../redux/actions/api/User/ConfirmForgotPassword";
-import APITransport from "../../redux/actions/apitransport/apitransport";
 
 const ConfirmForgetPassword = () => {
   const classes = LoginStyle();
-  const { uid, token } = useParams();
-  const dispatch = useDispatch();
+  const { key, token } = useParams();
   const apiStatus = useSelector((state) => state.apiStatus);
 
   const [values, setValues] = useState({
@@ -65,9 +63,27 @@ const ConfirmForgetPassword = () => {
     // eslint-disable-next-line
   }, [apiStatus]);
 
-  const handleSubmit = () => {
-    let obj = new ConfirmForgotPasswordAPI(uid, token, values.confirmPassword);
-    dispatch(APITransport(obj));
+  const handleSubmit = async () => {
+    let obj = new ConfirmForgotPasswordAPI(key, token, values.confirmPassword);
+    const res = await fetch(obj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(obj.getBody()),
+      headers: obj.getHeaders().headers,
+    });
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: "Password Updated Successfully!",
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong, please try again",
+        variant: "error",
+      });
+    }
   };
 
   const handleConfirmForgetPassword = () => {
@@ -97,7 +113,7 @@ const ConfirmForgetPassword = () => {
         open={snackbar.open}
         handleClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
       >
         <Alert severity={snackbar.variant}>{snackbar.message}</Alert>
       </Snackbar>
