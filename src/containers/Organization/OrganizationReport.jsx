@@ -163,16 +163,13 @@ const OrganizationReport = () => {
   };
 
   const handleTableChange = (columnName, data, tableName) => {
+    setOriginalTableData(data);
     if (tableName === "User" && columnName === "project") {
-      setOriginalTableData(data);
-
       const displayData = userReportDataParser(data);
       setTableData(displayData);
     }
 
     if (tableName === "Project Language" && columnName === "language") {
-      setOriginalTableData(data);
-      
       const displayData = transcriptLanguageReportDataParser(data);
       setTableData(displayData);
     }
@@ -182,13 +179,20 @@ const OrganizationReport = () => {
     const selectedColumns = [...columns];
 
     selectedColumns.forEach((element) => {
+      const {
+        options: { display },
+      } = element;
+
       if (element.name === e.target.name) {
-        if (
-          element.options.display === "false" ||
-          element.options.display === "exclude"
-        ) {
+        if (display === "false" || display === "exclude") {
           element.options.display = "true";
-          setTableData(originalTableData);
+          if (e.target.name === "project") {
+            createTableData(reportData);
+          } else if (e.target.name === "language") {
+            createTableData(reportData.transcript_stats);
+          } else {
+            setTableData(originalTableData);
+          }
         } else {
           element.options.display = "false";
           handleTableChange(e.target.name, tableData, reportsLevel);
