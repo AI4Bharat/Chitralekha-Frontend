@@ -29,11 +29,7 @@ import { MenuProps } from "../utils/utils";
 import { Box } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import {
-  genderOptions,
-  speakerFields,
-  voiceOptions,
-} from "../config/projectConfigs";
+import { speakerFields, voiceOptions } from "../config/projectConfigs";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -133,6 +129,15 @@ const CreateVideoDialog = ({
 
       if (isEmptyKeyPresent) {
         return true;
+      }
+
+      const idSet = new Set();
+
+      for (const item of speakerInfo) {
+        if (idSet.has(item.id)) {
+          return true;
+        }
+        idSet.add(item.id);
       }
     }
 
@@ -337,7 +342,7 @@ const CreateVideoDialog = ({
                                 inputProps={{ "aria-label": "Without label" }}
                                 MenuProps={MenuProps}
                               >
-                                {genderOptions?.map((item, index) => (
+                                {element.options.map((item, index) => (
                                   <MenuItem key={index} value={item.value}>
                                     {item.label}
                                   </MenuItem>

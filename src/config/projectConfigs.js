@@ -1,3 +1,33 @@
+export const genderOptions = [
+  {
+    label: "Male",
+    value: "Male",
+  },
+  {
+    label: "Female",
+    value: "Female",
+  },
+];
+
+export const ageGroupOptions = [
+  {
+    label: "1-10",
+    value: "1-10",
+  },
+  {
+    label: "11-20",
+    value: "11-20",
+  },
+  {
+    label: "21-60",
+    value: "21-60",
+  },
+  {
+    label: "61-100",
+    value: "61-100",
+  },
+];
+
 export const speakerFields = [
   {
     label: "Enter Speaker Name",
@@ -29,6 +59,7 @@ export const speakerFields = [
       width: "49.5%",
       backgroundColor: "#fff",
     },
+    options: genderOptions,
   },
   {
     label: "Select Age group",
@@ -39,6 +70,7 @@ export const speakerFields = [
       width: "49.5%",
       backgroundColor: "#fff",
     },
+    options: ageGroupOptions,
   },
 ];
 
@@ -49,17 +81,6 @@ export const voiceOptions = [
   },
   {
     label: "Female - Adult",
-    value: "Female",
-  },
-];
-
-export const genderOptions = [
-  {
-    label: "Male",
-    value: "Male",
-  },
-  {
-    label: "Female",
     value: "Female",
   },
 ];
