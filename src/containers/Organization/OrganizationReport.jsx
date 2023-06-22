@@ -87,14 +87,13 @@ const OrganizationReport = () => {
     }
 
     createTableData(rawData);
-    OrgProjectReport(rawData);
+    createReportColumns(rawData);
 
     // eslint-disable-next-line
   }, [reportData, languageLevelsStats, reportsLevel]);
 
-  const OrgProjectReport = (rawData) => {
+  const createReportColumns = (rawData) => {
     let tempColumns = [];
-    let tempSelected = [];
 
     if (rawData.length > 0 && rawData[0]) {
       Object.entries(rawData[0]).forEach((el) => {
@@ -127,7 +126,6 @@ const OrganizationReport = () => {
             },
           },
         });
-        tempSelected.push(el[0]);
       });
     }
 
