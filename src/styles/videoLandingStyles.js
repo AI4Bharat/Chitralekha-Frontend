@@ -476,7 +476,7 @@ const VideoLandingStyle = makeStyles({
     width: "30px",
     borderRadius: "50%",
     position: "absolute",
-    bottom: "11px",
+    bottom: "-25px",
     right: "10px",
     textAlign: "center",
   },

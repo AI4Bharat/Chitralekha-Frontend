@@ -448,3 +448,11 @@ export const getItemForDelete = (index) => {
 
   return data;
 };
+
+export const assignSpeakerId = (id, index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  copySub[index].speaker_id = id;
+
+  return copySub;
+};

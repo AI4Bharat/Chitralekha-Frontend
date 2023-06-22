@@ -36,6 +36,7 @@ import {
   getSelectionStart,
   getTimings,
   getItemForDelete,
+  assignSpeakerId,
 } from "../../../utils/subtitleUtils";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
@@ -74,6 +75,7 @@ const RightPanel = ({ currentIndex }) => {
     (state) => state.getTranscriptPayload.data
   );
   const limit = useSelector((state) => state.commonReducer.limit);
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -92,10 +94,22 @@ const RightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState([]);
+  const [speakerIdList, setSpeakerIdList] = useState([]);
 
   const [showTagSuggestionsAnchorEl, setShowTagSuggestionsAnchorEl] =
     useState(null);
   const [tagSuggestionList, setTagSuggestionList] = useState();
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+      const idList = videoDetails?.video?.speaker_info?.map((speaker) => {
+        return speaker.id;
+      });
+      setSpeakerIdList(idList);
+      setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+    }
+  }, [videoDetails]);
 
   useEffect(() => {
     if (currentPage) {
@@ -428,6 +442,12 @@ const RightPanel = ({ currentIndex }) => {
     getPayload(value, limit);
   };
 
+  const handleSpeakerChange = (id, index) => {
+    const sub = assignSpeakerId(id, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -571,7 +591,7 @@ const RightPanel = ({ currentIndex }) => {
                     </div>
                   )}
 
-                  <Box sx={{ border: "1px solid rgb(224 224 224)" }}>
+                  <Box>
                     <Popover
                       id={"'simple-popover'"}
                       open={Boolean(showTagSuggestionsAnchorEl)}
@@ -590,25 +610,38 @@ const RightPanel = ({ currentIndex }) => {
                   </Box>
                 </CardContent>
 
-                <FormControl sx={{ width: "50%", mr: "auto" }} size="small">
-                  <InputLabel id="select-speaker">Select Speaker</InputLabel>
-                  <Select
-                    fullWidth
-                    labelId="select-speaker"
-                    label="Select Speaker"
-                    // value={voice}
-                    // onChange={(event) => setVoice(event.target.value)}
-                    style={{ zIndex: "0", backgroundColor: "#fff" }}
-                    inputProps={{ "aria-label": "Without label" }}
-                    MenuProps={MenuProps}
+                {showSpeakerIdDropdown ? (
+                  <FormControl
+                    sx={{ width: "50%", mr: "auto", float: "left" }}
+                    size="small"
                   >
-                    {voiceOptions?.map((item, index) => (
-                      <MenuItem key={index} value={item.value}>
-                        {item.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                    <InputLabel id="select-speaker">Select Speaker</InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="select-speaker"
+                      label="Select Speaker"
+                      value={item.speaker_id}
+                      onChange={(event) =>
+                        handleSpeakerChange(event.target.value, index)
+                      }
+                      style={{
+                        backgroundColor: "#fff",
+                        textAlign: "left",
+                      }}
+                      inputProps={{
+                        "aria-label": "Without label",
+                        style: { textAlign: "left" },
+                      }}
+                      MenuProps={MenuProps}
+                    >
+                      {speakerIdList?.map((speaker, index) => (
+                        <MenuItem key={index} value={speaker}>
+                          {speaker}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : null}
               </Box>
             );
           })}

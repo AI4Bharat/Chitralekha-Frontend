@@ -12,6 +12,7 @@ export default class CreateNewVideoAPI extends API {
     create,
     gender,
     speakerInfo,
+    speakerType,
     timeout = 2000
   ) {
     super("GET", timeout, false);
@@ -23,11 +24,12 @@ export default class CreateNewVideoAPI extends API {
     this.description = description;
     this.gender = gender;
     this.speakerInfo = speakerInfo;
+    this.speakerType = speakerType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.video
     }?multimedia_url=${url}&lang=${language}&is_audio_only=${isAudio}&project_id=${projectId}&description=${description}&create=${create}&gender=${gender}&speaker_info=${JSON.stringify(
       speakerInfo
-    )}`;
+    )}&multiple_speaker=${speakerType === "multiple" ? true : false}`;
   }
 
   processResponse(res) {
