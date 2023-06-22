@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { snakeToTitleCase } from "../../../utils/utils";
-import { languagelevelStats, projectReportLevels } from "../../../config/reportConfig";
+import {
+  languagelevelStats,
+  projectReportLevels,
+} from "../../../config/reportConfig";
 
 //APIs
 import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
@@ -53,9 +56,15 @@ const ProjectReport = () => {
 
   let fetchedItems;
   useEffect(() => {
-    reportsLevel === "Language" && languageLevelsStats === "transcript_stats"
-      ? (fetchedItems = ProjectReportData.transcript_stats)
-      : (fetchedItems = ProjectReportData.translation_stats);
+    if (reportsLevel === "Language") {
+      if (languageLevelsStats === "transcript_stats") {
+        fetchedItems = ProjectReportData.transcript_stats;
+      } else if (languageLevelsStats === "translation_stats") {
+        fetchedItems = ProjectReportData.translation_stats;
+      } else if (languageLevelsStats === "voiceover_stats") {
+        fetchedItems = ProjectReportData.voiceover_stats;
+      }
+    }
 
     setProjectreport(fetchedItems);
     Projectreport();
