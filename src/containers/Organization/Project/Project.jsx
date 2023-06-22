@@ -103,6 +103,7 @@ const Project = () => {
       id: "",
     },
   ]);
+  const [speakerType, setSpeakerType] = useState("multiple");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -221,7 +222,8 @@ const Project = () => {
       desc,
       create,
       voice,
-      speakerInfo
+      speakerInfo,
+      speakerType
     );
 
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -539,6 +541,8 @@ const Project = () => {
           setVoice={setVoice}
           setSpeakerInfo={setSpeakerInfo}
           speakerInfo={speakerInfo}
+          speakerType={speakerType}
+          setSpeakerType={setSpeakerType} 
         />
       )}
 

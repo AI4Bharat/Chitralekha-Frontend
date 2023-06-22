@@ -50,11 +50,12 @@ const CreateVideoDialog = ({
   setVoice,
   setSpeakerInfo,
   speakerInfo,
+  speakerType, 
+  setSpeakerType
 }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [speakerType, setSpeakerType] = useState("multiple");
 
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");

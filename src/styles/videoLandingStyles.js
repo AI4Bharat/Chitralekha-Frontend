@@ -440,7 +440,7 @@ const VideoLandingStyle = makeStyles({
   },
 
   cardContent: {
-    padding: "16px 0 24px 0",
+    padding: "16px 0",
     alignItems: "center",
   },
 
@@ -459,7 +459,7 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
-    width: "95%",
+    width: "95.5%",
   },
 
   boxHighlight: {

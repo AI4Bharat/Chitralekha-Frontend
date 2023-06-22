@@ -12,6 +12,7 @@ export default class Sub {
     this.time_difference = obj.time_difference;
     this.id = obj.id;
     this.audio_speed = obj.audio_speed;
+    this.speaker_id = obj.speaker_id;
   }
 
   get check() {
