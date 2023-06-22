@@ -72,6 +72,8 @@ const ProjectReport = () => {
         rawData = projectReportData.transcript_stats;
       } else if (languageLevelsStats === "translation_stats") {
         rawData = projectReportData.translation_stats;
+      } else if (languageLevelsStats === "voiceover_stats") {
+        rawData = projectReportData.voiceover_stats;
       } else {
         rawData = [];
       }

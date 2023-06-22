@@ -79,6 +79,8 @@ const OrganizationReport = () => {
         rawData = reportData.transcript_stats;
       } else if (languageLevelsStats === "translation_stats") {
         rawData = reportData.translation_stats;
+      } else if (languageLevelsStats === "voiceover_stats") {
+        rawData = reportData.voiceover_stats;
       } else {
         rawData = [];
       }
