@@ -17,7 +17,6 @@ import TableStyles from "../../../styles/tableStyles";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import Loader from "../../../common/Spinner";
 import {
   ThemeProvider,
   FormControl,
@@ -25,27 +24,38 @@ import {
   Select,
   MenuItem,
   Grid,
+  Tooltip,
+  Button,
 } from "@mui/material";
+import ColumnSelector from "../../../common/ColumnSelector";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import { getOptions } from "../../../utils/tableUtils";
+import { isArray } from "lodash";
 
 const ProjectReport = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = TableStyles();
 
-  const [projectreport, setProjectreport] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [selectedColumns, setSelectedColumns] = useState([]);
   const [reportsLevel, setreportsLevel] = useState("");
   const [languageLevelsStats, setlanguageLevelStats] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [options, setOptions] = useState();
+
+  const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const ProjectReportData = useSelector(
+  const projectReportData = useSelector(
     (state) => state.getProjectReports?.data
   );
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
+    setlanguageLevelStats("");
+
     const apiObj = new FetchProjectReports(projectId, event.target.value);
     dispatch(APITransport(apiObj));
   };
@@ -54,60 +64,34 @@ const ProjectReport = () => {
     setlanguageLevelStats(event.target.value);
   };
 
-  let fetchedItems;
   useEffect(() => {
-    if (reportsLevel === "Language") {
+    let rawData = [];
+
+    if (reportsLevel.includes("Language")) {
       if (languageLevelsStats === "transcript_stats") {
-        fetchedItems = ProjectReportData.transcript_stats;
+        rawData = projectReportData.transcript_stats;
       } else if (languageLevelsStats === "translation_stats") {
-        fetchedItems = ProjectReportData.translation_stats;
+        rawData = projectReportData.translation_stats;
       } else if (languageLevelsStats === "voiceover_stats") {
-        fetchedItems = ProjectReportData.voiceover_stats;
+        rawData = projectReportData.voiceover_stats;
+      } else {
+        rawData = [];
       }
+    } else {
+      rawData = projectReportData;
     }
 
-    setProjectreport(fetchedItems);
-    Projectreport();
+    createTableData(rawData);
+    createReportColumns(rawData);
 
     // eslint-disable-next-line
-  }, [ProjectReportData, languageLevelsStats, reportsLevel]);
+  }, [projectReportData, languageLevelsStats, reportsLevel]);
 
-  useEffect(() => {
-    fetchedItems = ProjectReportData;
-
-    setProjectreport(fetchedItems);
-    Projectreport();
-
-    // eslint-disable-next-line
-  }, [ProjectReportData]);
-
-  const pageSearch = () => {
-    let result = [];
-    let tableData = projectreport.map((el) => {
-      let elementArr = [];
-      Object.values(el).filter(
-        (valEle, index) => (elementArr[index] = valEle.value)
-      );
-      return elementArr;
-    });
-
-    result = tableData.filter((ele, index) => {
-      return ele.some((valEle) =>
-        valEle
-          ?.toString()
-          .toLowerCase()
-          .includes(SearchProject?.toString().toLowerCase())
-      );
-    });
-
-    return result;
-  };
-
-  const Projectreport = () => {
+  const createReportColumns = (rawData) => {
     let tempColumns = [];
-    let tempSelected = [];
-    if (fetchedItems?.length > 0 && fetchedItems[0]) {
-      Object.entries(fetchedItems[0]).forEach((el, i) => {
+
+    if (rawData.length > 0 && rawData[0]) {
+      Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
           label: snakeToTitleCase(el[1].label),
@@ -115,58 +99,98 @@ const ProjectReport = () => {
             filter: false,
             sort: false,
             align: "center",
+            display: el[1].display ? "exclude" : "true",
+            viewColumns: el[1].viewColumns === false ? el[1].viewColumns : true,
             setCellHeaderProps: () => ({
               className: classes.cellHeaderProps,
             }),
-            // setCellProps: () => ({ style: { height: "40px" } }),
+            setCellProps: () => ({ className: classes.cellProps }),
             customBodyRender: (value) => {
+              if (isArray(value)) {
+                value = value.join(", ");
+              }
               return value === null ? "-" : value;
             },
           },
         });
-        tempSelected.push(el[0]);
       });
-    } else {
-      setProjectreport([]);
     }
+
     setColumns(tempColumns);
-    setSelectedColumns(tempSelected);
+  };
+
+  const createTableData = (rawData) => {
+    if (rawData?.length > 0) {
+      let result = [];
+
+      let tableData = rawData.map((el) => {
+        let elementArr = [];
+
+        Object.values(el).filter(
+          (valEle, index) => (elementArr[index] = valEle.value)
+        );
+
+        return elementArr;
+      });
+
+      result = tableData.filter((element) => {
+        return element.some((valEle) =>
+          valEle
+            ?.toString()
+            .toLowerCase()
+            .includes(SearchProject?.toString().toLowerCase())
+        );
+      });
+
+      setTableData(result);
+    }
+  };
+
+  const renderToolBar = () => {
+    return (
+      <Button
+        style={{ minWidth: "25px" }}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+      >
+        <Tooltip title={"View Column"}>
+          <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+        </Tooltip>
+      </Button>
+    );
   };
 
   useEffect(() => {
-    const newCols = columns.map((col) => {
-      col.options.display = selectedColumns.includes(col.name)
-        ? "true"
-        : "false";
-      return col;
-    });
-    setColumns(newCols);
-  }, [selectedColumns, columns]);
+    let option = getOptions(apiStatus.progress);
 
-  const options = {
-    textLabels: {
-      body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No records",
-      },
-      toolbar: {
-        search: "Search",
-        viewColumns: "View Column",
-      },
-      pagination: { rowsPerPage: "Rows per page" },
-      options: { sortDirection: "desc" },
-    },
-    displaySelectToolbar: false,
-    fixedHeader: false,
-    filterType: "checkbox",
-    download: true,
-    print: false,
-    rowsPerPageOptions: [10, 25, 50, 100],
-    filter: false,
-    viewColumns: true,
-    selectableRows: "none",
-    search: true,
-    jumpToPage: true,
-    // customToolbar: renderToolBar,
+    option = {
+      ...option,
+      viewColumns: false,
+      customToolbar: renderToolBar,
+    };
+
+    setOptions(option);
+
+    // eslint-disable-next-line
+  }, [apiStatus.progress]);
+
+  const handleColumnSelection = (e) => {
+    const selectedColumns = [...columns];
+
+    selectedColumns.forEach((element) => {
+      const {
+        options: { display },
+      } = element;
+
+      if (element.name === e.target.name) {
+        if (display === "false" || display === "exclude") {
+          element.options.display = "true";
+        } else {
+          element.options.display = "false";
+        }
+      }
+    });
+
+    setColumns(selectedColumns);
   };
 
   return (
@@ -224,8 +248,18 @@ const ProjectReport = () => {
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={pageSearch()} columns={columns} options={options} />
+        <MUIDataTable data={tableData} columns={columns} options={options} />
       </ThemeProvider>
+
+      {openSelector && (
+        <ColumnSelector
+          anchorEl={anchorEl}
+          open={openSelector}
+          handleClose={() => setAnchorEl(null)}
+          columns={columns}
+          handleColumnSelection={handleColumnSelection}
+        />
+      )}
     </>
   );
 };
