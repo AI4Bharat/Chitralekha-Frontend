@@ -1,6 +1,18 @@
 import React, { useCallback, useEffect, useState, memo } from "react";
 import Box from "@mui/material/Box";
-import { CardContent, Grid, useMediaQuery } from "@mui/material";
+import {
+  CardContent,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Popover,
+  Select,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
@@ -32,6 +44,12 @@ import Pagination from "./components/Pagination";
 import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import APITransport from "../../../redux/actions/apitransport/apitransport";
 import { useRef } from "react";
+import { MenuProps } from "../../../utils/utils";
+import {
+  tagsSuggestionData,
+  voiceOptions,
+} from "../../../config/projectConfigs";
+import CloseIcon from "@mui/icons-material/Close";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -75,6 +93,10 @@ const RightPanel = ({ currentIndex }) => {
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
 
+  const [showTagSuggestionsAnchorEl, setShowTagSuggestionsAnchorEl] =
+    useState(null);
+  const [tagSuggestionList, setTagSuggestionList] = useState();
+
   useEffect(() => {
     if (currentPage) {
       setCurrentOffset(currentPage);
@@ -103,7 +125,7 @@ const RightPanel = ({ currentIndex }) => {
     if (prevOffsetRef.current !== currentOffset) {
       setUndoStack([]);
       setRedoStack([]);
-      prevOffsetRef.current = currentOffset
+      prevOffsetRef.current = currentOffset;
     }
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
@@ -148,7 +170,7 @@ const RightPanel = ({ currentIndex }) => {
       {
         type: "split",
         index: currentIndexToSplitTextBlock,
-        selectionStart
+        selectionStart,
       },
     ]);
     setRedoStack([]);
@@ -162,6 +184,76 @@ const RightPanel = ({ currentIndex }) => {
 
   const changeTranscriptHandler = useCallback(
     (text, index) => {
+      const containsBackslash = text.includes("\\");
+      const textWithoutBackslash = text.split("\\")[0];
+      const currentTargetWord = text.split("\\")[1];
+
+      if (containsBackslash) {
+        let filteredSuggestionByInput = tagsSuggestionData.filter((el) =>
+          el.toLowerCase().includes(currentTargetWord.toLowerCase())
+        );
+
+        if (filteredSuggestionByInput.length) {
+          const suggestionTagsContainer = (
+            <Grid width={150}>
+              <Grid
+                position="fixed"
+                backgroundColor="#ffffff"
+                width="inherit"
+                textAlign={"end"}
+              >
+                <Tooltip title="close suggestions">
+                  <IconButton
+                    onClick={() => {
+                      setShowTagSuggestionsAnchorEl(null);
+                      // targetElement.focus();
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid
+                sx={{
+                  width: "max-content",
+                  maxHeight: 250,
+                  padding: 1,
+                }}
+              >
+                {filteredSuggestionByInput?.map((suggestion, idx) => {
+                  return (
+                    <Typography
+                      onClick={() => {
+                        const modifiedText = `${textWithoutBackslash}[${suggestion}]`;
+                        const sub = onSubtitleChange(modifiedText, index);
+                        dispatch(setSubtitles(sub, C.SUBTITLES));
+                        saveTranscriptHandler(false, false, sub);
+                        setShowTagSuggestionsAnchorEl(null);
+                      }}
+                      variant="body2"
+                      sx={{
+                        backgroundColor: "#ffffff",
+                        color: "#000",
+                        padding: 2,
+                        paddingTop: idx === 0 ? 6 : 2,
+                        "&:hover": {
+                          color: "white",
+                          backgroundColor: "#1890ff",
+                        },
+                      }}
+                    >
+                      {suggestion}
+                    </Typography>
+                  );
+                })}
+              </Grid>
+            </Grid>
+          );
+          setShowTagSuggestionsAnchorEl(true);
+          setTagSuggestionList(suggestionTagsContainer);
+        }
+      }
+
       const sub = onSubtitleChange(text, index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
       saveTranscriptHandler(false, false, sub);
@@ -324,7 +416,7 @@ const RightPanel = ({ currentIndex }) => {
 
     // eslint-disable-next-line
   }, [undoStack, redoStack]);
-  console.log(redoStack, "redoStack");
+
   const targetLength = (index) => {
     if (subtitles[index]?.text.trim() !== "")
       return subtitles[index]?.text.trim().split(" ").length;
@@ -370,7 +462,7 @@ const RightPanel = ({ currentIndex }) => {
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "15px",
+                  padding: "16px",
                   borderBottom: "1px solid lightgray",
                   backgroundColor:
                     index % 2 === 0
@@ -478,7 +570,45 @@ const RightPanel = ({ currentIndex }) => {
                       </span>
                     </div>
                   )}
+
+                  <Box sx={{ border: "1px solid rgb(224 224 224)" }}>
+                    <Popover
+                      id={"'simple-popover'"}
+                      open={Boolean(showTagSuggestionsAnchorEl)}
+                      anchorEl={showTagSuggestionsAnchorEl}
+                      onClose={() => {
+                        setShowTagSuggestionsAnchorEl(null);
+                        setTagSuggestionList(null);
+                      }}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                    >
+                      {tagSuggestionList}
+                    </Popover>
+                  </Box>
                 </CardContent>
+
+                <FormControl sx={{ width: "50%", mr: "auto" }} size="small">
+                  <InputLabel id="select-speaker">Select Speaker</InputLabel>
+                  <Select
+                    fullWidth
+                    labelId="select-speaker"
+                    label="Select Speaker"
+                    // value={voice}
+                    // onChange={(event) => setVoice(event.target.value)}
+                    style={{ zIndex: "0", backgroundColor: "#fff" }}
+                    inputProps={{ "aria-label": "Without label" }}
+                    MenuProps={MenuProps}
+                  >
+                    {voiceOptions?.map((item, index) => (
+                      <MenuItem key={index} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Box>
             );
           })}
