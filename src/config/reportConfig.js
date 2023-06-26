@@ -1,15 +1,14 @@
 export const reportLevels = [
-  { reportLevel: "Aggregated User", endPoint: "get_aggregated_report_users" },
-  { reportLevel: "Aggregated Language", endPoint: "get_aggregated_report_languages" },
-  { reportLevel: "Project", endPoint: "get_report_projects" },
-  { reportLevel: "User", endPoint: "get_report_users" },
-  { reportLevel: "Project Language", endPoint: "get_report_languages" },
   { reportLevel: "Task", endPoint: "get_tasks_report" },
+  { reportLevel: "User", endPoint: "get_report_users" },
+  { reportLevel: "Project", endPoint: "get_report_projects" },
+  { reportLevel: "Project Language", endPoint: "get_report_languages" },
 ];
 
 export const languagelevelStats = [
   { lable: "Transcript", value: "transcript_stats" },
   { lable: "Translation", value: "translation_stats" },
+  { lable: "Voiceover", value: "voiceover_stats" },
 ];
 
 export const projectReportLevels = [

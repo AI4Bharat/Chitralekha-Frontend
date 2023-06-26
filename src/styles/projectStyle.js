@@ -238,7 +238,8 @@ const ProjectStyle = makeStyles({
   },
 
   arrow: {
-    width: "100px",
+    margin: "0 10px",
+    width: "50px",
     height: "30px",
     display: "flex",
     clipPath:

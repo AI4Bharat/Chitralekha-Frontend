@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getOptions } from "../../utils/tableUtils";
+import {
+  getOptions,
+  transcriptLanguageReportDataParser,
+  // transcriptLanguageReportDataParser,
+  userReportDataParser,
+} from "../../utils/tableUtils";
 import { languagelevelStats, reportLevels } from "../../config/reportConfig";
 import { snakeToTitleCase } from "../../utils/utils";
 import { isArray } from "lodash";
@@ -20,13 +25,15 @@ import {
   MenuItem,
   Grid,
   Tooltip,
+  Button,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 
 //APIs
 import FetchOrganizationReportsAPI from "../../redux/actions/api/Organization/FetchOrganizationReports";
 import APITransport from "../../redux/actions/apitransport/apitransport";
-import { useRef } from "react";
+import ColumnSelector from "../../common/ColumnSelector";
 
 const OrganizationReport = () => {
   const { id } = useParams();
@@ -34,13 +41,19 @@ const OrganizationReport = () => {
   const classes = TableStyles();
   const projectClasses = ProjectStyle();
 
-  const [projectReport, setProjectReport] = useState([]);
   const [columns, setColumns] = useState([]);
   const [reportsLevel, setReportsLevel] = useState("");
   const [languageLevelsStats, setlanguageLevelStats] = useState("");
+  const [options, setOptions] = useState();
+  const [tableData, setTableData] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [originalTableData, setOriginalTableData] = useState([]);
+
+  const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const reportData = useSelector((state) => state.getOrganizationReports?.data);
+  const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
     setReportsLevel(event.target.value);
@@ -57,56 +70,35 @@ const OrganizationReport = () => {
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
   };
-  const SearchProject = useSelector((state) => state.searchList.data);
 
-  const pageSearch = () => {
-    let result = [];
-    let tableData = projectReport.map((el) => {
-      let elementArr = [];
-      Object.values(el).filter(
-        (valEle, index) => (elementArr[index] = valEle.value)
-      );
-      return elementArr;
-    });
-
-    result = tableData.filter((ele, index) => {
-      return ele.some((valEle) =>
-        valEle
-          ?.toString()
-          .toLowerCase()
-          .includes(SearchProject?.toString().toLowerCase())
-      );
-    });
-
-    return result;
-  };
-
-  let fetchedItems = useRef(null);
   useEffect(() => {
-    reportsLevel.includes("Language") &&
-    languageLevelsStats === "transcript_stats"
-      ? (fetchedItems.current = reportData.transcript_stats)
-      : (fetchedItems.current = reportData.translation_stats);
+    let rawData = [];
 
-    setProjectReport(fetchedItems.current);
-    OrgProjectReport();
+    if (reportsLevel.includes("Language")) {
+      if (languageLevelsStats === "transcript_stats") {
+        rawData = reportData.transcript_stats;
+      } else if (languageLevelsStats === "translation_stats") {
+        rawData = reportData.translation_stats;
+      } else if (languageLevelsStats === "voiceover_stats") {
+        rawData = reportData.voiceover_stats;
+      } else {
+        rawData = [];
+      }
+    } else {
+      rawData = reportData;
+    }
+
+    createTableData(rawData);
+    createReportColumns(rawData);
 
     // eslint-disable-next-line
   }, [reportData, languageLevelsStats, reportsLevel]);
 
-  useEffect(() => {
-    fetchedItems.current = reportData;
-    setProjectReport(fetchedItems.current);
-    OrgProjectReport();
-
-    // eslint-disable-next-line
-  }, [reportData]);
-
-  const OrgProjectReport = () => {
+  const createReportColumns = (rawData) => {
     let tempColumns = [];
-    let tempSelected = [];
-    if (fetchedItems.current?.length > 0 && fetchedItems.current[0]) {
-      Object.entries(fetchedItems.current[0]).forEach((el) => {
+
+    if (rawData.length > 0 && rawData[0]) {
+      Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
           label: snakeToTitleCase(el[1].label),
@@ -115,6 +107,7 @@ const OrganizationReport = () => {
             sort: false,
             align: "center",
             display: el[1].display ? "exclude" : "true",
+            viewColumns: el[1].viewColumns === false ? el[1].viewColumns : true,
             setCellHeaderProps: () => ({
               className: classes.cellHeaderProps,
             }),
@@ -135,13 +128,107 @@ const OrganizationReport = () => {
             },
           },
         });
-        tempSelected.push(el[0]);
       });
-    } else {
-      setProjectReport([]);
     }
+
     setColumns(tempColumns);
   };
+
+  const createTableData = (rawData) => {
+    if (rawData?.length > 0) {
+      let result = [];
+
+      let tableData = rawData.map((el) => {
+        let elementArr = [];
+
+        Object.values(el).filter(
+          (valEle, index) => (elementArr[index] = valEle.value)
+        );
+
+        return elementArr;
+      });
+
+      result = tableData.filter((element) => {
+        return element.some((valEle) =>
+          valEle
+            ?.toString()
+            .toLowerCase()
+            .includes(SearchProject?.toString().toLowerCase())
+        );
+      });
+
+      setTableData(result);
+      setOriginalTableData(result);
+    }
+  };
+
+  const handleTableChange = (columnName, data, tableName) => {
+    setOriginalTableData(data);
+    if (tableName === "User" && columnName === "project") {
+      const displayData = userReportDataParser(data);
+      setTableData(displayData);
+    }
+
+    if (tableName === "Project Language" && columnName === "language") {
+      const displayData = transcriptLanguageReportDataParser(data);
+      setTableData(displayData);
+    }
+  };
+
+  const handleColumnSelection = (e) => {
+    const selectedColumns = [...columns];
+
+    selectedColumns.forEach((element) => {
+      const {
+        options: { display },
+      } = element;
+
+      if (element.name === e.target.name) {
+        if (display === "false" || display === "exclude") {
+          element.options.display = "true";
+          if (e.target.name === "project") {
+            createTableData(reportData);
+          } else if (e.target.name === "language") {
+            createTableData(reportData.transcript_stats);
+          } else {
+            setTableData(originalTableData);
+          }
+        } else {
+          element.options.display = "false";
+          handleTableChange(e.target.name, tableData, reportsLevel);
+        }
+      }
+    });
+
+    setColumns(selectedColumns);
+  };
+
+  const renderToolBar = () => {
+    return (
+      <Button
+        style={{ minWidth: "25px" }}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+      >
+        <Tooltip title={"View Column"}>
+          <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+        </Tooltip>
+      </Button>
+    );
+  };
+
+  useEffect(() => {
+    let option = getOptions(apiStatus.progress);
+
+    option = {
+      ...option,
+      viewColumns: false,
+      customToolbar: renderToolBar,
+    };
+
+    setOptions(option);
+
+    // eslint-disable-next-line
+  }, [apiStatus.progress]);
 
   return (
     <>
@@ -198,13 +285,22 @@ const OrganizationReport = () => {
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           title=""
-          data={pageSearch()}
+          data={tableData}
           columns={columns}
-          options={getOptions(apiStatus.progress)}
+          options={options}
         />
       </ThemeProvider>
+
+      {openSelector && (
+        <ColumnSelector
+          anchorEl={anchorEl}
+          open={openSelector}
+          handleClose={() => setAnchorEl(null)}
+          columns={columns}
+          handleColumnSelection={handleColumnSelection}
+        />
+      )}
     </>
   );
 };
-
 export default OrganizationReport;

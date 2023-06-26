@@ -725,10 +725,10 @@ const EditProject = () => {
                 <Grid
                   container
                   direction="row"
-                  padding="40px"
+                  padding="40px 15px"
                   margin="32px 0 0 32px"
                   alignItems="center"
-                  justifyContent="space-around"
+                  justifyContent="center"
                   border="1px solid #eaeaea"
                 >
                   {defaultTask.map((item, index) => {

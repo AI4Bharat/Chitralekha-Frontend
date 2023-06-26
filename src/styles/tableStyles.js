@@ -20,9 +20,9 @@ const TableStyles = makeStyles({
     width: "60px",
   },
 
-  cellProps: {
-    height: "40px",
-  },
+  // cellProps: {
+  //   height: "40px",
+  // },
 
   customTableHeader: {
     display: "flex",
@@ -31,6 +31,30 @@ const TableStyles = makeStyles({
     columnGap: "5px",
     flexGrow: "1",
     alignItems: "center",
+  },
+
+  selectColumnContainer: {
+    padding: "20px",
+    width: "300px",
+    height: "fit-content",
+    maxHeight: "350px",
+    "@media (max-width:550px)": {
+      width: "330px",
+      maxHeight: "170px",
+    },
+  },
+
+  selectColumnHeader: {
+    color: "rgba(0, 0, 0, 0.6)",
+    fontSize: "14px",
+    fontFamily: "Roboto",
+    fontWeight: 500,
+  },
+
+  selectColumnGrid: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "10px",
   },
 });
 
