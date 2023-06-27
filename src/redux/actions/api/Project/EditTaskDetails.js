@@ -1,7 +1,7 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 
-export default class EditBulkTaskDetailAPI extends API {
+export default class EditTaskDetailAPI extends API {
   constructor(updateData, id, timeout = 2000) {
     super("PATCH", timeout, false);
     this.updateData = updateData;

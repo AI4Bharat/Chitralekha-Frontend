@@ -11,7 +11,7 @@ import {
   Grid,
 } from "@mui/material";
 import DatasetStyle from "../styles/datasetStyle";
-import { TaskTypes, TaskStatus } from "../config/taskItems";
+import { taskTypes, taskStatus } from "../config/taskItems";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();
@@ -205,7 +205,7 @@ const FilterList = (props) => {
               Status
             </Typography>
             <FormGroup>
-              {TaskStatus?.map((type, index) => {
+              {taskStatus?.map((type, index) => {
                 return (
                   <FormControlLabel
                     key={index}
@@ -234,7 +234,7 @@ const FilterList = (props) => {
               Task Type
             </Typography>
             <FormGroup>
-              {TaskTypes?.map((type, index) => {
+              {taskTypes?.map((type, index) => {
                 return (
                   <FormControlLabel
                     key={index}

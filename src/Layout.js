@@ -6,7 +6,7 @@ import BackButton from "./common/BackButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Joyride, { STATUS } from "react-joyride";
 import { steps } from "./utils/utils";
-import { TutorialTooltip } from "./common/TutorialPlayer";
+import TutorialTooltip from "common/TutorialPlayer";
 
 const App = (props) => {
   const { component, Backbutton, backPressNavigationPath, isDrawer } = props;

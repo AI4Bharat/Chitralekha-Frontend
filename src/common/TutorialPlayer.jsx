@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import React from "react";
 
-export const TutorialTooltip = ({
+const TutorialTooltip = ({
   index,
   step,
   tooltipProps,
@@ -58,3 +58,5 @@ export const TutorialTooltip = ({
     </Card>
   );
 };
+
+export default TutorialTooltip;
