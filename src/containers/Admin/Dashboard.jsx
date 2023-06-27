@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-//Styles
-import DatasetStyle from "../../styles/datasetStyle";
+//styles
+import { DatasetStyle } from "styles";
 
 //Components
 import { Box, Card, Grid, Tab, Tabs, Button } from "@mui/material";
-import CustomizedSnackbars from "../../common/Snackbar";
 import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
-import AddOrganizationMember from "../../common/AddOrganizationMember";
+import { AddOrganizationMember, CustomizedSnackbars } from "common";
 import AdminLevelReport from "./AdminLevelReport";
 
 //Apis

@@ -1,21 +1,20 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getColumns, getOptions } from "utils";
+import { adminMemberListColumns } from "config";
 
 //Themes
-import { ThemeProvider, Tooltip, IconButton, Box } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/tableStyles";
+import { TableStyles } from "styles";
+import { tableTheme } from "theme";
 
 //Components
+import { ThemeProvider, Tooltip, IconButton, Box } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import EditIcon from "@mui/icons-material/Edit";
 
 //APIs
-import FetchAllUsersAPI from "../../redux/actions/api/Admin/FetchAllUsers";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import { getColumns, getOptions } from "../../utils/tableUtils";
-import { adminMemberListColumns } from "../../config/tableColumns";
+import { FetchAllUsersAPI, APITransport } from "redux/actions";
 
 const MemberList = () => {
   const navigate = useNavigate();

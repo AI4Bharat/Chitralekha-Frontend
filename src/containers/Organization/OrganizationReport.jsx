@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { isArray } from "lodash";
 import {
   getOptions,
+  snakeToTitleCase,
   transcriptLanguageReportDataParser,
-  // transcriptLanguageReportDataParser,
   userReportDataParser,
-} from "../../utils/tableUtils";
-import { languagelevelStats, reportLevels } from "../../config/reportConfig";
-import { snakeToTitleCase } from "../../utils/utils";
-import { isArray } from "lodash";
-
-//Themes
-import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/tableStyles";
-import ProjectStyle from "../../styles/projectStyle";
+} from "utils";
+import { languagelevelStats, reportLevels } from "config";
 
 //Components
 import {
@@ -29,11 +23,14 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import { ColumnSelector } from "common";
 
 //APIs
-import FetchOrganizationReportsAPI from "../../redux/actions/api/Organization/FetchOrganizationReports";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import ColumnSelector from "../../common/ColumnSelector";
+import { APITransport, FetchOrganizationReportsAPI } from "redux/actions";
+
+//Themes
+import { ProjectStyle, TableStyles } from "styles";
+import { tableTheme } from "theme";
 
 const OrganizationReport = () => {
   const { id } = useParams();

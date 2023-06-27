@@ -1,3 +1,11 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+//Styles
+import { DatasetStyle } from "styles";
+
+//Components
 import {
   Card,
   Grid,
@@ -10,23 +18,20 @@ import {
   Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import OutlinedTextField from "../../../common/OutlinedTextField";
-import DatasetStyle from "../../../styles/datasetStyle";
-import CreateNewProjectAPI from "../../../redux/actions/api/Project/CreateNewProject";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import FetchOrganizatioProjectManagersUserAPI from "../../../redux/actions/api/Organization/FetchOrganizatioProjectManagersUser";
-import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
-import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
-import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTaskTypes";
-import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
-import FetchOrganizationDetailsAPI from "../../../redux/actions/api/Organization/FetchOrganizationDetails";
-import Loader from "../../../common/Spinner";
+import { CustomizedSnackbars, Loader, OutlinedTextField } from "common";
+
+//APIs
+import {
+  APITransport,
+  CreateNewProjectAPI,
+  FetchOrganizatioProjectManagersUserAPI,
+  FetchTranscriptTypesAPI,
+  FetchTranslationTypesAPI,
+  FetchBulkTaskTypeAPI,
+  FetchSupportedLanguagesAPI,
+  FetchOrganizatioUsersAPI,
+  FetchOrganizationDetailsAPI,
+} from "redux/actions";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

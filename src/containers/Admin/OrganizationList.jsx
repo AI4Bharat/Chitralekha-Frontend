@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getColumns, getOptions } from "../../utils/tableUtils";
-import { adminOrgListColumns } from "../../config/tableColumns";
+import { getColumns, getOptions } from "utils";
+import { adminOrgListColumns } from "config";
 
 //Themes
-import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/tableStyles";
+import { tableTheme } from "theme";
+import { TableStyles } from "styles";
 
 //Components
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteDialog from "../../common/DeleteDialog";
+import { CustomizedSnackbars, DeleteDialog } from "common";
 
 //APIs
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchOrganizationListAPI from "../../redux/actions/api/Organization/FetchOrganizationList";
-import DeleteOrganizationAPI from "../../redux/actions/api/Organization/DeleteOrganization";
-import CustomizedSnackbars from "../../common/Snackbar";
+import {
+  APITransport,
+  DeleteOrganizationAPI,
+  FetchOrganizationListAPI,
+} from "redux/actions";
 
 const OrganizationList = () => {
   const dispatch = useDispatch();

@@ -1,8 +1,18 @@
-import React, { createRef, memo, useCallback, useEffect, useState } from "react";
+import React, {
+  createRef,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPlayer } from "../../../../redux/actions/Common";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
-import { isPlaying } from "../../../../utils/subtitleUtils";
+import { isPlaying } from "utils/subtitleUtils";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//APIs
+import { setPlayer } from "redux/actions";
 
 const VideoPanel = memo(
   ({ setCurrentTime, setPlaying }) => {
@@ -28,7 +38,7 @@ const VideoPanel = memo(
           loop();
         });
       })();
-    // eslint-disable-next-line
+      // eslint-disable-next-line
     }, [setPlayer, setCurrentTime, setPlaying, $video]);
 
     const onClick = useCallback(() => {
@@ -44,7 +54,10 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <div className={classes.videoPlayerParent} style={{display: videoDetails?.video?.audio_only ? "flex" : ""}}>
+      <div
+        className={classes.videoPlayerParent}
+        style={{ display: videoDetails?.video?.audio_only ? "flex" : "" }}
+      >
         <video
           onClick={onClick}
           src={

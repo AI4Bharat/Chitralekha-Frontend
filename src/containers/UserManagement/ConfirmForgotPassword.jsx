@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
 import {
   Grid,
   Typography,
@@ -9,15 +16,14 @@ import {
   Alert,
   Button,
 } from "@mui/material";
-import LoginStyle from "../../styles/loginStyle";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import OutlinedTextField from "../../common/OutlinedTextField";
 import AppInfo from "./AppInfo";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
-import ConfirmForgotPasswordAPI from "../../redux/actions/api/User/ConfirmForgotPassword";
+import { OutlinedTextField } from "common";
+
+//APIs
+import { ConfirmForgotPasswordAPI } from "redux/actions";
 
 const ConfirmForgetPassword = () => {
   const classes = LoginStyle();

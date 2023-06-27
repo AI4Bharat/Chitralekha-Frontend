@@ -1,3 +1,11 @@
+import { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+
+//Styles
+import { DatasetStyle } from "styles";
+
+//Components
 import {
   Grid,
   IconButton,
@@ -12,20 +20,18 @@ import {
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { useEffect, useState } from "react";
-import { useMemo } from "react";
-import DatasetStyle from "../../../styles/datasetStyle";
-import TaskVideoDialog from "../../../common/TaskVideoDialog";
-import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useNavigate, useParams } from "react-router-dom";
-import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
-import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
-import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
-import CustomizedSnackbars from "../../../common/Snackbar";
+import { CustomizedSnackbars, TaskVideoDialog } from "common";
+
+//APIs
+import {
+  APITransport,
+  CompareTranscriptionSource,
+  ComparisionTableAPI,
+  FetchTaskDetailsAPI,
+  FetchTaskListAPI,
+  FetchTranscriptTypesAPI,
+  setComparisonTable,
+} from "redux/actions";
 
 const ComparisonTable = () => {
   const classes = DatasetStyle();

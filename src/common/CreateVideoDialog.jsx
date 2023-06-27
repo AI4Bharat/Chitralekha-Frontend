@@ -18,12 +18,11 @@ import {
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import Loader from "./Spinner";
-import { MenuProps } from "../utils/utils";
 import { Box } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
+import Loader from "./Spinner";
+import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
+import { MenuProps } from "utils";
 
 const voiceOptions = [
   {
@@ -196,7 +195,7 @@ const CreateVideoDialog = ({
 
           <Button
             variant="outlined"
-            sx={{ borderRadius: 2, margin: "0 10px"  }}
+            sx={{ borderRadius: 2, margin: "0 10px" }}
             onClick={() => handleClear()}
           >
             Clear

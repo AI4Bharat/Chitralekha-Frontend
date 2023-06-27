@@ -1,16 +1,7 @@
-import React, { useCallback, useEffect, useState, memo } from "react";
-import Box from "@mui/material/Box";
-import { CardContent, Grid, useMediaQuery } from "@mui/material";
+import React, { useCallback, useEffect, useState, useRef, memo } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/scrollbarStyle.css";
-import { setSubtitles } from "../../../redux/actions/Common";
-import C from "../../../redux/constants";
-import TimeBoxes from "../../../common/TimeBoxes";
-import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -24,14 +15,27 @@ import {
   getSelectionStart,
   getTimings,
   getItemForDelete,
-} from "../../../utils/subtitleUtils";
+} from "utils";
+
+//Styles
+import "../../../styles/scrollbarStyle.css";
+import { VideoLandingStyle } from "styles";
+
+//Components
+import { Box, CardContent, Grid, useMediaQuery } from "@mui/material";
+import { ConfirmDialog, CustomizedSnackbars, TimeBoxes } from "common";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import Pagination from "./components/Pagination";
-import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useRef } from "react";
+
+//APIs
+import C from "redux/constants";
+import {
+  APITransport,
+  FetchTranscriptPayloadAPI,
+  SaveTranscriptAPI,
+  setSubtitles,
+} from "redux/actions";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -103,7 +107,7 @@ const RightPanel = ({ currentIndex }) => {
     if (prevOffsetRef.current !== currentOffset) {
       setUndoStack([]);
       setRedoStack([]);
-      prevOffsetRef.current = currentOffset
+      prevOffsetRef.current = currentOffset;
     }
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
@@ -148,7 +152,7 @@ const RightPanel = ({ currentIndex }) => {
       {
         type: "split",
         index: currentIndexToSplitTextBlock,
-        selectionStart
+        selectionStart,
       },
     ]);
     setRedoStack([]);

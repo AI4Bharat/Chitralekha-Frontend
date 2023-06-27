@@ -1,17 +1,14 @@
 // OrgLevelTaskList
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getDateTime, roles } from "../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { getOptions } from "../../utils/tableUtils";
-import C from "../../redux/constants";
-import statusColor from "../../utils/getStatusColor";
+import C from "redux/constants";
+import { getDateTime, getOptions, roles, statusColor } from "utils";
 
 //Themes
-import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/datasetStyle";
-import TableStyles from "../../styles/tableStyles";
+import { DatasetStyle, TableStyles } from "styles";
+import { tableTheme } from "theme";
 
 //Components
 import {
@@ -24,13 +21,16 @@ import {
   Button,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../common/Snackbar";
-import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../common/ViewTaskDialog";
-import FilterList from "../../common/FilterList";
-import ExportDialog from "../../common/ExportDialog";
-import TableSearchPopover from "../../common/TableSearchPopover";
-import DeleteDialog from "../../common/DeleteDialog";
+import {
+  CustomizedSnackbars,
+  DeleteDialog,
+  ExportDialog,
+  FilterList,
+  PreviewDialog,
+  TableSearchPopover,
+  UpdateBulkTaskDialog,
+  ViewTaskDialog,
+} from "common";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -38,29 +38,30 @@ import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PreviewIcon from "@mui/icons-material/Preview";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
-import PreviewDialog from "../../common/PreviewDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 
 //Apis
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import DeleteTaskAPI from "../../redux/actions/api/Project/DeleteTask";
-import ComparisionTableAPI from "../../redux/actions/api/Project/ComparisonTable";
-import exportTranscriptionAPI from "../../redux/actions/api/Project/ExportTranscrip";
-import EditBulkTaskDetailAPI from "../../redux/actions/api/Project/EditBulkTaskDetails";
-import EditTaskDetailAPI from "../../redux/actions/api/Project/EditTaskDetails";
-import exportTranslationAPI from "../../redux/actions/api/Project/ExportTranslation";
-import CompareTranscriptionSource from "../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../redux/actions/api/Project/SetComparisonTableData";
-import clearComparisonTable from "../../redux/actions/api/Project/ClearComparisonTable";
-import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
-import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
-import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
-import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
-import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
-import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceoverTask";
-import FetchPaginatedOrgTaskListAPI from "../../redux/actions/api/Organization/FetchPaginatedOrgTaskList";
+import {
+  APITransport,
+  BulkTaskExportAPI,
+  CompareTranscriptionSource,
+  ComparisionTableAPI,
+  DeleteBulkTaskAPI,
+  DeleteTaskAPI,
+  EditBulkTaskDetailAPI,
+  EditTaskDetailAPI,
+  ExportVoiceoverTaskAPI,
+  FetchPaginatedOrgTaskListAPI,
+  FetchTranscriptExportTypesAPI,
+  FetchTranslationExportTypesAPI,
+  FetchpreviewTaskAPI,
+  clearComparisonTable,
+  exportTranscriptionAPI,
+  exportTranslationAPI,
+  setComparisonTable,
+} from "redux/actions";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
@@ -619,7 +620,7 @@ const OrgLevelTaskList = () => {
       })
     : [];
 
-    const handleShowSearch = (col, event) => {
+  const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     setSearchedCol({
       label: col.label,

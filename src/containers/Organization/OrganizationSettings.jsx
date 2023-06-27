@@ -1,3 +1,14 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import {
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "utils";
+
+//Components
 import {
   Button,
   Card,
@@ -12,24 +23,18 @@ import {
   Chip,
   Checkbox,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import CustomizedSnackbars from "../../common/Snackbar";
-import Loader from "../../common/Spinner";
-import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
-import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
-import FetchBulkTaskTypeAPI from "../../redux/actions/api/Project/FetchBulkTaskTypes";
-import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTranscriptTypes";
-import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
-import APITransport from "../../redux/actions/apitransport/apitransport";
+import { CustomizedSnackbars, Loader } from "common";
+
+//APIs
 import {
-  defaultTaskHandler,
-  diableTargetLang,
-  getDisableOption,
-  MenuProps,
-} from "../../utils/utils";
+  EditOrganizationDetailsAPI,
+  FetchOrganizationDetailsAPI,
+  FetchBulkTaskTypeAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTranscriptTypesAPI,
+  FetchTranslationTypesAPI,
+  APITransport,
+} from "redux/actions";
 
 const OrganizationSettings = () => {
   const { id } = useParams();

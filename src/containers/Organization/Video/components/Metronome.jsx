@@ -1,12 +1,18 @@
 import React, { useEffect, useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import DT from "duration-time-conversion";
 import isEqual from "lodash/isEqual";
+import { newSub } from "utils";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
 import { Box } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { setSubtitles } from "../../../../redux/actions/Common";
-import C from "../../../../redux/constants";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
-import { newSub } from "../../../../utils/subtitleUtils";
+
+//APIs
+import C from "redux/constants";
+import { setSubtitles } from "redux/actions";
 
 const findIndex = (subs, startTime) => {
   return subs.findIndex((item, index) => {
@@ -31,7 +37,7 @@ export default React.memo(
     const gridGap = document.body.clientWidth / render.gridNum;
 
     const subtitles = useSelector((state) => state.commonReducer.subtitles);
-    const player = useSelector(state => state.commonReducer.player);
+    const player = useSelector((state) => state.commonReducer.player);
 
     const getEventTime = useCallback(
       (event) => {
@@ -72,7 +78,7 @@ export default React.memo(
         ) {
           let index;
 
-          if(subtitles && subtitles.length) {
+          if (subtitles && subtitles.length) {
             index = findIndex(subtitles, drogStartTime) + 1;
           } else {
             index = 0;
@@ -100,8 +106,8 @@ export default React.memo(
       setIsDroging(false);
       setDrogStartTime(0);
       setDrogEndTime(0);
-      
-    // eslint-disable-next-line
+
+      // eslint-disable-next-line
     }, [isDroging, drogStartTime, drogEndTime, subtitles, newSub]);
 
     useEffect(() => {

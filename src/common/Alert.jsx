@@ -1,8 +1,8 @@
 import { Alert, Box, Snackbar } from "@mui/material";
 import React from "react";
-import ProjectStyle from "../styles/projectStyle";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import { ProjectStyle } from "styles";
 
 const AlertComponent = ({ open, message, report, onClose }) => {
   const classes = ProjectStyle();

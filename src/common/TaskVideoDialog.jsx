@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
-import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
-import APITransport from "../redux/actions/apitransport/apitransport";
 import { useDispatch, useSelector } from "react-redux";
+import { FetchVideoDetailsAPI, APITransport } from "redux/actions";
 
 const TaskVideoDialog = ({ videoName, videoUrl, projectId, lang }) => {
   const dispatch = useDispatch();

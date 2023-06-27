@@ -16,13 +16,9 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
-import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
-import FetchTranscriptTypesAPI from "../redux/actions/api/Project/FetchTranscriptTypes";
-import APITransport from "../redux/actions/apitransport/apitransport";
 import moment from "moment/moment";
-import FetchTranslationTypesAPI from "../redux/actions/api/Project/FetchTranslationTypes";
-import ImportSubtitlesAPI from "../redux/actions/api/Project/ImportSubtitles";
 import CustomizedSnackbars from "./Snackbar";
+import { FetchTaskDetailsAPI, FetchTranscriptTypesAPI, APITransport, FetchTranslationTypesAPI, ImportSubtitlesAPI } from "redux/actions";
 
 const ViewTaskDialog = ({
   open,

@@ -1,20 +1,22 @@
+import React, { memo, useRef } from "react";
+import { useSelector } from "react-redux";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
 import { IconButton, Tooltip } from "@mui/material";
-import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { memo } from "react";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
 import StopIcon from "@mui/icons-material/Stop";
-import { useSelector } from "react-redux";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import LyricsIcon from "@mui/icons-material/Lyrics";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import { useRef } from "react";
 
 const ButtonComponent = ({
   index,

@@ -18,19 +18,17 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
-import APITransport from "../redux/actions/apitransport/apitransport";
 import { Box } from "@mui/system";
-import ProjectStyle from "../styles/projectStyle";
-import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
-import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
-import { getTimeStamp, getMilliseconds, MenuProps } from "../utils/utils";
+import { getMilliseconds, getTimeStamp, MenuProps } from "utils";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import CloseIcon from "@mui/icons-material/Close";
-import C from "../redux/constants";
-import UpdateVideoAPI from "../redux/actions/api/Project/UpdateVideo";
+import C from "redux/constants";
+import { FetchVideoDetailsAPI, APITransport, UpdateVideoAPI } from "redux/actions";
+import { ProjectStyle } from "styles";
+import VideoTaskList from "containers/Organization/Project/VideoTaskList";
+import { useVideoSubtitle } from "hooks";
 
 const voiceOptions = [
   {

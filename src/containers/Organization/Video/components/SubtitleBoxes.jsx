@@ -1,9 +1,3 @@
-import {
-  ContextMenu,
-  MenuItem,
-  ContextMenuTrigger,
-  connectMenu,
-} from "react-contextmenu";
 import React, {
   useEffect,
   useCallback,
@@ -13,23 +7,37 @@ import React, {
 } from "react";
 import isEqual from "lodash/isEqual";
 import DT from "duration-time-conversion";
-import { getKeyCode } from "../../../../utils/utils";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setSubtitles } from "../../../../redux/actions/Common";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import {
   copySubs,
+  getKeyCode,
   hasSub,
   isPlaying,
   onMerge,
   onSubtitleDelete,
-} from "../../../../utils/subtitleUtils";
-import CustomizedSnackbars from "../../../../common/Snackbar";
-import C from "../../../../redux/constants";
-import SaveTranscriptAPI from "../../../../redux/actions/api/Project/SaveTranscript";
-import FetchTranscriptPayloadAPI from "../../../../redux/actions/api/Project/FetchTranscriptPayload";
-import APITransport from "../../../../redux/actions/apitransport/apitransport";
+} from "utils";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
+import {
+  ContextMenu,
+  MenuItem,
+  ContextMenuTrigger,
+  connectMenu,
+} from "react-contextmenu";
+import { CustomizedSnackbars } from "common";
+
+//APIs
+import C from "redux/constants";
+import {
+  APITransport,
+  FetchTranscriptPayloadAPI,
+  SaveTranscriptAPI,
+  setSubtitles,
+} from "redux/actions";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;

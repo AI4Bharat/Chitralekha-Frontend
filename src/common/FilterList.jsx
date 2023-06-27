@@ -10,8 +10,8 @@ import {
   Checkbox,
   Grid,
 } from "@mui/material";
-import DatasetStyle from "../styles/datasetStyle";
-import { taskTypes, taskStatus } from "../config/taskItems";
+import { DatasetStyle } from "styles";
+import { taskStatus, taskTypes } from "config";
 
 const FilterList = (props) => {
   const classes = DatasetStyle();

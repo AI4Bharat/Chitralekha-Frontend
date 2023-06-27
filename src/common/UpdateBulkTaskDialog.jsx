@@ -21,18 +21,15 @@ import {
   Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import CustomizedSnackbars from "../common/Snackbar";
 import CloseIcon from "@mui/icons-material/Close";
+import CustomizedSnackbars from "./Snackbar";
+import Loader from "./Spinner";
 
 //Styles
-import ProjectStyle from "../styles/projectStyle";
+import { ProjectStyle } from "styles";
 
 //APIs
-import APITransport from "../redux/actions/apitransport/apitransport";
-import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
-import Loader from "./Spinner";
-import FetchTaskDetailsAPI from "../redux/actions/api/Project/FetchTaskDetails";
-import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
+import { FetchProjectMembersAPI, FetchTaskDetailsAPI, FetchPriorityTypesAPI, APITransport } from "redux/actions";
 
 const UpdateBulkTaskDialog = ({
   open,

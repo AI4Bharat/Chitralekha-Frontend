@@ -1,6 +1,6 @@
 import { Alert, Box, Snackbar } from "@mui/material";
 import React from "react";
-import ProjectStyle from "../styles/projectStyle";
+import { ProjectStyle } from "styles";
 
 const CSVAlertComponent = ({ open, message, report, onClose }) => {
   const classes = ProjectStyle();

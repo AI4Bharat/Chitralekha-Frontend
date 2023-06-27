@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { getColumns, getOptions } from "utils";
+import { usersColumns } from "config";
 
 //Themes
-import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
-import tableTheme from "../../../theme/tableTheme";
+import { tableTheme } from "theme";
 
 //Components
+import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
-import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
-import DeleteDialog from "../../../common/DeleteDialog";
+import {
+  CustomizedSnackbars,
+  DeleteDialog,
+  DeleteMemberErrorDialog,
+} from "common";
 
 //APIs
-import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
-import DeleteMemberErrorDialog from "../../../common/DeleteMemberErrorDialog";
-import { getColumns, getOptions } from "../../../utils/tableUtils";
-import { usersColumns } from "../../../config/tableColumns";
+import {
+  APITransport,
+  FetchProjectMembersAPI,
+  RemoveProjectMemberAPI,
+} from "redux/actions";
 
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();

@@ -9,18 +9,17 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import headerStyle from "../styles/headerStyles";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useTheme } from "@emotion/react";
 import { Grid, useMediaQuery } from "@mui/material";
 import MobileNavbar from "./MobileNavbar";
 import { NavLink, useNavigate } from "react-router-dom";
-import FetchLoggedInUserDataAPI from "../redux/actions/api/User/FetchLoggedInUserDetails";
 import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import C from "../redux/constants";
+import C from "redux/constants";
 import HelpDialog from "./HelpDialog"
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+import { headerStyle } from "styles";
+import { APITransport, FetchLoggedInUserDetailsAPI } from "redux/actions";
 
 const Header = () => {
   const classes = headerStyle();
@@ -41,7 +40,7 @@ const Header = () => {
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
 
   const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    const loggedInUserObj = new FetchLoggedInUserDetailsAPI();
     dispatch(APITransport(loggedInUserObj));
   };
 

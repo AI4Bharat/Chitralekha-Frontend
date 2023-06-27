@@ -2,6 +2,7 @@ import AddOrganizationMember from "./AddOrganizationMember";
 import AddProjectMembers from "./AddProjectMembers";
 import AlertComponent from "./Alert";
 import BackButton from "./BackButton";
+import CustomCard from "./Card";
 import ColumnSelector from "./ColumnSelector";
 import ConfirmDialog from "./ConfirmDialog";
 import ConfirmErrorDialog from "./ConfirmErrorDialog";
@@ -41,6 +42,7 @@ export {
   AddProjectMembers,
   AlertComponent,
   BackButton,
+  CustomCard,
   ColumnSelector,
   ConfirmDialog,
   ConfirmErrorDialog,

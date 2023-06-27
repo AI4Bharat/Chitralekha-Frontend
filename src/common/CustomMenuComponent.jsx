@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
-import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "../utils/subtitleUtils";
+import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "utils";
 import { useSelector } from "react-redux";
 
 const CustomMenuComponent = ({
