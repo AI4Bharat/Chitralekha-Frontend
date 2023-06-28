@@ -66,6 +66,7 @@ import { taskListColumns } from "../../../config/tableColumns";
 import UploadToYoutubeAPI from "../../../redux/actions/api/Project/UploadToYoutube";
 import UploadAlertComponent from "../../../common/UploadAlertComponent";
 import UploadFormatDialog from "../../../common/UploadFormatDialog";
+import SpeakerInfoDialog from "../../../common/SpeakerInfoDialog";
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -125,6 +126,7 @@ const TaskList = () => {
   const [uploadTaskId, setUploadTaskId] = useState("");
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [openSpeakerInfoDialog, setOpenSpeakerInfoDialog] = useState(true);
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -1239,6 +1241,13 @@ const TaskList = () => {
               uploadExportType
             )
           }
+        />
+      )}
+
+      {openSpeakerInfoDialog && (
+        <SpeakerInfoDialog
+          open={openSpeakerInfoDialog}
+          handleClose={() => setOpenSpeakerInfoDialog(false)}
         />
       )}
     </>
