@@ -652,7 +652,7 @@ const TaskList = () => {
             color="primary"
             onClick={() =>
               handlePreviewTask(
-                tableData.rowData[14],
+                tableData.rowData[18],
                 tableData.rowData[1],
                 tableData.rowData[7]
               )
