@@ -5,10 +5,12 @@ import { getDateTime, roles } from "../../../utils/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { getColumns } from "../../../utils/tableUtils";
+import { taskListColumns } from "../../../config/tableColumns";
 
 //Themes
 import tableTheme from "../../../theme/tableTheme";
 import DatasetStyle from "../../../styles/datasetStyle";
+import TableStyles from "../../../styles/tableStyles";
 
 //Components
 import {
@@ -31,6 +33,9 @@ import FilterList from "../../../common/FilterList";
 import C from "../../../redux/constants";
 import DeleteDialog from "../../../common/DeleteDialog";
 import ExportDialog from "../../../common/ExportDialog";
+import UploadAlertComponent from "../../../common/UploadAlertComponent";
+import UploadFormatDialog from "../../../common/UploadFormatDialog";
+import SpeakerInfoDialog from "../../../common/SpeakerInfoDialog";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -61,12 +66,8 @@ import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask
 import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
 import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
 import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
-import TableStyles from "../../../styles/tableStyles";
-import { taskListColumns } from "../../../config/tableColumns";
 import UploadToYoutubeAPI from "../../../redux/actions/api/Project/UploadToYoutube";
-import UploadAlertComponent from "../../../common/UploadAlertComponent";
-import UploadFormatDialog from "../../../common/UploadFormatDialog";
-import SpeakerInfoDialog from "../../../common/SpeakerInfoDialog";
+
 
 const TaskList = () => {
   const { projectId } = useParams();
@@ -126,7 +127,8 @@ const TaskList = () => {
   const [uploadTaskId, setUploadTaskId] = useState("");
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
   const [uploadExportType, setUploadExportType] = useState("srt");
-  const [openSpeakerInfoDialog, setOpenSpeakerInfoDialog] = useState(true);
+  const [openSpeakerInfoDialog, setOpenSpeakerInfoDialog] = useState(false);
+  const [selectedTaskStatus, setSelectedTaskStatus] = useState("")
 
   const popoverOpen = Boolean(anchorEl);
   const filterId = popoverOpen ? "simple-popover" : undefined;
@@ -592,6 +594,25 @@ const TaskList = () => {
     );
   };
 
+  const renderUpdateSpeakerInfoButton = (tableData) => {
+    return (
+      tableData.rowData[16]?.["Edit-Speaker"] && (
+        <Tooltip title="Update Speaker Info">
+          <IconButton
+            onClick={() => {
+              setSelectedTaskId(tableData.rowData[0]);
+              setOpenSpeakerInfoDialog(true);
+              setSelectedTaskStatus(tableData.rowData[17]);
+            }}
+            color="primary"
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+      )
+    );
+  };
+
   const renderUploadButton = (tableData) => {
     return (
       tableData.rowData[16]?.Upload &&
@@ -835,6 +856,7 @@ const TaskList = () => {
             {renderUpdateTaskButton(tableMeta)}
             {renderViewButton(tableMeta)}
             {renderEditButton(tableMeta)}
+            {renderUpdateSpeakerInfoButton(tableMeta)}
             {renderExportButton(tableMeta)}
             {renderPreviewButton(tableMeta)}
             {renderDeleteButton(tableMeta)}
@@ -1248,6 +1270,8 @@ const TaskList = () => {
         <SpeakerInfoDialog
           open={openSpeakerInfoDialog}
           handleClose={() => setOpenSpeakerInfoDialog(false)}
+          taskId={selectedTaskId}
+          handleContinueEdit={() => generateTranslationCall(selectedTaskId, selectedTaskStatus)}
         />
       )}
     </>
