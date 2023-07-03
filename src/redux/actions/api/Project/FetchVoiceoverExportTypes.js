@@ -2,14 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class exportTranscriptionAPI extends API {
-  constructor(taskId, exportType, speakerInfo, timeout = 2000) {
+export default class FetchVoiceoverExportTypesAPI extends API {
+  constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.EXPORT_TRANSCRIPTION;
-    this.exportType = exportType;
+    this.type = C.GET_VOICEOVER_EXPORT_TYPE;
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.transcript
-    }export_transcript/?task_id=${taskId}&export_type=${exportType}&with_speaker_info=${speakerInfo}`;
+      ENDPOINTS.voiceover
+    }get_voice_over_export_types/`;
   }
 
   processResponse(res) {
@@ -28,11 +27,7 @@ export default class exportTranscriptionAPI extends API {
   getHeaders() {
     this.headers = {
       headers: {
-        "Content-Type": `${
-          this.exportType === "docx"
-            ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            : "application/json"
-        }`,
+        "Content-Type": "application/json",
         Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };

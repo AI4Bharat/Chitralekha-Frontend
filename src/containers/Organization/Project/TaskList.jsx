@@ -56,6 +56,7 @@ import {
   FetchTaskListAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
+  FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
   UploadToYoutubeAPI,
@@ -126,8 +127,12 @@ const TaskList = () => {
   const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
   const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
 
-  const [exportTranscription, setExportTranscription] = useState("srt");
-  const [exportTranslation, setExportTranslation] = useState("srt");
+  const [exportTypes, setExportTypes] = useState({
+    transcription: "srt",
+    translation: "srt",
+    voiceover: "mp4",
+    speakerInfo: "false",
+  });
   const [uploadExportType, setUploadExportType] = useState("srt");
 
   //Data from Redux
@@ -137,12 +142,6 @@ const TaskList = () => {
     target_languages_list: targetlanguagesList,
   } = useSelector((state) => state.getTaskList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-  const transcriptExportTypes = useSelector(
-    (state) => state.getTranscriptExportTypes.data.export_types
-  );
-  const translationExportTypes = useSelector(
-    (state) => state.getTranslationExportTypes.data.export_types
-  );
 
   const fetchTaskList = () => {
     const apiObj = new FetchTaskListAPI(projectId);
@@ -158,6 +157,9 @@ const TaskList = () => {
 
     const translationExportObj = new FetchTranslationExportTypesAPI();
     dispatch(APITransport(translationExportObj));
+
+    const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
+    dispatch(APITransport(voiceoverExportObj));
 
     fetchTaskList();
 
@@ -217,7 +219,14 @@ const TaskList = () => {
   }, [selectedFilters]);
 
   const exportVoiceoverTask = async (id) => {
-    const apiObj = new ExportVoiceoverTaskAPI(id);
+    const {
+      id: taskId,
+      video_name: videoName,
+      target_language: targetLanguage,
+    } = currentTaskDetails;
+    const { voiceover } = exportTypes;
+
+    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover);
 
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
@@ -229,16 +238,12 @@ const TaskList = () => {
       const resp = await res.json();
 
       if (res.ok) {
-        const task = taskList.filter((task) => task.id === id)[0];
-
         const link = document.createElement("a");
         link.href = resp.azure_url;
 
         link.setAttribute(
           "download",
-          `Chitralekha_Video_${task.video_name}_${getDateTime()}_${
-            task.target_language
-          }.mp4`
+          `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.mp4`
         );
 
         document.body.appendChild(link);
@@ -260,35 +265,48 @@ const TaskList = () => {
     }
   };
 
-  const handleExportButtonClick = (id, taskType) => {
-    if (taskType.includes("VOICEOVER")) {
-      exportVoiceoverTask(id);
+  const handleExportSubmitClick = () => {
+    const { task_type: taskType } = currentTaskDetails;
+
+    if (isBulkTaskDownload) {
+      handleBulkTaskDownload();
     } else {
-      handleDialogOpen("exportDialog");
-      setIsBulkTaskDownload(false);
+      if (taskType?.includes("TRANSCRIPTION")) {
+        handleTranscriptExport();
+      } else if (taskType?.includes("TRANSLATION")) {
+        handleTranslationExport();
+      } else {
+        exportVoiceoverTask();
+      }
     }
   };
 
   const handleTranscriptExport = async () => {
-    const { id: taskId } = currentTaskDetails;
+    const {
+      id: taskId,
+      video: videoId,
+      src_language: sourceLanguage,
+    } = currentTaskDetails;
+    const { transcription, speakerInfo } = exportTypes;
 
-    const apiObj = new exportTranscriptionAPI(taskId, exportTranscription);
+    const apiObj = new exportTranscriptionAPI(
+      taskId,
+      transcription,
+      speakerInfo
+    );
     handleDialogClose("exportDialog");
 
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
         method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
         headers: apiObj.getHeaders().headers,
       });
 
       const resp = await res.blob();
 
       if (res.ok) {
-        const task = taskList.filter((task) => task.id === taskId)[0];
-
         let newBlob;
-        if (exportTranscription === "docx") {
+        if (transcription === "docx") {
           newBlob = new Blob([resp], {
             type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           });
@@ -310,7 +328,7 @@ const TaskList = () => {
 
         link.setAttribute(
           "download",
-          `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.src_language}.${exportTranscription}`
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${sourceLanguage}.${transcription}`
         );
         document.body.appendChild(link);
         link.click();
@@ -335,27 +353,27 @@ const TaskList = () => {
   };
 
   const handleTranslationExport = async () => {
-    const { id: taskId } = currentTaskDetails;
+    const {
+      id: taskId,
+      video: videoId,
+      target_language: targetLanguage,
+    } = currentTaskDetails;
+    const { translation, speakerInfo } = exportTypes;
 
-    const apiObj = new exportTranslationAPI(taskId, exportTranslation);
+    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
         method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
         headers: apiObj.getHeaders().headers,
       });
 
       const resp = await res.blob();
 
       if (res.ok) {
-        const task = taskList.tasks_list.filter(
-          (task) => task.id === taskId
-        )[0];
-
         let newBlob;
-        if (exportTranscription === "docx") {
+        if (translation === "docx") {
           newBlob = new Blob([resp], {
             type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           });
@@ -377,7 +395,7 @@ const TaskList = () => {
 
         link.setAttribute(
           "download",
-          `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${exportTranslation}`
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${translation}`
         );
         document.body.appendChild(link);
         link.click();
@@ -400,12 +418,15 @@ const TaskList = () => {
     }
   };
 
-  const handleTranscriptRadioButton = (e) => {
-    setExportTranscription(e.target.value);
-  };
+  const handleExportRadioButtonChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
 
-  const handleTranslationRadioButton = (e) => {
-    setExportTranslation(e.target.value);
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
@@ -649,7 +670,8 @@ const TaskList = () => {
         break;
 
       case "Export":
-        handleExportButtonClick(id, task_type);
+        handleDialogOpen("exportDialog");
+        setIsBulkTaskDownload(false);
         break;
 
       case "Preview":
@@ -776,8 +798,9 @@ const TaskList = () => {
 
   const handleBulkTaskDownload = async () => {
     handleDialogClose("exportDialog");
+    const { translation } = exportTypes;
 
-    const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
+    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
 
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
@@ -1029,16 +1052,9 @@ const TaskList = () => {
           open={openDialogs.exportDialog}
           handleClose={() => handleDialogClose("exportDialog")}
           taskType={currentTaskDetails?.task_type}
-          handleTranscriptRadioButton={handleTranscriptRadioButton}
-          handleTranslationRadioButton={handleTranslationRadioButton}
-          handleTranscriptExport={handleTranscriptExport}
-          handleTranslationExport={handleTranslationExport}
-          exportTranscription={exportTranscription}
-          exportTranslation={exportTranslation}
-          transcriptionOptions={transcriptExportTypes}
-          translationOptions={translationExportTypes}
-          isBulkTaskDownload={isBulkTaskDownload}
-          handleBulkTaskDownload={handleBulkTaskDownload}
+          exportTypes={exportTypes}
+          handleExportSubmitClick={handleExportSubmitClick}
+          handleExportRadioButtonChange={handleExportRadioButtonChange}
         />
       )}
 

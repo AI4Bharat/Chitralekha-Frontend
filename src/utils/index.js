@@ -54,6 +54,7 @@ import {
   getTimeStamp,
   getUpdatedTime,
   roles,
+  speakerInfoOptions,
   snakeToTitleCase,
   steps,
 } from "./utils";
@@ -110,6 +111,7 @@ export {
   getTimeStamp,
   getUpdatedTime,
   roles,
+  speakerInfoOptions,
   snakeToTitleCase,
   steps,
 };

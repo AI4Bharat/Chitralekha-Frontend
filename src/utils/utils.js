@@ -561,3 +561,14 @@ export const filterTaskList = (taskList, selectedFilters) => {
 
   return filterResult;
 };
+
+export const speakerInfoOptions = [
+  {
+    label: "With Speaker Info",
+    value: "true",
+  },
+  {
+    label: "Without Speaker Info",
+    value: "false",
+  },
+];

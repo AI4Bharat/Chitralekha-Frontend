@@ -1,4 +1,6 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { speakerInfoOptions } from "utils";
 
 //Components
 import {
@@ -21,23 +23,26 @@ const ExportDialog = ({
   open,
   handleClose,
   taskType,
-  handleTranscriptRadioButton,
-  handleTranslationRadioButton,
-  handleTranscriptExport,
-  handleTranslationExport,
-  exportTranscription,
-  exportTranslation,
-  transcriptionOptions,
-  translationOptions,
-  isBulkTaskDownload,
-  handleBulkTaskDownload,
+  exportTypes,
+  handleExportSubmitClick,
+  handleExportRadioButtonChange,
 }) => {
+  const { transcription, translation, voiceover, speakerInfo } = exportTypes;
+
+  const transcriptExportTypes = useSelector(
+    (state) => state.getTranscriptExportTypes.data.export_types
+  );
+  const translationExportTypes = useSelector(
+    (state) => state.getTranslationExportTypes.data.export_types
+  );
+  const voiceoverExportTypes = useSelector(
+    (state) => state.getVoiceoverExportTypes.data.export_types
+  );
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4" display="flex" alignItems={"center"}>
@@ -52,89 +57,99 @@ const ExportDialog = ({
       </DialogTitle>
 
       <DialogContent>
-        <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
+        <DialogContentText id="select-export-types" sx={{ mt: 2 }}>
           Select Export Type
         </DialogContentText>
         {taskType?.includes("TRANSCRIPTION") ? (
-          <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
+          <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-              >
-                {transcriptionOptions?.map((item, index) => (
+              <RadioGroup row>
+                {transcriptExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
                     control={<Radio />}
-                    checked={exportTranscription === item}
+                    checked={transcription === item}
                     label={item}
-                    onClick={handleTranscriptRadioButton}
+                    name="transcription"
+                    onClick={(event) => handleExportRadioButtonChange(event)}
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </DialogActions>
+        ) : taskType?.includes("VOICEOVER") ? (
+          <DialogActions sx={{ mb: 1, mt: 1 }}>
+            <FormControl>
+              <RadioGroup row>
+                {voiceoverExportTypes?.map((item, index) => (
+                  <FormControlLabel
+                    key={index}
+                    value={item}
+                    control={<Radio />}
+                    checked={voiceover === item}
+                    label={item}
+                    name="voiceover"
+                    onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
               </RadioGroup>
             </FormControl>
           </DialogActions>
         ) : (
-          <DialogActions sx={{ mr: 17, mb: 1, mt: 1 }}>
+          <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-              >
-                {translationOptions?.map((item, index) => (
+              <RadioGroup row>
+                {translationExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
                     control={<Radio />}
-                    checked={exportTranslation === item}
+                    checked={translation === item}
                     label={item}
-                    onClick={handleTranslationRadioButton}
+                    name="translation"
+                    onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
               </RadioGroup>
             </FormControl>
           </DialogActions>
         )}
+
+        {!taskType?.includes("VOICEOVER") ? (
+          <>
+            <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
+              Speaker Tagging
+            </DialogContentText>
+            <DialogActions sx={{ mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup row>
+                  {speakerInfoOptions?.map((item, index) => (
+                    <FormControlLabel
+                      key={index}
+                      value={item.value}
+                      control={<Radio />}
+                      checked={speakerInfo === item.value}
+                      label={item.label}
+                      name="speakerInfo"
+                      onClick={(event) => handleExportRadioButtonChange(event)}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
+          </>
+        ) : null}
+
         <DialogActions>
           <Button
-            variant="standard"
-            onClick={handleClose}
+            variant="contained"
+            onClick={handleExportSubmitClick}
             style={{ borderRadius: "8px" }}
+            autoFocus
           >
-            Cancel
+            Export
           </Button>
-
-          {isBulkTaskDownload ? (
-            <Button
-              variant="contained"
-              onClick={handleBulkTaskDownload}
-              style={{ borderRadius: "8px" }}
-              autoFocus
-            >
-              Export
-            </Button>
-          ) : taskType.includes("TRANSCRIPTION") ? (
-            <Button
-              variant="contained"
-              onClick={handleTranscriptExport}
-              style={{ borderRadius: "8px" }}
-              autoFocus
-            >
-              Export
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={handleTranslationExport}
-              style={{ borderRadius: "8px" }}
-              autoFocus
-            >
-              Export
-            </Button>
-          )}
         </DialogActions>
       </DialogContent>
     </Dialog>
