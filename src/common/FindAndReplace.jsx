@@ -38,8 +38,7 @@ const FindAndReplace = (props) => {
         dispatch(setSubtitles(updatedSource, C.SUBTITLES));
       };
 
-    const TransliterationLanguage =  (!taskType?.task_type?.includes("TRANSCRIPTION") ? transliterationLang?.target_language : transliterationLang?.src_language)
-    
+    const TransliterationLanguage =  !taskType?.includes("TRANSCRIPTION") ? transliterationLang?.target_language :transliterationLang?.src_language
     useEffect(() => {
         setSubtitlesData(sourceData);
     }, [sourceData, subtitleDataKey])
