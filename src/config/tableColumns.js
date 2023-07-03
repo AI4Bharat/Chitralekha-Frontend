@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import moment from "moment";
+import statusColor from "../utils/getStatusColor";
 
 export const projectColumns = [
   {
@@ -211,53 +212,42 @@ export const videoListColumns = [
   },
 ];
 
+const renderTaskListColumnCell = (value, tableMeta) => {
+  const { tableData: data, rowIndex } = tableMeta;
+  const selectedTask = data[rowIndex];
+
+  return (
+    <Box
+      style={{
+        color: selectedTask.is_active ? "" : "grey",
+      }}
+    >
+      {value}
+    </Box>
+  );
+};
+
 export const taskListColumns = [
   {
     name: "id",
     label: "Id",
     options: {
       display: "exclude",
-    },
-  },
-  {
-    name: "task_type",
-    label: "",
-    options: {
-      display: "excluded",
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "task_type_label",
     label: "Task Type",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "video_name",
     label: "Video Name",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
@@ -266,64 +256,33 @@ export const taskListColumns = [
     options: {
       display: false,
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
+            {moment(value).format("DD/MM/YYYY HH:mm:ss")}
           </Box>
         );
       },
-    },
-  },
-  {
-    name: "src_language",
-    label: "",
-    options: {
-      display: "excluded",
     },
   },
   {
     name: "src_language_label",
     label: "Source Language",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
-    },
-  },
-  {
-    name: "target_language",
-    label: "",
-    options: {
-      display: "excluded",
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "target_language_label",
     label: "Target Language",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
@@ -333,13 +292,16 @@ export const taskListColumns = [
       sort: false,
       align: "center",
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
+            {statusColor(value)?.element}
           </Box>
         );
       },
@@ -347,30 +309,19 @@ export const taskListColumns = [
   },
   {
     name: "user",
-    label: "",
-    options: {
-      display: "excluded",
-    },
-  },
-  {
-    name: "is_active",
-    label: "",
-    options: {
-      display: "excluded",
-    },
-  },
-  {
-    name: "username",
     label: "Assignee",
     options: {
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
+            {value.first_name} {value.last_name}
           </Box>
         );
       },
@@ -381,35 +332,14 @@ export const taskListColumns = [
     label: "Project Name",
     options: {
       display: "excluded",
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "time_spent",
     label: "Time Spent",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-              textAlign: "right"
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
@@ -417,32 +347,7 @@ export const taskListColumns = [
     label: "Description",
     options: {
       display: "exclude",
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
-    },
-  },
-  {
-    name: "buttons",
-    label: "",
-    options: {
-      display: "excluded",
-    },
-  },
-  {
-    name: "status",
-    label: "",
-    options: {
-      display: "excluded",
-      viewColumns: false,
+      customBodyRender: renderTaskListColumnCell,
     },
   },
 ];

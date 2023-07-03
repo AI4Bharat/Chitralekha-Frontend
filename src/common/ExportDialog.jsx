@@ -53,7 +53,7 @@ const ExportDialog = ({
         <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
           Select Export Type
         </DialogContentText>
-        {taskType.includes("TRANSCRIPTION") ? (
+        {taskType?.includes("TRANSCRIPTION") ? (
           <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
             <FormControl>
               <RadioGroup
