@@ -21,9 +21,10 @@ const FindAndReplace = (props) => {
 
     const {
         subtitleDataKey,
+        taskType
     } = { ...props }
 
-    const transliterationLang = useSelector((state) => state.getTaskDetails.data?.src_language)
+    const transliterationLang = useSelector((state) => state.getTaskDetails.data)
     const sourceData = useSelector((state) => state.commonReducer.subtitles);
 
     const [subtitlesData, setSubtitlesData] = useState();
@@ -37,6 +38,8 @@ const FindAndReplace = (props) => {
         dispatch(setSubtitles(updatedSource, C.SUBTITLES));
       };
 
+    const TransliterationLanguage =  (!taskType?.task_type?.includes("TRANSCRIPTION") ? transliterationLang?.target_language : transliterationLang?.src_language)
+    
     useEffect(() => {
         setSubtitlesData(sourceData);
     }, [sourceData, subtitleDataKey])
@@ -166,9 +169,9 @@ const FindAndReplace = (props) => {
                             md={4}
                             sx={{ margin: 2 }}
                         >
-                            {transliterationLang !== "en" ? (
+                            {TransliterationLanguage !== "en" ? (
                                 <IndicTransliterate
-                                    lang={transliterationLang}
+                                    lang={TransliterationLanguage}
                                     value={findValue}
                                     onChangeText={(text) => {
                                         setFindValue(text);
@@ -239,9 +242,9 @@ const FindAndReplace = (props) => {
                                     <ChevronRight />
                                 </Button>}
                             </Grid>
-                            {transliterationLang !== "en" ? (
+                            {TransliterationLanguage !== "en" ? (
                                 <IndicTransliterate
-                                    lang={transliterationLang}
+                                    lang={TransliterationLanguage}
                                     value={replaceValue}
                                     onChangeText={(text) => {
                                         setReplaceValue(text);

@@ -284,7 +284,7 @@ const SettingsButtonComponent = ({
         ))}
       </Menu> */}
 
-      <FindAndReplace subtitleDataKey={"text"} />
+      <FindAndReplace subtitleDataKey={taskData?.task_type === "TRANSLATION_EDIT" ? "target_text" : "text"} taskType={taskData?.task_type} />
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
