@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef, memo } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { tagsSuggestionData } from "config/projectConfigs";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -15,6 +16,8 @@ import {
   getSelectionStart,
   getTimings,
   getItemForDelete,
+  MenuProps,
+  assignSpeakerId,
 } from "utils";
 
 //Styles
@@ -22,8 +25,22 @@ import "../../../styles/scrollbarStyle.css";
 import { VideoLandingStyle } from "styles";
 
 //Components
-import { Box, CardContent, Grid, useMediaQuery } from "@mui/material";
-import { ConfirmDialog, CustomizedSnackbars, TimeBoxes } from "common";
+import {
+  Box,
+  CardContent,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  ConfirmDialog,
+  CustomizedSnackbars,
+  TagsSuggestionList,
+  TimeBoxes,
+} from "common";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -60,6 +77,7 @@ const RightPanel = ({ currentIndex }) => {
     (state) => state.getTranscriptPayload.data
   );
   const limit = useSelector((state) => state.commonReducer.limit);
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -78,6 +96,22 @@ const RightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState([]);
+  const [speakerIdList, setSpeakerIdList] = useState([]);
+  const [currentSelectedIndex, setCurrentSelectedIndex] = useState(0);
+  const [tagSuggestionsAnchorEl, setTagSuggestionsAnchorEl] = useState(null);
+  const [tagSuggestionList, setTagSuggestionList] = useState([]);
+  const [textWithoutBackSlash, setTextWithoutBackSlash] = useState("");
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+      const speakerList = videoDetails?.video?.speaker_info?.map((speaker) => {
+        return speaker;
+      });
+      setSpeakerIdList(speakerList);
+      setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+    }
+  }, [videoDetails]);
 
   useEffect(() => {
     if (currentPage) {
@@ -165,8 +199,30 @@ const RightPanel = ({ currentIndex }) => {
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
   const changeTranscriptHandler = useCallback(
-    (text, index) => {
-      const sub = onSubtitleChange(text, index);
+    (event, index) => {
+      const {
+        target: { value },
+        currentTarget,
+      } = event;
+
+      const containsBackslash = value.includes("\\");
+      const textWithoutlash = value.split("\\")[0];
+      const currentTargetWord = value.split("\\")[1];
+
+      if (containsBackslash) {
+        let filteredSuggestionByInput = tagsSuggestionData.filter((el) => {
+          return el.toLowerCase().includes(currentTargetWord.toLowerCase());
+        });
+
+        if (filteredSuggestionByInput.length) {
+          setCurrentSelectedIndex(index);
+          setTagSuggestionsAnchorEl(currentTarget);
+          setTextWithoutBackSlash(textWithoutlash);
+          setTagSuggestionList(filteredSuggestionByInput);
+        }
+      }
+
+      const sub = onSubtitleChange(value, index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
       saveTranscriptHandler(false, false, sub);
     },
@@ -328,7 +384,7 @@ const RightPanel = ({ currentIndex }) => {
 
     // eslint-disable-next-line
   }, [undoStack, redoStack]);
-  console.log(redoStack, "redoStack");
+
   const targetLength = (index) => {
     if (subtitles[index]?.text.trim() !== "")
       return subtitles[index]?.text.trim().split(" ").length;
@@ -338,6 +394,12 @@ const RightPanel = ({ currentIndex }) => {
   const onNavigationClick = (value) => {
     saveTranscriptHandler(false, true);
     getPayload(value, limit);
+  };
+
+  const handleSpeakerChange = (id, index) => {
+    const sub = assignSpeakerId(id, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
   };
 
   return (
@@ -374,7 +436,7 @@ const RightPanel = ({ currentIndex }) => {
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "15px",
+                  padding: "16px",
                   borderBottom: "1px solid lightgray",
                   backgroundColor:
                     index % 2 === 0
@@ -408,6 +470,7 @@ const RightPanel = ({ currentIndex }) => {
 
                 <CardContent
                   className={classes.cardContent}
+                  aria-describedby={"suggestionList"}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -421,8 +484,8 @@ const RightPanel = ({ currentIndex }) => {
                     <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
-                      onChangeText={(text) => {
-                        changeTranscriptHandler(text, index);
+                      onChange={(event) => {
+                        changeTranscriptHandler(event, index);
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
@@ -458,7 +521,7 @@ const RightPanel = ({ currentIndex }) => {
                     <div className={classes.relative}>
                       <textarea
                         onChange={(event) => {
-                          changeTranscriptHandler(event.target.value, index);
+                          changeTranscriptHandler(event, index);
                         }}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         value={item.text}
@@ -483,6 +546,39 @@ const RightPanel = ({ currentIndex }) => {
                     </div>
                   )}
                 </CardContent>
+
+                {showSpeakerIdDropdown ? (
+                  <FormControl
+                    sx={{ width: "50%", mr: "auto", float: "left" }}
+                    size="small"
+                  >
+                    <InputLabel id="select-speaker">Select Speaker</InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="select-speaker"
+                      label="Select Speaker"
+                      value={item.speaker_id}
+                      onChange={(event) =>
+                        handleSpeakerChange(event.target.value, index)
+                      }
+                      style={{
+                        backgroundColor: "#fff",
+                        textAlign: "left",
+                      }}
+                      inputProps={{
+                        "aria-label": "Without label",
+                        style: { textAlign: "left" },
+                      }}
+                      MenuProps={MenuProps}
+                    >
+                      {speakerIdList?.map((speaker, index) => (
+                        <MenuItem key={index} value={speaker.id}>
+                          {speaker.name} ({speaker.gender[0]})
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : null}
               </Box>
             );
           })}
@@ -517,6 +613,18 @@ const RightPanel = ({ currentIndex }) => {
             submit={() => saveTranscriptHandler(true, true)}
             message={"Do you want to submit the transcript?"}
             loading={loading}
+          />
+        )}
+
+        {Boolean(tagSuggestionsAnchorEl) && (
+          <TagsSuggestionList
+            tagSuggestionsAnchorEl={tagSuggestionsAnchorEl}
+            setTagSuggestionList={setTagSuggestionList}
+            index={currentSelectedIndex}
+            filteredSuggestionByInput={tagSuggestionList}
+            setTagSuggestionsAnchorEl={setTagSuggestionsAnchorEl}
+            textWithoutBackslash={textWithoutBackSlash}
+            saveTranscriptHandler={saveTranscriptHandler}
           />
         )}
       </Box>

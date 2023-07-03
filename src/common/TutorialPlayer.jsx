@@ -1,3 +1,6 @@
+import React from "react";
+
+//Components
 import {
   Button,
   Card,
@@ -5,7 +8,6 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
-import React from "react";
 
 const TutorialTooltip = ({
   index,

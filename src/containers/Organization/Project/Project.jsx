@@ -79,6 +79,33 @@ const Project = () => {
   const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
+  const [value, setValue] = useState(0);
+  const [projectDetails, SetProjectDetails] = useState({});
+  const [videoList, setVideoList] = useState([]);
+  const [createVideoDialog, setCreateVideoDialog] = useState(false);
+  const [videoLink, setVideoLink] = useState("");
+  const [isAudio, setIsAudio] = useState(false);
+  const [lang, setLang] = useState("");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
+  const [projectData, setProjectData] = useState([
+    { name: "Project ID", value: null },
+    { name: "CreatedAt", value: null },
+    { name: "UserName", value: null },
+  ]);
+  const [videoDescription, setVideoDescription] = useState("");
+  const [speakerInfo, setSpeakerInfo] = useState([
+    {
+      name: "",
+      gender: "",
+      age: "",
+      id: "",
+    },
+  ]);
+  const [speakerType, setSpeakerType] = useState("multiple");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -124,25 +151,6 @@ const Project = () => {
     };
     // eslint-disable-next-line
   }, []);
-
-  const [value, setValue] = useState(0);
-  const [projectDetails, SetProjectDetails] = useState({});
-  const [videoList, setVideoList] = useState([]);
-  const [createVideoDialog, setCreateVideoDialog] = useState(false);
-  const [videoLink, setVideoLink] = useState("");
-  const [isAudio, setIsAudio] = useState(false);
-  const [lang, setLang] = useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
-  const [projectData, setProjectData] = useState([
-    { name: "Project ID", value: null },
-    { name: "CreatedAt", value: null },
-    { name: "UserName", value: null },
-  ]);
-  const [videoDescription, setVideoDescription] = useState("");
 
   useEffect(() => {
     setProjectData([
@@ -215,7 +223,9 @@ const Project = () => {
       lang,
       desc,
       create,
-      voice
+      voice,
+      speakerInfo,
+      speakerType
     );
 
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -531,6 +541,10 @@ const Project = () => {
           setVideoDescription={setVideoDescription}
           voice={voice}
           setVoice={setVoice}
+          setSpeakerInfo={setSpeakerInfo}
+          speakerInfo={speakerInfo}
+          speakerType={speakerType}
+          setSpeakerType={setSpeakerType} 
         />
       )}
 

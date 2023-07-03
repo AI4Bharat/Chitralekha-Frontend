@@ -1,3 +1,6 @@
+import React from "react";
+
+//Components
 import {
   Button,
   Dialog,
@@ -12,7 +15,6 @@ import {
   RadioGroup,
   Typography,
 } from "@mui/material";
-import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
 const ExportDialog = ({
@@ -53,7 +55,7 @@ const ExportDialog = ({
         <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
           Select Export Type
         </DialogContentText>
-        {taskType.includes("TRANSCRIPTION") ? (
+        {taskType?.includes("TRANSCRIPTION") ? (
           <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>
             <FormControl>
               <RadioGroup

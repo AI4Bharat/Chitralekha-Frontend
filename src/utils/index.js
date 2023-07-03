@@ -4,6 +4,7 @@ import imageArray from "./getModelIcons";
 import statusColor from "./getStatusColor";
 import {
   addSubtitleBox,
+  assignSpeakerId,
   base64toBlob,
   copySubs,
   fontMenu,
@@ -44,6 +45,7 @@ import {
   checkPassword,
   defaultTaskHandler,
   diableTargetLang,
+  filterTaskList,
   getDateTime,
   getDisableOption,
   getHelpList,
@@ -57,6 +59,7 @@ import {
 } from "./utils";
 
 export {
+  assignSpeakerId,
   Sub,
   colorArray,
   imageArray,
@@ -64,6 +67,7 @@ export {
   addSubtitleBox,
   base64toBlob,
   copySubs,
+  filterTaskList,
   fontMenu,
   formatSub,
   fullscreenUtil,

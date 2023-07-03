@@ -1,8 +1,11 @@
 import React from "react";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
-import { createTheme } from "@mui/material/styles";
+
+//Components
+import {
+  createTheme,
+  ThemeProvider as MuiThemeProvider,
+} from "@mui/material/styles";
+import { Alert, Snackbar } from "@mui/material";
 
 const CustomizedSnackbars = (props) => {
   const getMuiTheme = () =>

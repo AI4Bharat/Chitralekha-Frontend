@@ -51,6 +51,7 @@ import FetchProjectDetailsAPI from "./api/Project/FetchProjectDetails";
 import FetchProjectListAPI from "./api/Project/FetchProjectList";
 import FetchProjectMembersAPI from "./api/Project/FetchProjectMembers";
 import FetchProjectReportsAPI from "./api/Project/FetchProjectReports";
+import FetchSpeakerInfoAPI from "./api/Project/FetchSpeakerInfo";
 import FetchSupportedLanguagesAPI from "./api/Project/FetchSupportedLanguages";
 import FetchTaskDetailsAPI from "./api/Project/FetchTaskDetails";
 import FetchTaskListAPI from "./api/Project/FetchTaskList";
@@ -71,6 +72,7 @@ import SaveFullPayloadAPI from "./api/Project/SaveFullPayload";
 import SaveTranscriptAPI from "./api/Project/SaveTranscript";
 import setComparisonTable from "./api/Project/SetComparisonTableData";
 import StoreAccessTokenAPI from "./api/Project/StoreAccessToken";
+import UpdateSpeakerInfoAPI from "./api/Project/UpdateSpeakerInfo";
 import UpdateTimeSpentPerTask from "./api/Project/UpdateTimeSpentPerTask";
 import UpdateVideoAPI from "./api/Project/UpdateVideo";
 import UploadCSVAPI from "./api/Project/UploadCSV";
@@ -161,6 +163,7 @@ export {
   FetchProjectListAPI,
   FetchProjectMembersAPI,
   FetchProjectReportsAPI,
+  FetchSpeakerInfoAPI,
   FetchSupportedLanguagesAPI,
   FetchTaskDetailsAPI,
   FetchTaskListAPI,
@@ -181,6 +184,7 @@ export {
   SaveTranscriptAPI,
   setComparisonTable,
   StoreAccessTokenAPI,
+  UpdateSpeakerInfoAPI,
   UpdateTimeSpentPerTask,
   UpdateVideoAPI,
   UploadCSVAPI,

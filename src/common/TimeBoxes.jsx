@@ -1,6 +1,6 @@
-import { Box, TextField } from "@mui/material";
 import React, { memo } from "react";
 import { ProjectStyle } from "styles";
+import { Box, TextField } from "@mui/material";
 
 const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
   const classes = ProjectStyle();

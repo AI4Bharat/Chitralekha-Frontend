@@ -1,3 +1,8 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { MenuProps } from "utils";
+
+//Components
 import {
   Button,
   Dialog,
@@ -13,10 +18,6 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { MenuProps } from "utils";
 
 //APIs
 import { APITransport, FetchUserRolesAPI } from "redux/actions";

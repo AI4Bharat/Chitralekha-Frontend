@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment/moment";
+
+//Components
 import {
+  Box,
+  Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
   FormControl,
   InputLabel,
   ListItemText,
@@ -14,11 +19,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { useDispatch, useSelector } from "react-redux";
-import moment from "moment/moment";
 import CustomizedSnackbars from "./Snackbar";
-import { FetchTaskDetailsAPI, FetchTranscriptTypesAPI, APITransport, FetchTranslationTypesAPI, ImportSubtitlesAPI } from "redux/actions";
+
+//APIs
+import {
+  FetchTaskDetailsAPI,
+  FetchTranscriptTypesAPI,
+  APITransport,
+  FetchTranslationTypesAPI,
+  ImportSubtitlesAPI,
+} from "redux/actions";
 
 const ViewTaskDialog = ({
   open,
@@ -54,7 +64,7 @@ const ViewTaskDialog = ({
       variant: importApiStatus?.error ? "error" : "success",
       message: importApiStatus.message,
     });
-    
+
     // eslint-disable-next-line
   }, [importApiStatus]);
 

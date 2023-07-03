@@ -44,6 +44,7 @@ import getTranscriptExportTypes from "./Project/FetchTranscriptExportTypes";
 import getTranslationExportTypes from "./Project/FetchTranslationExportTypes";
 import getOrgTaskList from "./Organization/FetchOrgTaskList";
 import getTaskQueueStatus from "./Organization/FetchTaskQueueStatus";
+import getSpeakerInfo from "./Project/FetchSpeakerInfo";
 
 const rootReducer = {
     apiStatus,
@@ -92,6 +93,7 @@ const rootReducer = {
     getTranslationExportTypes,
     getOrgTaskList,
     getTaskQueueStatus,
+    getSpeakerInfo,
 };
 
 export default rootReducer;

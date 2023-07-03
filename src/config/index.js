@@ -13,6 +13,12 @@ import {
 import { translate } from "./localisation";
 import { profileOptions } from "./profileConfigs";
 import {
+  buttonConfig,
+  speakerFields,
+  toolBarActions,
+  voiceOptions,
+} from "./projectConfigs";
+import {
   reportLevels,
   languagelevelStats,
   projectReportLevels,
@@ -55,4 +61,8 @@ export {
   taskQueueStatusColumns,
   taskStatus,
   taskTypes,
+  voiceOptions,
+  speakerFields,
+  buttonConfig,
+  toolBarActions,
 };

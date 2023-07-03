@@ -24,8 +24,10 @@ import OutlinedTextField from "./OutlinedTextField";
 import PreviewDialog from "./PreviewDialog";
 import Search from "./Search";
 import CustomizedSnackbars from "./Snackbar";
+import SpeakerInfoDialog from "./SpeakerInfoDialog";
 import Loader from "./Spinner";
 import TableSearchPopover from "./TableSearchPopover";
+import TagsSuggestionList from "./TagsSuggestionList";
 import TaskVideoDialog from "./TaskVideoDialog";
 import TimeBoxes from "./TimeBoxes";
 import TutorialTooltip from "./TutorialPlayer";
@@ -65,7 +67,9 @@ export {
   Search,
   CustomizedSnackbars,
   Loader,
+  SpeakerInfoDialog,
   TableSearchPopover,
+  TagsSuggestionList,
   TaskVideoDialog,
   TimeBoxes,
   TutorialTooltip,

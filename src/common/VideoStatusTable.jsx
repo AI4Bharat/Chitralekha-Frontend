@@ -1,13 +1,15 @@
-import moment from "moment/moment";
 import React from "react";
+import moment from "moment/moment";
+
+//Components
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
 } from "@mui/material";
-import { Box } from "@mui/system";
 
 const VideoStatusTable = ({ headers, status }) => {
   return (

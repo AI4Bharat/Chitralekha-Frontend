@@ -29,15 +29,19 @@ import Loader from "./Spinner";
 import { ProjectStyle } from "styles";
 
 //APIs
-import { FetchProjectMembersAPI, FetchTaskDetailsAPI, FetchPriorityTypesAPI, APITransport } from "redux/actions";
+import {
+  FetchProjectMembersAPI,
+  FetchTaskDetailsAPI,
+  FetchPriorityTypesAPI,
+  APITransport,
+} from "redux/actions";
 
 const UpdateBulkTaskDialog = ({
   open,
   handleUserDialogClose,
   loading,
   handleUpdateTask,
-  selectedTaskId,
-  selectedTaskDetails,
+  currentTaskDetails,
   isBulk,
   projectId,
 }) => {
@@ -67,8 +71,10 @@ const UpdateBulkTaskDialog = ({
       dispatch(APITransport(userObj));
     }
 
+    const { id: taskId } = currentTaskDetails;
+
     if (!isBulk) {
-      const taskObj = new FetchTaskDetailsAPI(selectedTaskId);
+      const taskObj = new FetchTaskDetailsAPI(taskId);
       dispatch(APITransport(taskObj));
     }
 
@@ -76,12 +82,12 @@ const UpdateBulkTaskDialog = ({
   }, []);
 
   useEffect(() => {
-    if (!isBulk && selectedTaskDetails) {
+    if (!isBulk && currentTaskDetails) {
       const userObj = new FetchProjectMembersAPI(
         projectId,
-        selectedTaskDetails.taskType,
-        selectedTaskDetails.videoId,
-        selectedTaskDetails.targetLang
+        currentTaskDetails.task_type,
+        currentTaskDetails.video,
+        currentTaskDetails.target_language
       );
       dispatch(APITransport(userObj));
     }

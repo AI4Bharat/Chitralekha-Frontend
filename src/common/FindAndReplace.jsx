@@ -1,14 +1,18 @@
-import { Button, Dialog, DialogContent, DialogTitle, Grid, Box, Typography, Tooltip, IconButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { IndicTransliterate } from '@ai4bharat/indic-transliterate';
+import { useDispatch, useSelector } from 'react-redux';
+
+//Styles
+import { ProjectStyle } from 'styles';
+
+//Components
+import { Button, Dialog, DialogContent, DialogTitle, Grid, Box, Typography, Tooltip, IconButton } from '@mui/material';
 import OutlinedTextField from './OutlinedTextField';
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
-import { IndicTransliterate } from '@ai4bharat/indic-transliterate';
 import FindReplaceIcon from '@mui/icons-material/FindReplace';
-import { useDispatch, useSelector } from 'react-redux';
 import C from "redux/constants";
-import { ProjectStyle } from 'styles';
 import { setSubtitles } from 'redux/actions';
 
 const FindAndReplace = (props) => {

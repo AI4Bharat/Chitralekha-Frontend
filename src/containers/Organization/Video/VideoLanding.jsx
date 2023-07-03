@@ -226,6 +226,7 @@ const VideoLanding = () => {
       const apiObj = new UpdateTimeSpentPerTask(taskId, time_spent);
       dispatch(APITransport(apiObj));
     };
+    // eslint-disable-next-line
   }, []);
 
   const handleFullscreen = () => {

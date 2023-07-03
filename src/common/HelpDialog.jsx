@@ -1,3 +1,11 @@
+import React, { useState } from "react";
+import { translate, Workflow, workflowInnerList } from "config";
+import { getHelpList } from "utils";
+
+//Styles
+import { headerStyle } from "styles";
+
+//Components
 import {
   Dialog,
   IconButton,
@@ -6,16 +14,10 @@ import {
   DialogContent,
   DialogContentText,
 } from "@mui/material";
-import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import QuestionAnswerOutlinedIcon from "@mui/icons-material/QuestionAnswerOutlined";
-import { headerStyle } from "styles";
-import { translate } from "config";
-import { getHelpList } from "utils";
-import { workflowInnerList } from "config";
-import { Workflow } from "config";
 
 const HelpDialog = ({ openHelpDialog, handleClose, setOpenHelpDialog }) => {
   const classes = headerStyle();

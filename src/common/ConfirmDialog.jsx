@@ -1,3 +1,6 @@
+import React from "react";
+
+//Components
 import {
   Button,
   Dialog,
@@ -5,7 +8,6 @@ import {
   DialogContent,
   DialogContentText,
 } from "@mui/material";
-import React from "react";
 import Loader from "./Spinner";
 
 const ConfirmDialog = ({

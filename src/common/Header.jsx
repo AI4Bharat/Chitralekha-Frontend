@@ -1,24 +1,33 @@
 import React, { useState, useEffect } from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { useTheme } from "@emotion/react";
-import { Grid, useMediaQuery } from "@mui/material";
-import MobileNavbar from "./MobileNavbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import C from "redux/constants";
+
+//Styles
+import { headerStyle } from "styles";
+import { useTheme } from "@emotion/react";
+
+//Components
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Toolbar,
+  IconButton,
+  Tooltip,
+  Typography,
+  Menu,
+  MenuItem,
+  Container,
+  Grid,
+  useMediaQuery,
+} from "@mui/material";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import MobileNavbar from "./MobileNavbar";
 import HelpDialog from "./HelpDialog"
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
-import { headerStyle } from "styles";
+
+//APIs
+import C from "redux/constants";
 import { APITransport, FetchLoggedInUserDetailsAPI } from "redux/actions";
 
 const Header = () => {
