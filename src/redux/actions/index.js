@@ -64,6 +64,7 @@ import FetchTranslationTypesAPI from "./api/Project/FetchTranslationTypes";
 import FetchVideoDetailsAPI from "./api/Project/FetchVideoDetails";
 import FetchVideoListAPI from "./api/Project/FetchVideoList";
 import FetchVideoTaskListAPI from "./api/Project/FetchVideoTaskList";
+import FetchVoiceoverExportTypesAPI from "./api/Project/FetchVoiceoverExportTypes";
 import GenerateTranslationOutputAPI from "./api/Project/GenerateTranslationOutput";
 import ImportSubtitlesAPI from "./api/Project/ImportSubtitles";
 import ProjectListAPI from "./api/Project/ProjectList";
@@ -218,4 +219,5 @@ export {
   setRangeStart,
   setRangeEnd,
   APITransport,
+  FetchVoiceoverExportTypesAPI,
 };

@@ -95,6 +95,7 @@ const ProjectMemberDetails = () => {
       `${item.first_name} ${item.last_name}`,
       item.email,
       item.role,
+      item.languages.join(", "),
       <Box sx={{ display: "flex" }}>
         <Tooltip title="View">
           <IconButton>

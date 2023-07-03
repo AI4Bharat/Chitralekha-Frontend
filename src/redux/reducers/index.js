@@ -42,6 +42,7 @@ import getAdminReports from "./Admin/AdminLevelReport";
 import getInviteUserInfo from "./User/FetchInviteUserInfo";
 import getTranscriptExportTypes from "./Project/FetchTranscriptExportTypes";
 import getTranslationExportTypes from "./Project/FetchTranslationExportTypes";
+import getVoiceoverExportTypes from "./Project/FetchVoiceoverExportTypes";
 import getOrgTaskList from "./Organization/FetchOrgTaskList";
 import getTaskQueueStatus from "./Organization/FetchTaskQueueStatus";
 import getSpeakerInfo from "./Project/FetchSpeakerInfo";
@@ -94,6 +95,7 @@ const rootReducer = {
     getOrgTaskList,
     getTaskQueueStatus,
     getSpeakerInfo,
+    getVoiceoverExportTypes,
 };
 
 export default rootReducer;

@@ -56,6 +56,7 @@ import {
   FetchPaginatedOrgTaskListAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
+  FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   clearComparisonTable,
   exportTranscriptionAPI,
@@ -79,8 +80,6 @@ const OrgLevelTaskList = () => {
   const [tasktype, setTasktype] = useState();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [exportTranscription, setExportTranscription] = useState("srt");
-  const [exportTranslation, setexportTranslation] = useState("srt");
   const [taskdata, setTaskdata] = useState();
   const [deleteTaskid, setDeleteTaskid] = useState();
   const [showEditTaskBtn, setShowEditTaskBtn] = useState(false);
@@ -119,18 +118,19 @@ const OrgLevelTaskList = () => {
   const [searchedColumn, setSearchedColumn] = useState({});
   const [columnDisplay, setColumnDisplay] = useState(false);
 
+  const [exportTypes, setExportTypes] = useState({
+    transcription: "srt",
+    translation: "srt",
+    voiceover: "mp4",
+    speakerInfo: "false",
+  });
+
   const searchOpen = Boolean(searchAnchor);
   const popoverOpen = Boolean(anchorEl);
 
   const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
-  const transcriptExportTypes = useSelector(
-    (state) => state.getTranscriptExportTypes.data.export_types
-  );
-  const translationExportTypes = useSelector(
-    (state) => state.getTranslationExportTypes.data.export_types
-  );
   const taskList = useSelector((state) => state.getOrgTaskList.data);
 
   const fetchTaskList = () => {
@@ -180,6 +180,9 @@ const OrgLevelTaskList = () => {
     const translationExportObj = new FetchTranslationExportTypesAPI();
     dispatch(APITransport(translationExportObj));
 
+    const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
+    dispatch(APITransport(voiceoverExportObj));
+
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
@@ -216,8 +219,10 @@ const OrgLevelTaskList = () => {
     setOpenPreviewDialog(false);
   };
 
-  const exportVoiceoverTask = async (id) => {
-    const apiObj = new ExportVoiceoverTaskAPI(id);
+  const exportVoiceoverTask = async () => {
+    const { voiceover } = exportTypes;
+
+    const apiObj = new ExportVoiceoverTaskAPI(taskdata, voiceover);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
@@ -228,7 +233,9 @@ const OrgLevelTaskList = () => {
     const resp = await res.json();
 
     if (res.ok) {
-      const task = taskList.tasks_list.filter((task) => task.id === id)[0];
+      const task = taskList.tasks_list.filter(
+        (task) => task.id === taskdata
+      )[0];
 
       const link = document.createElement("a");
       link.href = resp.azure_url;
@@ -253,14 +260,10 @@ const OrgLevelTaskList = () => {
   };
 
   const handleClickOpen = (id, taskType) => {
-    if (taskType.includes("VOICEOVER")) {
-      exportVoiceoverTask(id);
-    } else {
-      setOpen(true);
-      setTaskdata(id);
-      setTasktype(taskType);
-      setIsBulkTaskDownload(false);
-    }
+    setOpen(true);
+    setTaskdata(id);
+    setTasktype(taskType);
+    setIsBulkTaskDownload(false);
   };
 
   const handleShowFilter = (event) => {
@@ -268,7 +271,13 @@ const OrgLevelTaskList = () => {
   };
 
   const handleok = async () => {
-    const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
+    const { transcription, speakerInfo } = exportTypes;
+
+    const apiObj = new exportTranscriptionAPI(
+      taskdata,
+      transcription,
+      speakerInfo
+    );
     //dispatch(APITransport(apiObj));
     setOpen(false);
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -283,7 +292,7 @@ const OrgLevelTaskList = () => {
       )[0];
 
       let newBlob;
-      if (exportTranscription === "docx") {
+      if (transcription === "docx") {
         newBlob = new Blob([resp], {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
@@ -304,7 +313,7 @@ const OrgLevelTaskList = () => {
       const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
       link.setAttribute(
         "download",
-        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.src_language}.${exportTranscription}`
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.src_language}.${transcription}`
       );
       document.body.appendChild(link);
       link.click();
@@ -322,7 +331,13 @@ const OrgLevelTaskList = () => {
   };
 
   const handleokTranslation = async () => {
-    const apiObj = new exportTranslationAPI(taskdata, exportTranslation);
+    const { transcription, speakerInfo } = exportTypes;
+
+    const apiObj = new exportTranslationAPI(
+      taskdata,
+      transcription,
+      speakerInfo
+    );
     //dispatch(APITransport(apiObj));
     setOpen(false);
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -337,7 +352,7 @@ const OrgLevelTaskList = () => {
       )[0];
 
       let newBlob;
-      if (exportTranscription === "docx") {
+      if (transcription === "docx") {
         newBlob = new Blob([resp], {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
@@ -356,10 +371,10 @@ const OrgLevelTaskList = () => {
         .join("");
 
       const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-      // link.setAttribute("download", `${taskdata}.${exportTranslation}`);
+      // link.setAttribute("download", `${taskdata}.${transcription}`);
       link.setAttribute(
         "download",
-        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${exportTranslation}`
+        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${transcription}`
       );
       document.body.appendChild(link);
       link.click();
@@ -373,14 +388,6 @@ const OrgLevelTaskList = () => {
         variant: "error",
       });
     }
-  };
-
-  const handleClickRadioButton = (e) => {
-    setExportTranscription(e.target.value);
-  };
-
-  const handleClickRadioButtonTranslation = (e) => {
-    setexportTranslation(e.target.value);
   };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
@@ -1232,8 +1239,10 @@ const OrgLevelTaskList = () => {
   };
 
   const handleBulkTaskDownload = async () => {
+    const { translation } = exportTypes;
+
     setOpen(false);
-    const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
+    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
 
     const res = await fetch(apiObj.apiEndPoint(), {
       method: "GET",
@@ -1283,6 +1292,31 @@ const OrgLevelTaskList = () => {
     }
   };
 
+  const handleExportRadioButtonChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleExportSubmitClick = () => {
+    if (isBulkTaskDownload) {
+      handleBulkTaskDownload();
+    } else {
+      if (tasktype?.includes("TRANSCRIPTION")) {
+        handleok();
+      } else if (tasktype?.includes("TRANSLATION")) {
+        handleokTranslation();
+      } else {
+        exportVoiceoverTask();
+      }
+    }
+  };
+
   return (
     <>
       <Grid>{renderSnackBar()}</Grid>
@@ -1317,16 +1351,9 @@ const OrgLevelTaskList = () => {
           open={open}
           handleClose={handleClose}
           taskType={tasktype}
-          handleTranscriptRadioButton={handleClickRadioButton}
-          handleTranslationRadioButton={handleClickRadioButtonTranslation}
-          handleTranscriptExport={handleok}
-          handleTranslationExport={handleokTranslation}
-          exportTranscription={exportTranscription}
-          exportTranslation={exportTranslation}
-          transcriptionOptions={transcriptExportTypes}
-          translationOptions={translationExportTypes}
-          isBulkTaskDownload={isBulkTaskDownload}
-          handleBulkTaskDownload={handleBulkTaskDownload}
+          exportTypes={exportTypes}
+          handleExportSubmitClick={handleExportSubmitClick}
+          handleExportRadioButtonChange={handleExportRadioButtonChange}
         />
       )}
 

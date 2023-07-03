@@ -3,14 +3,13 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class exportTranslationAPI extends API {
-  constructor(projectId, exportType, data, timeout = 2000) {
+  constructor(projectId, exportType, speakerInfo, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.EXPORT_TRANLATION;
-    this.data = data;
     this.exportType = exportType;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.translation
-    }export_translation/?task_id=${projectId}&export_type=${exportType}`;
+    }export_translation/?task_id=${projectId}&export_type=${exportType}&with_speaker_info=${speakerInfo}`;
   }
 
   processResponse(res) {
@@ -24,9 +23,7 @@ export default class exportTranslationAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.data;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {
