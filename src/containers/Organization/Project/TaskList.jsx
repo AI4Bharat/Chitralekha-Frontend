@@ -970,7 +970,8 @@ const TaskList = () => {
 
   const handleDeleteSubmit = () => {
     if (isBulkTaskDelete) {
-      handleBulkDelete(currentTaskDetails?.id, true);
+      const taskIds = currentSelectedTasks.map((item) => item.id);
+      handleBulkDelete(taskIds, true);
     } else {
       handleDeleteTask(currentTaskDetails?.id, true);
     }
