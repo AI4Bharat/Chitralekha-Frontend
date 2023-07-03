@@ -529,3 +529,35 @@ export const checkPassword = (str) => {
   const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   return regex.test(str);
 };
+
+export const filterTaskList = (taskList, selectedFilters) => {
+  const { status, taskType, srcLanguage, tgtLanguage } = selectedFilters;
+
+  let filterResult = taskList;
+
+  if (status?.length) {
+    filterResult = filterResult.filter((value) => {
+      return status.includes(value.status);
+    });
+  }
+
+  if (taskType?.length) {
+    filterResult = filterResult.filter((value) => {
+      return taskType.includes(value.task_type);
+    });
+  }
+
+  if (srcLanguage?.length) {
+    filterResult = filterResult.filter((value) => {
+      return srcLanguage.includes(value.src_language_label);
+    });
+  }
+
+  if (tgtLanguage?.length) {
+    filterResult = filterResult.filter((value) => {
+      return tgtLanguage.includes(value.target_language_label);
+    });
+  }
+
+  return filterResult;
+};

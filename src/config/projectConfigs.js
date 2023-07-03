@@ -1,3 +1,11 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import PreviewIcon from "@mui/icons-material/Preview";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import UploadIcon from "@mui/icons-material/Upload";
+
 export const genderOptions = [
   {
     label: "Male",
@@ -164,4 +172,82 @@ export const tagsSuggestionData = [
   "whistling",
   "yawning",
   "yelling",
+];
+
+export const buttonConfig = [
+  {
+    title: "Upload Subtitles to Youtube",
+    color: "primary",
+    icon: <UploadIcon />,
+    key: "Upload",
+  },
+  {
+    title: "Edit Task Details",
+    color: "primary",
+    icon: <AppRegistrationIcon />,
+    key: "Update",
+  },
+  {
+    title: "view",
+    color: "primary",
+    icon: <PreviewIcon />,
+    disabled: false,
+    key: "View",
+  },
+  {
+    title: "Edit",
+    color: "primary",
+    icon: <EditIcon />,
+    key: "Edit",
+  },
+  {
+    title: "Update Speaker Info",
+    color: "primary",
+    icon: <EditIcon />,
+    key: "Edit-Speaker",
+  },
+  {
+    title: "Export",
+    color: "primary",
+    icon: <FileDownloadIcon />,
+    key: "Export",
+  },
+  {
+    title: "Preview",
+    color: "primary",
+    icon: <VisibilityIcon />,
+    key: "Preview",
+  },
+  {
+    title: "Delete",
+    color: "error",
+    icon: <DeleteIcon />,
+    key: "Delete",
+  },
+];
+
+export const toolBarActions = [
+  {
+    key: "bulkTaskUpdate",
+    title: "Bulk Task Update",
+    icon: <AppRegistrationIcon />,
+  },
+  {
+    key: "bulkTaskDelete",
+    title: "Bulk Task Delete",
+    icon: <DeleteIcon />,
+    style: { color: "#d32f2f" },
+  },
+  {
+    key: "bulkTaskDownload",
+    title: "Bulk Task Dowload",
+    icon: <FileDownloadIcon />,
+    style: { marginRight: "auto" },
+  },
+  {
+    key: "bulkTaskUpload",
+    title: "Bulk Subtitle Upload",
+    icon: <UploadIcon />,
+    style: { marginRight: "auto" },
+  },
 ];

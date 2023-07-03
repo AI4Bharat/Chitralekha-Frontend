@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 //Components
@@ -38,8 +38,8 @@ const SpeakerInfoDialog = ({
     variant: "success",
   });
 
-  const speakerInfo = useSelector(
-    (state) => state.getSpeakerInfo.data.speaker_info
+  const { speaker_info: speakerInfo } = useSelector(
+    (state) => state.getSpeakerInfo.data
   );
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const SpeakerInfoDialog = ({
     }
   }, [speakerInfo]);
 
-  const handleSpeakerInfoChange = (event, index) => {
+  const handleSpeakerInfoChange = useCallback((event, index) => {
     const {
       target: { value },
     } = event;
@@ -66,38 +66,47 @@ const SpeakerInfoDialog = ({
 
       return updatedSpeakerInfo;
     });
-  };
+  }, []);
 
-  const handleUpdateSpeakerInfo = async () => {
+  const handleUpdateSpeakerInfo = useCallback(async () => {
     setLoading(true);
 
     const apiObj = new UpdateSpeakerInfoAPI(taskId, speakerDetails);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
 
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
       });
-      setLoading(false);
-    } else {
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: "An error occurred.",
         variant: "error",
       });
+    } finally {
       setLoading(false);
     }
-  };
+  }, [taskId, speakerDetails]);
 
-  const renderSnackBar = () => {
+  const renderSnackBar = useCallback(() => {
     return (
       <CustomizedSnackbars
         open={snackbar.open}
@@ -109,7 +118,7 @@ const SpeakerInfoDialog = ({
         message={snackbar.message}
       />
     );
-  };
+  }, [snackbar]);
 
   return (
     <>
