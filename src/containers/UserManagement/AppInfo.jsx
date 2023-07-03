@@ -1,7 +1,11 @@
+import { translate } from "config";
+
+//Components
 import { Grid, Typography, Hidden, ThemeProvider } from "@mui/material";
-import { translate } from "../../config/localisation";
-import themeDefault from "../../theme/theme";
-import LoginStyle from "../../styles/loginStyle";
+
+//Styles
+import { themeDefault } from "theme";
+import { LoginStyle } from "styles";
 
 export default function AppInfo() {
   const classes = LoginStyle();

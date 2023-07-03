@@ -2,18 +2,20 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { roles } from "../../utils/utils";
+import { roles } from "utils";
 
 //APIs
-import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
-import ProjectListAPI from "../../redux/actions/api/Project/ProjectList";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchOrganizatioUsersAPI from "../../redux/actions/api/Organization/FetchOrganizatioUsers";
-import AddOrganizationMemberAPI from "../../redux/actions/api/Organization/AddOrganizationMember";
-import UploadCSVAPI from "../../redux/actions/api/Project/UploadCSV";
+import {
+  APITransport,
+  AddOrganizationMemberAPI,
+  FetchOrganizatioUsersAPI,
+  FetchOrganizationDetailsAPI,
+  UploadCSVAPI,
+  ProjectListAPI,
+} from "redux/actions";
 
 //Styles
-import DatasetStyle from "../../styles/datasetStyle";
+import { DatasetStyle } from "styles";
 
 //Components
 import {
@@ -28,14 +30,16 @@ import {
   IconButton,
 } from "@mui/material";
 import UserList from "./UserList";
-import AddOrganizationMember from "../../common/AddOrganizationMember";
-import CustomizedSnackbars from "../../common/Snackbar";
-import Loader from "../../common/Spinner";
 import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
-import CSVAlertComponent from "../../common/csvUploadFailAlert";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import {
+  AddOrganizationMember,
+  CSVAlertComponent,
+  CustomizedSnackbars,
+  Loader,
+} from "common";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;

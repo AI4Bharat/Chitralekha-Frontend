@@ -1,11 +1,15 @@
-import { Box, Tab, Typography, Tabs } from "@mui/material";
-import EditProfile from "./EditProfile";
 import React, { useState } from "react";
-import LoginStyle from "../../styles/loginStyle";
-import LoginAndSecurity from "./LoginAndSecurity";
-import Notifications from "./Notifications";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
+import { Box, Tab, Typography, Tabs } from "@mui/material";
+import EditProfile from "./EditProfile";
+import LoginAndSecurity from "./LoginAndSecurity";
+import Notifications from "./Notifications";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

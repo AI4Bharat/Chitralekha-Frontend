@@ -1,3 +1,11 @@
+import React, { memo, useState } from "react";
+import { useSelector } from "react-redux";
+import { fontMenu } from "utils";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
 import {
   Checkbox,
   Divider,
@@ -8,21 +16,15 @@ import {
   Typography,
   MenuItem,
 } from "@mui/material";
-import React, { memo, useState } from "react";
-import FindAndReplace from "../../../../common/FindAndReplace";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckIcon from "@mui/icons-material/Check";
-import UndoIcon from '@mui/icons-material/Undo';
-import RedoIcon from '@mui/icons-material/Redo';
-import { fontMenu } from "../../../../utils/subtitleUtils";
-import { useSelector } from "react-redux";
+import UndoIcon from "@mui/icons-material/Undo";
+import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
-// import FormatLineSpacingIcon from "@mui/icons-material/FormatLineSpacing";
-// import { setLimitInStore } from "../../../../redux/actions/Common";
+import { FindAndReplace } from "common";
 
 const anchorOrigin = {
   vertical: "top",

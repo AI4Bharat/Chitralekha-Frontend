@@ -1,30 +1,48 @@
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { cloneDeep } from "lodash";
+import { fullscreenUtil, getKeyCode, Sub } from "utils";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
 import {
   Backdrop,
+  Box,
   Button,
   CircularProgress,
   Grid,
   Typography,
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 import RightPanel from "./RightPanel";
 import VoiceOverRightPanel from "./VoiceOverRightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./components/VideoPanel";
-import FetchTaskDetailsAPI from "../../../redux/actions/api/Project/FetchTaskDetails";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import FetchVideoDetailsAPI from "../../../redux/actions/api/Project/FetchVideoDetails";
-import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import TranslationRightPanel from "./TranslationRightPanel";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import Sub from "../../../utils/Sub";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import { Box } from "@mui/system";
+import VideoName from "./components/VideoName";
+import { CustomizedSnackbars } from "common";
+
+//APIs
 import {
+  APITransport,
+  FetchTaskDetailsAPI,
+  FetchTranscriptPayloadAPI,
+  FetchVideoDetailsAPI,
   FullScreen,
+  FullScreenVideo,
+  UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
   setNextPage,
@@ -34,15 +52,8 @@ import {
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
-} from "../../../redux/actions/Common";
-import C from "../../../redux/constants";
-import { FullScreenVideo } from "../../../redux/actions/Common";
-import { fullscreenUtil, getKeyCode } from "../../../utils/subtitleUtils";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import VideoName from "./components/VideoName";
-import { cloneDeep } from "lodash";
-import { useRef } from "react";
-import UpdateTimeSpentPerTask from "../../../redux/actions/api/Project/UpdateTimeSpentPerTask";
+} from "redux/actions";
+import C from "redux/constants";
 
 const VideoLanding = () => {
   const { taskId } = useParams();

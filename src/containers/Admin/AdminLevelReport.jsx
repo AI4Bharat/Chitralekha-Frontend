@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { snakeToTitleCase } from "utils";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
-import TableStyles from "../../styles/tableStyles";
+import { TableStyles } from "styles";
+import { tableTheme } from "theme";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import Loader from "../../common/Spinner";
-import FetchAdminLevelReportsAPI from "../../redux/actions/api/Admin/AdminLevelReport";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import { snakeToTitleCase } from "../../utils/utils";
+import { Loader } from "common";
+
+//Apis
+import { FetchAdminLevelReportsAPI, APITransport } from "redux/actions";
 
 const AdminLevelReport = () => {
   const dispatch = useDispatch();

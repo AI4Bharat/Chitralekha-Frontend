@@ -1,18 +1,18 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { getColumns, getOptions } from "utils";
+import { usersColumns } from "config";
 
 //Themes, Styles
-import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
-import tableTheme from "../../theme/tableTheme";
+import { tableTheme } from "theme";
 
 //Icons
 import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
+import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import { getColumns, getOptions } from "../../utils/tableUtils";
-import { usersColumns } from "../../config/tableColumns";
 
 const UserList = ({ data }) => {
   const apiStatus = useSelector((state) => state.apiStatus);

@@ -1,16 +1,19 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { filterTaskList, getDateTime, roles } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { getColumns, getOptions } from "../../../utils/tableUtils";
-import { taskListColumns } from "../../../config/tableColumns";
-import { buttonConfig, toolBarActions } from "../../../config/projectConfigs";
+import {
+  filterTaskList,
+  getColumns,
+  getDateTime,
+  getOptions,
+  roles,
+} from "utils";
+import { buttonConfig, taskListColumns, toolBarActions } from "config";
 
 //Themes
-import tableTheme from "../../../theme/tableTheme";
-import DatasetStyle from "../../../styles/datasetStyle";
-import TableStyles from "../../../styles/tableStyles";
+import { tableTheme } from "theme";
+import { DatasetStyle, TableStyles } from "styles";
 
 //Components
 import {
@@ -23,41 +26,45 @@ import {
   Divider,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import UpdateBulkTaskDialog from "../../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../../common/ViewTaskDialog";
-import PreviewDialog from "../../../common/PreviewDialog";
-import FilterList from "../../../common/FilterList";
-import DeleteDialog from "../../../common/DeleteDialog";
-import ExportDialog from "../../../common/ExportDialog";
-import UploadAlertComponent from "../../../common/UploadAlertComponent";
-import UploadFormatDialog from "../../../common/UploadFormatDialog";
-import SpeakerInfoDialog from "../../../common/SpeakerInfoDialog";
+import {
+  CustomizedSnackbars,
+  DeleteDialog,
+  ExportDialog,
+  FilterList,
+  PreviewDialog,
+  SpeakerInfoDialog,
+  UpdateBulkTaskDialog,
+  UploadAlertComponent,
+  UploadFormatDialog,
+  ViewTaskDialog,
+} from "common";
 
 //Icons
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-//Apis
-import FetchTaskListAPI from "../../../redux/actions/api/Project/FetchTaskList";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import DeleteTaskAPI from "../../../redux/actions/api/Project/DeleteTask";
-import ComparisionTableAPI from "../../../redux/actions/api/Project/ComparisonTable";
-import exportTranscriptionAPI from "../../../redux/actions/api/Project/ExportTranscrip";
-import EditBulkTaskDetailAPI from "../../../redux/actions/api/Project/EditBulkTaskDetails";
-import EditTaskDetailAPI from "../../../redux/actions/api/Project/EditTaskDetails";
-import exportTranslationAPI from "../../../redux/actions/api/Project/ExportTranslation";
-import CompareTranscriptionSource from "../../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../../redux/actions/api/Project/SetComparisonTableData";
-import clearComparisonTable from "../../../redux/actions/api/Project/ClearComparisonTable";
-import FetchpreviewTaskAPI from "../../../redux/actions/api/Project/FetchPreviewTask";
-import FetchTranscriptExportTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptExportTypes";
-import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
-import DeleteBulkTaskAPI from "../../../redux/actions/api/Project/DeleteBulkTask";
-import GenerateTranslationOutputAPI from "../../../redux/actions/api/Project/GenerateTranslationOutput";
-import BulkTaskExportAPI from "../../../redux/actions/api/Project/BulkTaskDownload";
-import ExportVoiceoverTaskAPI from "../../../redux/actions/api/Project/ExportVoiceoverTask";
-import UploadToYoutubeAPI from "../../../redux/actions/api/Project/UploadToYoutube";
-import constants from "../../../redux/constants";
+//APIs
+import {
+  APITransport,
+  BulkTaskExportAPI,
+  CompareTranscriptionSource,
+  ComparisionTableAPI,
+  DeleteBulkTaskAPI,
+  DeleteTaskAPI,
+  EditBulkTaskDetailAPI,
+  EditTaskDetailAPI,
+  ExportVoiceoverTaskAPI,
+  FetchTaskListAPI,
+  FetchTranscriptExportTypesAPI,
+  FetchTranslationExportTypesAPI,
+  FetchpreviewTaskAPI,
+  GenerateTranslationOutputAPI,
+  UploadToYoutubeAPI,
+  clearComparisonTable,
+  exportTranscriptionAPI,
+  exportTranslationAPI,
+  setComparisonTable,
+} from "redux/actions";
+import constants from "redux/constants";
 
 const TaskList = () => {
   const { projectId } = useParams();

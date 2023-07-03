@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { roles } from "../../../utils/utils";
-import { getColumns } from "../../../utils/tableUtils";
-import { videoListColumns } from "../../../config/tableColumns";
+import { videoListColumns } from "config";
+import { getColumns, roles } from "utils";
 
 //Themes
-import DatasetStyle from "../../../styles/datasetStyle";
-import tableTheme from "../../../theme/tableTheme";
+import { DatasetStyle } from "styles";
+import { tableTheme } from "theme";
 
 //Icons
 import FileDownload from "@mui/icons-material/FileDownload";
@@ -23,21 +22,25 @@ import {
   Divider,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import VideoDialog from "../../../common/VideoDialog";
-import CreateTaskDialog from "../../../common/CreateTaskDialog";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import Loader from "../../../common/Spinner";
-import DeleteDialog from "../../../common/DeleteDialog";
-import VideoStatusTable from "../../../common/VideoStatusTable";
-import AlertComponent from "../../../common/Alert";
+import {
+  AlertComponent,
+  CreateTaskDialog,
+  CustomizedSnackbars,
+  DeleteDialog,
+  ExportAllDialog,
+  Loader,
+  VideoDialog,
+  VideoStatusTable,
+} from "common";
 
 //APIs
-import CreateNewTaskAPI from "../../../redux/actions/api/Project/CreateTask";
-import DeleteVideoAPI from "../../../redux/actions/api/Project/DeleteVideo";
-import ExportAllDialog from "../../../common/ExportAllDialog";
-import FetchTranslationExportTypesAPI from "../../../redux/actions/api/Project/FetchTranslationExportTypes";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import BulkDownloadForVideoAPI from "../../../redux/actions/api/Project/BulkDownloadForVideo";
+import {
+  APITransport,
+  BulkDownloadForVideoAPI,
+  CreateNewTaskAPI,
+  DeleteVideoAPI,
+  FetchTranslationExportTypesAPI,
+} from "redux/actions";
 
 const VideoList = ({ data, removeVideo }) => {
   const classes = DatasetStyle();

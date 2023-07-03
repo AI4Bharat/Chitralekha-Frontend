@@ -18,9 +18,11 @@ import Loader from "./Spinner";
 import CustomizedSnackbars from "./Snackbar";
 
 //APIs
-import FetchSpeakerInfoAPI from "../redux/actions/api/Project/FetchSpeakerInfo";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import UpdateSpeakerInfoAPI from "../redux/actions/api/Project/UpdateSpeakerInfo";
+import {
+  APITransport,
+  FetchSpeakerInfoAPI,
+  UpdateSpeakerInfoAPI,
+} from "redux/actions";
 
 const SpeakerInfoDialog = ({
   open,

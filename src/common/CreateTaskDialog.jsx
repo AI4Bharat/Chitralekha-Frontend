@@ -1,3 +1,12 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import { useParams } from "react-router-dom";
+
+//Styles
+import { ProjectStyle } from "styles";
+
+//Components
 import {
   Box,
   Button,
@@ -15,22 +24,19 @@ import {
   Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import Loader from "./Spinner";
 
 //APIs
-import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import { useDispatch, useSelector } from "react-redux";
-import ProjectStyle from "../styles/projectStyle";
-import moment from "moment";
-import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
-import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
-import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
-import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchBulkTaskTypeAPI from "../redux/actions/api/Project/FetchBulkTaskTypes";
-import Loader from "./Spinner";
+import {
+  APITransport,
+  FetchAllowedTasksAPI,
+  FetchBulkTaskTypeAPI,
+  FetchPriorityTypesAPI,
+  FetchProjectMembersAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTaskTypeAPI,
+} from "redux/actions";
 
 const CreateTaskDialog = ({
   open,

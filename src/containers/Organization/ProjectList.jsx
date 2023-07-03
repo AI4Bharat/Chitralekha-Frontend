@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { getColumns, getOptions } from "../../utils/tableUtils";
+import { getColumns, getOptions } from "utils";
 import { Link, useParams } from "react-router-dom";
 import moment from "moment/moment";
+import { projectColumns } from "config";
 
 //Themes
-import tableTheme from "../../theme/tableTheme";
+import { tableTheme } from "theme";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,12 +15,10 @@ import PreviewIcon from "@mui/icons-material/Preview";
 //Components
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../common/Snackbar";
-import DeleteDialog from "../../common/DeleteDialog";
+import { CustomizedSnackbars, DeleteDialog } from "common";
 
 //APIs
-import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
-import { projectColumns } from "../../config/tableColumns";
+import DeleteProjectAPI from "redux/actions/api/Project/DeleteProject";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();

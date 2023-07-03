@@ -1,3 +1,11 @@
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
 import {
   Card,
   FormControlLabel,
@@ -6,13 +14,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
-import LoginStyle from "../../styles/loginStyle";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import ToggleMailsAPI from "../../redux/actions/api/User/ToggleMails";
-import CustomizedSnackbars from "../../common/Snackbar";
+import { CustomizedSnackbars } from "common";
+
+//APIs
+import { ToggleMailsAPI } from "redux/actions";
 
 const Notifications = () => {
   const classes = LoginStyle();

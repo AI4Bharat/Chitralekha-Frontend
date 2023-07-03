@@ -1,7 +1,13 @@
+import React, { Fragment, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { MenuProps } from "utils";
+
+//Components
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -20,19 +26,17 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { Fragment, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
-import APITransport from "../redux/actions/apitransport/apitransport";
 import Loader from "./Spinner";
-import { MenuProps } from "../utils/utils";
-import { Box } from "@mui/system";
+
+//Icons
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { speakerFields, voiceOptions } from "../config/projectConfigs";
-import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+//Redux
+import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
+import { speakerFields, voiceOptions } from "config";
 
 const CreateVideoDialog = ({
   open,
@@ -50,12 +54,11 @@ const CreateVideoDialog = ({
   setVoice,
   setSpeakerInfo,
   speakerInfo,
-  speakerType, 
-  setSpeakerType
+  speakerType,
+  setSpeakerType,
 }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
-
 
   useEffect(() => {
     const langObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");

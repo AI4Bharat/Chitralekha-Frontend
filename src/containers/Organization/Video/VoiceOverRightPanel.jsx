@@ -1,42 +1,37 @@
 // Voice Over Right Panel
-
 import React, { useEffect, useState, useRef } from "react";
-import Box from "@mui/material/Box";
-import { CardContent, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
-import CustomizedSnackbars from "../../../common/Snackbar";
+import { cloneDeep } from "lodash";
+import { Sub, base64toBlob, getSubtitleRange, setAudioContent } from "utils";
+
+//Styles
 import "../../../styles/scrollbarStyle.css";
-import C from "../../../redux/constants";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { VideoLandingStyle } from "styles";
+
+//Components
+import { Box, CardContent, Grid, Typography } from "@mui/material";
+import AudioReactRecorder, { RecordState } from "audio-react-recorder";
+import SettingsButtonComponent from "./components/SettingsButtonComponent";
+import ButtonComponent from "./components/ButtonComponent";
+import Pagination from "./components/Pagination";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { ConfirmDialog, ConfirmErrorDialog, CustomizedSnackbars } from "common";
+
+//APIs
+import C from "redux/constants";
 import {
+  APITransport,
+  FetchTranscriptPayloadAPI,
   setCurrentPage,
   setNextPage,
   setPreviousPage,
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
-} from "../../../redux/actions/Common";
-import ConfirmDialog from "../../../common/ConfirmDialog";
-import AudioReactRecorder, { RecordState } from "audio-react-recorder";
-import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import ButtonComponent from "./components/ButtonComponent";
-import {
-  base64toBlob,
-  getSubtitleRange,
-  // onRedoAction,
-  // onUndoAction,
-  setAudioContent,
-} from "../../../utils/subtitleUtils";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import Pagination from "./components/Pagination";
-import Sub from "../../../utils/Sub";
-import { cloneDeep } from "lodash";
-import ConfirmErrorDialog from "../../../common/ConfirmErrorDialog";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+  SaveTranscriptAPI,
+} from "redux/actions";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();

@@ -1,18 +1,17 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { videoTaskListColumns } from "../../../config/tableColumns";
-import { getColumns, getOptions } from "../../../utils/tableUtils";
+import { videoTaskListColumns } from "config";
+import { getColumns, getOptions } from "utils";
 
 //Themes
 import { ThemeProvider } from "@mui/material";
-import tableTheme from "../../../theme/tableTheme";
+import { tableTheme } from "theme";
 
 //Components
 import MUIDataTable from "mui-datatables";
 
 //APIs
-import FetchVideoTaskListAPI from "../../../redux/actions/api/Project/FetchVideoTaskList";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
+import { APITransport, FetchVideoTaskListAPI } from "redux/actions";
 
 const VideoTaskList = (props) => {
   const dispatch = useDispatch();

@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { snakeToTitleCase } from "../../../utils/utils";
-import {
-  languagelevelStats,
-  projectReportLevels,
-} from "../../../config/reportConfig";
+import { projectReportLevels, languagelevelStats } from "config";
+import { getOptions, snakeToTitleCase } from "utils";
+import { isArray } from "lodash";
 
 //APIs
-import FetchProjectReports from "../../../redux/actions/api/Project/FetchProjectReports";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
+import { APITransport, FetchProjectReportsAPI } from "redux/actions";
 
 //Themes
-import tableTheme from "../../../theme/tableTheme";
-import TableStyles from "../../../styles/tableStyles";
+import { tableTheme } from "theme";
+import { TableStyles } from "styles";
 
 //Components
 import MUIDataTable from "mui-datatables";
@@ -27,10 +24,9 @@ import {
   Tooltip,
   Button,
 } from "@mui/material";
-import ColumnSelector from "../../../common/ColumnSelector";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
-import { getOptions } from "../../../utils/tableUtils";
-import { isArray } from "lodash";
+import { ColumnSelector } from "common";
+
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -56,7 +52,7 @@ const ProjectReport = () => {
     setreportsLevel(event.target.value);
     setlanguageLevelStats("");
 
-    const apiObj = new FetchProjectReports(projectId, event.target.value);
+    const apiObj = new FetchProjectReportsAPI(projectId, event.target.value);
     dispatch(APITransport(apiObj));
   };
 

@@ -1,17 +1,18 @@
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { MenuProps } from "utils";
+
+//Components
 import {
+  Box,
   Select,
   IconButton,
   MenuItem,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Box } from "@mui/system";
-import { MenuProps } from "../../../../utils/utils";
 
 const Pagination = ({
   range,

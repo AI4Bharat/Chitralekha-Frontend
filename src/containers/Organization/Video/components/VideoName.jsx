@@ -1,11 +1,13 @@
-import { IconButton, Tooltip, Typography } from "@mui/material";
-import { Box } from "@mui/system";
-import React, { useState } from "react";
-import CustomMenuComponent from "../../../../common/CustomMenuComponent";
-import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
-import VideoLandingStyle from "../../../../styles/videoLandingStyles";
-import { memo } from "react";
+import React, { memo, useState } from "react";
 import { useSelector } from "react-redux";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
+import { CustomMenuComponent } from "common";
 
 const VideoName = ({
   fontSize,

@@ -9,10 +9,10 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import OutlinedTextField from "../common/OutlinedTextField";
 import Snackbar from "../common/Snackbar";
-import VerifyUpdateEmailAPI from "../redux/actions/api/User/VerifyUpdateEmail";
 import CloseIcon from "@mui/icons-material/Close";
+import { VerifyUpdateEmailAPI } from "redux/actions";
+import OutlinedTextField from "./OutlinedTextField";
 
 const UpdateEmailDialog = ({
   isOpen,

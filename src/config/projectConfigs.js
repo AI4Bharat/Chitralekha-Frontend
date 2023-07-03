@@ -232,12 +232,12 @@ export const toolBarActions = [
     title: "Bulk Task Update",
     icon: <AppRegistrationIcon />,
   },
-  {
-    key: "bulkTaskDelete",
-    title: "Bulk Task Delete",
-    icon: <DeleteIcon />,
-    style: { color: "#d32f2f" },
-  },
+  // {
+  //   key: "bulkTaskDelete",
+  //   title: "Bulk Task Delete",
+  //   icon: <DeleteIcon />,
+  //   style: { color: "#d32f2f" },
+  // },
   {
     key: "bulkTaskDownload",
     title: "Bulk Task Dowload",

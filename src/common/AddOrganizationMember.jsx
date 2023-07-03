@@ -1,3 +1,8 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { MenuProps } from "utils";
+
+//Components
 import {
   Button,
   Dialog,
@@ -12,12 +17,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import FetchUserRolesAPI from "../redux/actions/api/User/FetchUsersRoles";
-import { MenuProps } from "../utils/utils";
 import CloseIcon from "@mui/icons-material/Close";
+
+//APIs
+import { APITransport, FetchUserRolesAPI } from "redux/actions";
 
 const AddOrganizationMember = ({
   open,

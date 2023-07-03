@@ -1,16 +1,18 @@
+import React, { useState } from "react";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
 import {
+  Box,
   Card,
   Grid,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { Box } from "@mui/system";
-import LoginStyle from "../../styles/loginStyle";
-// import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-// import DraftsIcon from "@mui/icons-material/Drafts";
 import ChangePassword from "./ChangePassword";
 
 const LoginAndSecurity = () => {

@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import { taskStatus, taskTypes } from "config";
+
+//Styles
+import { DatasetStyle } from "styles";
+
+//Components
 import {
   Button,
   Divider,
@@ -10,8 +16,6 @@ import {
   Checkbox,
   Grid,
 } from "@mui/material";
-import DatasetStyle from "../styles/datasetStyle";
-import { TaskTypes, TaskStatus } from "../config/taskItems";
 
 const FilterList = ({
   id,
@@ -213,7 +217,7 @@ const FilterList = ({
               Status
             </Typography>
             <FormGroup>
-              {TaskStatus?.map((type, index) => {
+              {taskStatus?.map((type, index) => {
                 return (
                   <FormControlLabel
                     key={index}
@@ -242,7 +246,7 @@ const FilterList = ({
               Task Type
             </Typography>
             <FormGroup>
-              {TaskTypes?.map((type, index) => {
+              {taskTypes?.map((type, index) => {
                 return (
                   <FormControlLabel
                     key={index}

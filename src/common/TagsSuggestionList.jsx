@@ -1,11 +1,19 @@
 import React from "react";
-import { Grid, IconButton, Popover, Tooltip, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch } from "react-redux";
-import { onSubtitleChange } from "../utils/subtitleUtils";
-import { setSubtitles } from "../redux/actions/Common";
-import C from "../redux/constants";
-import VideoLandingStyle from "../styles/videoLandingStyles";
+import { onSubtitleChange } from "utils";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
+import { Grid, IconButton, Popover, Tooltip, Typography } from "@mui/material";
+
+//Icons
+import CloseIcon from "@mui/icons-material/Close";
+
+//Redux
+import C from "redux/constants";
+import { setSubtitles } from "redux/actions";
 
 const TagsSuggestionList = ({
   tagSuggestionsAnchorEl,

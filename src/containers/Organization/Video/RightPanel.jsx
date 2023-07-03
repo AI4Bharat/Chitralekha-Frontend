@@ -1,24 +1,8 @@
-import React, { useCallback, useEffect, useState, memo } from "react";
-import Box from "@mui/material/Box";
-import {
-  CardContent,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  useMediaQuery,
-} from "@mui/material";
+import React, { useCallback, useEffect, useState, useRef, memo } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/scrollbarStyle.css";
-import { setSubtitles } from "../../../redux/actions/Common";
-import C from "../../../redux/constants";
-import TimeBoxes from "../../../common/TimeBoxes";
-import ConfirmDialog from "../../../common/ConfirmDialog";
+import { tagsSuggestionData } from "config/projectConfigs";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -32,18 +16,43 @@ import {
   getSelectionStart,
   getTimings,
   getItemForDelete,
+  MenuProps,
   assignSpeakerId,
-} from "../../../utils/subtitleUtils";
+} from "utils";
+
+//Styles
+import "../../../styles/scrollbarStyle.css";
+import { VideoLandingStyle } from "styles";
+
+//Components
+import {
+  Box,
+  CardContent,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  ConfirmDialog,
+  CustomizedSnackbars,
+  TagsSuggestionList,
+  TimeBoxes,
+} from "common";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import Pagination from "./components/Pagination";
-import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useRef } from "react";
-import { MenuProps } from "../../../utils/utils";
-import { tagsSuggestionData } from "../../../config/projectConfigs";
-import TagsSuggestionList from "../../../common/TagsSuggestionList";
+
+//APIs
+import C from "redux/constants";
+import {
+  APITransport,
+  FetchTranscriptPayloadAPI,
+  SaveTranscriptAPI,
+  setSubtitles,
+} from "redux/actions";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();

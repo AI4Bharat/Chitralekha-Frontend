@@ -19,19 +19,20 @@ import {
   Switch,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import CustomizedSnackbars from "../../common/Snackbar";
+import { CustomizedSnackbars, Loader } from "common";
 
 //APIs
-import FetchOrganizationDetailsAPI from "../../redux/actions/api/Organization/FetchOrganizationDetails";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchOrgOwnersAPI from "../../redux/actions/api/Admin/FetchOrgOwners";
-import EditOrganizationDetailsAPI from "../../redux/actions/api/Organization/EditOrganizationDetails";
-import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTranscriptTypes";
-import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
-import FetchBulkTaskTypeAPI from "../../redux/actions/api/Project/FetchBulkTaskTypes";
-import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
-import Loader from "../../common/Spinner";
-import ToggleCSVUploadAPI from "../../redux/actions/api/Organization/ToggleCSVUpload";
+import {
+  FetchOrganizationDetailsAPI,
+  APITransport,
+  FetchOrgOwnersAPI,
+  EditOrganizationDetailsAPI,
+  FetchTranscriptTypesAPI,
+  FetchTranslationTypesAPI,
+  FetchBulkTaskTypeAPI,
+  FetchSupportedLanguagesAPI,
+  ToggleCSVUploadAPI,
+} from "redux/actions";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

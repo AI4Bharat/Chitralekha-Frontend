@@ -1,4 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { MenuProps } from "utils";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
 import {
   Grid,
   Typography,
@@ -16,20 +24,18 @@ import {
   FormControl,
   Button,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
-import OutlinedTextField from "../../common/OutlinedTextField";
-import LoginStyle from "../../styles/loginStyle";
 import AppInfo from "./AppInfo";
-import CustomizedSnackbars from "../../common/Snackbar";
-import SignupAPI from "../../redux/actions/api/User/Signup";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchInviteUserInfoAPI from "../../redux/actions/api/User/FetchInviteUserInfo";
-import { MenuProps } from "../../utils/utils";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import Loader from "../../common/Spinner";
+import { CustomizedSnackbars, Loader, OutlinedTextField } from "common";
+
+//APIs
+import {
+  APITransport,
+  FetchInviteUserInfoAPI,
+  FetchSupportedLanguagesAPI,
+  SignupAPI,
+} from "redux/actions";
 
 const SignUp = () => {
   let navigate = useNavigate();
