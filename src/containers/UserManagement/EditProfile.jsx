@@ -250,7 +250,7 @@ const EditProfile = () => {
   };
 
   const getDisabledOption = (name, value) => {
-    if (name === "role" || name === "languages") {
+    if (name === "role" || name === "org" || name === "availability") {
       if (
         loggedInUserData.role === "ADMIN" ||
         loggedInUserData.role === "ORG_OWNER"

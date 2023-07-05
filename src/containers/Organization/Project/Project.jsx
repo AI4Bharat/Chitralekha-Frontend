@@ -105,7 +105,7 @@ const Project = () => {
       id: "",
     },
   ]);
-  const [speakerType, setSpeakerType] = useState("multiple");
+  const [speakerType, setSpeakerType] = useState("individual");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
