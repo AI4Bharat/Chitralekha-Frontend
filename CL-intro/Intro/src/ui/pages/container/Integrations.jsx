@@ -5,6 +5,10 @@ import Chitralekhalogo from "../../../img/Chitralekha_Logo.png";
 // import LightTooltip from "../component/common/Tooltip";
 import { ThemeProvider } from "@mui/material";
 import themeDefault from "../../styles/theme/theme";
+import Nptel from "../../../img/Nptel.png";
+import TicTacLearn from "../../../img/TicTac.png";
+import Pratham from "../../../img/Partham.png";
+import EkStep from "../../../img/EkStep.png";
 
 export default function Integrations() {
   const classes = DatasetStyle();
@@ -40,11 +44,10 @@ export default function Integrations() {
                 <Button sx={{ textTransform: "capitalize" }}>
                   <Paper component="form" className={classes.integrationPaper}>
                     <img
-                      src={Chitralekhalogo}
+                      src={Nptel}
                       alt="logo"
-                      className={classes.Anuvaanlogo}
+                      style={{marginTop:"-7px"}}
                     />
-                   NPTEL
                   </Paper>
                 </Button>
               </Tooltip>
@@ -58,11 +61,10 @@ export default function Integrations() {
                 <Button sx={{ textTransform: "capitalize" }}>
                   <Paper component="form" className={classes.integrationPaper}>
                     <img
-                      src={Chitralekhalogo}
+                      src={TicTacLearn}
                       alt="logo"
-                      className={classes.Anuvaanlogo}
+                      className={classes.Chitralekhalogo}
                     />
-                    TicTac
                   </Paper>
                 </Button>
               </Tooltip>
@@ -76,11 +78,10 @@ export default function Integrations() {
                 <Button sx={{ textTransform: "capitalize" }}>
                   <Paper component="form" className={classes.integrationPaper}>
                     <img
-                      src={Chitralekhalogo}
+                      src={Pratham}
                       alt="logo"
-                      className={classes.Anuvaanlogo}
+                      className={classes.Chitralekhalogo}
                     />
-                   Pratham
                   </Paper>
                 </Button>
               </Tooltip>
@@ -94,11 +95,10 @@ export default function Integrations() {
                 <Button sx={{ textTransform: "capitalize" }}>
                   <Paper component="form" className={classes.integrationPaper}>
                     <img
-                      src={Chitralekhalogo}
+                      src={EkStep}
                       alt="logo"
-                      className={classes.Anuvaanlogo}
+                      className={classes.Chitralekhalogo}
                     />
-                   Convegenius 
                   </Paper>
                 </Button>
               </Tooltip>

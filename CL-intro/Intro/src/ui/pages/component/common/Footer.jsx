@@ -28,7 +28,7 @@ function Footer() {
           xl={7}
           className={classes.footerGridMains}
         >
-          <a target="_blank" href="https://github.com/project-anuvaad/anuvaad">
+          <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha">
             <img src={Github} alt="logo" className={classes.footerimg} />{" "}
           </a>
           <a target="_blank" href="https://twitter.com/hashtag/Bhashini?src=hashtag_click">
@@ -78,7 +78,7 @@ function Footer() {
           xl={2}
           className={classes.footerGrid}
         >
-           <a href=" https://github.com/project-anuvaad/anuvaad/blob/master/LICENSE" style={{color:"white",textDecoration:"none"}}>
+           <a href="https://github.com/AI4Bharat/Chitralekha/blob/master/LICENSE" style={{color:"white",textDecoration:"none"}}>
             <Typography variant="caption" sx={{ml:"2px"}}> License </Typography>{" "}
           </a> <span  style={{margin:"0px 15px 0px 15px"}}>|</span>
          

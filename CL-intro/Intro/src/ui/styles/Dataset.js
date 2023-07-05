@@ -2,13 +2,10 @@ import { makeStyles } from "@mui/styles";
 import ChitralekhabackgroundImage from "../../img/Slide.png"
 
 const DatasetStyle = makeStyles({
-  Anuvaanlogo: {
-    width: "90%",
-    margin: "0px 0px 0px 0px",
-    filter: "grayscale(100%)",
-    "&:hover": {
-      filter: "grayscale(0%)",
-    },
+  Chitralekhalogo: {
+    width: "100%",
+    height:"100%",
+    margin: "0px 0px -7px 0px",
   },
   section:{
     backgroundImage: `url(${ChitralekhabackgroundImage})`,
@@ -77,7 +74,7 @@ const DatasetStyle = makeStyles({
     display: "block",
     alignItems: "center",
     width: "250px",
-    border: "1px solid gray",
+    // border: "1px solid gray",
   },
   featuresimg: {
     width: "150px",

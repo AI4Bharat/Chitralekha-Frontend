@@ -11,13 +11,11 @@ import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
 import DatasetStyle from "../../../styles/Dataset";
 import Chitralekhalogo from "../../../../img/Chitralekha_Logo.png";
-import {Routes, Route, useNavigate,Link} from 'react-router-dom';
-
-
+import { Routes, Route, useNavigate, Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
- function Header(props) {
+function Header(props) {
   const classes = DatasetStyle();
   const navigate = useNavigate();
   const { window } = props;
@@ -27,10 +25,9 @@ const drawerWidth = 240;
     setMobileOpen((prevState) => !prevState);
   };
 
-  const handleClickUseCases = () =>{
-    navigate('/useCases');
-
-  }
+  const handleClickUseCases = () => {
+    navigate("/useCases");
+  };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", mt: 3 }}>
@@ -39,7 +36,7 @@ const drawerWidth = 240;
 
         <Grid>
           {" "}
-          <a target="_blank" href=" https://anuvaad.sunbird.org/">
+          <a target="_blank" href="https://www.youtube.com/@chitralekha-bhashini">
             <Button
               sx={{
                 color: "#51504f",
@@ -54,7 +51,10 @@ const drawerWidth = 240;
         </Grid>
         <Grid>
           {" "}
-          <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha-Frontend">
+          <a
+            target="_blank"
+            href="https://github.com/AI4Bharat/Chitralekha"
+          >
             <Button
               sx={{
                 color: "#51504f",
@@ -67,13 +67,12 @@ const drawerWidth = 240;
             </Button>
           </a>
         </Grid>
-        
-      
+
         <Grid>
           {" "}
           <a
             target="_blank"
-            href="https://github.com/AI4Bharat/Chitralekha-Frontend/wiki"
+            href="https://github.com/AI4Bharat/Chitralekha/wiki"
           >
             <Button
               sx={{
@@ -89,19 +88,17 @@ const drawerWidth = 240;
         </Grid>
         <Grid>
           {" "}
-         
-            <Button
+          <Button
             onClick={handleClickUseCases}
-              sx={{
-                color: "#51504f",
-                textTransform: "capitalize",
-                fontSize: "16px",
-                fontFamily: "roboto,sans-serif",
-              }}
-            >
-              Use Cases
-            </Button>
-         
+            sx={{
+              color: "#51504f",
+              textTransform: "capitalize",
+              fontSize: "16px",
+              fontFamily: "roboto,sans-serif",
+            }}
+          >
+            Use Cases
+          </Button>
         </Grid>
       </Grid>
     </Box>
@@ -124,7 +121,7 @@ const drawerWidth = 240;
         <Toolbar>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Grid>
-            <a target="_blank" href=" https://anuvaad.sunbird.org/">
+              <a target="_blank" href="https://www.youtube.com/@chitralekha-bhashini">
                 <Button
                   sx={{
                     color: "#51504f",
@@ -139,7 +136,7 @@ const drawerWidth = 240;
               </a>
               <a
                 target="_blank"
-                href="https://github.com/AI4Bharat/Chitralekha-Frontend"
+                href="https://github.com/AI4Bharat/Chitralekha"
               >
                 <Button
                   sx={{
@@ -153,10 +150,10 @@ const drawerWidth = 240;
                   CodeBase
                 </Button>
               </a>
-             
+
               <a
                 target="_blank"
-                href="https://github.com/AI4Bharat/Chitralekha-Frontend/wiki"
+                href="https://github.com/AI4Bharat/Chitralekha/wiki"
               >
                 <Button
                   sx={{
@@ -173,16 +170,16 @@ const drawerWidth = 240;
 
               <Button
                 onClick={handleClickUseCases}
-              sx={{
-                color: "#51504f",
-                textTransform: "capitalize",
-                fontSize: "16px",
-                fontFamily: "roboto,sans-serif",
-                ml: 3,
-              }}
-            >
-              Use Cases
-            </Button>
+                sx={{
+                  color: "#51504f",
+                  textTransform: "capitalize",
+                  fontSize: "16px",
+                  fontFamily: "roboto,sans-serif",
+                  ml: 3,
+                }}
+              >
+                Use Cases
+              </Button>
             </Grid>
           </Box>
           <IconButton
@@ -201,35 +198,37 @@ const drawerWidth = 240;
             <MenuIcon />
           </IconButton>
           <Grid
-           
             sx={{
               flexGrow: 1,
               display: { xs: "none", sm: "flex" },
               justifyContent: "end",
               mr: 3,
-              mt:2
+              mt: 2,
             }}
           >
-
-<a
-                target="_blank"
-                href="https://chitralekha.ai4bharat.org/"
+            <a target="_blank" href="https://chitralekha.ai4bharat.org/">
+              <Button
+                variant="contained"
+                // className={classes.buttons}
+                sx={{
+                  textTransform: "capitalize",
+                  fontSize: "16px",
+                  fontFamily: "roboto,sans-serif",
+                  mt: 2,
+                  mr: 4,
+                  backgroundColor:"rgb(44, 39, 153)",
+                  height:"38px"
+                }}
               >
-                <Button
-                  sx={{
-                    color: "#51504f",
-                    textTransform: "capitalize",
-                    fontSize: "16px",
-                    fontFamily: "roboto,sans-serif",
-                    mt:1,
-                    mr:2
-                  }}
-                >
-                  Login
-                </Button>
-              </a>
+                Login
+              </Button>
+            </a>
             <Link to={`/`}>
-            <img src={Chitralekhalogo} style={{ maxWidth: "70px" }} alt="logo" />
+              <img
+                src={Chitralekhalogo}
+                style={{ maxWidth: "70px" }}
+                alt="logo"
+              />
             </Link>
           </Grid>
         </Toolbar>
