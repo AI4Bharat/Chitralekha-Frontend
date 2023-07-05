@@ -32,6 +32,7 @@ import {
   videoListColumns,
   taskListColumns,
   taskQueueStatusColumns,
+  orgTaskListColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 
@@ -65,4 +66,5 @@ export {
   speakerFields,
   buttonConfig,
   toolBarActions,
+  orgTaskListColumns,
 };

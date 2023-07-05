@@ -17,28 +17,41 @@ import MUIDataTable from "mui-datatables";
 const UserList = ({ data }) => {
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const result = data.map((item, i) => {
-    return [
-      `${item.first_name} ${item.last_name}`,
-      item.email,
-      item.languages.join(", "),
-      item.role,
-      <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-        <Tooltip title="View">
-          <IconButton>
-            <PreviewIcon color="primary" />
-          </IconButton>
-        </Tooltip>
-      </Link>,
-    ];
-  });
+  const actionColumn = {
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData, rowIndex } = tableMeta;
+        const selectedRow = tableData[rowIndex];
+
+        return (
+          <Link
+            to={`/profile/${selectedRow.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <Tooltip title="View">
+              <IconButton>
+                <PreviewIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+          </Link>
+        );
+      },
+    },
+  };
+
+  const columns = [...getColumns(usersColumns), actionColumn];
 
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
-          data={result}
-          columns={getColumns(usersColumns)}
+          data={data}
+          columns={columns}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

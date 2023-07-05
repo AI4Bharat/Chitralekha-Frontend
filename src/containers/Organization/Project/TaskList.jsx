@@ -1074,7 +1074,6 @@ const TaskList = () => {
           open={openDialogs.editTaskDialog}
           handleUserDialogClose={() => handleDialogClose("editTaskDialog")}
           handleUpdateTask={(data) => handleUpdateTask(data)}
-          currentSelectedTasks={currentSelectedTasks}
           currentTaskDetails={currentTaskDetails}
           loading={loading}
           isBulk={isBulk}
