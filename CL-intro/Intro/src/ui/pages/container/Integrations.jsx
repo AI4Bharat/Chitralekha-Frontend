@@ -8,7 +8,6 @@ import themeDefault from "../../styles/theme/theme";
 
 export default function Integrations() {
   const classes = DatasetStyle();
-
   return (
     <ThemeProvider theme={themeDefault}>
       <div>
