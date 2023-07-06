@@ -91,21 +91,23 @@ export default memo(
     );
 
     useEffect(() => {
-      const isLastSub =
-        player.currentTime > subtitles[subtitles?.length - 1]?.endTime;
+      if (subtitles) {
+        const isLastSub =
+          player?.currentTime > subtitles[subtitles?.length - 1]?.endTime;
 
-      if (next && isPlaying(player) && isLastSub) {
-        const payloadObj = new FetchTranscriptPayloadAPI(
-          taskDetails.id,
-          taskDetails.task_type,
-          next,
-          limit
-        );
-        dispatch(APITransport(payloadObj));
+        if (next && isPlaying(player) && isLastSub) {
+          const payloadObj = new FetchTranscriptPayloadAPI(
+            taskDetails.id,
+            taskDetails.task_type,
+            next,
+            limit
+          );
+          dispatch(APITransport(payloadObj));
+        }
       }
 
       // eslint-disable-next-line
-    }, [currentIndex, isPlaying(player)]);
+    }, [subtitles, currentIndex, isPlaying(player)]);
 
     const saveTranscript = async (taskType, subs = subtitles) => {
       const reqBody = {
