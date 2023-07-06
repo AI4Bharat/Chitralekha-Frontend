@@ -90,37 +90,52 @@ const ProjectMemberDetails = () => {
     // eslint-disable-next-line
   }, []);
 
-  const result = projectMembersList.map((item, i) => {
-    return [
-      `${item.first_name} ${item.last_name}`,
-      item.email,
-      item.role,
-      item.languages.join(", "),
-      <Box sx={{ display: "flex" }}>
-        <Tooltip title="View">
-          <IconButton>
-            <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-              <PreviewIcon color="primary" sx={{ mt: "10px" }} />
-            </Link>
-          </IconButton>
-        </Tooltip>
+  const actionColumn = {
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData, rowIndex } = tableMeta;
+        const selectedRow = tableData[rowIndex];
 
-        {(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-          userData.role === "ORG_OWNER") && (
-          <Tooltip title="Delete">
-            <IconButton
-              onClick={() => {
-                setMemberId(item.id);
-                setOpenDeleteDialog(true);
-              }}
-            >
-              <DeleteIcon color="error" />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>,
-    ];
-  });
+        return (
+          <Box sx={{ display: "flex" }}>
+            <Tooltip title="View">
+              <IconButton>
+                <Link
+                  to={`/profile/${selectedRow.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <PreviewIcon color="primary" sx={{ mt: "10px" }} />
+                </Link>
+              </IconButton>
+            </Tooltip>
+
+            {(projectDetails?.managers?.some(
+              (item) => item.id === userData.id
+            ) ||
+              userData.role === "ORG_OWNER") && (
+              <Tooltip title="Delete">
+                <IconButton
+                  onClick={() => {
+                    setMemberId(selectedRow.id);
+                    setOpenDeleteDialog(true);
+                  }}
+                >
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
+        );
+      },
+    },
+  };
+
+  const columns = [...getColumns(usersColumns), actionColumn];
 
   const renderSnackBar = () => {
     return (
@@ -140,8 +155,8 @@ const ProjectMemberDetails = () => {
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
-          data={result}
-          columns={getColumns(usersColumns)}
+          data={projectMembersList}
+          columns={columns}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

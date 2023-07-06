@@ -84,7 +84,7 @@ const CreateTaskDialog = ({
   }, []);
 
   useEffect(() => {
-    if (taskType.length && taskType.includes("TRANSLATION")) {
+    if (taskType.length && !taskType.includes("TRANSCRIPTION")) {
       const langObj = new FetchSupportedLanguagesAPI(taskType);
       dispatch(APITransport(langObj));
     }

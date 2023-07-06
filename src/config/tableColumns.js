@@ -66,7 +66,7 @@ export const usersColumns = [
     label: "Languages",
     options: {
       customBodyRender: (value) => {
-        return <Box>{value.join(", ")}</Box>;
+        return <Box>{value?.join(", ")}</Box>;
       },
     },
   },
