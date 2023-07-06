@@ -1,9 +1,9 @@
 import { InputBase, Grid } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useRef, useState } from "react";
-import DatasetStyle from "../styles/datasetStyle";
 import { useDispatch } from "react-redux";
 import SearchList from "../redux/actions/api/Project/Search";
+import { DatasetStyle } from "styles";
 
 const Search = () => {
   const ref = useRef(null);

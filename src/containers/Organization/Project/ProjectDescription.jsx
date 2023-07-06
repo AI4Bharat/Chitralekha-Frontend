@@ -1,12 +1,16 @@
-import DatasetStyle from "../../../styles/datasetStyle";
+import React from "react";
+import { imageArray } from "utils";
+
+//Styles
+import { DatasetStyle } from "styles";
+
+//Components
 import {
   Grid,
   Typography,
   Card,
   CardContent,
 } from "@mui/material";
-import ImageArray from "../../../utils/getModelIcons";
-import React from "react";
 
 const ProjectDescription = (props) => {
   const { name, value, index } = props;
@@ -17,7 +21,7 @@ const ProjectDescription = (props) => {
       style={{
         minHeight: "100px",
         maxHeight: "100px",
-        backgroundColor: ImageArray[index]?.color,
+        backgroundColor: imageArray[index]?.color,
         display: "flex",
       }}
     >
@@ -38,11 +42,11 @@ const ProjectDescription = (props) => {
           <div
             className={classes.descCardIcon}
             style={{
-              color: ImageArray[index]?.iconColor,
-              backgroundColor: ImageArray[index]?.color,
+              color: imageArray[index]?.iconColor,
+              backgroundColor: imageArray[index]?.color,
             }}
           >
-            {ImageArray[index]?.imageUrl}
+            {imageArray[index]?.imageUrl}
           </div>
         </Grid>
         <Grid

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
-import { getColumns, getOptions } from "../../utils/tableUtils";
+import { getColumns, getOptions } from "utils";
 import { Link, useParams } from "react-router-dom";
-import moment from "moment/moment";
+import { projectColumns } from "config";
 
 //Themes
-import tableTheme from "../../theme/tableTheme";
+import { tableTheme } from "theme";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,12 +14,10 @@ import PreviewIcon from "@mui/icons-material/Preview";
 //Components
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../common/Snackbar";
-import DeleteDialog from "../../common/DeleteDialog";
+import { CustomizedSnackbars, DeleteDialog } from "common";
 
 //APIs
-import DeleteProjectAPI from "../../redux/actions/api/Project/DeleteProject";
-import { projectColumns } from "../../config/tableColumns";
+import DeleteProjectAPI from "redux/actions/api/Project/DeleteProject";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
@@ -37,28 +35,39 @@ const ProjectList = ({ data, removeProjectList }) => {
 
   const handleok = async (id) => {
     setLoading(true);
+
     const apiObj = new DeleteProjectAPI(id);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "DELETE",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
       });
-      setLoading(false);
-      setOpen(false);
-      removeProjectList();
-    } else {
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+        removeProjectList();
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: "Something went wrong!",
         variant: "error",
       });
+    } finally {
       setLoading(false);
       setOpen(false);
     }
@@ -73,34 +82,44 @@ const ProjectList = ({ data, removeProjectList }) => {
     setprojectid(id);
   };
 
-  const result = data.map((item, i) => {
-    return [
-      item.title,
-      item.managers[0]?.email,
-      moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-      `${item.created_by?.first_name} ${item.created_by?.last_name}`,
-      <div style={{ textAlign: "center" }}>
-        <Link
-          to={`/my-organization/${id}/project/${item.id}`}
-          style={{ textDecoration: "none" }}
-        >
-          <Tooltip title="View">
-            <IconButton>
-              <PreviewIcon color="primary" />
-            </IconButton>
-          </Tooltip>
-        </Link>
+  const actionColumn = {
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedRow = data[rowIndex];
 
-        <Tooltip title="Delete">
-          <IconButton onClick={() => handleDeleteProject(item.id)}>
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </div>,
-    ];
-  });
+        return (
+          <div style={{ textAlign: "center" }}>
+            <Link
+              to={`/my-organization/${id}/project/${selectedRow.id}`}
+              style={{ textDecoration: "none" }}
+            >
+              <Tooltip title="View">
+                <IconButton>
+                  <PreviewIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Link>
 
-  const renderSnackBar = () => {
+            <Tooltip title="Delete">
+              <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        );
+      },
+    },
+  };
+
+  const columns = [...getColumns(projectColumns), actionColumn];
+
+  const renderSnackBar = useCallback(() => {
     return (
       <CustomizedSnackbars
         open={snackbar.open}
@@ -112,14 +131,14 @@ const ProjectList = ({ data, removeProjectList }) => {
         message={snackbar.message}
       />
     );
-  };
+  }, [snackbar]);
 
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
-          data={result}
-          columns={getColumns(projectColumns)}
+          data={data}
+          columns={columns}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

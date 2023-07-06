@@ -1,3 +1,11 @@
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import { checkPassword } from "utils";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
 import {
   Box,
   Button,
@@ -8,15 +16,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
-import LoginStyle from "../../styles/loginStyle";
-import CustomizedSnackbars from "../../common/Snackbar";
-import { checkPassword } from "../../utils/utils";
-import UpdateMyPasswordAPI from "../../redux/actions/api/User/UpdateMyPassword";
-import { useParams } from "react-router-dom";
+import { CustomizedSnackbars } from "common";
+
+//APIs
+import { UpdateMyPasswordAPI } from "redux/actions";
 
 const ChangePassword = () => {
   const classes = LoginStyle();

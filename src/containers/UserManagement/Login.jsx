@@ -1,22 +1,32 @@
-import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { translate } from "../../config/localisation";
-import LoginStyle from "../../styles/loginStyle";
-import CustomCard from "../../common/Card";
-import OutlinedTextField from "../../common/OutlinedTextField";
-import themeDefault from "../../theme/theme";
+import { translate } from "config";
+
+//Styles
+import { LoginStyle } from "styles";
+import { themeDefault } from "theme";
+
+//Components
+import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppInfo from "./AppInfo";
-import CustomizedSnackbars from "../../common/Snackbar";
-import LoginAPI from "../../redux/actions/api/User/Login";
-import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import Loader from "../../common/Spinner";
+import {
+  CustomCard,
+  CustomizedSnackbars,
+  Loader,
+  OutlinedTextField,
+} from "common";
+
+//APIs
+import {
+  APITransport,
+  FetchLoggedInUserDetailsAPI,
+  LoginAPI,
+} from "redux/actions";
 
 const Login = () => {
   const classes = LoginStyle();
@@ -61,7 +71,7 @@ const Login = () => {
   }, []);
 
   const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    const loggedInUserObj = new FetchLoggedInUserDetailsAPI();
     dispatch(APITransport(loggedInUserObj));
   };
 

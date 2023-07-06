@@ -1,18 +1,7 @@
 // TranslationRightPanel
-
-import React, { useEffect, useState, useCallback } from "react";
-import Box from "@mui/material/Box";
-import { CardContent, Grid, useMediaQuery } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import React, { memo, useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useParams, useNavigate } from "react-router-dom";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/scrollbarStyle.css";
-import C from "../../../redux/constants";
-import { setSubtitles } from "../../../redux/actions/Common";
-import TimeBoxes from "../../../common/TimeBoxes";
-import ConfirmDialog from "../../../common/ConfirmDialog";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -24,15 +13,28 @@ import {
   getItemForDelete,
   getSelectionStart,
   getTargetSelectionStart,
-} from "../../../utils/subtitleUtils";
+} from "utils";
+
+//Styles
+import "../../../styles/scrollbarStyle.css";
+import { VideoLandingStyle } from "styles";
+
+//Components
+import { Box, CardContent, Grid, useMediaQuery } from "@mui/material";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
-import { memo } from "react";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
 import Pagination from "./components/Pagination";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useRef } from "react";
+import { ConfirmDialog, CustomizedSnackbars, TimeBoxes } from "common";
+
+//APIs
+import C from "redux/constants";
+import {
+  APITransport,
+  FetchTranscriptPayloadAPI,
+  SaveTranscriptAPI,
+  setSubtitles,
+} from "redux/actions";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -94,7 +96,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     if (prevOffsetRef.current !== currentOffset) {
       setUndoStack([]);
       setRedoStack([]);
-      prevOffsetRef.current = currentOffset
+      prevOffsetRef.current = currentOffset;
     }
     getPayload(currentOffset, limit);
 

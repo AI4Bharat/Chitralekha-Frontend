@@ -1,7 +1,6 @@
+import React from 'react';
 
-// CustomSwitchDarkBackground
-
-import * as React from 'react';
+//Components
 import { styled } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';

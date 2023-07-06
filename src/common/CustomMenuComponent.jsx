@@ -1,10 +1,11 @@
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "utils";
+
+//Components
 import { Menu, MenuItem, Typography } from "@mui/material";
-import React from "react";
-import { useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
-import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "../utils/subtitleUtils";
-import { useSelector } from "react-redux";
 
 const CustomMenuComponent = ({
   anchorElSettings,
@@ -17,7 +18,7 @@ const CustomMenuComponent = ({
   subtitlePlacement,
   setSubtitlePlacement,
 }) => {
-  const player = useSelector(state => state.commonReducer.player);
+  const player = useSelector((state) => state.commonReducer.player);
 
   const [anchorElFonts, setAnchorElFonts] = useState(null);
   const [anchorElTheme, setAnchorElTheme] = useState(null);
@@ -40,7 +41,7 @@ const CustomMenuComponent = ({
     {
       label: "Subtitle Placement",
       onClick: (event) => setAnchorElPlacement(event.currentTarget),
-    }
+    },
   ];
 
   return (

@@ -1,3 +1,13 @@
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { MenuProps, availability, roles } from "utils";
+import { profileOptions } from "config";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
 import {
   Button,
   Card,
@@ -12,23 +22,20 @@ import {
   Checkbox,
   TextField,
 } from "@mui/material";
-import React, { Fragment, useEffect, useRef, useState } from "react";
-import Snackbar from "../../common/Snackbar";
-import UpdateEmailDialog from "../../common/UpdateEmailDialog";
-import { useDispatch, useSelector } from "react-redux";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchLoggedInUserDataAPI from "../../redux/actions/api/User/FetchLoggedInUserDetails";
-import FetchUserDetailsAPI from "../../redux/actions/api/User/FetchUserDetails";
-import { MenuProps, availability, roles } from "../../utils/utils";
-import UpdateEmailAPI from "../../redux/actions/api/User/UpdateEmail";
-import UpdateProfileAPI from "../../redux/actions/api/User/UpdateProfile";
-import { useParams } from "react-router-dom";
-import FetchOrganizationListAPI from "../../redux/actions/api/Organization/FetchOrganizationList";
 import { Box } from "@mui/system";
-import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import { CustomizedSnackbars as Snackbar, UpdateEmailDialog } from "common";
 import EditIcon from "@mui/icons-material/Edit";
-import LoginStyle from "../../styles/loginStyle";
-import { profileOptions } from "../../config/profileConfigs";
+
+//APIs
+import {
+  APITransport,
+  FetchLoggedInUserDetailsAPI,
+  FetchOrganizationListAPI,
+  FetchSupportedLanguagesAPI,
+  FetchUserDetailsAPI,
+  UpdateEmailAPI,
+  UpdateProfileAPI,
+} from "redux/actions";
 
 const EditProfile = () => {
   const classes = LoginStyle();
@@ -82,7 +89,7 @@ const EditProfile = () => {
   }, [orgList]);
 
   const getLoggedInUserData = () => {
-    const loggedInUserObj = new FetchLoggedInUserDataAPI();
+    const loggedInUserObj = new FetchLoggedInUserDetailsAPI();
     dispatch(APITransport(loggedInUserObj));
   };
 
@@ -243,7 +250,7 @@ const EditProfile = () => {
   };
 
   const getDisabledOption = (name, value) => {
-    if (name === "role" || name === "languages") {
+    if (name === "role" || name === "org" || name === "availability") {
       if (
         loggedInUserData.role === "ADMIN" ||
         loggedInUserData.role === "ORG_OWNER"

@@ -1,3 +1,12 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import { useParams } from "react-router-dom";
+
+//Styles
+import { ProjectStyle } from "styles";
+
+//Components
 import {
   Box,
   Button,
@@ -15,22 +24,19 @@ import {
   Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import Loader from "./Spinner";
 
 //APIs
-import FetchProjectMembersAPI from "../redux/actions/api/Project/FetchProjectMembers";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import { useDispatch, useSelector } from "react-redux";
-import ProjectStyle from "../styles/projectStyle";
-import moment from "moment";
-import FetchTaskTypeAPI from "../redux/actions/api/Project/FetchTaskTypes";
-import FetchAllowedTasksAPI from "../redux/actions/api/Project/FetchAllowedTasks";
-import FetchPriorityTypesAPI from "../redux/actions/api/Project/FetchPriorityTypes";
-import FetchSupportedLanguagesAPI from "../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchBulkTaskTypeAPI from "../redux/actions/api/Project/FetchBulkTaskTypes";
-import Loader from "./Spinner";
+import {
+  APITransport,
+  FetchAllowedTasksAPI,
+  FetchSupportedBulkTaskTypeAPI,
+  FetchPriorityTypesAPI,
+  FetchProjectMembersAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTaskTypeAPI,
+} from "redux/actions";
 
 const CreateTaskDialog = ({
   open,
@@ -51,7 +57,9 @@ const CreateTaskDialog = ({
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.data
   );
-  const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
+  const bulkTaskTypes = useSelector(
+    (state) => state.getSupportedBulkTaskTypes.data
+  );
 
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
@@ -69,14 +77,14 @@ const CreateTaskDialog = ({
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
 
-    const bulkTaskObj = new FetchBulkTaskTypeAPI();
+    const bulkTaskObj = new FetchSupportedBulkTaskTypeAPI();
     dispatch(APITransport(bulkTaskObj));
 
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (taskType.length) {
+    if (taskType.length && !taskType.includes("TRANSCRIPTION")) {
       const langObj = new FetchSupportedLanguagesAPI(taskType);
       dispatch(APITransport(langObj));
     }
@@ -100,17 +108,26 @@ const CreateTaskDialog = ({
   };
 
   const selectTaskTypeHandler = (event) => {
-    setTaskType(event.target.value);
+    const {
+      target: { value },
+    } = event;
+
+    setTaskType(value);
+
+    if (isBulk && value.includes("TRANSCRIPTION")) {
+      const obj = new FetchProjectMembersAPI(projectId, value, "", "");
+      dispatch(APITransport(obj));
+    }
 
     if (!isBulk) {
       setShowAllowedTaskList(true);
 
-      if (event.target.value === "TRANSCRIPTION") {
+      if (value === "TRANSCRIPTION") {
         const allowedTaskObj = new FetchAllowedTasksAPI(
           Array.isArray(videoDetails)
             ? videoDetails.map((item) => item.id)
             : videoDetails.id,
-          event.target.value
+          value
         );
         dispatch(APITransport(allowedTaskObj));
       }
@@ -118,13 +135,23 @@ const CreateTaskDialog = ({
   };
 
   const selectTranslationLanguageHandler = (event) => {
-    setLanguage(event.target.value);
+    const {
+      target: { value },
+    } = event;
+
+    setLanguage(value);
+
+    if (isBulk) {
+      const obj = new FetchProjectMembersAPI(projectId, taskType, "", value);
+      dispatch(APITransport(obj));
+    }
+
     const allowedTaskObj = new FetchAllowedTasksAPI(
       Array.isArray(videoDetails)
         ? videoDetails.map((item) => item.id)
         : videoDetails.id,
       taskType,
-      event.target.value
+      value
     );
     dispatch(APITransport(allowedTaskObj));
   };
@@ -168,13 +195,23 @@ const CreateTaskDialog = ({
       return true;
     }
 
-    if (taskType === "TRANSCRIPTION") {
-      if (!allowedTaskType) {
-        return true;
+    if (isBulk) {
+      if (taskType.includes("TRANSCRIPTION")) {
+        return false;
+      } else {
+        if (!language) {
+          return true;
+        }
       }
     } else {
-      if (!allowedTaskType || !language) {
-        return true;
+      if (taskType === "TRANSCRIPTION") {
+        if (!allowedTaskType) {
+          return true;
+        }
+      } else {
+        if (!allowedTaskType || !language) {
+          return true;
+        }
       }
     }
 
@@ -355,14 +392,6 @@ const CreateTaskDialog = ({
       </DialogContent>
 
       <DialogActions style={{ padding: "24px 24px 24px 0" }}>
-        <Button
-          sx={{ borderRadius: "8px" }}
-          autoFocus
-          onClick={handleUserDialogClose}
-        >
-          Cancel
-        </Button>
-
         <Button
           variant="outlined"
           sx={{ borderRadius: 2 }}

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Typography, Link, Snackbar, Alert, Button } from "@mui/material";
-import OutlinedTextField from "../../common/OutlinedTextField";
-import AppInfo from "./AppInfo";
 import { useDispatch, useSelector } from "react-redux";
-import LoginStyle from "../../styles/loginStyle";
-import ForgotPasswordAPI from "../../redux/actions/api/User/ForgotPassword";
-import APITransport from "../../redux/actions/apitransport/apitransport";
+
+//Styles
+import { LoginStyle } from "styles";
+
+//Components
+import { Grid, Typography, Link, Snackbar, Alert, Button } from "@mui/material";
+import AppInfo from "./AppInfo";
+import { OutlinedTextField } from "common";
+
+//APIs
+import { APITransport, ForgotPasswordAPI } from "redux/actions";
 
 const ForgotPassword = () => {
   const classes = LoginStyle();

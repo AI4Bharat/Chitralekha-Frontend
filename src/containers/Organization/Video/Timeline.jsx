@@ -1,26 +1,24 @@
-import { Box } from "@mui/material";
-import React, {
-  createRef,
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import WFPlayer from "wfplayer";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
 import { throttle } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+
+//Styles
+import { VideoLandingStyle } from "styles";
+
+//Components
+import { Box } from "@mui/material";
+import WFPlayer from "wfplayer";
 import Metronome from "./components/Metronome";
 import SubtitleBoxes from "./components/SubtitleBoxes";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
-import { useDispatch, useSelector } from "react-redux";
-import FetchPayloadFromTimelineAPI from "../../../redux/actions/api/Project/FetchPayloadFromTimeline";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
+
+//APIs
+import { APITransport, FetchPayloadFromTimelineAPI } from "redux/actions";
 
 const WaveForm = memo(({ setWaveform, setRender }) => {
   const classes = VideoLandingStyle();
-  const $waveform = createRef();
+  const $waveform = useRef();
 
   const player = useSelector((state) => state.commonReducer.player);
 
@@ -265,7 +263,7 @@ const Duration = memo(({ currentTime }) => {
 });
 
 const Timeline = ({ currentTime, playing }) => {
-  const $footer = createRef();
+  const $footer = useRef();
   const classes = VideoLandingStyle();
 
   const player = useSelector((state) => state.commonReducer.player);

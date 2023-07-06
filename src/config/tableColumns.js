@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import moment from "moment";
+import statusColor from "../utils/getStatusColor";
 
 export const projectColumns = [
   {
@@ -7,20 +8,35 @@ export const projectColumns = [
     label: "Name",
   },
   {
-    name: "Manager",
+    name: "managers",
     label: "Manager",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{value[0]?.email}</Box>;
+      },
+    },
   },
   {
-    name: "createdAt",
+    name: "created_at",
     label: "Created At",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+      },
+    },
   },
   {
-    name: "createdBy",
+    name: "created_by",
     label: "Created By",
-  },
-  {
-    name: "Action",
-    label: "Actions",
+    options: {
+      customBodyRender: (value) => {
+        return (
+          <Box>
+            {value.first_name} {value.last_name}
+          </Box>
+        );
+      },
+    },
   },
 ];
 
@@ -28,6 +44,18 @@ export const usersColumns = [
   {
     name: "name",
     label: "Name",
+    options: {
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedRow = data[rowIndex];
+
+        return (
+          <Box>
+            {selectedRow.first_name} {selectedRow.last_name}
+          </Box>
+        );
+      },
+    },
   },
   {
     name: "email",
@@ -36,14 +64,15 @@ export const usersColumns = [
   {
     name: "languages",
     label: "Languages",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{value?.join(", ")}</Box>;
+      },
+    },
   },
   {
     name: "role",
     label: "Role",
-  },
-  {
-    name: "Action",
-    label: "Actions",
   },
 ];
 
@@ -211,53 +240,42 @@ export const videoListColumns = [
   },
 ];
 
+export const renderTaskListColumnCell = (value, tableMeta) => {
+  const { tableData: data, rowIndex } = tableMeta;
+  const selectedTask = data[rowIndex];
+
+  return (
+    <Box
+      style={{
+        color: selectedTask.is_active ? "" : "grey",
+      }}
+    >
+      {value}
+    </Box>
+  );
+};
+
 export const taskListColumns = [
   {
     name: "id",
     label: "Id",
     options: {
       display: "exclude",
-    },
-  },
-  {
-    name: "task_type",
-    label: "",
-    options: {
-      display: "excluded",
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "task_type_label",
     label: "Task Type",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "video_name",
     label: "Video Name",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
@@ -266,64 +284,33 @@ export const taskListColumns = [
     options: {
       display: false,
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
+            {moment(value).format("DD/MM/YYYY HH:mm:ss")}
           </Box>
         );
       },
-    },
-  },
-  {
-    name: "src_language",
-    label: "",
-    options: {
-      display: "excluded",
     },
   },
   {
     name: "src_language_label",
     label: "Source Language",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
-    },
-  },
-  {
-    name: "target_language",
-    label: "",
-    options: {
-      display: "excluded",
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
     name: "target_language_label",
     label: "Target Language",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
@@ -333,13 +320,16 @@ export const taskListColumns = [
       sort: false,
       align: "center",
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
+            {statusColor(value)?.element}
           </Box>
         );
       },
@@ -347,48 +337,19 @@ export const taskListColumns = [
   },
   {
     name: "user",
-    label: "",
-    options: {
-      display: "excluded",
-    },
-  },
-  {
-    name: "is_active",
-    label: "",
-    options: {
-      display: "excluded",
-    },
-  },
-  {
-    name: "username",
     label: "Assignee",
     options: {
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
-          </Box>
-        );
-      },
-    },
-  },
-  {
-    name: "project_name",
-    label: "Project Name",
-    options: {
-      display: "excluded",
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-            }}
-          >
-            {value}
+            {value.first_name} {value.last_name}
           </Box>
         );
       },
@@ -398,18 +359,7 @@ export const taskListColumns = [
     name: "time_spent",
     label: "Time Spent",
     options: {
-      customBodyRender: (value, tableMeta) => {
-        return (
-          <Box
-            style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
-              textAlign: "right"
-            }}
-          >
-            {value}
-          </Box>
-        );
-      },
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
@@ -417,32 +367,96 @@ export const taskListColumns = [
     label: "Description",
     options: {
       display: "exclude",
+      customBodyRender: renderTaskListColumnCell,
+    },
+  },
+];
+
+export const orgTaskListColumns = [
+  {
+    name: "id",
+    label: "Id",
+    options: {
+      display: "exclude",
+      customBodyRender: renderTaskListColumnCell,
+    },
+  },
+  {
+    name: "task_type_label",
+    label: "Task Type",
+    options: {
+      customBodyRender: renderTaskListColumnCell,
+    },
+  },
+  {
+    name: "created_at",
+    label: "Created At",
+    options: {
+      display: false,
       customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
         return (
           <Box
             style={{
-              color: tableMeta.rowData[11] ? "" : "grey",
+              color: selectedTask.is_active ? "" : "grey",
             }}
           >
-            {value}
+            {moment(value).format("DD/MM/YYYY HH:mm:ss")}
           </Box>
         );
       },
     },
   },
   {
-    name: "buttons",
-    label: "",
+    name: "src_language_label",
+    label: "Source Language",
     options: {
-      display: "excluded",
+      customBodyRender: renderTaskListColumnCell,
     },
   },
   {
-    name: "status",
-    label: "",
+    name: "target_language_label",
+    label: "Target Language",
     options: {
-      display: "excluded",
-      viewColumns: false,
+      customBodyRender: renderTaskListColumnCell,
+    },
+  },
+  {
+    name: "status_label",
+    label: "Status",
+    options: {
+      sort: false,
+      align: "center",
+      customBodyRender: (value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
+        return (
+          <Box
+            style={{
+              color: selectedTask.is_active ? "" : "grey",
+            }}
+          >
+            {statusColor(value)?.element}
+          </Box>
+        );
+      },
+    },
+  },
+  {
+    name: "project_name",
+    label: "Project Name",
+    options: {
+      customBodyRender: renderTaskListColumnCell,
+    },
+  },
+  {
+    name: "time_spent",
+    label: "Time Spent",
+    options: {
+      customBodyRender: renderTaskListColumnCell,
     },
   },
 ];

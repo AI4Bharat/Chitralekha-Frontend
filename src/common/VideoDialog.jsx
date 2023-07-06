@@ -1,12 +1,22 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import { useDispatch, useSelector } from "react-redux";
+import { getMilliseconds, getTimeStamp, MenuProps } from "utils";
+import { useVideoSubtitle } from "hooks";
+import { voiceOptions } from "config";
+
+//Styles
+import { ProjectStyle } from "styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+
+//Components
 import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   Typography,
   IconButton,
@@ -17,31 +27,19 @@ import {
   MenuItem,
   Tooltip,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import FetchVideoDetailsAPI from "../redux/actions/api/Project/FetchVideoDetails";
-import APITransport from "../redux/actions/apitransport/apitransport";
-import { Box } from "@mui/system";
-import ProjectStyle from "../styles/projectStyle";
-import VideoTaskList from "../containers/Organization/Project/VideoTaskList";
-import { useVideoSubtitle } from "../hooks/useVideoSubtitle";
-import { getTimeStamp, getMilliseconds, MenuProps } from "../utils/utils";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import CloseIcon from "@mui/icons-material/Close";
-import C from "../redux/constants";
-import UpdateVideoAPI from "../redux/actions/api/Project/UpdateVideo";
+import VideoTaskList from "containers/Organization/Project/VideoTaskList";
 
-const voiceOptions = [
-  {
-    label: "Male - Adult",
-    value: "Male",
-  },
-  {
-    label: "Female - Adult",
-    value: "Female",
-  },
-];
+//APIs
+import C from "redux/constants";
+import {
+  FetchVideoDetailsAPI,
+  APITransport,
+  UpdateVideoAPI,
+} from "redux/actions";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -83,12 +81,12 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       return false;
     });
     setSubtitles(subs);
-    // eslint-disable-next-line    
+    // eslint-disable-next-line
   }, [time]);
 
   useEffect(() => {
     processSubtitleData();
-    // eslint-disable-next-line    
+    // eslint-disable-next-line
   }, [subtitles]);
 
   const getHighlightedWords = (index, currentTime, word, start, end) => {
@@ -139,7 +137,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     return () => {
       dispatch({ type: C.CLEAR_VIDEO_DETAILS });
     };
-    // eslint-disable-next-line    
+    // eslint-disable-next-line
   }, []);
 
   const onFullScreenChange = (status) => {
@@ -254,7 +252,11 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
         },
       }}
     >
-      <DialogTitle id="responsive-dialog-title" display="flex" alignItems={"center"}>
+      <DialogTitle
+        id="responsive-dialog-title"
+        display="flex"
+        alignItems={"center"}
+      >
         <Tooltip title={videoDetails[0].name}>
           <Typography
             variant="h4"

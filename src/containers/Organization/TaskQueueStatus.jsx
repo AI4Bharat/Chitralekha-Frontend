@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { getColumns, getOptions } from "../../utils/tableUtils";
-import { taskQueueStatusColumns } from "../../config/tableColumns";
+import { getColumns, getOptions } from "utils";
+import { taskQueueStatusColumns } from "config";
 
 //Components
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../common/Snackbar";
+import { CustomizedSnackbars } from "common";
 
 //APIs
-import FetchTaskQueueStatusAPI from "../../redux/actions/api/Organization/FetchTaskQueueStatus";
+import { FetchTaskQueueStatusAPI } from "redux/actions";
 
 const TaskQueueStatus = () => {
   const [loading, setLoading] = useState(true);

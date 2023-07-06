@@ -1,16 +1,8 @@
-import React, { useCallback, useEffect, useState, memo } from "react";
-import Box from "@mui/material/Box";
-import { CardContent, Grid, useMediaQuery } from "@mui/material";
+import React, { useCallback, useEffect, useState, useRef, memo } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
-import SaveTranscriptAPI from "../../../redux/actions/api/Project/SaveTranscript";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import "../../../styles/scrollbarStyle.css";
-import { setSubtitles } from "../../../redux/actions/Common";
-import C from "../../../redux/constants";
-import TimeBoxes from "../../../common/TimeBoxes";
-import ConfirmDialog from "../../../common/ConfirmDialog";
+import { tagsSuggestionData } from "config/projectConfigs";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -24,14 +16,43 @@ import {
   getSelectionStart,
   getTimings,
   getItemForDelete,
-} from "../../../utils/subtitleUtils";
+  MenuProps,
+  assignSpeakerId,
+} from "utils";
+
+//Styles
+import "../../../styles/scrollbarStyle.css";
+import { VideoLandingStyle } from "styles";
+
+//Components
+import {
+  Box,
+  CardContent,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  ConfirmDialog,
+  CustomizedSnackbars,
+  TagsSuggestionList,
+  TimeBoxes,
+} from "common";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import VideoLandingStyle from "../../../styles/videoLandingStyles";
 import Pagination from "./components/Pagination";
-import FetchTranscriptPayloadAPI from "../../../redux/actions/api/Project/FetchTranscriptPayload";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import { useRef } from "react";
+
+//APIs
+import C from "redux/constants";
+import {
+  APITransport,
+  FetchTranscriptPayloadAPI,
+  SaveTranscriptAPI,
+  setSubtitles,
+} from "redux/actions";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -56,6 +77,7 @@ const RightPanel = ({ currentIndex }) => {
     (state) => state.getTranscriptPayload.data
   );
   const limit = useSelector((state) => state.commonReducer.limit);
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
@@ -74,6 +96,23 @@ const RightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState([]);
+  const [speakerIdList, setSpeakerIdList] = useState([]);
+  const [currentSelectedIndex, setCurrentSelectedIndex] = useState(0);
+  const [tagSuggestionsAnchorEl, setTagSuggestionsAnchorEl] = useState(null);
+  const [tagSuggestionList, setTagSuggestionList] = useState([]);
+  const [textWithoutBackSlash, setTextWithoutBackSlash] = useState("");
+  const [textAfterBackSlash, setTextAfterBackSlash] = useState("");
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+      const speakerList = videoDetails?.video?.speaker_info?.map((speaker) => {
+        return speaker;
+      });
+      setSpeakerIdList(speakerList);
+      setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+    }
+  }, [videoDetails]);
 
   useEffect(() => {
     if (currentPage) {
@@ -103,7 +142,7 @@ const RightPanel = ({ currentIndex }) => {
     if (prevOffsetRef.current !== currentOffset) {
       setUndoStack([]);
       setRedoStack([]);
-      prevOffsetRef.current = currentOffset
+      prevOffsetRef.current = currentOffset;
     }
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
@@ -148,7 +187,7 @@ const RightPanel = ({ currentIndex }) => {
       {
         type: "split",
         index: currentIndexToSplitTextBlock,
-        selectionStart
+        selectionStart,
       },
     ]);
     setRedoStack([]);
@@ -161,8 +200,40 @@ const RightPanel = ({ currentIndex }) => {
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
   const changeTranscriptHandler = useCallback(
-    (text, index) => {
-      const sub = onSubtitleChange(text, index);
+    (event, index) => {
+      const {
+        target: { value },
+        currentTarget,
+      } = event;
+
+      const containsBackslash = value.includes("\\");
+
+      if (containsBackslash) {
+        const textBeforeSlash = value.split("\\")[0];
+        const currentTargetWord = value.split("\\")[1].split(" ")[0];
+        const textAfterSlash = value
+          .split("\\")[1]
+          .split(" ")
+          .slice(1)
+          .join(" ");
+
+        let filteredSuggestionByInput = tagsSuggestionData.filter((el) => {
+          return el.toLowerCase().includes(currentTargetWord.toLowerCase());
+        });
+
+        setCurrentSelectedIndex(index);
+        setTagSuggestionsAnchorEl(currentTarget);
+        setTextWithoutBackSlash(textBeforeSlash);
+        setTextAfterBackSlash(textAfterSlash);
+
+        if (filteredSuggestionByInput.length) {
+          setTagSuggestionList(filteredSuggestionByInput);
+        } else {
+          setTagSuggestionList(tagsSuggestionData);
+        }
+      }
+
+      const sub = onSubtitleChange(value, index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
       saveTranscriptHandler(false, false, sub);
     },
@@ -324,7 +395,7 @@ const RightPanel = ({ currentIndex }) => {
 
     // eslint-disable-next-line
   }, [undoStack, redoStack]);
-  console.log(redoStack, "redoStack");
+
   const targetLength = (index) => {
     if (subtitles[index]?.text.trim() !== "")
       return subtitles[index]?.text.trim().split(" ").length;
@@ -334,6 +405,12 @@ const RightPanel = ({ currentIndex }) => {
   const onNavigationClick = (value) => {
     saveTranscriptHandler(false, true);
     getPayload(value, limit);
+  };
+
+  const handleSpeakerChange = (id, index) => {
+    const sub = assignSpeakerId(id, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
   };
 
   return (
@@ -370,7 +447,7 @@ const RightPanel = ({ currentIndex }) => {
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "15px",
+                  padding: "16px",
                   borderBottom: "1px solid lightgray",
                   backgroundColor:
                     index % 2 === 0
@@ -404,6 +481,7 @@ const RightPanel = ({ currentIndex }) => {
 
                 <CardContent
                   className={classes.cardContent}
+                  aria-describedby={"suggestionList"}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -417,8 +495,8 @@ const RightPanel = ({ currentIndex }) => {
                     <IndicTransliterate
                       lang={taskData?.src_language}
                       value={item.text}
-                      onChangeText={(text) => {
-                        changeTranscriptHandler(text, index);
+                      onChange={(event) => {
+                        changeTranscriptHandler(event, index);
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
@@ -454,7 +532,7 @@ const RightPanel = ({ currentIndex }) => {
                     <div className={classes.relative}>
                       <textarea
                         onChange={(event) => {
-                          changeTranscriptHandler(event.target.value, index);
+                          changeTranscriptHandler(event, index);
                         }}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         value={item.text}
@@ -479,6 +557,39 @@ const RightPanel = ({ currentIndex }) => {
                     </div>
                   )}
                 </CardContent>
+
+                {showSpeakerIdDropdown ? (
+                  <FormControl
+                    sx={{ width: "50%", mr: "auto", float: "left" }}
+                    size="small"
+                  >
+                    <InputLabel id="select-speaker">Select Speaker</InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="select-speaker"
+                      label="Select Speaker"
+                      value={item.speaker_id}
+                      onChange={(event) =>
+                        handleSpeakerChange(event.target.value, index)
+                      }
+                      style={{
+                        backgroundColor: "#fff",
+                        textAlign: "left",
+                      }}
+                      inputProps={{
+                        "aria-label": "Without label",
+                        style: { textAlign: "left" },
+                      }}
+                      MenuProps={MenuProps}
+                    >
+                      {speakerIdList?.map((speaker, index) => (
+                        <MenuItem key={index} value={speaker.id}>
+                          {speaker.name} ({speaker.gender[0]})
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : null}
               </Box>
             );
           })}
@@ -513,6 +624,19 @@ const RightPanel = ({ currentIndex }) => {
             submit={() => saveTranscriptHandler(true, true)}
             message={"Do you want to submit the transcript?"}
             loading={loading}
+          />
+        )}
+
+        {Boolean(tagSuggestionsAnchorEl) && (
+          <TagsSuggestionList
+            tagSuggestionsAnchorEl={tagSuggestionsAnchorEl}
+            setTagSuggestionList={setTagSuggestionList}
+            index={currentSelectedIndex}
+            filteredSuggestionByInput={tagSuggestionList}
+            setTagSuggestionsAnchorEl={setTagSuggestionsAnchorEl}
+            textWithoutBackslash={textWithoutBackSlash}
+            textAfterBackSlash={textAfterBackSlash}
+            saveTranscriptHandler={saveTranscriptHandler}
           />
         )}
       </Box>

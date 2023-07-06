@@ -1,6 +1,8 @@
+import React from "react";
+
+//Components
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   Box,
@@ -8,15 +10,9 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
-const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
-  const [Previewdata, setPreviewdata] = useState();
-
-  useEffect(() => {
-    setPreviewdata(data);
-  }, [data]);
+const PreviewDialog = ({ openPreviewDialog, handleClose, data, taskType }) => {
   return (
     <Dialog
       open={openPreviewDialog}
@@ -38,51 +34,26 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
 
       <DialogContent sx={{ height: "410px" }}>
         <DialogContentText id="alert-dialog-description">
-          {Previewdata?.data?.payload &&
-          Previewdata?.data?.payload.length > 0 ? (
-            Previewdata?.data?.payload.map((el, i) => {
-              return (
-                <Box
-                  key={i}
-                  id={`sub_${i}`}
-                  textAlign={"start"}
-                  sx={{
-                    mb: 2,
-                    padding: 2,
-                    border: "1px solid #000000",
-                    borderRadius: 2,
-                    width: "90%",
-                  }}
-                >
-                  {task_type === "TRANSCRIPTION_EDIT" ||
-                  task_type === "TRANSCRIPTION_REVIEW"
-                    ? el.text
-                    : el.target_text}
-                </Box>
-              );
-            })
-          ) : (
-            <Box
-              sx={{
-                // marginY: 2,
-                padding: 3,
-                border: "1px solid #000000",
-                borderRadius: 2,
-                width: "80%",
-              }}
-            ></Box>
-          )}
+          {data?.map((el, i) => {
+            return (
+              <Box
+                key={i}
+                id={`sub_${i}`}
+                textAlign={"start"}
+                sx={{
+                  mb: 2,
+                  padding: 2,
+                  border: "1px solid #000000",
+                  borderRadius: 2,
+                  width: "90%",
+                }}
+              >
+                {taskType.includes("TRANSCRIPTION") ? el.text : el.target_text}
+              </Box>
+            );
+          })}
         </DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ p: "20px" }}>
-        {/* <Button
-          variant="text"
-          onClick={handleClose}
-          sx={{ lineHeight: "1", borderRadius: "6px" }}
-        >
-          Close
-        </Button> */}
-      </DialogActions>
     </Dialog>
   );
 };

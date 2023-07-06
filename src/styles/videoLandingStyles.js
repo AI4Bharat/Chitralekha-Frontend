@@ -21,8 +21,8 @@ const VideoLandingStyle = makeStyles({
   videoNameBox: {
     display: "flex",
     flexDirection: "row",
-   // backgroundColor: "rgba(254, 191, 44, 0.1)",
-    backgroundColor:"#fcf7e9"
+    // backgroundColor: "rgba(254, 191, 44, 0.1)",
+    backgroundColor: "#fcf7e9",
   },
 
   videoName: {
@@ -375,7 +375,7 @@ const VideoLandingStyle = makeStyles({
 
   optionIconBtn: {
     //backgroundColor: "#fff",
-    backgroundColor:"#fcf7e9",
+    backgroundColor: "#fcf7e9",
     borderRadius: "50%",
     marginRight: "10px",
     color: "blue",
@@ -383,8 +383,8 @@ const VideoLandingStyle = makeStyles({
       background: "grey",
     },
     "&:hover": {
-     // backgroundColor: "#fff",
-     backgroundColor:"#fcf7e9"
+      // backgroundColor: "#fff",
+      backgroundColor: "#fcf7e9",
     },
   },
 
@@ -395,7 +395,7 @@ const VideoLandingStyle = makeStyles({
     padding: "26.5px 0",
     justifyContent: "center",
     // backgroundColor: "rgba(254, 191, 44, 0.1)",
-    backgroundColor:"#fcf7e9"
+    backgroundColor: "#fcf7e9",
   },
 
   rightPanelParentBox: {
@@ -440,7 +440,7 @@ const VideoLandingStyle = makeStyles({
   },
 
   cardContent: {
-    padding: "16px 0 24px 0",
+    padding: "16px 0",
     alignItems: "center",
   },
 
@@ -459,7 +459,7 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
-    width: "95%",
+    width: "95.5%",
   },
 
   boxHighlight: {
@@ -535,7 +535,7 @@ const VideoLandingStyle = makeStyles({
     justifyContent: "center",
     alignItems: "center",
     padding: "10px",
-    border: "1px solid #EAEAEA"
+    border: "1px solid #EAEAEA",
   },
 
   durationBox: {
@@ -560,12 +560,32 @@ const VideoLandingStyle = makeStyles({
     backgroundColor: "#0083e2",
     display: "flex",
     alignItems: "center",
-    marginRight: "10%"
+    marginRight: "10%",
   },
 
   disabledCard: {
     opacity: "0.5",
     cursor: "not-allowed",
+  },
+
+  suggestionListTypography: {
+    borderBottom: "1px solid lightgrey",
+    cursor: "pointer",
+    backgroundColor: "#ffffff",
+    color: "#000",
+    padding: "16px",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#1890ff",
+    },
+  },
+
+  suggestionListHeader: {
+    padding: "10px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottom: "1px solid lightgrey",
   },
 });
 

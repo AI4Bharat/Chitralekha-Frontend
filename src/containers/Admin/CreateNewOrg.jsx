@@ -17,17 +17,18 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import CustomizedSnackbars from "../../common/Snackbar";
-import Loader from "../../common/Spinner";
+import { CustomizedSnackbars, Loader } from "common";
 
 //APIs
-import CreateNewOrganizationAPI from "../../redux/actions/api/Organization/CreateNewOrganization";
-import FetchOrgOwnersAPI from "../../redux/actions/api/Admin/FetchOrgOwners";
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import FetchTranscriptTypesAPI from "../../redux/actions/api/Project/FetchTranscriptTypes";
-import FetchTranslationTypesAPI from "../../redux/actions/api/Project/FetchTranslationTypes";
-import FetchBulkTaskTypeAPI from "../../redux/actions/api/Project/FetchBulkTaskTypes";
-import FetchSupportedLanguagesAPI from "../../redux/actions/api/Project/FetchSupportedLanguages";
+import {
+  CreateNewOrganizationAPI,
+  FetchOrgOwnersAPI,
+  FetchTranscriptTypesAPI,
+  APITransport,
+  FetchTranslationTypesAPI,
+  FetchBulkTaskTypeAPI,
+  FetchSupportedLanguagesAPI,
+} from "redux/actions";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

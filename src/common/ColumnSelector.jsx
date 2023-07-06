@@ -7,8 +7,9 @@ import {
   Popover,
   Typography,
 } from "@mui/material";
-import TableStyles from "../styles/tableStyles";
 import CloseIcon from "@mui/icons-material/Close";
+
+import { TableStyles } from "styles";
 
 const ColumnSelector = ({
   open,

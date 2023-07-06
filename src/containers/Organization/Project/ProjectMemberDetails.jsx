@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { getColumns, getOptions } from "utils";
+import { usersColumns } from "config";
 
 //Themes
-import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
-import tableTheme from "../../../theme/tableTheme";
+import { tableTheme } from "theme";
 
 //Components
+import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
-import CustomizedSnackbars from "../../../common/Snackbar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
-import DeleteDialog from "../../../common/DeleteDialog";
+import {
+  CustomizedSnackbars,
+  DeleteDialog,
+  DeleteMemberErrorDialog,
+} from "common";
 
 //APIs
-import RemoveProjectMemberAPI from "../../../redux/actions/api/Project/RemoveProjectMember";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
-import DeleteMemberErrorDialog from "../../../common/DeleteMemberErrorDialog";
-import { getColumns, getOptions } from "../../../utils/tableUtils";
-import { usersColumns } from "../../../config/tableColumns";
+import {
+  APITransport,
+  FetchProjectMembersAPI,
+  RemoveProjectMemberAPI,
+} from "redux/actions";
 
 const ProjectMemberDetails = () => {
   const { projectId } = useParams();
@@ -86,36 +90,52 @@ const ProjectMemberDetails = () => {
     // eslint-disable-next-line
   }, []);
 
-  const result = projectMembersList.map((item, i) => {
-    return [
-      `${item.first_name} ${item.last_name}`,
-      item.email,
-      item.role,
-      <Box sx={{ display: "flex" }}>
-        <Tooltip title="View">
-          <IconButton>
-            <Link to={`/profile/${item.id}`} style={{ textDecoration: "none" }}>
-              <PreviewIcon color="primary" sx={{ mt: "10px" }} />
-            </Link>
-          </IconButton>
-        </Tooltip>
+  const actionColumn = {
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData, rowIndex } = tableMeta;
+        const selectedRow = tableData[rowIndex];
 
-        {(projectDetails?.managers?.some((item) => item.id === userData.id) ||
-          userData.role === "ORG_OWNER") && (
-          <Tooltip title="Delete">
-            <IconButton
-              onClick={() => {
-                setMemberId(item.id);
-                setOpenDeleteDialog(true);
-              }}
-            >
-              <DeleteIcon color="error" />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>,
-    ];
-  });
+        return (
+          <Box sx={{ display: "flex" }}>
+            <Tooltip title="View">
+              <IconButton>
+                <Link
+                  to={`/profile/${selectedRow.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <PreviewIcon color="primary" sx={{ mt: "10px" }} />
+                </Link>
+              </IconButton>
+            </Tooltip>
+
+            {(projectDetails?.managers?.some(
+              (item) => item.id === userData.id
+            ) ||
+              userData.role === "ORG_OWNER") && (
+              <Tooltip title="Delete">
+                <IconButton
+                  onClick={() => {
+                    setMemberId(selectedRow.id);
+                    setOpenDeleteDialog(true);
+                  }}
+                >
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
+        );
+      },
+    },
+  };
+
+  const columns = [...getColumns(usersColumns), actionColumn];
 
   const renderSnackBar = () => {
     return (
@@ -135,8 +155,8 @@ const ProjectMemberDetails = () => {
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
-          data={result}
-          columns={getColumns(usersColumns)}
+          data={projectMembersList}
+          columns={columns}
           options={getOptions(apiStatus.progress)}
         />
       </ThemeProvider>

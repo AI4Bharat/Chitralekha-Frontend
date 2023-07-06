@@ -1,18 +1,26 @@
 //My Organization
-import { useEffect, useState } from "react";
-
-//APIs
-import FetchProjectDetailsAPI from "../../../redux/actions/api/Project/FetchProjectDetails";
-import FetchVideoListAPI from "../../../redux/actions/api/Project/FetchVideoList";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import CreateNewVideoAPI from "../../../redux/actions/api/Project/CreateNewVideo";
-
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
+import { roles } from "utils";
+
+//APIs
+import {
+  APITransport,
+  AddProjectMembersAPI,
+  CreateNewVideoAPI,
+  FetchManagerNameAPI,
+  FetchOrganizatioUsersAPI,
+  FetchProjectDetailsAPI,
+  FetchProjectMembersAPI,
+  FetchVideoListAPI,
+  UploadCSVAPI,
+} from "redux/actions";
+import C from "redux/constants";
 
 //Styles
-import DatasetStyle from "../../../styles/datasetStyle";
+import { DatasetStyle } from "styles";
 
 //Components
 import {
@@ -26,27 +34,21 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import CreateVideoDialog from "../../../common/CreateVideoDialog";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
 import TaskList from "./TaskList";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import AddProjectMembers from "../../../common/AddProjectMembers";
-import FetchManagerNameAPI from "../../../redux/actions/api/User/FetchUserList";
-import AddProjectMembersAPI from "../../../redux/actions/api/Project/AddProjectMembers";
-import FetchProjectMembersAPI from "../../../redux/actions/api/Project/FetchProjectMembers";
-import FetchOrganizatioUsersAPI from "../../../redux/actions/api/Organization/FetchOrganizatioUsers";
-import { roles } from "../../../utils/utils";
 import ProjectDescription from "./ProjectDescription";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import Loader from "../../../common/Spinner";
 import ProjectReport from "./ProjectReport";
-import C from "../../../redux/constants";
-import AlertComponent from "../../../common/Alert";
-import { useRef } from "react";
-import UploadCSVAPI from "../../../redux/actions/api/Project/UploadCSV";
-import CSVAlertComponent from "../../../common/csvUploadFailAlert";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import {
+  AddProjectMembers,
+  AlertComponent,
+  CSVAlertComponent,
+  CreateVideoDialog,
+  CustomizedSnackbars,
+  Loader,
+} from "common";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -77,6 +79,33 @@ const Project = () => {
   const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
+  const [value, setValue] = useState(0);
+  const [projectDetails, SetProjectDetails] = useState({});
+  const [videoList, setVideoList] = useState([]);
+  const [createVideoDialog, setCreateVideoDialog] = useState(false);
+  const [videoLink, setVideoLink] = useState("");
+  const [isAudio, setIsAudio] = useState(false);
+  const [lang, setLang] = useState("");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
+  const [projectData, setProjectData] = useState([
+    { name: "Project ID", value: null },
+    { name: "CreatedAt", value: null },
+    { name: "UserName", value: null },
+  ]);
+  const [videoDescription, setVideoDescription] = useState("");
+  const [speakerInfo, setSpeakerInfo] = useState([
+    {
+      name: "",
+      gender: "",
+      age: "",
+      id: "",
+    },
+  ]);
+  const [speakerType, setSpeakerType] = useState("individual");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -122,25 +151,6 @@ const Project = () => {
     };
     // eslint-disable-next-line
   }, []);
-
-  const [value, setValue] = useState(0);
-  const [projectDetails, SetProjectDetails] = useState({});
-  const [videoList, setVideoList] = useState([]);
-  const [createVideoDialog, setCreateVideoDialog] = useState(false);
-  const [videoLink, setVideoLink] = useState("");
-  const [isAudio, setIsAudio] = useState(false);
-  const [lang, setLang] = useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
-  const [projectData, setProjectData] = useState([
-    { name: "Project ID", value: null },
-    { name: "CreatedAt", value: null },
-    { name: "UserName", value: null },
-  ]);
-  const [videoDescription, setVideoDescription] = useState("");
 
   useEffect(() => {
     setProjectData([
@@ -213,7 +223,9 @@ const Project = () => {
       lang,
       desc,
       create,
-      voice
+      voice,
+      speakerInfo,
+      speakerType
     );
 
     const res = await fetch(apiObj.apiEndPoint(), {
@@ -529,6 +541,10 @@ const Project = () => {
           setVideoDescription={setVideoDescription}
           voice={voice}
           setVoice={setVoice}
+          setSpeakerInfo={setSpeakerInfo}
+          speakerInfo={speakerInfo}
+          speakerType={speakerType}
+          setSpeakerType={setSpeakerType} 
         />
       )}
 

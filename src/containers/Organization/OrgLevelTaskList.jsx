@@ -1,17 +1,15 @@
 // OrgLevelTaskList
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getDateTime, roles } from "../../utils/utils";
-import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { getOptions } from "../../utils/tableUtils";
-import C from "../../redux/constants";
-import statusColor from "../../utils/getStatusColor";
+import C from "redux/constants";
+import { getColumns, getDateTime, getOptions, roles } from "utils";
+import { buttonConfig, orgTaskListColumns, toolBarActions } from "config";
+import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
-import tableTheme from "../../theme/tableTheme";
-import DatasetStyle from "../../styles/datasetStyle";
-import TableStyles from "../../styles/tableStyles";
+import { DatasetStyle, TableStyles } from "styles";
+import { tableTheme } from "theme";
 
 //Components
 import {
@@ -24,43 +22,47 @@ import {
   Button,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import CustomizedSnackbars from "../../common/Snackbar";
-import UpdateBulkTaskDialog from "../../common/UpdateBulkTaskDialog";
-import ViewTaskDialog from "../../common/ViewTaskDialog";
-import FilterList from "../../common/FilterList";
-import ExportDialog from "../../common/ExportDialog";
-import TableSearchPopover from "../../common/TableSearchPopover";
-import DeleteDialog from "../../common/DeleteDialog";
+import {
+  CustomizedSnackbars,
+  DeleteDialog,
+  ExportDialog,
+  FilterList,
+  PreviewDialog,
+  SpeakerInfoDialog,
+  TableSearchPopover,
+  UpdateBulkTaskDialog,
+  UploadAlertComponent,
+  UploadFormatDialog,
+  ViewTaskDialog,
+} from "common";
 
 //Icons
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import PreviewIcon from "@mui/icons-material/Preview";
-import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
-import PreviewDialog from "../../common/PreviewDialog";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 
 //Apis
-import APITransport from "../../redux/actions/apitransport/apitransport";
-import DeleteTaskAPI from "../../redux/actions/api/Project/DeleteTask";
-import ComparisionTableAPI from "../../redux/actions/api/Project/ComparisonTable";
-import exportTranscriptionAPI from "../../redux/actions/api/Project/ExportTranscrip";
-import EditBulkTaskDetailAPI from "../../redux/actions/api/Project/EditBulkTaskDetails";
-import EditTaskDetailAPI from "../../redux/actions/api/Project/EditTaskDetails";
-import exportTranslationAPI from "../../redux/actions/api/Project/ExportTranslation";
-import CompareTranscriptionSource from "../../redux/actions/api/Project/CompareTranscriptionSource";
-import setComparisonTable from "../../redux/actions/api/Project/SetComparisonTableData";
-import clearComparisonTable from "../../redux/actions/api/Project/ClearComparisonTable";
-import FetchpreviewTaskAPI from "../../redux/actions/api/Project/FetchPreviewTask";
-import DeleteBulkTaskAPI from "../../redux/actions/api/Project/DeleteBulkTask";
-import FetchTranscriptExportTypesAPI from "../../redux/actions/api/Project/FetchTranscriptExportTypes";
-import FetchTranslationExportTypesAPI from "../../redux/actions/api/Project/FetchTranslationExportTypes";
-import BulkTaskExportAPI from "../../redux/actions/api/Project/BulkTaskDownload";
-import ExportVoiceoverTaskAPI from "../../redux/actions/api/Project/ExportVoiceoverTask";
-import FetchPaginatedOrgTaskListAPI from "../../redux/actions/api/Organization/FetchPaginatedOrgTaskList";
+import {
+  APITransport,
+  BulkTaskExportAPI,
+  CompareTranscriptionSource,
+  ComparisionTableAPI,
+  DeleteBulkTaskAPI,
+  DeleteTaskAPI,
+  EditBulkTaskDetailAPI,
+  EditTaskDetailAPI,
+  ExportVoiceoverTaskAPI,
+  FetchPaginatedOrgTaskListAPI,
+  FetchTranscriptExportTypesAPI,
+  FetchTranslationExportTypesAPI,
+  FetchVoiceoverExportTypesAPI,
+  FetchpreviewTaskAPI,
+  GenerateTranslationOutputAPI,
+  UploadToYoutubeAPI,
+  clearComparisonTable,
+  exportTranscriptionAPI,
+  exportTranslationAPI,
+  setComparisonTable,
+} from "redux/actions";
 
 const OrgLevelTaskList = () => {
   const dispatch = useDispatch();
@@ -68,49 +70,58 @@ const OrgLevelTaskList = () => {
   const tableClasses = TableStyles();
   const navigate = useNavigate();
 
-  const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
-  const [currentTaskDetails, setCurrentTaskDetails] = useState();
+  //Table States
+  const [tableData, setTableData] = useState([]);
+  const [options, setOptions] = useState();
+  const [rows, setRows] = useState([]);
+
+  //Filter States
+  const [srcLanguageList, setSrcLanguageList] = useState([]);
+  const [tgtLanguageList, setTgtLanguageList] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState({
+    status: [],
+    taskType: [],
+    srcLanguage: [],
+    tgtLanguage: [],
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState([]);
   const [snackbar, setSnackbarInfo] = useState({
     open: false,
     message: "",
     variant: "success",
   });
-  const [tasktype, setTasktype] = useState();
-  const [open, setOpen] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [exportTranscription, setExportTranscription] = useState("srt");
-  const [exportTranslation, setexportTranslation] = useState("srt");
-  const [taskdata, setTaskdata] = useState();
-  const [deleteTaskid, setDeleteTaskid] = useState();
-  const [showEditTaskBtn, setShowEditTaskBtn] = useState(false);
-  const [rows, setRows] = useState([]);
-  const [openEditTaskDialog, setOpenEditTaskDialog] = useState(false);
-  const [currentSelectedTasks, setCurrentSelectedTask] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isBulk, setIsBulk] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState("");
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState({
-    taskType: "",
-    videoId: "",
-    targetLang: "",
-  });
-  const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
-  const [Previewdata, setPreviewdata] = useState("");
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
-  const [task_type, setTask_type] = useState();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedFilters, setsSelectedFilters] = useState({
-    status: [],
-    taskType: [],
-    SrcLanguage: [],
-    TgtLanguage: [],
+
+  const [currentTaskDetails, setCurrentTaskDetails] = useState();
+  const [previewData, setPreviewData] = useState([]);
+  const [currentSelectedTasks, setCurrentSelectedTasks] = useState([]);
+  const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
+
+  //Dialogs
+  const [openDialogs, setOpenDialogs] = useState({
+    exportDialog: false,
+    deleteDialog: false,
+    viewTaskDialog: false,
+    previewDialog: false,
+    editTaskDialog: false,
+    uploadDialog: false,
+    speakerInfoDialog: false,
   });
+
+  //Bulk Opertaion States
+  const [isBulk, setIsBulk] = useState(false);
   const [isBulkTaskDelete, setIsBulkTaskDelete] = useState(false);
   const [isBulkTaskDownload, setIsBulkTaskDownload] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [selectedBulkTaskid, setSelectedBulkTaskId] = useState([]);
-  const [options, setOptions] = useState({});
+  const [showEditTaskBtn, setShowEditTaskBtn] = useState(false);
+  const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
+  const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
+
+  //Server Side Pagination States
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchAnchor, setSearchAnchor] = useState(null);
@@ -118,20 +129,25 @@ const OrgLevelTaskList = () => {
   const [searchedColumn, setSearchedColumn] = useState({});
   const [columnDisplay, setColumnDisplay] = useState(false);
 
-  const searchOpen = Boolean(searchAnchor);
-  const popoverOpen = Boolean(anchorEl);
+  const [exportTypes, setExportTypes] = useState({
+    transcription: "srt",
+    translation: "srt",
+    voiceover: "mp4",
+    speakerInfo: "false",
+  });
+  const [uploadExportType, setUploadExportType] = useState("srt");
 
-  const filterId = popoverOpen ? "simple-popover" : undefined;
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
-  const transcriptExportTypes = useSelector(
-    (state) => state.getTranscriptExportTypes.data.export_types
-  );
-  const translationExportTypes = useSelector(
-    (state) => state.getTranslationExportTypes.data.export_types
-  );
-  const taskList = useSelector((state) => state.getOrgTaskList.data);
 
+  const {
+    total_count: totalCount,
+    tasks_list: taskList,
+    src_languages_list: sourceLanguagesList,
+    target_languages_list: targetlanguagesList,
+  } = useSelector((state) => state.getOrgTaskList.data);
+
+  //Fixed
   const fetchTaskList = () => {
     setLoading(true);
 
@@ -144,8 +160,8 @@ const OrgLevelTaskList = () => {
     const filter = {
       task_type: selectedFilters?.taskType,
       status: selectedFilters?.status,
-      src_language: selectedFilters?.SrcLanguage,
-      target_language: selectedFilters?.TgtLanguage,
+      src_language: selectedFilters?.srcLanguage,
+      target_language: selectedFilters?.tgtLanguage,
     };
 
     const searchRequest = Object.entries(search).reduce((acc, [key, value]) => {
@@ -172,12 +188,19 @@ const OrgLevelTaskList = () => {
     dispatch(APITransport(apiObj));
   };
 
+  //Fixed
   useEffect(() => {
+    localStorage.removeItem("sourceTypeList");
+    localStorage.removeItem("sourceId");
+
     const transcriptExportObj = new FetchTranscriptExportTypesAPI();
     dispatch(APITransport(transcriptExportObj));
 
     const translationExportObj = new FetchTranslationExportTypesAPI();
     dispatch(APITransport(translationExportObj));
+
+    const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
+    dispatch(APITransport(voiceoverExportObj));
 
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
@@ -186,6 +209,7 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, []);
 
+  //Fixed
   useEffect(() => {
     if (orgId) {
       fetchTaskList();
@@ -194,194 +218,206 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, [orgId, offset, limit, searchedColumn, selectedFilters]);
 
+  //Fixed
   useEffect(() => {
-    localStorage.removeItem("sourceTypeList");
-    localStorage.removeItem("sourceId");
-  }, []);
-
-  useEffect(() => {
-    if (taskList.tasks_list) {
+    if (taskList) {
       setLoading(false);
+      setTableData(taskList);
+      setSrcLanguageList(sourceLanguagesList);
+      setTgtLanguageList(targetlanguagesList);
     }
-  }, [taskList]);
+  }, [taskList, sourceLanguagesList, targetlanguagesList]);
 
-  const handleClose = () => {
-    setOpen(false);
-    setAnchorEl(null);
-  };
+  //Fixed
+  const exportVoiceoverTask = async () => {
+    const {
+      id: taskId,
+      video_name: videoName,
+      target_language: targetLanguage,
+    } = currentTaskDetails;
+    const { voiceover } = exportTypes;
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setOpenPreviewDialog(false);
-  };
+    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover);
 
-  const exportVoiceoverTask = async (id) => {
-    const apiObj = new ExportVoiceoverTaskAPI(id);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      const task = taskList.tasks_list.filter((task) => task.id === id)[0];
-
-      const link = document.createElement("a");
-      link.href = resp.azure_url;
-
-      link.setAttribute(
-        "download",
-        `Chitralekha_Video_${task.video_name}_${getDateTime()}_${
-          task.target_language
-        }.mp4`
-      );
-
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
       });
-    }
-  };
 
-  const handleClickOpen = (id, taskType) => {
-    if (taskType.includes("VOICEOVER")) {
-      exportVoiceoverTask(id);
-    } else {
-      setOpen(true);
-      setTaskdata(id);
-      setTasktype(taskType);
-      setIsBulkTaskDownload(false);
-    }
-  };
+      const resp = await res.json();
 
-  const handleShowFilter = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+      if (res.ok) {
+        const link = document.createElement("a");
+        link.href = resp.azure_url;
 
-  const handleok = async () => {
-    const apiObj = new exportTranscriptionAPI(taskdata, exportTranscription);
-    //dispatch(APITransport(apiObj));
-    setOpen(false);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.blob();
-    if (res.ok) {
-      const task = taskList.tasks_list.filter(
-        (task) => task.id === taskdata
-      )[0];
+        link.setAttribute(
+          "download",
+          `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.mp4`
+        );
 
-      let newBlob;
-      if (exportTranscription === "docx") {
-        newBlob = new Blob([resp], {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        });
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
       } else {
-        newBlob = new Blob([resp]);
-      }
-
-      const blobUrl = window.URL.createObjectURL(newBlob);
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      const date = new Date();
-      const YYYYMMDD = date
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("");
-
-      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-      link.setAttribute(
-        "download",
-        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.src_language}.${exportTranscription}`
-      );
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-
-      // clean up Url
-      window.URL.revokeObjectURL(blobUrl);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
-  };
-
-  const handleokTranslation = async () => {
-    const apiObj = new exportTranslationAPI(taskdata, exportTranslation);
-    //dispatch(APITransport(apiObj));
-    setOpen(false);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.blob();
-    if (res.ok) {
-      const task = taskList.tasks_list.filter(
-        (task) => task.id === taskdata
-      )[0];
-
-      let newBlob;
-      if (exportTranscription === "docx") {
-        newBlob = new Blob([resp], {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
         });
-      } else {
-        newBlob = new Blob([resp]);
       }
-
-      const blobUrl = window.URL.createObjectURL(newBlob);
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      const date = new Date();
-      const YYYYMMDD = date
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("");
-
-      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-      // link.setAttribute("download", `${taskdata}.${exportTranslation}`);
-      link.setAttribute(
-        "download",
-        `Chitralekha_Video${task.video}_${YYYYMMDD}_${HHMMSS}_${task.target_language}.${exportTranslation}`
-      );
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
-    } else {
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: "Something went wrong!!",
         variant: "error",
       });
     }
   };
 
-  const handleClickRadioButton = (e) => {
-    setExportTranscription(e.target.value);
+  //Fixed
+  const handleTranscriptExport = async () => {
+    const {
+      id: taskId,
+      video: videoId,
+      src_language: sourceLanguage,
+    } = currentTaskDetails;
+    const { transcription, speakerInfo } = exportTypes;
+
+    const apiObj = new exportTranscriptionAPI(
+      taskId,
+      transcription,
+      speakerInfo
+    );
+    handleDialogClose("exportDialog");
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.blob();
+
+      if (res.ok) {
+        let newBlob;
+        if (transcription === "docx") {
+          newBlob = new Blob([resp], {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          });
+        } else {
+          newBlob = new Blob([resp]);
+        }
+
+        const blobUrl = window.URL.createObjectURL(newBlob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+
+        const date = new Date();
+        const YYYYMMDD = date
+          .toLocaleDateString("en-GB")
+          .split("/")
+          .reverse()
+          .join("");
+
+        const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+        link.setAttribute(
+          "download",
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${sourceLanguage}.${transcription}`
+        );
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+
+        // clean up Url
+        window.URL.revokeObjectURL(blobUrl);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
   };
 
-  const handleClickRadioButtonTranslation = (e) => {
-    setexportTranslation(e.target.value);
+  //Fixed
+  const handleTranslationExport = async () => {
+    const {
+      id: taskId,
+      video: videoId,
+      target_language: targetLanguage,
+    } = currentTaskDetails;
+    const { transcription, speakerInfo } = exportTypes;
+
+    const apiObj = new exportTranslationAPI(taskId, transcription, speakerInfo);
+    handleDialogClose("exportDialog");
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.blob();
+
+      if (res.ok) {
+        let newBlob;
+        if (transcription === "docx") {
+          newBlob = new Blob([resp], {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          });
+        } else {
+          newBlob = new Blob([resp]);
+        }
+
+        const blobUrl = window.URL.createObjectURL(newBlob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+
+        const date = new Date();
+        const YYYYMMDD = date
+          .toLocaleDateString("en-GB")
+          .split("/")
+          .reverse()
+          .join("");
+        const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+        link.setAttribute(
+          "download",
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${transcription}`
+        );
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+
+        window.URL.revokeObjectURL(blobUrl);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
   };
 
+  //Fixed
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
       type: Object.keys(rsp_data.payloads)[0],
@@ -395,6 +431,7 @@ const OrgLevelTaskList = () => {
     navigate(`/task/${id}/translate`);
   };
 
+  //Fixed
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
     const sourceTypeList = source.map((el) => {
       return el.toUpperCase().split(" ").join("_");
@@ -417,209 +454,85 @@ const OrgLevelTaskList = () => {
     });
   };
 
-  const handledeletetask = async (id, flag) => {
-    setDeleteTaskid(id);
-
+  //Fixed
+  const handleDeleteTask = async (id, flag) => {
     setLoading(true);
-    const apiObj = new DeleteTaskAPI(id, flag);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setOpenDialog(false);
-      setLoading(false);
-      fetchTaskList();
-    } else {
-      setOpenDialog(true);
-      setDeleteMsg(resp.message);
-      setDeleteResponse(resp.response);
-      setLoading(false);
-    }
-  };
+    setIsBulkTaskDelete(false);
 
-  const handlePreviewTask = async (id, Task_type, Targetlanguage) => {
-    setPreviewdata({});
-    setOpenPreviewDialog(true);
-    setTask_type(Task_type);
-    const taskObj = new FetchpreviewTaskAPI(id, Task_type, Targetlanguage);
-    //dispatch(APITransport(taskObj));
-    const res = await fetch(taskObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(taskObj.getBody()),
-      headers: taskObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    setLoading(false);
-    if (res.ok) {
-      setPreviewdata(resp);
-    } else {
-      setOpenPreviewDialog(false);
+    const apiObj = new DeleteTaskAPI(id, flag);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "DELETE",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+        handleDialogClose("deleteDialog");
+        fetchTaskList();
+      } else {
+        handleDialogOpen("deleteDialog");
+        setDeleteMsg(resp.message);
+        setDeleteResponse(resp.response);
+      }
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: "Something went wrong!!",
         variant: "error",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderViewButton = (tableData) => {
-    return (
-      tableData.rowData[17]?.View && (
-        <Tooltip title="View">
-          <IconButton
-            onClick={() => {
-              setOpenViewTaskDialog(true);
-              setCurrentTaskDetails(tableData.rowData);
-            }}
-            disabled={!tableData.rowData[12]}
-            color="primary"
-          >
-            <PreviewIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    );
+  //Fixed
+  const handlePreviewTask = async (id, taskType, targetlanguage) => {
+    setPreviewData([]);
+    handleDialogOpen("previewDialog");
+
+    const taskObj = new FetchpreviewTaskAPI(id, taskType, targetlanguage);
+
+    try {
+      const res = await fetch(taskObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(taskObj.getBody()),
+        headers: taskObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setPreviewData(resp.data.payload);
+      } else {
+        handleDialogClose("previewDialog");
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderExportButton = (tableData) => {
-    return (
-      tableData.rowData[17]?.Export && (
-        <Tooltip title="Export">
-          <IconButton
-            onClick={() =>
-              handleClickOpen(tableData.rowData[0], tableData.rowData[1])
-            }
-            disabled={!tableData.rowData[12]}
-            color="primary"
-          >
-            <FileDownloadIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    );
-  };
-
-  const renderEditButton = (tableData) => {
-    return (
-      tableData.rowData[17]?.Edit && (
-        <Tooltip title="Edit">
-          <IconButton
-            disabled={!tableData.rowData[12]}
-            onClick={() => {
-              if (tableData.rowData[1].includes("TRANSCRIPTION")) {
-                navigate(`/task/${tableData.rowData[0]}/transcript`);
-              } else if (tableData.rowData[1].includes("TRANSLATION")) {
-                navigate(`/task/${tableData.rowData[0]}/translate`);
-              } else {
-                navigate(`/task/${tableData.rowData[0]}/voiceover`);
-              }
-            }}
-            color="primary"
-          >
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    );
-  };
-
-  const renderDeleteButton = (tableData) => {
-    return (
-      tableData.rowData[17]?.Delete && (
-        <Tooltip title="Delete">
-          <IconButton
-            onClick={() => handledeletetask(tableData.rowData[0], false)}
-            color="error"
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    );
-  };
-
-  const renderUpdateTaskButton = (tableData) => {
-    return (
-      tableData.rowData[17]?.Update && (
-        <Tooltip title="Edit Task Details">
-          <IconButton
-            color="primary"
-            onClick={() => {
-              setSelectedTaskId(tableData.rowData[0]);
-              setSelectedTaskDetails({
-                taskType: tableData.rowData[1],
-                videoId: tableData.rowData[18],
-                targetLang: tableData.rowData[8],
-              });
-              setSelectedProjectId(tableData.rowData[19]);
-              setOpenEditTaskDialog(true);
-              setIsBulk(false);
-            }}
-          >
-            <AppRegistrationIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    );
-  };
-
-  const renderPreviewButton = (tableData) => {
-    return (
-      tableData.rowData[17]?.Preview && (
-        <Tooltip title="Preview">
-          <IconButton
-            color="primary"
-            onClick={() =>
-              handlePreviewTask(
-                tableData.rowData[14],
-                tableData.rowData[1],
-                tableData.rowData[7]
-              )
-            }
-          >
-            <VisibilityIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    );
-  };
-
-  const result = taskList?.tasks_list
-    ? taskList.tasks_list.map((item) => {
-        return [
-          item.id,
-          item.task_type,
-          item.task_type_label,
-          item.video_name,
-          moment(item.created_at).format("DD/MM/YYYY HH:mm:ss"),
-          item.source_type,
-          item.src_language,
-          item.src_language_label,
-          item.target_language,
-          item.target_language_label,
-          statusColor(item.status_label)?.element,
-          item.user,
-          item.is_active,
-          `${item.user?.first_name} ${item.user?.last_name}`,
-          item.project_name,
-          item.time_spent,
-          item.description,
-          item.buttons,
-          item.video,
-          item.project,
-        ];
-      })
-    : [];
-
-    const handleShowSearch = (col, event) => {
+  //Fixed
+  const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     setSearchedCol({
       label: col.label,
@@ -631,6 +544,7 @@ const OrgLevelTaskList = () => {
     }
   };
 
+  //Fixed
   const CustomTableHeader = (col) => {
     return (
       <>
@@ -647,371 +561,253 @@ const OrgLevelTaskList = () => {
     );
   };
 
-  const columns = useMemo(
-    () => [
-      {
-        name: "id",
-        label: "Id",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          display: "exclude",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-        },
-      },
-      {
-        name: "task_type",
-        label: "",
-        options: {
-          display: "excluded",
-          filter: true,
-        },
-      },
-      {
-        name: "task_type_label",
-        label: "Task Type",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "video_name",
-        label: "Video Name",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          customHeadLabelRender: CustomTableHeader,
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "created_at",
-        label: "Created At",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          display: false,
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "source_type",
-        label: "Source Type",
-        options: {
-          filter: false,
-          sort: false,
-          display: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "src_language",
-        label: "",
-        options: {
-          display: "excluded",
-          filter: true,
-        },
-      },
-      {
-        name: "src_language_label",
-        label: "Source Language",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "target_language",
-        label: "",
-        options: {
-          display: "excluded",
-          filter: true,
-        },
-      },
-      {
-        name: "target_language_label",
-        label: "Target Language",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "status_label",
-        label: "Status",
-        options: {
-          filter: true,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "user",
-        label: "",
-        options: {
-          display: "excluded",
-        },
-      },
-      {
-        name: "is_active",
-        label: "",
-        options: {
-          display: "excluded",
-        },
-      },
-      {
-        name: "username",
-        label: "Assignee",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          customHeadLabelRender: CustomTableHeader,
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "project_name",
-        label: "Project Name",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          display: true,
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "time_spent",
-        label: "Time Spent",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          display: true,
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "description",
-        label: "Description",
-        options: {
-          filter: false,
-          sort: false,
-          display: columnDisplay,
-          align: "center",
-          customHeadLabelRender: CustomTableHeader,
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box
-                style={{
-                  color: tableMeta.rowData[12] ? "" : "grey",
-                }}
-              >
-                {value}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        name: "buttons",
-        label: "",
-        options: {
-          display: "excluded",
-        },
-      },
-      {
-        name: "project",
-        label: "",
-        options: {
-          display: "excluded",
-        },
-      },
-      {
-        name: "Action",
-        label: "Actions",
-        options: {
-          filter: false,
-          sort: false,
-          align: "center",
-          setCellHeaderProps: () => ({
-            className: tableClasses.cellHeaderProps,
-          }),
-          customBodyRender: (value, tableMeta) => {
-            return (
-              <Box sx={{ display: "flex" }}>
-                {renderUpdateTaskButton(tableMeta)}
+  const generateTranslationCall = async (id, taskStatus) => {
+    if (taskStatus === "SELECTED_SOURCE") {
+      const apiObj = new GenerateTranslationOutputAPI(id);
 
-                {renderViewButton(tableMeta)}
+      try {
+        const res = await fetch(apiObj.apiEndPoint(), {
+          method: "POST",
+          body: JSON.stringify(apiObj.getBody()),
+          headers: apiObj.getHeaders().headers,
+        });
 
-                {renderEditButton(tableMeta)}
+        const resp = await res.json();
 
-                {renderExportButton(tableMeta)}
+        if (res.ok) {
+          navigate(`/task/${id}/translate`);
+        } else {
+          setSnackbarInfo({
+            open: true,
+            message: resp?.message,
+            variant: "error",
+          });
+        }
+      } catch (error) {
+        setSnackbarInfo({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        });
+      }
+    } else {
+      navigate(`/task/${id}/translate`);
+    }
+  };
 
-                {renderPreviewButton(tableMeta)}
+  const handleUploadSubtitle = async (id, rowIndex, exportType = "srt") => {
+    handleDialogClose("uploadDialog");
 
-                {renderDeleteButton(tableMeta)}
-              </Box>
-            );
-          },
+    const loadingArray = [...uploadLoading];
+    loadingArray[rowIndex] = true;
+    setUploadLoading(loadingArray);
+
+    const apiObj = new UploadToYoutubeAPI(id, exportType);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setBulkSubtitleAlert(true);
+        setBulkSubtitleAlertData(resp);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    } finally {
+      loadingArray[rowIndex] = false;
+      setUploadLoading(loadingArray);
+    }
+  };
+
+  const handleOpenSubtitleUploadDialog = (rowIndex) => {
+    handleDialogOpen("uploadDialog");
+    setUploadTaskRowIndex(rowIndex);
+  };
+
+  const handleActionButtonClick = (tableMeta, action) => {
+    const { tableData: data, rowIndex } = tableMeta;
+    const selectedTask = data[rowIndex];
+
+    const { id, task_type, status, video, target_language } = selectedTask;
+    setCurrentTaskDetails(selectedTask);
+
+    switch (action) {
+      case "Upload":
+        if (task_type.includes("TRANSCRIPTION")) {
+          handleOpenSubtitleUploadDialog(rowIndex);
+        } else {
+          handleUploadSubtitle([id], rowIndex);
+        }
+        break;
+
+      case "Update":
+        setIsBulk(false);
+        handleDialogOpen("editTaskDialog");
+        break;
+
+      case "View":
+        handleDialogOpen("viewTaskDialog");
+        break;
+
+      case "Edit":
+        if (task_type.includes("TRANSCRIPTION")) {
+          navigate(`/task/${id}/transcript`);
+        } else if (task_type.includes("TRANSLATION")) {
+          generateTranslationCall(id, status);
+        } else {
+          navigate(`/task/${id}/voiceover`);
+        }
+        break;
+
+      case "Edit-Speaker":
+        handleDialogOpen("speakerInfoDialog");
+        break;
+
+      case "Export":
+        handleDialogOpen("exportDialog");
+        setIsBulkTaskDownload(false);
+        break;
+
+      case "Preview":
+        handlePreviewTask(video, task_type, target_language);
+        break;
+
+      case "Delete":
+        handleDeleteTask(id, false);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const initColumns = () => {
+    const videoName = {
+      name: "video_name",
+      label: "Video Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: renderTaskListColumnCell,
+      },
+    };
+  
+    const assigneeColumn = {
+      name: "user",
+      label: "Assignee",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+  
+          return (
+            <Box
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+              {value.first_name} {value.last_name}
+            </Box>
+          );
         },
       },
-    ],
+    };
+  
+    const descriptionColumn = {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: columnDisplay,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: renderTaskListColumnCell,
+      },
+    };
+  
+    const actionColumn = {
+      name: "Action",
+      label: "Actions",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: (_value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+  
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              {buttonConfig.map((item) => {
+                return (
+                  <Tooltip key={item.key} title={item.title}>
+                    <IconButton
+                      onClick={() => handleActionButtonClick(tableMeta, item.key)}
+                      color={item.color}
+                      sx={{
+                        display: selectedTask.buttons?.[item.key] ? "" : "none",
+                      }}
+                      disabled={
+                        item.key === "Edit" ? !selectedTask.is_active : false
+                      }
+                    >
+                      {item.icon}
+                    </IconButton>
+                  </Tooltip>
+                );
+              })}
+            </Box>
+          );
+        },
+      },
+    };
+  
+    const columns = [...getColumns(orgTaskListColumns), actionColumn];
+    columns.splice(2, 0, videoName);
+    columns.splice(7, 0, assigneeColumn);
+    columns.splice(10, 0, descriptionColumn);
 
-    // eslint-disable-next-line
-    [CustomTableHeader, columnDisplay]
-  );
+    return columns;
+  }
 
+  //Fixed
   const handleRowClick = (_currentRow, allRow) => {
-    const temp = taskList?.tasks_list?.filter((_item, index) => {
+    const temp = tableData?.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
     });
 
@@ -1024,74 +820,88 @@ const OrgLevelTaskList = () => {
     let temp3 = taskIds.join();
 
     setSelectedBulkTaskId(temp3);
-    setCurrentSelectedTask(temp);
+    setCurrentSelectedTasks(temp);
     setRows(temp2);
     setShowEditTaskBtn(!!temp.length);
   };
 
+  //Fixed
   const handleBulkDelete = async (taskIds, flag) => {
     setLoading(true);
     setIsBulkTaskDelete(true);
 
     const apiObj = new DeleteBulkTaskAPI(flag, taskIds);
 
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "DELETE",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
 
-    const resp = await res.json();
+      const resp = await res.json();
 
-    if (res.ok) {
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+        handleDialogClose("deleteDialog");
+        setRows([]);
+        setShowEditTaskBtn(false);
+        fetchTaskList();
+      } else {
+        handleDialogOpen("deleteDialog");
+        setDeleteMsg(resp.message);
+        setDeleteResponse(resp.error_report);
+      }
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
-        variant: "success",
+        message: "Something went wrong!!",
+        variant: "error",
       });
-      setOpenDialog(false);
-      setLoading(false);
-      fetchTaskList();
-    } else {
-      setDeleteTaskid(resp.task_ids);
-      setOpenDialog(true);
-      setDeleteMsg(resp.message);
-      setDeleteResponse(resp.error_report);
+    } finally {
       setLoading(false);
     }
   };
 
-  const toolBarActions = [
-    {
-      title: "Bulk Task Update",
-      icon: <AppRegistrationIcon />,
-      onClick: () => {
-        setOpenEditTaskDialog(true);
+  //Fixed
+  const handleToolbarButtonClick = (key) => {
+    switch (key) {
+      case "bulkTaskUpdate":
+        handleDialogOpen("editTaskDialog");
         setIsBulk(true);
-      },
-    },
-    {
-      title: "Bulk Task Delete",
-      icon: <DeleteIcon />,
-      onClick: () => {},
-      style: { color: "#d32f2f" },
-    },
-    {
-      title: "Bulk Task Dowload",
-      icon: <FileDownloadIcon />,
-      onClick: () => {
-        setOpen(true);
-        setTasktype("TRANSLATION_EDIT");
-        setIsBulkTaskDownload(true);
-      },
-      style: { marginRight: "auto" },
-    },
-  ];
+        break;
 
+      case "bulkTaskDelete":
+        const taskIds = currentSelectedTasks.map((item) => item.id);
+        handleBulkDelete(taskIds, false);
+        break;
+
+      case "bulkTaskDownload":
+        handleDialogOpen("exportDialog");
+        setIsBulkTaskDownload(true);
+        break;
+
+      case "bulkTaskUpload":
+        handleUploadSubtitle(selectedBulkTaskid.split(","));
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  //Fixed
   const renderToolBar = () => {
     return (
       <>
-        <Button style={{ minWidth: "25px" }} onClick={handleShowFilter}>
+        <Button
+          style={{ minWidth: "25px" }}
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+        >
           <Tooltip title={"Filter Table"}>
             <FilterListIcon sx={{ color: "#515A5A" }} />
           </Tooltip>
@@ -1119,7 +929,7 @@ const OrgLevelTaskList = () => {
                 <Tooltip key={index} title={item.title} placement="bottom">
                   <IconButton
                     className={classes.createTaskBtn}
-                    onClick={item.onClick}
+                    onClick={() => handleToolbarButtonClick(item.key)}
                     style={item.style}
                   >
                     {item.icon}
@@ -1132,10 +942,11 @@ const OrgLevelTaskList = () => {
     );
   };
 
+  //Fixed
   useEffect(() => {
     let option = getOptions(loading);
 
-    option = {
+    const newOptions = {
       ...option,
       selectableRows: roles.filter((role) => role.value === userData?.role)[0]
         ?.showSelectCheckbox
@@ -1147,7 +958,7 @@ const OrgLevelTaskList = () => {
       page: offset,
       rowsSelected: rows,
       rowsPerPage: limit,
-      count: taskList.total_count,
+      count: totalCount,
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
@@ -1165,12 +976,13 @@ const OrgLevelTaskList = () => {
       },
     };
 
-    setOptions(option);
+    setOptions(newOptions);
 
     // eslint-disable-next-line
   }, [loading, rows]);
 
-  const renderSnackBar = () => {
+  //Fixed
+  const renderSnackBar = useCallback(() => {
     return (
       <CustomizedSnackbars
         open={snackbar.open}
@@ -1182,9 +994,11 @@ const OrgLevelTaskList = () => {
         message={snackbar.message}
       />
     );
-  };
+  }, [snackbar]);
 
+  //Fixed
   const handleUpdateTask = async (data) => {
+    const { id: taskId } = currentTaskDetails;
     setLoading(true);
 
     const body = {
@@ -1199,87 +1013,159 @@ const OrgLevelTaskList = () => {
     if (isBulk) {
       userObj = new EditBulkTaskDetailAPI(body);
     } else {
-      userObj = new EditTaskDetailAPI(body, selectedTaskId);
+      userObj = new EditTaskDetailAPI(body, taskId);
     }
 
-    const res = await fetch(userObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(userObj.getBody()),
-      headers: userObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
+    try {
+      const res = await fetch(userObj.apiEndPoint(), {
+        method: "PATCH",
+        body: JSON.stringify(userObj.getBody()),
+        headers: userObj.getHeaders().headers,
       });
-      fetchTaskList();
-      setLoading(false);
-      setOpenEditTaskDialog(false);
-    } else {
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+        fetchTaskList();
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: "Something went wrong!!",
         variant: "error",
       });
+    } finally {
       setLoading(false);
-      setOpenEditTaskDialog(false);
+      handleDialogClose("editTaskDialog");
     }
   };
 
+  //Fixed
   const handleBulkTaskDownload = async () => {
-    setOpen(false);
-    const apiObj = new BulkTaskExportAPI(exportTranslation, selectedBulkTaskid);
+    handleDialogClose("exportDialog");
+    const { translation } = exportTypes;
 
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
+    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
 
-    if (res.ok) {
-      const resp = await res.blob();
-      const newBlob = new Blob([resp], { type: "application/zip" });
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
 
-      const blobUrl = window.URL.createObjectURL(newBlob);
+      if (res.ok) {
+        const resp = await res.blob();
+        const newBlob = new Blob([resp], { type: "application/zip" });
 
-      const link = document.createElement("a");
-      link.href = blobUrl;
+        const blobUrl = window.URL.createObjectURL(newBlob);
 
-      const date = new Date();
-      const YYYYMMDD = date
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("");
+        const link = document.createElement("a");
+        link.href = blobUrl;
 
-      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+        const date = new Date();
+        const YYYYMMDD = date
+          .toLocaleDateString("en-GB")
+          .split("/")
+          .reverse()
+          .join("");
 
-      link.setAttribute(
-        "download",
-        `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`
-      );
+        const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
 
-      document.body.appendChild(link);
+        link.setAttribute(
+          "download",
+          `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`
+        );
 
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
+        document.body.appendChild(link);
 
-      setLoading(false);
-    } else {
-      const resp = await res.json();
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      } else {
+        const resp = await res.json();
 
-      setLoading(false);
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
       setSnackbarInfo({
         open: true,
-        message: resp?.message,
+        message: "Something went wrong!!",
         variant: "error",
       });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  //Fixed
+  const handleExportRadioButtonChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  //Fixed
+  const handleExportSubmitClick = () => {
+    const { task_type: taskType } = currentTaskDetails;
+
+    if (isBulkTaskDownload) {
+      handleBulkTaskDownload();
+    } else {
+      if (taskType?.includes("TRANSCRIPTION")) {
+        handleTranscriptExport();
+      } else if (taskType?.includes("TRANSLATION")) {
+        handleTranslationExport();
+      } else {
+        exportVoiceoverTask();
+      }
+    }
+  };
+
+  //Fixed
+  const handleDeleteSubmit = () => {
+    if (isBulkTaskDelete) {
+      const taskIds = currentSelectedTasks.map((item) => item.id);
+      handleBulkDelete(taskIds, true);
+    } else {
+      handleDeleteTask(currentTaskDetails?.id, true);
+    }
+  };
+
+  //Fixed
+  const handleDialogClose = (key) => {
+    setOpenDialogs((prevState) => ({
+      ...prevState,
+      [key]: false,
+    }));
+  };
+
+  //Fixed
+  const handleDialogOpen = (key) => {
+    setOpenDialogs((prevState) => ({
+      ...prevState,
+      [key]: true,
+    }));
   };
 
   return (
@@ -1287,13 +1173,13 @@ const OrgLevelTaskList = () => {
       <Grid>{renderSnackBar()}</Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={result} columns={columns} options={options} />
+        <MUIDataTable data={tableData} columns={initColumns()} options={options} />
       </ThemeProvider>
 
-      {openViewTaskDialog && (
+      {openDialogs.viewTaskDialog && (
         <ViewTaskDialog
-          open={openViewTaskDialog}
-          handleClose={() => setOpenViewTaskDialog(false)}
+          open={openDialogs.viewTaskDialog}
+          handleClose={() => handleDialogClose("viewTaskDialog")}
           compareHandler={(id, source, isSubmitCall) => {
             dispatch(clearComparisonTable());
             localStorage.setItem("sourceId", id);
@@ -1301,86 +1187,112 @@ const OrgLevelTaskList = () => {
               getTranscriptionSourceComparison(id, source, isSubmitCall);
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
-          // submitHandler={({id, source}) => {
-
-          // }}
-          id={currentTaskDetails[0]}
+          id={currentTaskDetails?.id}
           snackbar={snackbar}
           setSnackbarInfo={setSnackbarInfo}
           fetchTaskList={fetchTaskList}
         />
       )}
 
-      {open && (
+      {openDialogs.exportDialog && (
         <ExportDialog
-          open={open}
-          handleClose={handleClose}
-          taskType={tasktype}
-          handleTranscriptRadioButton={handleClickRadioButton}
-          handleTranslationRadioButton={handleClickRadioButtonTranslation}
-          handleTranscriptExport={handleok}
-          handleTranslationExport={handleokTranslation}
-          exportTranscription={exportTranscription}
-          exportTranslation={exportTranslation}
-          transcriptionOptions={transcriptExportTypes}
-          translationOptions={translationExportTypes}
-          isBulkTaskDownload={isBulkTaskDownload}
-          handleBulkTaskDownload={handleBulkTaskDownload}
+          open={openDialogs.exportDialog}
+          handleClose={() => handleDialogClose("exportDialog")}
+          taskType={currentTaskDetails?.task_type}
+          exportTypes={exportTypes}
+          handleExportSubmitClick={handleExportSubmitClick}
+          handleExportRadioButtonChange={handleExportRadioButtonChange}
         />
       )}
 
-      {openDialog && (
+      {openDialogs.deleteDialog && (
         <DeleteDialog
-          openDialog={openDialog}
-          handleClose={() => handleCloseDialog()}
-          submit={() => {
-            isBulkTaskDelete
-              ? handleBulkDelete(deleteTaskid, true)
-              : handledeletetask(deleteTaskid, true);
-          }}
+          openDialog={openDialogs.deleteDialog}
+          handleClose={() => handleDialogClose("deleteDialog")}
+          submit={() => handleDeleteSubmit()}
           loading={loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
         />
       )}
 
-      {openEditTaskDialog && (
+      {openDialogs.editTaskDialog && (
         <UpdateBulkTaskDialog
-          open={openEditTaskDialog}
-          handleUserDialogClose={() => setOpenEditTaskDialog(false)}
+          open={openDialogs.editTaskDialog}
+          handleUserDialogClose={() => handleDialogClose("editTaskDialog")}
           handleUpdateTask={(data) => handleUpdateTask(data)}
-          currentSelectedTasks={currentSelectedTasks}
-          selectedTaskDetails={selectedTaskDetails}
-          selectedTaskId={selectedTaskId}
+          currentTaskDetails={currentTaskDetails}
           loading={loading}
           isBulk={isBulk}
-          projectId={selectedProjectId}
+          projectId={currentTaskDetails?.project}
         />
       )}
 
-      {openPreviewDialog && (
+      {openDialogs.previewDialog && (
         <PreviewDialog
-          openPreviewDialog={openPreviewDialog}
-          handleClose={() => handleCloseDialog()}
-          data={Previewdata}
-          task_type={task_type}
+          openPreviewDialog={openDialogs.previewDialog}
+          handleClose={() => handleDialogClose("previewDialog")}
+          data={previewData}
+          taskType={currentTaskDetails?.task_type}
         />
       )}
-      {popoverOpen && (
+
+      {Boolean(anchorEl) && (
         <FilterList
-          id={filterId}
-          open={popoverOpen}
+          id={"filterList"}
+          open={Boolean(anchorEl)}
           anchorEl={anchorEl}
-          handleClose={handleClose}
-          updateFilters={setsSelectedFilters}
+          handleClose={() => setAnchorEl(null)}
+          updateFilters={setSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
+          srcLanguageList={srcLanguageList}
+          tgtLanguageList={tgtLanguageList}
         />
       )}
 
-      {searchOpen && (
+      {bulkSubtitleAlert && (
+        <UploadAlertComponent
+          open={bulkSubtitleAlert}
+          onClose={() => setBulkSubtitleAlert(false)}
+          message={bulkSubtitleAlertData.message}
+          report={bulkSubtitleAlertData}
+        />
+      )}
+
+      {openDialogs.uploadDialog && (
+        <UploadFormatDialog
+          open={openDialogs.uploadDialog}
+          handleClose={() => handleDialogClose("uploadDialog")}
+          uploadExportType={uploadExportType}
+          setUploadExportType={setUploadExportType}
+          handleSubtitleUpload={() =>
+            handleUploadSubtitle(
+              currentTaskDetails?.id,
+              uploadTaskRowIndex,
+              uploadExportType
+            )
+          }
+        />
+      )}
+
+      {openDialogs.speakerInfoDialog && (
+        <SpeakerInfoDialog
+          open={openDialogs.speakerInfoDialog}
+          handleClose={() => handleDialogClose("speakerInfoDialog")}
+          taskId={currentTaskDetails?.id}
+          handleContinueEdit={() =>
+            generateTranslationCall(
+              currentTaskDetails?.id,
+              currentTaskDetails?.status
+            )
+          }
+        />
+      )}
+
+      {Boolean(searchAnchor) && (
         <TableSearchPopover
-          open={searchOpen}
+          open={Boolean(searchAnchor)}
           anchorEl={searchAnchor}
           handleClose={() => setSearchAnchor(null)}
           updateFilters={setSearchedColumn}

@@ -1,3 +1,16 @@
+import React, { Fragment, useEffect, useState } from "react";
+import moment from "moment";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import {
+  colorArray,
+  defaultTaskHandler,
+  diableTargetLang,
+  getDisableOption,
+  MenuProps,
+} from "utils";
+
 import {
   Button,
   Card,
@@ -14,31 +27,24 @@ import {
   Tooltip,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import moment from "moment";
-import React, { Fragment, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import CustomizedSnackbars from "../../../common/Snackbar";
-import Loader from "../../../common/Spinner";
-import EditProjectDetailsAPI from "../../../redux/actions/api/Project/EditProjectDetails";
-import FetchBulkTaskTypeAPI from "../../../redux/actions/api/Project/FetchBulkTaskTypes";
-import FetchPriorityTypesAPI from "../../../redux/actions/api/Project/FetchPriorityTypes";
-import FetchProjectDetailsAPI from "../../../redux/actions/api/Project/FetchProjectDetails";
-import FetchSupportedLanguagesAPI from "../../../redux/actions/api/Project/FetchSupportedLanguages";
-import FetchTranscriptTypesAPI from "../../../redux/actions/api/Project/FetchTranscriptTypes";
-import FetchTranslationTypesAPI from "../../../redux/actions/api/Project/FetchTranslationTypes";
-import APITransport from "../../../redux/actions/apitransport/apitransport";
-import ProjectStyle from "../../../styles/projectStyle";
-import {
-  defaultTaskHandler,
-  diableTargetLang,
-  getDisableOption,
-  MenuProps,
-} from "../../../utils/utils";
-import { colorArray } from "../../../utils/getColors";
-import StoreAccessTokenAPI from "../../../redux/actions/api/Project/StoreAccessToken";
-import { useGoogleLogin } from "@react-oauth/google";
+import { CustomizedSnackbars, Loader } from "common";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+
+//Styles
+import { ProjectStyle } from "styles";
+
+//APIs
+import {
+  APITransport,
+  EditProjectDetailsAPI,
+  FetchBulkTaskTypeAPI,
+  FetchPriorityTypesAPI,
+  FetchProjectDetailsAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTranscriptTypesAPI,
+  FetchTranslationTypesAPI,
+  StoreAccessTokenAPI,
+} from "redux/actions";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
@@ -291,7 +297,11 @@ const EditProject = () => {
         The supported languages for 'Voice Over' task might be different than
         the supported languages for Translation Tasks. Please make the choice
         accordingly.{" "}
-        <a href="https://github.com/AI4Bharat/Chitralekha/wiki" target="blank" rel="noreferer">
+        <a
+          href="https://github.com/AI4Bharat/Chitralekha/wiki"
+          target="blank"
+          rel="noreferer"
+        >
           Click here
         </a>{" "}
         to see all the supported languages.

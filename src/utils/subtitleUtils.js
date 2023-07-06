@@ -99,6 +99,7 @@ export const addSubtitleBox = (index) => {
           ? copySub[index + 1].start_time
           : DT.d2t(duration + 0.5),
       text: "SUB_TEXT",
+      speaker_id: "",
       target_text: "SUB_TEXT",
     })
   );
@@ -124,6 +125,7 @@ export const onMerge = (index) => {
       target_text: `${existingsourceData[index].target_text} ${
         existingsourceData[index + 1].target_text
       }`,
+      speaker_id: "",
     })
   );
 
@@ -193,6 +195,7 @@ export const onSplit = (
       end_time: middleTime ?? timings[0].end,
       text: text1,
       ...(targetSelectionStart && { target_text: targetText1 }),
+      speaker_id: "",
     })
   );
 
@@ -207,6 +210,7 @@ export const onSplit = (
           : timings[1].end,
       text: text2,
       ...(targetSelectionStart && { target_text: targetText2 }),
+      speaker_id: "",
     })
   );
 
@@ -447,4 +451,12 @@ export const getItemForDelete = (index) => {
   const data = subtitles[index];
 
   return data;
+};
+
+export const assignSpeakerId = (id, index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  copySub[index].speaker_id = id;
+
+  return copySub;
 };
