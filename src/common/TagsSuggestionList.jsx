@@ -22,13 +22,14 @@ const TagsSuggestionList = ({
   filteredSuggestionByInput,
   setTagSuggestionsAnchorEl,
   textWithoutBackslash,
+  textAfterBackSlash,
   saveTranscriptHandler,
 }) => {
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
 
   const handleTagClick = (suggestion) => {
-    const modifiedText = `${textWithoutBackslash}[${suggestion}]`;
+    const modifiedText = `${textWithoutBackslash}[${suggestion}] ${textAfterBackSlash}`;
 
     const sub = onSubtitleChange(modifiedText, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));

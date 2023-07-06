@@ -102,6 +102,7 @@ const RightPanel = ({ currentIndex }) => {
   const [tagSuggestionsAnchorEl, setTagSuggestionsAnchorEl] = useState(null);
   const [tagSuggestionList, setTagSuggestionList] = useState([]);
   const [textWithoutBackSlash, setTextWithoutBackSlash] = useState("");
+  const [textAfterBackSlash, setTextAfterBackSlash] = useState("");
 
   useEffect(() => {
     if (videoDetails.hasOwnProperty("video")) {
@@ -206,19 +207,29 @@ const RightPanel = ({ currentIndex }) => {
       } = event;
 
       const containsBackslash = value.includes("\\");
-      const textWithoutlash = value.split("\\")[0];
-      const currentTargetWord = value.split("\\")[1];
 
       if (containsBackslash) {
+        const textBeforeSlash = value.split("\\")[0];
+        const currentTargetWord = value.split("\\")[1].split(" ")[0];
+        const textAfterSlash = value
+          .split("\\")[1]
+          .split(" ")
+          .slice(1)
+          .join(" ");
+
         let filteredSuggestionByInput = tagsSuggestionData.filter((el) => {
           return el.toLowerCase().includes(currentTargetWord.toLowerCase());
         });
 
+        setCurrentSelectedIndex(index);
+        setTagSuggestionsAnchorEl(currentTarget);
+        setTextWithoutBackSlash(textBeforeSlash);
+        setTextAfterBackSlash(textAfterSlash);
+
         if (filteredSuggestionByInput.length) {
-          setCurrentSelectedIndex(index);
-          setTagSuggestionsAnchorEl(currentTarget);
-          setTextWithoutBackSlash(textWithoutlash);
           setTagSuggestionList(filteredSuggestionByInput);
+        } else {
+          setTagSuggestionList(tagsSuggestionData);
         }
       }
 
@@ -624,6 +635,7 @@ const RightPanel = ({ currentIndex }) => {
             filteredSuggestionByInput={tagSuggestionList}
             setTagSuggestionsAnchorEl={setTagSuggestionsAnchorEl}
             textWithoutBackslash={textWithoutBackSlash}
+            textAfterBackSlash={textAfterBackSlash}
             saveTranscriptHandler={saveTranscriptHandler}
           />
         )}
