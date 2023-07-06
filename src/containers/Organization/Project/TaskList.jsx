@@ -341,7 +341,7 @@ const TaskList = () => {
       } else {
         setSnackbarInfo({
           open: true,
-          message: resp?.message,
+          message: "Something went wrong!!",
           variant: "error",
         });
       }
@@ -409,7 +409,7 @@ const TaskList = () => {
       } else {
         setSnackbarInfo({
           open: true,
-          message: resp?.message,
+          message: "There is no speaker info in this translation.",
           variant: "error",
         });
       }
