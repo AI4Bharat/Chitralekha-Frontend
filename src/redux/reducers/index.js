@@ -46,6 +46,7 @@ import getVoiceoverExportTypes from "./Project/FetchVoiceoverExportTypes";
 import getOrgTaskList from "./Organization/FetchOrgTaskList";
 import getTaskQueueStatus from "./Organization/FetchTaskQueueStatus";
 import getSpeakerInfo from "./Project/FetchSpeakerInfo";
+import getSupportedBulkTaskTypes from "./Project/FetchSupportedBulkTaskTypes";
 
 const rootReducer = {
     apiStatus,
@@ -96,6 +97,7 @@ const rootReducer = {
     getTaskQueueStatus,
     getSpeakerInfo,
     getVoiceoverExportTypes,
+    getSupportedBulkTaskTypes,
 };
 
 export default rootReducer;

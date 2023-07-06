@@ -262,6 +262,8 @@ const TaskList = () => {
         message: "Something went wrong!!",
         variant: "error",
       });
+    } finally {
+      handleDialogClose("exportDialog");
     }
   };
 
@@ -393,9 +395,11 @@ const TaskList = () => {
           .join("");
         const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
 
+        const format = translation === "docx-bilingual" ? "docx" : translation;
+
         link.setAttribute(
           "download",
-          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${translation}`
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${format}`
         );
         document.body.appendChild(link);
         link.click();

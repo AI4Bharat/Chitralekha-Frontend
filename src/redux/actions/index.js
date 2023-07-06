@@ -78,6 +78,7 @@ import UpdateTimeSpentPerTask from "./api/Project/UpdateTimeSpentPerTask";
 import UpdateVideoAPI from "./api/Project/UpdateVideo";
 import UploadCSVAPI from "./api/Project/UploadCSV";
 import UploadToYoutubeAPI from "./api/Project/UploadToYoutube";
+import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskTypes";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -220,4 +221,5 @@ export {
   setRangeEnd,
   APITransport,
   FetchVoiceoverExportTypesAPI,
+  FetchSupportedBulkTaskTypeAPI,
 };

@@ -121,7 +121,7 @@ const ExportDialog = ({
             <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
               Speaker Tagging
             </DialogContentText>
-            <DialogActions sx={{ mb: 1, mt: 1 }}>
+            <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
               <FormControl>
                 <RadioGroup row>
                   {speakerInfoOptions?.map((item, index) => (
