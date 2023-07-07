@@ -1125,7 +1125,7 @@ const TaskList = () => {
           setUploadExportType={setUploadExportType}
           handleSubtitleUpload={() =>
             handleUploadSubtitle(
-              currentTaskDetails?.id,
+              [currentTaskDetails?.id],
               uploadTaskRowIndex,
               uploadExportType
             )
