@@ -2,22 +2,7 @@ import Sub from "./Sub";
 import { getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
-import {
-  assameseTagsSuggestionData,
-  bengaliTagsSuggestionData,
-  bodoTagsSuggestionData,
-  englishTagsSuggestionData,
-  hindiTagsSuggestionData,
-  kannadaTagsSuggestionData,
-  malayalamTagsSuggestionData,
-  marathiTagsSuggestionData,
-  odiaTagsSuggestionData,
-  sanskritTagsSuggestionData,
-  santaliTagsSuggestionData,
-  sindhiTagsSuggestionData,
-  tamilTagsSuggestionData,
-  teluguTagsSuggestionData,
-} from "config";
+import { noiseTags } from "config";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -480,33 +465,33 @@ export const assignSpeakerId = (id, index) => {
 export const getTagsList = (sourceLang) => {
   switch (sourceLang) {
     case "Hindi":
-      return hindiTagsSuggestionData;
+      return noiseTags.hindi;
     case "Malayalam":
-      return malayalamTagsSuggestionData;
+      return noiseTags.malayalam;
     case "Bengali":
-      return bengaliTagsSuggestionData;
+      return noiseTags.bengali;
     case "Sanskrit":
-      return sanskritTagsSuggestionData;
+      return noiseTags.sanskrit;
     case "Marathi":
-      return marathiTagsSuggestionData;
+      return noiseTags.marathi;
     case "Kannada":
-      return kannadaTagsSuggestionData;
+      return noiseTags.kannada;
     case "Telugu":
-      return teluguTagsSuggestionData;
+      return noiseTags.telugu;
     case "Sindhi":
-      return sindhiTagsSuggestionData;
+      return noiseTags.sindhi;
     case "Bodo":
-      return bodoTagsSuggestionData;
+      return noiseTags.bodo;
     case "Assamese":
-      return assameseTagsSuggestionData;
+      return noiseTags.assamese;
     case "Tamil":
-      return tamilTagsSuggestionData;
+      return noiseTags.tamil;
     case "Santali":
-      return santaliTagsSuggestionData;
+      return noiseTags.santali;
     case "Odia":
-      return odiaTagsSuggestionData;
+      return noiseTags.odia;
     case "English":
-      return englishTagsSuggestionData;
+      return noiseTags.english;
     default:
       return [];
   }

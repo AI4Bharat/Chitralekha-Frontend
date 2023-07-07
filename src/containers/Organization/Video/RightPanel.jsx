@@ -199,50 +199,42 @@ const RightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
-  const changeTranscriptHandler = useCallback(
-    (event, index) => {
-      const {
-        target: { value },
-        currentTarget,
-      } = event;
+  const changeTranscriptHandler = (event, index) => {
+    const {
+      target: { value },
+      currentTarget,
+    } = event;
+    const containsBackslash = value.includes("\\");
 
-      const containsBackslash = value.includes("\\");
+    if (containsBackslash) {
+      const textBeforeSlash = value.split("\\")[0];
+      const currentTargetWord = value.split("\\")[1].split(" ")[0];
+      const textAfterSlash = value.split("\\")[1].split(" ").slice(1).join(" ");
 
-      if (containsBackslash) {
-        const textBeforeSlash = value.split("\\")[0];
-        const currentTargetWord = value.split("\\")[1].split(" ")[0];
-        const textAfterSlash = value
-          .split("\\")[1]
-          .split(" ")
-          .slice(1)
-          .join(" ");
+      const tags = getTagsList(videoDetails?.video?.language_label);
 
-        let filteredSuggestionByInput = getTagsList(
-          videoDetails?.video?.language_label
-        ).filter((el) => {
-          return el.toLowerCase().includes(currentTargetWord.toLowerCase());
-        });
+      const filteredSuggestionByInput = Object.entries(tags).filter(([tag]) => {
+        return tag.toLowerCase().includes(currentTargetWord.toLowerCase());
+      });
 
-        setCurrentSelectedIndex(index);
-        setTagSuggestionsAnchorEl(currentTarget);
-        setTextWithoutBackSlash(textBeforeSlash);
-        setTextAfterBackSlash(textAfterSlash);
+      const filteredSuggestions = Object.fromEntries(filteredSuggestionByInput);
 
-        if (filteredSuggestionByInput.length) {
-          setTagSuggestionList(filteredSuggestionByInput);
-        } else {
-          setTagSuggestionList([]);
-        }
+      setCurrentSelectedIndex(index);
+      setTagSuggestionsAnchorEl(currentTarget);
+      setTextWithoutBackSlash(textBeforeSlash);
+      setTextAfterBackSlash(textAfterSlash);
+
+      if (Object.keys(filteredSuggestions).length) {
+        setTagSuggestionList(filteredSuggestions);
+      } else {
+        setTagSuggestionList([]);
       }
+    }
 
-      const sub = onSubtitleChange(value, index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, false, sub);
-    },
-
-    // eslint-disable-next-line
-    [limit, currentOffset]
-  );
+    const sub = onSubtitleChange(value, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
+  };
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -500,6 +492,7 @@ const RightPanel = ({ currentIndex }) => {
                       onChange={(event) => {
                         changeTranscriptHandler(event, index);
                       }}
+                      onChangeText={() => {}}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
                       onBlur={() =>

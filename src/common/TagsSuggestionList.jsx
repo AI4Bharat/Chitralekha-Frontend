@@ -73,17 +73,15 @@ const TagsSuggestionList = ({
         </Grid>
 
         <Grid maxHeight={250}>
-          {filteredSuggestionByInput?.map((suggestion) => {
-            return (
-              <Typography
-                onClick={() => handleTagClick(suggestion)}
-                variant="body2"
-                className={classes.suggestionListTypography}
-              >
-                {suggestion}
-              </Typography>
-            );
-          })}
+          {Object.entries(filteredSuggestionByInput).map(([key, value]) => (
+            <Typography
+              onClick={() => handleTagClick(value)}
+              variant="body2"
+              className={classes.suggestionListTypography}
+            >
+              {key}
+            </Typography>
+          ))}
         </Grid>
       </Grid>
     </Popover>

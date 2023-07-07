@@ -20,6 +20,7 @@ import {
   kannadaTagsSuggestionData,
   malayalamTagsSuggestionData,
   marathiTagsSuggestionData,
+  noiseTags,
   odiaTagsSuggestionData,
   sanskritTagsSuggestionData,
   santaliTagsSuggestionData,
@@ -97,4 +98,5 @@ export {
   sindhiTagsSuggestionData,
   tamilTagsSuggestionData,
   teluguTagsSuggestionData,
+  noiseTags,
 };
