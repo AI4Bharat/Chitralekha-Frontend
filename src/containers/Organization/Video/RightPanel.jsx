@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState, useRef, memo } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { tagsSuggestionData } from "config/projectConfigs";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -18,6 +17,7 @@ import {
   getItemForDelete,
   MenuProps,
   assignSpeakerId,
+  getTagsList,
 } from "utils";
 
 //Styles
@@ -217,7 +217,9 @@ const RightPanel = ({ currentIndex }) => {
           .slice(1)
           .join(" ");
 
-        let filteredSuggestionByInput = tagsSuggestionData.filter((el) => {
+        let filteredSuggestionByInput = getTagsList(
+          videoDetails?.video?.language_label
+        ).filter((el) => {
           return el.toLowerCase().includes(currentTargetWord.toLowerCase());
         });
 
@@ -229,7 +231,7 @@ const RightPanel = ({ currentIndex }) => {
         if (filteredSuggestionByInput.length) {
           setTagSuggestionList(filteredSuggestionByInput);
         } else {
-          setTagSuggestionList(tagsSuggestionData);
+          setTagSuggestionList([]);
         }
       }
 

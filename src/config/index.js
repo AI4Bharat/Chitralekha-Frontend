@@ -11,6 +11,22 @@ import {
   workflowInnerList,
 } from "./helpOptions";
 import { translate } from "./localisation";
+import {
+  assameseTagsSuggestionData,
+  bengaliTagsSuggestionData,
+  bodoTagsSuggestionData,
+  englishTagsSuggestionData,
+  hindiTagsSuggestionData,
+  kannadaTagsSuggestionData,
+  malayalamTagsSuggestionData,
+  marathiTagsSuggestionData,
+  odiaTagsSuggestionData,
+  sanskritTagsSuggestionData,
+  santaliTagsSuggestionData,
+  sindhiTagsSuggestionData,
+  tamilTagsSuggestionData,
+  teluguTagsSuggestionData,
+} from "./noiseTags";
 import { profileOptions } from "./profileConfigs";
 import {
   buttonConfig,
@@ -67,4 +83,18 @@ export {
   buttonConfig,
   toolBarActions,
   orgTaskListColumns,
+  assameseTagsSuggestionData,
+  bengaliTagsSuggestionData,
+  bodoTagsSuggestionData,
+  englishTagsSuggestionData,
+  hindiTagsSuggestionData,
+  kannadaTagsSuggestionData,
+  malayalamTagsSuggestionData,
+  marathiTagsSuggestionData,
+  odiaTagsSuggestionData,
+  sanskritTagsSuggestionData,
+  santaliTagsSuggestionData,
+  sindhiTagsSuggestionData,
+  tamilTagsSuggestionData,
+  teluguTagsSuggestionData,
 };

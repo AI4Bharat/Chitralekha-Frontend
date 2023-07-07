@@ -2,6 +2,22 @@ import Sub from "./Sub";
 import { getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
+import {
+  assameseTagsSuggestionData,
+  bengaliTagsSuggestionData,
+  bodoTagsSuggestionData,
+  englishTagsSuggestionData,
+  hindiTagsSuggestionData,
+  kannadaTagsSuggestionData,
+  malayalamTagsSuggestionData,
+  marathiTagsSuggestionData,
+  odiaTagsSuggestionData,
+  sanskritTagsSuggestionData,
+  santaliTagsSuggestionData,
+  sindhiTagsSuggestionData,
+  tamilTagsSuggestionData,
+  teluguTagsSuggestionData,
+} from "config";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -459,4 +475,39 @@ export const assignSpeakerId = (id, index) => {
   copySub[index].speaker_id = id;
 
   return copySub;
+};
+
+export const getTagsList = (sourceLang) => {
+  switch (sourceLang) {
+    case "Hindi":
+      return hindiTagsSuggestionData;
+    case "Malayalam":
+      return malayalamTagsSuggestionData;
+    case "Bengali":
+      return bengaliTagsSuggestionData;
+    case "Sanskrit":
+      return sanskritTagsSuggestionData;
+    case "Marathi":
+      return marathiTagsSuggestionData;
+    case "Kannada":
+      return kannadaTagsSuggestionData;
+    case "Telugu":
+      return teluguTagsSuggestionData;
+    case "Sindhi":
+      return sindhiTagsSuggestionData;
+    case "Bodo":
+      return bodoTagsSuggestionData;
+    case "Assamese":
+      return assameseTagsSuggestionData;
+    case "Tamil":
+      return tamilTagsSuggestionData;
+    case "Santali":
+      return santaliTagsSuggestionData;
+    case "Odia":
+      return odiaTagsSuggestionData;
+    case "English":
+      return englishTagsSuggestionData;
+    default:
+      return [];
+  }
 };
