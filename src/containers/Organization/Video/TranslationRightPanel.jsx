@@ -13,6 +13,7 @@ import {
   getItemForDelete,
   getSelectionStart,
   getTargetSelectionStart,
+  reGenerateTranslation,
 } from "utils";
 
 //Styles
@@ -180,7 +181,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const saveTranscriptHandler = async (
     isFinal,
     isAutosave,
-    subs = sourceText
+    subs = sourceText,
+    isRegenerate = false
   ) => {
     const reqBody = {
       task_id: taskId,
@@ -214,6 +216,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+
+      if (isRegenerate) {
+        getPayload();
+      }
 
       if (isFinal) {
         setTimeout(() => {
@@ -326,6 +332,17 @@ const TranslationRightPanel = ({ currentIndex }) => {
     getPayload(value, limit);
   };
 
+  const handleReGenerateTranslation = useCallback((index) => {
+    const regenerate = true;
+
+    const sub = reGenerateTranslation(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+    saveTranscriptHandler(false, false, sub, regenerate);
+
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <>
       {renderSnackBar()}
@@ -388,6 +405,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     onMergeClick={onMergeClick}
                     onDelete={onDelete}
                     addNewSubtitleBox={addNewSubtitleBox}
+                    handleReGenerateTranslation={handleReGenerateTranslation}
                   />
 
                   <TimeBoxes

@@ -460,3 +460,11 @@ export const assignSpeakerId = (id, index) => {
 
   return copySub;
 };
+
+export const reGenerateTranslation = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  copySub[index].retranslate = true;
+
+  return copySub;
+};
