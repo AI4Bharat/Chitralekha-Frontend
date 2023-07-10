@@ -103,6 +103,8 @@ const RightPanel = ({ currentIndex }) => {
   const [tagSuggestionList, setTagSuggestionList] = useState([]);
   const [textWithoutBackSlash, setTextWithoutBackSlash] = useState("");
   const [textAfterBackSlash, setTextAfterBackSlash] = useState("");
+  const [enableTransliterationSuggestion, setEnableTransliterationSuggestion] =
+    useState(true);
 
   useEffect(() => {
     if (videoDetails.hasOwnProperty("video")) {
@@ -206,7 +208,11 @@ const RightPanel = ({ currentIndex }) => {
     } = event;
     const containsBackslash = value.includes("\\");
 
+    setEnableTransliterationSuggestion(true);
+
     if (containsBackslash) {
+      setEnableTransliterationSuggestion(false);
+
       const textBeforeSlash = value.split("\\")[0];
       const currentTargetWord = value.split("\\")[1].split(" ")[0];
       const textAfterSlash = value.split("\\")[1].split(" ").slice(1).join(" ");
@@ -492,6 +498,7 @@ const RightPanel = ({ currentIndex }) => {
                       onChange={(event) => {
                         changeTranscriptHandler(event, index);
                       }}
+                      enabled={enableTransliterationSuggestion}
                       onChangeText={() => {}}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
@@ -632,6 +639,9 @@ const RightPanel = ({ currentIndex }) => {
             textWithoutBackslash={textWithoutBackSlash}
             textAfterBackSlash={textAfterBackSlash}
             saveTranscriptHandler={saveTranscriptHandler}
+            setEnableTransliterationSuggestion={
+              setEnableTransliterationSuggestion
+            }
           />
         )}
       </Box>

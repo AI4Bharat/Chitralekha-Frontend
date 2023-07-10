@@ -24,6 +24,7 @@ const TagsSuggestionList = ({
   textWithoutBackslash,
   textAfterBackSlash,
   saveTranscriptHandler,
+  setEnableTransliterationSuggestion,
 }) => {
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
@@ -35,6 +36,7 @@ const TagsSuggestionList = ({
     dispatch(setSubtitles(sub, C.SUBTITLES));
     saveTranscriptHandler(false, false, sub);
 
+    setEnableTransliterationSuggestion(true);
     setTagSuggestionsAnchorEl(null);
   };
 
