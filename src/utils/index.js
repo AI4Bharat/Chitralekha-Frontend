@@ -28,6 +28,7 @@ import {
   onUndoAction,
   placementMenu,
   playbackSpeed,
+  reGenerateTranslation,
   setAudioContent,
   themeMenu,
   timeChange,
@@ -114,4 +115,5 @@ export {
   speakerInfoOptions,
   snakeToTitleCase,
   steps,
+  reGenerateTranslation,
 };

@@ -8,7 +8,7 @@ import { VideoLandingStyle } from "styles";
 import { IconButton, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
 import StopIcon from "@mui/icons-material/Stop";
@@ -17,6 +17,7 @@ import LyricsIcon from "@mui/icons-material/Lyrics";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import LoopIcon from "@mui/icons-material/Loop";
 
 const ButtonComponent = ({
   index,
@@ -34,6 +35,7 @@ const ButtonComponent = ({
   durationError,
   handleFileUpload,
   isDisabled,
+  handleReGenerateTranslation,
 }) => {
   const classes = VideoLandingStyle();
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -76,6 +78,17 @@ const ButtonComponent = ({
             onClick={() => addNewSubtitleBox(index)}
           >
             <AddIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {taskData.task_type.includes("TRANSLATION") && (
+        <Tooltip title="Regenerate Translation" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={() => handleReGenerateTranslation(index)}
+          >
+            <LoopIcon />
           </IconButton>
         </Tooltip>
       )}
