@@ -3,11 +3,24 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchTaskListAPI extends API {
-  constructor(id, timeout = 2000) {
+  constructor(id, offset, limit, search, filter, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_TASK_LIST;
+
     this.id = id;
-    this.getTargetEndpoint = `${ENDPOINTS.project}${this.id}/list_project_tasks/`
+    this.offset = offset;
+    this.limit = limit;
+    this.search = search;
+    this.filter = filter;
+
+    this.getTargetEndpoint = `${
+      ENDPOINTS.project
+    }${id}/list_project_tasks/?limit=${this.limit}&offset=${
+      this.offset
+    }&filter=${JSON.stringify(this.filter)}&search=${JSON.stringify(
+      this.search
+    )}`;
+
     this.endpoint = `${super.apiEndPointAuto()}${this.getTargetEndpoint}`;
   }
 

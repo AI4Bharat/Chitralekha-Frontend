@@ -10,6 +10,7 @@ import {
   roles,
 } from "utils";
 import { buttonConfig, taskListColumns, toolBarActions } from "config";
+import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
 import { tableTheme } from "theme";
@@ -33,6 +34,7 @@ import {
   FilterList,
   PreviewDialog,
   SpeakerInfoDialog,
+  TableSearchPopover,
   UpdateBulkTaskDialog,
   UploadAlertComponent,
   UploadFormatDialog,
@@ -41,6 +43,7 @@ import {
 
 //Icons
 import FilterListIcon from "@mui/icons-material/FilterList";
+import SearchIcon from "@mui/icons-material/Search";
 
 //APIs
 import {
@@ -135,8 +138,17 @@ const TaskList = () => {
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
 
+  //Server Side Pagination States
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [searchAnchor, setSearchAnchor] = useState(null);
+  const [searchedCol, setSearchedCol] = useState({});
+  const [searchedColumn, setSearchedColumn] = useState({});
+  const [columnDisplay, setColumnDisplay] = useState(false);
+
   //Data from Redux
   const {
+    total_count: totalCount,
     tasks_list: taskList,
     src_languages_list: sourceLanguagesList,
     target_languages_list: targetlanguagesList,
@@ -144,7 +156,42 @@ const TaskList = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const fetchTaskList = () => {
-    const apiObj = new FetchTaskListAPI(projectId);
+    setLoading(true);
+
+    const search = {
+      video_name: searchedColumn?.video_name,
+      description: searchedColumn?.description,
+      assignee: searchedColumn?.username,
+    };
+
+    const filter = {
+      task_type: selectedFilters?.taskType,
+      status: selectedFilters?.status,
+      src_language: selectedFilters?.srcLanguage,
+      target_language: selectedFilters?.tgtLanguage,
+    };
+
+    const searchRequest = Object.entries(search).reduce((acc, [key, value]) => {
+      if (value) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    const filterRequest = Object.entries(filter).reduce((acc, [key, value]) => {
+      if (value.length > 0) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    const apiObj = new FetchTaskListAPI(
+      projectId,
+      offset + 1,
+      limit,
+      searchRequest,
+      filterRequest
+    );
     dispatch(APITransport(apiObj));
   };
 
@@ -161,13 +208,17 @@ const TaskList = () => {
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
 
-    fetchTaskList();
-
     return () => {
       dispatch({ type: constants.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    fetchTaskList();
+
+    // eslint-disable-next-line
+  }, [offset, limit, searchedColumn, selectedFilters]);
 
   useEffect(() => {
     if (taskList) {
@@ -188,12 +239,27 @@ const TaskList = () => {
         ? "multiple"
         : "none",
       search: true,
+      serverSide: true,
+      page: offset,
+      rowsSelected: rows,
+      rowsPerPage: limit,
+      count: totalCount,
       jumpToPage: true,
       selectToolbarPlacement: "none",
-      rowsSelected: rows,
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
+      },
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case "changePage":
+            setOffset(tableState.page);
+            break;
+          case "changeRowsPerPage":
+            setLimit(tableState.rowsPerPage);
+            break;
+          default:
+        }
       },
     };
 
@@ -638,6 +704,34 @@ const TaskList = () => {
     setUploadTaskRowIndex(rowIndex);
   };
 
+  const handleShowSearch = (col, event) => {
+    setSearchAnchor(event.currentTarget);
+    setSearchedCol({
+      label: col.label,
+      name: col.name,
+    });
+
+    if (col.name === "description") {
+      setColumnDisplay(true);
+    }
+  };
+
+  const CustomTableHeader = (col) => {
+    return (
+      <>
+        <Box className={tableClasses.customTableHeader}>
+          {col.label}
+          <IconButton
+            sx={{ borderRadius: "100%" }}
+            onClick={(e) => handleShowSearch(col, e)}
+          >
+            <SearchIcon id={col.name + "_btn"} />
+          </IconButton>
+        </Box>
+      </>
+    );
+  };
+
   const handleActionButtonClick = (tableMeta, action) => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
@@ -695,53 +789,115 @@ const TaskList = () => {
     }
   };
 
-  const actionColumn = {
-    name: "Action",
-    label: "Actions",
-    options: {
-      filter: false,
-      sort: false,
-      align: "center",
-      setCellHeaderProps: () => ({
-        className: tableClasses.cellHeaderProps,
-      }),
-      customBodyRender: (_value, tableMeta) => {
-        const { tableData: data, rowIndex } = tableMeta;
-        const selectedTask = data[rowIndex];
-
-        return (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          >
-            {buttonConfig.map((item) => {
-              return (
-                <Tooltip key={item.key} title={item.title}>
-                  <IconButton
-                    onClick={() => handleActionButtonClick(tableMeta, item.key)}
-                    color={item.color}
-                    sx={{
-                      display: selectedTask.buttons?.[item.key] ? "" : "none",
-                    }}
-                    disabled={
-                      item.key === "Edit" ? !selectedTask.is_active : false
-                    }
-                  >
-                    {item.icon}
-                  </IconButton>
-                </Tooltip>
-              );
-            })}
-          </Box>
-        );
+  const initColumns = () => {
+    const videoName = {
+      name: "video_name",
+      label: "Video Name",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: renderTaskListColumnCell,
       },
-    },
-  };
+    };
 
-  const columns = [...getColumns(taskListColumns), actionColumn];
+    const assigneeColumn = {
+      name: "user",
+      label: "Assignee",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+
+          return (
+            <Box
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+              {value.first_name} {value.last_name}
+            </Box>
+          );
+        },
+      },
+    };
+
+    const descriptionColumn = {
+      name: "description",
+      label: "Description",
+      options: {
+        filter: false,
+        sort: false,
+        display: columnDisplay,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: renderTaskListColumnCell,
+      },
+    };
+
+    const actionColumn = {
+      name: "Action",
+      label: "Actions",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: (_value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              {buttonConfig.map((item) => {
+                return (
+                  <Tooltip key={item.key} title={item.title}>
+                    <IconButton
+                      onClick={() =>
+                        handleActionButtonClick(tableMeta, item.key)
+                      }
+                      color={item.color}
+                      sx={{
+                        display: selectedTask.buttons?.[item.key] ? "" : "none",
+                      }}
+                      disabled={
+                        item.key === "Edit" ? !selectedTask.is_active : false
+                      }
+                    >
+                      {item.icon}
+                    </IconButton>
+                  </Tooltip>
+                );
+              })}
+            </Box>
+          );
+        },
+      },
+    };
+
+    const columns = [...getColumns(taskListColumns), actionColumn];
+    columns.splice(2, 0, videoName);
+    columns.splice(7, 0, assigneeColumn);
+    columns.splice(10, 0, descriptionColumn);
+
+    return columns;
+  };
 
   const handleRowClick = (_currentRow, allRow) => {
     const temp = tableData?.filter((_item, index) => {
@@ -1034,7 +1190,11 @@ const TaskList = () => {
       <Grid>{renderSnackBar()}</Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={tableData} columns={columns} options={options} />
+        <MUIDataTable
+          data={tableData}
+          columns={initColumns()}
+          options={options}
+        />
       </ThemeProvider>
 
       {openDialogs.viewTaskDialog && (
@@ -1148,6 +1308,17 @@ const TaskList = () => {
               currentTaskDetails?.status
             )
           }
+        />
+      )}
+
+      {Boolean(searchAnchor) && (
+        <TableSearchPopover
+          open={Boolean(searchAnchor)}
+          anchorEl={searchAnchor}
+          handleClose={() => setSearchAnchor(null)}
+          updateFilters={setSearchedColumn}
+          currentFilters={searchedColumn}
+          searchedCol={searchedCol}
         />
       )}
     </>
