@@ -316,14 +316,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }, [undoStack, redoStack]);
 
   const sourceLength = (index) => {
-    if (sourceText[index]?.text.trim() !== "")
-      return sourceText[index]?.text.trim().split(" ").length;
+    if (sourceText[index]?.text?.trim() !== "")
+      return sourceText[index]?.text?.trim().split(" ").length;
     return 0;
   };
 
   const targetLength = (index) => {
-    if (sourceText[index]?.target_text.trim() !== "")
-      return sourceText[index]?.target_text.trim().split(" ").length;
+    if (sourceText[index]?.target_text?.trim() !== "")
+      return sourceText[index]?.target_text?.trim().split(" ").length;
     return 0;
   };
 
