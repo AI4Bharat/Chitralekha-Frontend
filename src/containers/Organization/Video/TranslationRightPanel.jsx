@@ -83,8 +83,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }, [currentPage]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
-    console.log(offset, "test", currentOffset, "test", lim, "test", limit);
-
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
