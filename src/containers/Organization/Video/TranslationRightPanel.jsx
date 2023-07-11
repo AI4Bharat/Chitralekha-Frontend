@@ -13,6 +13,7 @@ import {
   getItemForDelete,
   getSelectionStart,
   getTargetSelectionStart,
+  reGenerateTranslation,
 } from "utils";
 
 //Styles
@@ -180,7 +181,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const saveTranscriptHandler = async (
     isFinal,
     isAutosave,
-    subs = sourceText
+    subs = sourceText,
+    isRegenerate = false
   ) => {
     const reqBody = {
       task_id: taskId,
@@ -214,6 +216,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
           : "Translation Submitted Successfully",
         variant: "success",
       });
+
+      if (isRegenerate) {
+        getPayload(currentPage, limit);
+      }
 
       if (isFinal) {
         setTimeout(() => {
@@ -310,14 +316,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }, [undoStack, redoStack]);
 
   const sourceLength = (index) => {
-    if (sourceText[index]?.text.trim() !== "")
-      return sourceText[index]?.text.trim().split(" ").length;
+    if (sourceText[index]?.text?.trim() !== "")
+      return sourceText[index]?.text?.trim().split(" ").length;
     return 0;
   };
 
   const targetLength = (index) => {
-    if (sourceText[index]?.target_text.trim() !== "")
-      return sourceText[index]?.target_text.trim().split(" ").length;
+    if (sourceText[index]?.target_text?.trim() !== "")
+      return sourceText[index]?.target_text?.trim().split(" ").length;
     return 0;
   };
 
@@ -325,6 +331,19 @@ const TranslationRightPanel = ({ currentIndex }) => {
     saveTranscriptHandler(false, true);
     getPayload(value, limit);
   };
+
+  const handleReGenerateTranslation = useCallback(
+    (index) => {
+      const regenerate = true;
+
+      const sub = reGenerateTranslation(index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+
+      saveTranscriptHandler(false, false, sub, regenerate);
+    },
+    // eslint-disable-next-line
+    [limit, currentOffset]
+  );
 
   return (
     <>
@@ -388,6 +407,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     onMergeClick={onMergeClick}
                     onDelete={onDelete}
                     addNewSubtitleBox={addNewSubtitleBox}
+                    handleReGenerateTranslation={handleReGenerateTranslation}
                   />
 
                   <TimeBoxes

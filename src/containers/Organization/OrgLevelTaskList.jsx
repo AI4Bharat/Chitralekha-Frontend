@@ -139,7 +139,7 @@ const OrgLevelTaskList = () => {
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
-
+  console.log(exportTypes, "exportTypes");
   const {
     total_count: totalCount,
     tasks_list: taskList,
@@ -351,9 +351,9 @@ const OrgLevelTaskList = () => {
       video: videoId,
       target_language: targetLanguage,
     } = currentTaskDetails;
-    const { transcription, speakerInfo } = exportTypes;
+    const { translation, speakerInfo } = exportTypes;
 
-    const apiObj = new exportTranslationAPI(taskId, transcription, speakerInfo);
+    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
@@ -367,7 +367,7 @@ const OrgLevelTaskList = () => {
         const resp = await res.blob();
 
         let newBlob;
-        if (transcription === "docx") {
+        if (translation === "docx") {
           newBlob = new Blob([resp], {
             type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           });
@@ -387,9 +387,11 @@ const OrgLevelTaskList = () => {
           .join("");
         const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
 
+        const format = translation === "docx-bilingual" ? "docx" : translation;
+
         link.setAttribute(
           "download",
-          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${transcription}`
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${format}`
         );
         document.body.appendChild(link);
         link.click();
@@ -398,7 +400,7 @@ const OrgLevelTaskList = () => {
         window.URL.revokeObjectURL(blobUrl);
       } else {
         const resp = await res.json();
-        
+
         setSnackbarInfo({
           open: true,
           message: resp?.message,
