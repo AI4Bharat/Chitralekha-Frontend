@@ -83,6 +83,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }, [currentPage]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
+    console.log(offset, "test", currentOffset, "test", lim, "test", limit);
+
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
@@ -218,7 +220,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       });
 
       if (isRegenerate) {
-        getPayload();
+        getPayload(currentPage, limit);
       }
 
       if (isFinal) {
@@ -332,16 +334,18 @@ const TranslationRightPanel = ({ currentIndex }) => {
     getPayload(value, limit);
   };
 
-  const handleReGenerateTranslation = useCallback((index) => {
-    const regenerate = true;
+  const handleReGenerateTranslation = useCallback(
+    (index) => {
+      const regenerate = true;
 
-    const sub = reGenerateTranslation(index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
+      const sub = reGenerateTranslation(index);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
 
-    saveTranscriptHandler(false, false, sub, regenerate);
-
+      saveTranscriptHandler(false, false, sub, regenerate);
+    },
     // eslint-disable-next-line
-  }, []);
+    [limit, currentOffset]
+  );
 
   return (
     <>
