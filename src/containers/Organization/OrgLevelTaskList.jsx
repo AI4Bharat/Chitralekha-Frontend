@@ -139,7 +139,7 @@ const OrgLevelTaskList = () => {
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
-
+  console.log(exportTypes, "exportTypes");
   const {
     total_count: totalCount,
     tasks_list: taskList,
@@ -147,7 +147,6 @@ const OrgLevelTaskList = () => {
     target_languages_list: targetlanguagesList,
   } = useSelector((state) => state.getOrgTaskList.data);
 
-  //Fixed
   const fetchTaskList = () => {
     setLoading(true);
 
@@ -188,7 +187,6 @@ const OrgLevelTaskList = () => {
     dispatch(APITransport(apiObj));
   };
 
-  //Fixed
   useEffect(() => {
     localStorage.removeItem("sourceTypeList");
     localStorage.removeItem("sourceId");
@@ -209,7 +207,6 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, []);
 
-  //Fixed
   useEffect(() => {
     if (orgId) {
       fetchTaskList();
@@ -218,7 +215,6 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, [orgId, offset, limit, searchedColumn, selectedFilters]);
 
-  //Fixed
   useEffect(() => {
     if (taskList) {
       setLoading(false);
@@ -228,7 +224,6 @@ const OrgLevelTaskList = () => {
     }
   }, [taskList, sourceLanguagesList, targetlanguagesList]);
 
-  //Fixed
   const exportVoiceoverTask = async () => {
     const {
       id: taskId,
@@ -276,7 +271,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleTranscriptExport = async () => {
     const {
       id: taskId,
@@ -299,9 +293,9 @@ const OrgLevelTaskList = () => {
         headers: apiObj.getHeaders().headers,
       });
 
-      const resp = await res.blob();
-
       if (res.ok) {
+        const resp = await res.blob();
+
         let newBlob;
         if (transcription === "docx") {
           newBlob = new Blob([resp], {
@@ -334,6 +328,8 @@ const OrgLevelTaskList = () => {
         // clean up Url
         window.URL.revokeObjectURL(blobUrl);
       } else {
+        const resp = await res.json();
+
         setSnackbarInfo({
           open: true,
           message: resp?.message,
@@ -349,16 +345,15 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleTranslationExport = async () => {
     const {
       id: taskId,
       video: videoId,
       target_language: targetLanguage,
     } = currentTaskDetails;
-    const { transcription, speakerInfo } = exportTypes;
+    const { translation, speakerInfo } = exportTypes;
 
-    const apiObj = new exportTranslationAPI(taskId, transcription, speakerInfo);
+    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
@@ -368,11 +363,11 @@ const OrgLevelTaskList = () => {
         headers: apiObj.getHeaders().headers,
       });
 
-      const resp = await res.blob();
-
       if (res.ok) {
+        const resp = await res.blob();
+
         let newBlob;
-        if (transcription === "docx") {
+        if (translation === "docx") {
           newBlob = new Blob([resp], {
             type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           });
@@ -392,9 +387,11 @@ const OrgLevelTaskList = () => {
           .join("");
         const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
 
+        const format = translation === "docx-bilingual" ? "docx" : translation;
+
         link.setAttribute(
           "download",
-          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${transcription}`
+          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${format}`
         );
         document.body.appendChild(link);
         link.click();
@@ -402,6 +399,8 @@ const OrgLevelTaskList = () => {
 
         window.URL.revokeObjectURL(blobUrl);
       } else {
+        const resp = await res.json();
+
         setSnackbarInfo({
           open: true,
           message: resp?.message,
@@ -417,7 +416,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
       type: Object.keys(rsp_data.payloads)[0],
@@ -431,7 +429,6 @@ const OrgLevelTaskList = () => {
     navigate(`/task/${id}/translate`);
   };
 
-  //Fixed
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
     const sourceTypeList = source.map((el) => {
       return el.toUpperCase().split(" ").join("_");
@@ -454,7 +451,6 @@ const OrgLevelTaskList = () => {
     });
   };
 
-  //Fixed
   const handleDeleteTask = async (id, flag) => {
     setLoading(true);
     setIsBulkTaskDelete(false);
@@ -494,7 +490,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handlePreviewTask = async (id, taskType, targetlanguage) => {
     setPreviewData([]);
     handleDialogOpen("previewDialog");
@@ -531,7 +526,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     setSearchedCol({
@@ -544,7 +538,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const CustomTableHeader = (col) => {
     return (
       <>
@@ -712,7 +705,7 @@ const OrgLevelTaskList = () => {
         customBodyRender: renderTaskListColumnCell,
       },
     };
-  
+
     const assigneeColumn = {
       name: "user",
       label: "Assignee",
@@ -724,7 +717,7 @@ const OrgLevelTaskList = () => {
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
-  
+
           return (
             <Box
               style={{
@@ -737,7 +730,7 @@ const OrgLevelTaskList = () => {
         },
       },
     };
-  
+
     const descriptionColumn = {
       name: "description",
       label: "Description",
@@ -750,7 +743,7 @@ const OrgLevelTaskList = () => {
         customBodyRender: renderTaskListColumnCell,
       },
     };
-  
+
     const actionColumn = {
       name: "Action",
       label: "Actions",
@@ -764,7 +757,7 @@ const OrgLevelTaskList = () => {
         customBodyRender: (_value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
-  
+
           return (
             <Box
               sx={{
@@ -777,7 +770,9 @@ const OrgLevelTaskList = () => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
                     <IconButton
-                      onClick={() => handleActionButtonClick(tableMeta, item.key)}
+                      onClick={() =>
+                        handleActionButtonClick(tableMeta, item.key)
+                      }
                       color={item.color}
                       sx={{
                         display: selectedTask.buttons?.[item.key] ? "" : "none",
@@ -796,16 +791,15 @@ const OrgLevelTaskList = () => {
         },
       },
     };
-  
+
     const columns = [...getColumns(orgTaskListColumns), actionColumn];
     columns.splice(2, 0, videoName);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);
 
     return columns;
-  }
+  };
 
-  //Fixed
   const handleRowClick = (_currentRow, allRow) => {
     const temp = tableData?.filter((_item, index) => {
       return allRow.find((element) => element.index === index);
@@ -825,7 +819,6 @@ const OrgLevelTaskList = () => {
     setShowEditTaskBtn(!!temp.length);
   };
 
-  //Fixed
   const handleBulkDelete = async (taskIds, flag) => {
     setLoading(true);
     setIsBulkTaskDelete(true);
@@ -867,7 +860,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleToolbarButtonClick = (key) => {
     switch (key) {
       case "bulkTaskUpdate":
@@ -894,7 +886,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const renderToolBar = () => {
     return (
       <>
@@ -942,7 +933,6 @@ const OrgLevelTaskList = () => {
     );
   };
 
-  //Fixed
   useEffect(() => {
     let option = getOptions(loading);
 
@@ -981,7 +971,6 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, [loading, rows]);
 
-  //Fixed
   const renderSnackBar = useCallback(() => {
     return (
       <CustomizedSnackbars
@@ -996,7 +985,6 @@ const OrgLevelTaskList = () => {
     );
   }, [snackbar]);
 
-  //Fixed
   const handleUpdateTask = async (data) => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
@@ -1051,7 +1039,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleBulkTaskDownload = async () => {
     handleDialogClose("exportDialog");
     const { translation } = exportTypes;
@@ -1113,7 +1100,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleExportRadioButtonChange = (event) => {
     const {
       target: { name, value },
@@ -1125,7 +1111,6 @@ const OrgLevelTaskList = () => {
     }));
   };
 
-  //Fixed
   const handleExportSubmitClick = () => {
     const { task_type: taskType } = currentTaskDetails;
 
@@ -1142,7 +1127,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleDeleteSubmit = () => {
     if (isBulkTaskDelete) {
       const taskIds = currentSelectedTasks.map((item) => item.id);
@@ -1152,7 +1136,6 @@ const OrgLevelTaskList = () => {
     }
   };
 
-  //Fixed
   const handleDialogClose = (key) => {
     setOpenDialogs((prevState) => ({
       ...prevState,
@@ -1160,7 +1143,6 @@ const OrgLevelTaskList = () => {
     }));
   };
 
-  //Fixed
   const handleDialogOpen = (key) => {
     setOpenDialogs((prevState) => ({
       ...prevState,
@@ -1173,7 +1155,11 @@ const OrgLevelTaskList = () => {
       <Grid>{renderSnackBar()}</Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable data={tableData} columns={initColumns()} options={options} />
+        <MUIDataTable
+          data={tableData}
+          columns={initColumns()}
+          options={options}
+        />
       </ThemeProvider>
 
       {openDialogs.viewTaskDialog && (

@@ -268,11 +268,11 @@ const TaskList = () => {
   };
 
   const handleExportSubmitClick = () => {
-    const { task_type: taskType } = currentTaskDetails;
-
     if (isBulkTaskDownload) {
       handleBulkTaskDownload();
     } else {
+      const { task_type: taskType } = currentTaskDetails;
+
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
       } else if (taskType?.includes("TRANSLATION")) {
@@ -304,9 +304,9 @@ const TaskList = () => {
         headers: apiObj.getHeaders().headers,
       });
 
-      const resp = await res.blob();
-
       if (res.ok) {
+        const resp = await res.blob();
+
         let newBlob;
         if (transcription === "docx") {
           newBlob = new Blob([resp], {
@@ -339,9 +339,11 @@ const TaskList = () => {
         // clean up Url
         window.URL.revokeObjectURL(blobUrl);
       } else {
+        const resp = await res.json();
+
         setSnackbarInfo({
           open: true,
-          message: "Something went wrong!!",
+          message: resp.message,
           variant: "error",
         });
       }
@@ -371,9 +373,9 @@ const TaskList = () => {
         headers: apiObj.getHeaders().headers,
       });
 
-      const resp = await res.blob();
-
       if (res.ok) {
+        const resp = await res.blob();
+
         let newBlob;
         if (translation === "docx") {
           newBlob = new Blob([resp], {
@@ -407,9 +409,11 @@ const TaskList = () => {
 
         window.URL.revokeObjectURL(blobUrl);
       } else {
+        const resp = await res.json();
+
         setSnackbarInfo({
           open: true,
-          message: "There is no speaker info in this translation.",
+          message: resp.message,
           variant: "error",
         });
       }
@@ -1125,7 +1129,7 @@ const TaskList = () => {
           setUploadExportType={setUploadExportType}
           handleSubtitleUpload={() =>
             handleUploadSubtitle(
-              currentTaskDetails?.id,
+              [currentTaskDetails?.id],
               uploadTaskRowIndex,
               uploadExportType
             )

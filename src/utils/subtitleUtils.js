@@ -496,3 +496,11 @@ export const getTagsList = (sourceLang) => {
       return [];
   }
 };
+
+export const reGenerateTranslation = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  copySub[index].retranslate = true;
+
+  return copySub;
+};

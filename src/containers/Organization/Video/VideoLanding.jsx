@@ -221,7 +221,7 @@ const VideoLanding = () => {
     return () => {
       const date = new Date().getTime();
       const ms = date - ref.current;
-      const time_spent = Math.floor((ms / 1000) % 60);
+      const time_spent = Math.floor((ms / 1000));
 
       const apiObj = new UpdateTimeSpentPerTask(taskId, time_spent);
       dispatch(APITransport(apiObj));

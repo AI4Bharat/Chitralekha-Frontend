@@ -29,6 +29,7 @@ import {
   onUndoAction,
   placementMenu,
   playbackSpeed,
+  reGenerateTranslation,
   setAudioContent,
   themeMenu,
   timeChange,
@@ -116,4 +117,5 @@ export {
   snakeToTitleCase,
   steps,
   getTagsList,
+  reGenerateTranslation,
 };
