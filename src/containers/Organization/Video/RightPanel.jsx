@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState, useRef, memo } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { tagsSuggestionData } from "config/projectConfigs";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -18,6 +17,7 @@ import {
   getItemForDelete,
   MenuProps,
   assignSpeakerId,
+  getTagsList,
 } from "utils";
 
 //Styles
@@ -103,6 +103,8 @@ const RightPanel = ({ currentIndex }) => {
   const [tagSuggestionList, setTagSuggestionList] = useState([]);
   const [textWithoutBackSlash, setTextWithoutBackSlash] = useState("");
   const [textAfterBackSlash, setTextAfterBackSlash] = useState("");
+  const [enableTransliterationSuggestion, setEnableTransliterationSuggestion] =
+    useState(true);
 
   useEffect(() => {
     if (videoDetails.hasOwnProperty("video")) {
@@ -199,48 +201,46 @@ const RightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
-  const changeTranscriptHandler = useCallback(
-    (event, index) => {
-      const {
-        target: { value },
-        currentTarget,
-      } = event;
+  const changeTranscriptHandler = (event, index) => {
+    const {
+      target: { value },
+      currentTarget,
+    } = event;
+    const containsBackslash = value.includes("\\");
 
-      const containsBackslash = value.includes("\\");
+    setEnableTransliterationSuggestion(true);
 
-      if (containsBackslash) {
-        const textBeforeSlash = value.split("\\")[0];
-        const currentTargetWord = value.split("\\")[1].split(" ")[0];
-        const textAfterSlash = value
-          .split("\\")[1]
-          .split(" ")
-          .slice(1)
-          .join(" ");
+    if (containsBackslash) {
+      setEnableTransliterationSuggestion(false);
 
-        let filteredSuggestionByInput = tagsSuggestionData.filter((el) => {
-          return el.toLowerCase().includes(currentTargetWord.toLowerCase());
-        });
+      const textBeforeSlash = value.split("\\")[0];
+      const currentTargetWord = value.split("\\")[1].split(" ")[0];
+      const textAfterSlash = value.split("\\")[1].split(" ").slice(1).join(" ");
 
-        setCurrentSelectedIndex(index);
-        setTagSuggestionsAnchorEl(currentTarget);
-        setTextWithoutBackSlash(textBeforeSlash);
-        setTextAfterBackSlash(textAfterSlash);
+      const tags = getTagsList(videoDetails?.video?.language_label);
 
-        if (filteredSuggestionByInput.length) {
-          setTagSuggestionList(filteredSuggestionByInput);
-        } else {
-          setTagSuggestionList(tagsSuggestionData);
-        }
+      const filteredSuggestionByInput = Object.entries(tags).filter(([tag]) => {
+        return tag.toLowerCase().includes(currentTargetWord.toLowerCase());
+      });
+
+      const filteredSuggestions = Object.fromEntries(filteredSuggestionByInput);
+
+      setCurrentSelectedIndex(index);
+      setTagSuggestionsAnchorEl(currentTarget);
+      setTextWithoutBackSlash(textBeforeSlash);
+      setTextAfterBackSlash(textAfterSlash);
+
+      if (Object.keys(filteredSuggestions).length) {
+        setTagSuggestionList(filteredSuggestions);
+      } else {
+        setTagSuggestionList([]);
       }
+    }
 
-      const sub = onSubtitleChange(value, index);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, false, sub);
-    },
-
-    // eslint-disable-next-line
-    [limit, currentOffset]
-  );
+    const sub = onSubtitleChange(value, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    saveTranscriptHandler(false, false, sub);
+  };
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -498,6 +498,8 @@ const RightPanel = ({ currentIndex }) => {
                       onChange={(event) => {
                         changeTranscriptHandler(event, index);
                       }}
+                      enabled={enableTransliterationSuggestion}
+                      onChangeText={() => {}}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
                       onBlur={() =>
@@ -637,6 +639,9 @@ const RightPanel = ({ currentIndex }) => {
             textWithoutBackslash={textWithoutBackSlash}
             textAfterBackSlash={textAfterBackSlash}
             saveTranscriptHandler={saveTranscriptHandler}
+            setEnableTransliterationSuggestion={
+              setEnableTransliterationSuggestion
+            }
           />
         )}
       </Box>
