@@ -54,10 +54,7 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <div
-        className={classes.videoPlayerParent}
-        style={{ display: videoDetails?.video?.audio_only ? "flex" : "" }}
-      >
+      <div className={classes.videoPlayerParent} style={{ display: "flex" }}>
         <video
           onClick={onClick}
           src={

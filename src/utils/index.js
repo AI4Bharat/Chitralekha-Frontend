@@ -15,6 +15,7 @@ import {
   getSelectionStart,
   getSubtitleRange,
   getSubtitleRangeTranscript,
+  getTagsList,
   getTargetSelectionStart,
   getTimings,
   hasSub,
@@ -115,5 +116,6 @@ export {
   speakerInfoOptions,
   snakeToTitleCase,
   steps,
+  getTagsList,
   reGenerateTranslation,
 };
