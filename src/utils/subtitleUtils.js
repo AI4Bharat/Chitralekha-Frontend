@@ -2,6 +2,7 @@ import Sub from "./Sub";
 import { getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
+import { noiseTags } from "config";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -457,6 +458,49 @@ export const assignSpeakerId = (id, index) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = [...subtitles];
   copySub[index].speaker_id = id;
+
+  return copySub;
+};
+
+export const getTagsList = (sourceLang) => {
+  switch (sourceLang) {
+    case "Hindi":
+      return noiseTags.hindi;
+    case "Malayalam":
+      return noiseTags.malayalam;
+    case "Bengali":
+      return noiseTags.bengali;
+    case "Sanskrit":
+      return noiseTags.sanskrit;
+    case "Marathi":
+      return noiseTags.marathi;
+    case "Kannada":
+      return noiseTags.kannada;
+    case "Telugu":
+      return noiseTags.telugu;
+    case "Sindhi":
+      return noiseTags.sindhi;
+    case "Bodo":
+      return noiseTags.bodo;
+    case "Assamese":
+      return noiseTags.assamese;
+    case "Tamil":
+      return noiseTags.tamil;
+    case "Santali":
+      return noiseTags.santali;
+    case "Odia":
+      return noiseTags.odia;
+    case "English":
+      return noiseTags.english;
+    default:
+      return [];
+  }
+};
+
+export const reGenerateTranslation = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  copySub[index].retranslate = true;
 
   return copySub;
 };

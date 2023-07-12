@@ -334,11 +334,11 @@ const TaskList = () => {
   };
 
   const handleExportSubmitClick = () => {
-    const { task_type: taskType } = currentTaskDetails;
-
     if (isBulkTaskDownload) {
       handleBulkTaskDownload();
     } else {
+      const { task_type: taskType } = currentTaskDetails;
+
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
       } else if (taskType?.includes("TRANSLATION")) {

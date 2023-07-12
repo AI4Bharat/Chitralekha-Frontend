@@ -15,6 +15,7 @@ import {
   getSelectionStart,
   getSubtitleRange,
   getSubtitleRangeTranscript,
+  getTagsList,
   getTargetSelectionStart,
   getTimings,
   hasSub,
@@ -28,6 +29,7 @@ import {
   onUndoAction,
   placementMenu,
   playbackSpeed,
+  reGenerateTranslation,
   setAudioContent,
   themeMenu,
   timeChange,
@@ -114,4 +116,6 @@ export {
   speakerInfoOptions,
   snakeToTitleCase,
   steps,
+  getTagsList,
+  reGenerateTranslation,
 };
