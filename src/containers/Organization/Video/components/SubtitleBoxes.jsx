@@ -28,7 +28,6 @@ import {
   ContextMenuTrigger,
   connectMenu,
 } from "react-contextmenu";
-import { CustomizedSnackbars } from "common";
 
 //APIs
 import C from "redux/constants";
@@ -73,11 +72,6 @@ export default memo(
     const next = useSelector((state) => state.commonReducer.nextPage);
 
     const [currentSubs, setCurrentSubs] = useState([]);
-    const [snackbar, setSnackbarInfo] = useState({
-      open: false,
-      message: "",
-      variant: "success",
-    });
 
     useEffect(() => {
       if (subtitles) {
@@ -120,26 +114,7 @@ export default memo(
       };
 
       const obj = new SaveTranscriptAPI(reqBody, taskType);
-      const res = await fetch(obj.apiEndPoint(), {
-        method: "POST",
-        body: JSON.stringify(obj.getBody()),
-        headers: obj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: "Failed",
-          variant: "error",
-        });
-      }
+      dispatch(APITransport(obj));
     };
 
     const removeSub = useCallback(
@@ -374,23 +349,8 @@ export default memo(
       className: classes.contextMenu,
     };
 
-    const renderSnackBar = () => {
-      return (
-        <CustomizedSnackbars
-          open={snackbar.open}
-          handleClose={() =>
-            setSnackbarInfo({ open: false, message: "", variant: "" })
-          }
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          variant={snackbar.variant}
-          message={snackbar.message}
-        />
-      );
-    };
-
     return (
       <div className={classes.parentSubtitleBox} ref={$blockRef}>
-        {renderSnackBar()}
         <div ref={$subsRef}>
           {currentSubs?.map((sub, key) => {
             return (

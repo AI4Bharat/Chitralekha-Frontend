@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 //Styles
@@ -14,14 +14,14 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { CustomizedSnackbars } from "common";
 
 //APIs
-import { ToggleMailsAPI } from "redux/actions";
+import { APITransport, ToggleMailsAPI } from "redux/actions";
 
 const Notifications = () => {
   const classes = LoginStyle();
   const { id } = useParams();
+  const dispatch = useDispatch();
 
   const loggedInUser = useSelector(
     (state) => state.getLoggedInUserDetails.data
@@ -29,11 +29,6 @@ const Notifications = () => {
 
   const [formFields, setFormFields] = useState({
     dailyEmail: false,
-  });
-  const [snackbarState, setSnackbarState] = useState({
-    open: false,
-    message: "",
-    variant: "",
   });
 
   const handleEmailToggle = async () => {
@@ -43,26 +38,7 @@ const Notifications = () => {
     }));
 
     const mailObj = new ToggleMailsAPI(loggedInUser.id, !formFields.dailyEmail);
-    const res = await fetch(mailObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(mailObj.getBody()),
-      headers: mailObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarState({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-    } else {
-      setSnackbarState({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(mailObj));
   };
 
   const notificationOptions = [
@@ -82,28 +58,12 @@ const Notifications = () => {
     },
   ];
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbarState.open}
-        handleClose={() =>
-          setSnackbarState({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbarState.variant}
-        message={snackbarState.message}
-      />
-    );
-  };
-
   return (
     <Grid container direction="row">
-      {renderSnackBar()}
-
       <Card className={classes.editProfileParentCard}>
         {notificationOptions.map((element) => {
           return (
-            <Grid container sx={{p: "40px", justifyContent: "center"}}>
+            <Grid container sx={{ p: "40px", justifyContent: "center" }}>
               <Grid item xs={12} sm={12} md={3} lg={4} xl={4}>
                 <Typography variant="body1">{element.title}</Typography>
                 <Typography

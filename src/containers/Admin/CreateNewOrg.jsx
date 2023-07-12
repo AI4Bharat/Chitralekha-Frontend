@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 //Components
 import {
+  Box,
   Card,
   Grid,
   Typography,
@@ -16,8 +17,7 @@ import {
   InputLabel,
   TextField,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { CustomizedSnackbars, Loader } from "common";
+import { Loader } from "common";
 
 //APIs
 import {
@@ -54,24 +54,33 @@ const CreateNewOrg = () => {
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.data
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [title, setTitle] = useState("");
   const [owner, setOwner] = useState("");
   const [emailDomainName, setEmailDomainName] = useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [transcriptSourceType, setTranscriptSourceType] =
     useState("MACHINE_GENERATED");
   const [translationSourceType, setTranslationSourceType] =
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [voiceOverSourceType, setVoiceOverSourceType] =
     useState("MACHINE_GENERATED");
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "CREATE_NEW_ORGANIZATION") {
+          navigate(`/admin`, { replace: true });
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const disableBtn = () => {
     if (!title || !owner) {
@@ -108,7 +117,6 @@ const CreateNewOrg = () => {
   }, []);
 
   const handleCreateOrganization = async () => {
-    setLoading(true);
     const reqBody = {
       title,
       email_domain_name: emailDomainName,
@@ -121,50 +129,11 @@ const CreateNewOrg = () => {
     };
 
     const apiObj = new CreateNewOrganizationAPI(reqBody);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-      navigate(`/admin`, { replace: true });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(apiObj));
   };
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
       <Card
         sx={{
           width: "100%",
@@ -389,7 +358,7 @@ const CreateNewOrg = () => {
               disabled={disableBtn()}
             >
               Create Organization{" "}
-              {loading && (
+              {apiStatus.loading && (
                 <Loader size={20} margin="0 0 0 10px" color="secondary" />
               )}
             </Button>

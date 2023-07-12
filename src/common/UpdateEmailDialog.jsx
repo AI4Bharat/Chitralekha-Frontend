@@ -8,11 +8,11 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import Snackbar from "../common/Snackbar";
+import React, { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import { VerifyUpdateEmailAPI } from "redux/actions";
+import { APITransport, VerifyUpdateEmailAPI } from "redux/actions";
 import OutlinedTextField from "./OutlinedTextField";
+import { useDispatch, useSelector } from "react-redux";
 
 const UpdateEmailDialog = ({
   isOpen,
@@ -21,44 +21,31 @@ const UpdateEmailDialog = ({
   newEmail,
   onSuccess,
 }) => {
+  const dispatch = useDispatch();
+
   const [oldEmailCode, setOldEmailCode] = useState("");
   const [newEmailCode, setNewEmailCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [snackbarState, setSnackbarState] = useState({
-    open: false,
-    message: "",
-    variant: "",
-  });
+
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "VERIFY_UPDATE_EMAIL") {
+          onSuccess();
+          handleClose();
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const verifyEmail = async () => {
-    setLoading(true);
     const apiObj = new VerifyUpdateEmailAPI(oldEmailCode, newEmailCode);
-    fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (res) => {
-        if (!res.ok) throw await res.json();
-        else return await res.json();
-      })
-      .then((res) => {
-        setSnackbarState({
-          open: true,
-          message: res.message,
-          variant: "success",
-        });
-        onSuccess();
-        handleClose();
-      })
-      .catch((err) => {
-        setSnackbarState({
-          open: true,
-          message: err.message,
-          variant: "error",
-        });
-        setLoading(false);
-      });
+    dispatch(APITransport(apiObj));
   };
 
   return (
@@ -110,7 +97,10 @@ const UpdateEmailDialog = ({
         </Grid>
       </Grid>
       <DialogActions style={{ padding: 24 }}>
-        <Button sx={{ borderRadius: "8px", lineHeight: 1 }} onClick={handleClose}>
+        <Button
+          sx={{ borderRadius: "8px", lineHeight: 1 }}
+          onClick={handleClose}
+        >
           Cancel
         </Button>
 
@@ -120,17 +110,12 @@ const UpdateEmailDialog = ({
           onClick={verifyEmail}
           variant="contained"
         >
-          {loading && <CircularProgress size="0.8rem" color="secondary" />}
+          {apiStatus.loading && (
+            <CircularProgress size="0.8rem" color="secondary" />
+          )}
           <span style={{ marginLeft: "10px" }}>Verify</span>
         </Button>
       </DialogActions>
-
-      <Snackbar
-        {...snackbarState}
-        handleClose={() => setSnackbarState({ ...snackbarState, open: false })}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        hide={2000}
-      />
     </Dialog>
   );
 };

@@ -27,7 +27,7 @@ import {
 import AppInfo from "./AppInfo";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { CustomizedSnackbars, Loader, OutlinedTextField } from "common";
+import { Loader, OutlinedTextField } from "common";
 
 //APIs
 import {
@@ -47,8 +47,8 @@ const SignUp = () => {
     (state) => state.getSupportedLanguages.data
   );
   const userInfo = useSelector((state) => state.getInviteUserInfo.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     UserName: "",
     email: "",
@@ -61,11 +61,6 @@ const SignUp = () => {
     showPassword: false,
     showConfirmPassword: false,
   });
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [error, setError] = useState({
     userName: false,
     firstName: false,
@@ -77,6 +72,31 @@ const SignUp = () => {
     languages: false,
   });
   const [phoneErrorText, setPhoneErrorText] = useState("");
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "SIGNUP") {
+          localStorage.clear();
+          navigate("/");
+          setValues({
+            UserName: "",
+            email: "",
+            password: "",
+            phone: "",
+            confirmPassword: "",
+            firstName: "",
+            lastName: "",
+            languages: [],
+          });
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   useEffect(() => {
     if (userInfo.email) {
@@ -127,8 +147,6 @@ const SignUp = () => {
   }, []);
 
   const handleSubmit = () => {
-    setLoading(true);
-
     const data = {
       username: values.UserName,
       email: values.email,
@@ -140,49 +158,7 @@ const SignUp = () => {
     };
 
     let apiObj = new SignupAPI(invitecode, data);
-
-    let rsp_data;
-    fetch(apiObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (response) => {
-        rsp_data = await response.json();
-        setLoading(false);
-
-        if (!response.ok) {
-          return Promise.reject("");
-        } else {
-          setSnackbarInfo({
-            ...snackbar,
-            open: true,
-            message: rsp_data.message,
-            variant: "success",
-          });
-          localStorage.clear();
-          navigate("/");
-          setValues({
-            UserName: "",
-            email: "",
-            password: "",
-            phone: "",
-            confirmPassword: "",
-            firstName: "",
-            lastName: "",
-            languages: [],
-          });
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        setSnackbarInfo({
-          ...snackbar,
-          open: true,
-          message: rsp_data.message,
-          variant: "error",
-        });
-      });
+    dispatch(APITransport(apiObj));
   };
 
   const ValidateEmail = (mail) => {
@@ -220,7 +196,6 @@ const SignUp = () => {
       setError({ ...error, languages: true });
     } else {
       handleSubmit();
-      setLoading(true);
     }
   };
 
@@ -229,24 +204,9 @@ const SignUp = () => {
     navigate("/");
   };
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   const TextFields = () => {
     return (
       <Grid container spacing={2} style={{ width: "40%" }}>
-        <Grid>{renderSnackBar()}</Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Typography variant="h3" align="center">
             Create new account
@@ -444,7 +404,7 @@ const SignUp = () => {
                 style={{ fontSize: "14px" }}
               >
                 Sign in
-                {loading && (
+                {apiStatus.loading && (
                   <Loader size={20} margin="0 0 0 10px" color="secondary" />
                 )}
               </Link>

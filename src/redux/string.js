@@ -19,7 +19,7 @@ module.exports = {
           422: "A User with same email already exist.",
           400: "Something wrong with the input you supplied, please verify and try again!",
           401: "You are not authorized to do this action at the moment!",
-          default: "Something went wrong while we process your request. Please try after sometime"
+          500: "Something went wrong while we process your request. Please try after sometime"
         }
       }
     },

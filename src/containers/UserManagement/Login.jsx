@@ -14,12 +14,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppInfo from "./AppInfo";
-import {
-  CustomCard,
-  CustomizedSnackbars,
-  Loader,
-  OutlinedTextField,
-} from "common";
+import { CustomCard, Loader, OutlinedTextField } from "common";
 
 //APIs
 import {
@@ -31,29 +26,37 @@ import {
 const Login = () => {
   const classes = LoginStyle();
   const dispatch = useDispatch();
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  });
+  const navigate = useNavigate();
 
   const accessToken = localStorage.getItem("token");
   const userInfo = JSON.parse(localStorage.getItem("userData"));
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
-
-  const navigate = useNavigate();
-
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [values, setValues] = useState({
     password: "",
     showPassword: false,
   });
-  const [loading, setLoading] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+  const [credentials, setCredentials] = useState({
+    email: "",
+    password: "",
+  });
+
+  useEffect(() => {
+    const { progess, success, apiType, data } = apiStatus;
+
+    if (!progess) {
+      if (success) {
+        if (apiType === "GET_USER_ACCESS_TOKEN") {
+          localStorage.setItem("token", data.access);
+          getLoggedInUserData();
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const keyPress = useCallback((e) => {
     if (e.code === "Enter") {
@@ -113,28 +116,8 @@ const Login = () => {
   };
 
   const createToken = async () => {
-    setLoading(true);
-
     const apiObj = new LoginAPI(credentials.email, credentials.password);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-    if (res.ok) {
-      localStorage.setItem("token", resp.access);
-      getLoggedInUserData();
-      setLoading(false);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.detail,
-        variant: "error",
-      });
-      setLoading(false);
-    }
+    dispatch(APITransport(apiObj));
   };
 
   const TextFields = () => {
@@ -194,7 +177,7 @@ const Login = () => {
             variant="contained"
           >
             Login{" "}
-            {loading && (
+            {apiStatus.loading && (
               <Loader size={20} margin="0 0 0 10px" color="secondary" />
             )}
           </Button>
@@ -202,20 +185,6 @@ const Login = () => {
       </Box>
     </CustomCard>
   );
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
 
   return (
     <ThemeProvider theme={themeDefault}>
@@ -234,7 +203,6 @@ const Login = () => {
         <Grid item xs={12} sm={9} md={9} lg={9} className={classes.parent}>
           <form autoComplete="off">{renderCardContent()}</form>
         </Grid>
-        {renderSnackBar()}
       </Grid>
     </ThemeProvider>
   );

@@ -16,6 +16,7 @@ import {
   FetchProjectMembersAPI,
   FetchVideoListAPI,
   UploadCSVAPI,
+  setSnackBar,
 } from "redux/actions";
 import C from "redux/constants";
 
@@ -46,7 +47,6 @@ import {
   AlertComponent,
   CSVAlertComponent,
   CreateVideoDialog,
-  CustomizedSnackbars,
   Loader,
 } from "common";
 
@@ -86,11 +86,6 @@ const Project = () => {
   const [videoLink, setVideoLink] = useState("");
   const [isAudio, setIsAudio] = useState(false);
   const [lang, setLang] = useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [projectData, setProjectData] = useState([
     { name: "Project ID", value: null },
     { name: "CreatedAt", value: null },
@@ -113,6 +108,31 @@ const Project = () => {
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "ADD_PROJECT_MEMBERS") {
+          getProjectMembers();
+        }
+
+        if (apiType === "CREATE_NEW_VIDEO") {
+          setShowAlert(true);
+          setAlertData(data);
+        }
+      } else {
+        if (apiType === "UPLOAD_CSV") {
+          setShowCSVAlert(true);
+          setAlertData(data);
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
@@ -176,45 +196,26 @@ const Project = () => {
   }, [projectInfo, projectvideoList]);
 
   const addNewMemberHandler = async () => {
-    const selectedMemberIdArr = addmembers.map((el, i) => {
-      return el.id;
-    });
+    const body = {
+      user_id: addmembers.map((el, i) => el.id),
+    };
 
-    const apiObj = new AddProjectMembersAPI(projectId, {
-      user_id: selectedMemberIdArr,
-    });
-    // dispatch(APITransport(apiObj));
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      getProjectMembers();
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    const apiObj = new AddProjectMembersAPI(projectId, body);
+    dispatch(APITransport(apiObj));
   };
 
   const addNewVideoHandler = async () => {
     const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
     const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
     const create = true;
-    setSnackbarInfo({
-      open: true,
-      message: "Your request is being processed.",
-      variant: "info",
-    });
+
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: "Your request is being processed.",
+        variant: "info",
+      })
+    );
 
     const apiObj = new CreateNewVideoAPI(
       link,
@@ -227,46 +228,11 @@ const Project = () => {
       speakerInfo,
       speakerType
     );
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "GET",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setShowAlert(true);
-      setAlertData(resp);
-      setSnackbarInfo({
-        open: false,
-      });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(apiObj));
 
     setCreateVideoDialog(false);
     getProjectVideoList();
     setIsAudio(false);
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
   };
 
   const handeFileUpload = (file) => {
@@ -275,25 +241,8 @@ const Project = () => {
       const csvData = reader.result;
       const csv = btoa(csvData);
 
-      const uploadCSVObj = new UploadCSVAPI("project");
-      const res = await fetch(uploadCSVObj.apiEndPoint(), {
-        method: "POST",
-        body: JSON.stringify({ project_id: +projectId, csv }),
-        headers: uploadCSVObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      } else {
-        setShowCSVAlert(true);
-        setAlertData(resp);
-      }
+      const uploadCSVObj = new UploadCSVAPI("project", projectId, csv);
+      dispatch(APITransport(uploadCSVObj));
     };
     reader.readAsBinaryString(file[0]);
   };
@@ -379,7 +328,6 @@ const Project = () => {
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
       {renderProjectDetails()}
 
       <Card className={classes.workspaceCard}>
@@ -544,7 +492,7 @@ const Project = () => {
           setSpeakerInfo={setSpeakerInfo}
           speakerInfo={speakerInfo}
           speakerType={speakerType}
-          setSpeakerType={setSpeakerType} 
+          setSpeakerType={setSpeakerType}
         />
       )}
 

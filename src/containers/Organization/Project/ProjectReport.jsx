@@ -156,7 +156,7 @@ const ProjectReport = () => {
   };
 
   useEffect(() => {
-    let option = getOptions(apiStatus.progress);
+    let option = getOptions(apiStatus.loading);
 
     option = {
       ...option,

@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CloseIcon from "@mui/icons-material/Close";
-import CustomizedSnackbars from "./Snackbar";
 import Loader from "./Spinner";
 
 //Styles
@@ -56,11 +55,6 @@ const UpdateBulkTaskDialog = ({
   const [user, setUser] = useState("");
   const [priority, setPriority] = useState("");
   const [date, setDate] = useState(moment().format());
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
 
   useEffect(() => {
     const priorityTypesObj = new FetchPriorityTypesAPI();
@@ -120,20 +114,6 @@ const UpdateBulkTaskDialog = ({
     handleUpdateTask(data);
   };
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   const handleClear = () => {
     setUser("");
     setDescription("");
@@ -143,7 +123,6 @@ const UpdateBulkTaskDialog = ({
 
   return (
     <>
-      {renderSnackBar()}
       <Dialog
         fullWidth={true}
         open={open}

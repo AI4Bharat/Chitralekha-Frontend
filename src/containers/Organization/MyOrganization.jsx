@@ -34,12 +34,7 @@ import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import {
-  AddOrganizationMember,
-  CSVAlertComponent,
-  CustomizedSnackbars,
-  Loader,
-} from "common";
+import { AddOrganizationMember, CSVAlertComponent, Loader } from "common";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -68,11 +63,6 @@ const MyOrganization = () => {
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
 
@@ -82,6 +72,28 @@ const MyOrganization = () => {
   const projectList = useSelector((state) => state.getProjectList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const usersList = useSelector((state) => state.getOrganizatioUsers.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "GET_USERS_ROLES") {
+          setNewMemberName("");
+          setNewMemberRole("");
+          getOrganizatioUsersList();
+        }
+      } else {
+        if (apiType === "UPLOAD_CSV") {
+          setShowCSVAlert(true);
+          setAlertData(data);
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const getOrganizationDetails = () => {
     const userObj = new FetchOrganizationDetailsAPI(id);
@@ -116,45 +128,7 @@ const MyOrganization = () => {
       organization_id: id,
     };
     const apiObj = new AddOrganizationMemberAPI(data);
-    // dispatch(APITransport(apiObj));
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setNewMemberName("");
-      setNewMemberRole("");
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      getOrganizatioUsersList();
-    } else {
-      setNewMemberName("");
-      setNewMemberRole("");
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(apiObj));
   };
 
   const renderOrgDetails = () => {
@@ -163,15 +137,9 @@ const MyOrganization = () => {
     }
 
     return (
-      <>
-        <Typography variant="h2" gutterBottom component="div">
-          {organizationDetails?.title}
-        </Typography>
-
-        {/* <Typography variant="body1" gutterBottom component="div">
-          Created by : {`${organizationDetails?.created_by?.first_name}`}
-        </Typography> */}
-      </>
+      <Typography variant="h2" gutterBottom component="div">
+        {organizationDetails?.title}
+      </Typography>
     );
   };
 
@@ -181,32 +149,14 @@ const MyOrganization = () => {
       const csvData = reader.result;
       const csv = btoa(csvData);
 
-      const uploadCSVObj = new UploadCSVAPI("org");
-      const res = await fetch(uploadCSVObj.apiEndPoint(), {
-        method: "POST",
-        body: JSON.stringify({ org_id: +id, csv }),
-        headers: uploadCSVObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      } else {
-        setShowCSVAlert(true);
-        setAlertData(resp);
-      }
+      const uploadCSVObj = new UploadCSVAPI("org", id, csv);
+      dispatch(APITransport(uploadCSVObj));
     };
     reader.readAsBinaryString(file[0]);
   };
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         {renderOrgDetails()}
 

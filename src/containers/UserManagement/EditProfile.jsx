@@ -23,7 +23,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { CustomizedSnackbars as Snackbar, UpdateEmailDialog } from "common";
+import { UpdateEmailDialog } from "common";
 import EditIcon from "@mui/icons-material/Edit";
 
 //APIs
@@ -35,6 +35,7 @@ import {
   FetchUserDetailsAPI,
   UpdateEmailAPI,
   UpdateProfileAPI,
+  setSnackBar,
 } from "redux/actions";
 
 const EditProfile = () => {
@@ -42,16 +43,10 @@ const EditProfile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const [snackbarState, setSnackbarState] = useState({
-    open: false,
-    message: "",
-    variant: "",
-  });
   const [email, setEmail] = useState("");
   const [originalEmail, setOriginalEmail] = useState("");
   const [enableVerifyEmail, setEnableVerifyEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [emailVerifyLoading, setEmailVerifyLoading] = useState("");
   const [userDetails, setUserDetails] = useState({
     first_name: "",
     last_name: "",
@@ -83,6 +78,7 @@ const EditProfile = () => {
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.data
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   useEffect(() => {
     orgList.forEach((element) => (element.label = element.title));
@@ -158,44 +154,20 @@ const EditProfile = () => {
   };
 
   const handleUpdateEmail = () => {
-    setEmailVerifyLoading(true);
     const apiObj = new UpdateEmailAPI(email);
-
-    fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (res) => {
-        setEmailVerifyLoading(false);
-        if (!res.ok) throw await res.json();
-        else return await res.json();
-      })
-      .then((res) => {
-        setSnackbarState({
-          open: true,
-          message: res.message,
-          variant: "success",
-        });
-        setShowEmailDialog(true);
-      })
-      .catch((err) => {
-        setSnackbarState({
-          open: true,
-          message: err.message,
-          variant: "error",
-        });
-      });
+    dispatch(APITransport(apiObj));
   };
 
   const handleVerificationSuccess = () => {
     setEnableVerifyEmail(false);
     setOriginalEmail(email);
-    setSnackbarState({
-      open: true,
-      message: "Email successfully updated",
-      variant: "success",
-    });
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: "Email successfully updated",
+        variant: "success",
+      })
+    );
   };
 
   const handleSubmit = () => {
@@ -224,29 +196,7 @@ const EditProfile = () => {
       apiObj = new UpdateProfileAPI(updateProfileReqBody);
     }
 
-    fetch(apiObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (res) => {
-        if (!res.ok) throw await res.json();
-        else return await res.json();
-      })
-      .then((res) => {
-        setSnackbarState({
-          open: true,
-          message: res.message,
-          variant: "success",
-        });
-      })
-      .catch((err) => {
-        setSnackbarState({
-          open: true,
-          message: err.message,
-          variant: "error",
-        });
-      });
+    dispatch(APITransport(apiObj));
   };
 
   const getDisabledOption = (name, value) => {
@@ -283,7 +233,7 @@ const EditProfile = () => {
                 onClick={handleUpdateEmail}
                 sx={{ gap: "4px" }}
               >
-                {emailVerifyLoading && (
+                {apiStatus.loading && (
                   <CircularProgress size="1rem" color="primary" />
                 )}
                 VERIFY EMAIL
@@ -420,13 +370,6 @@ const EditProfile = () => {
           </Grid>
         )}
       </Card>
-
-      <Snackbar
-        {...snackbarState}
-        handleClose={() => setSnackbarState({ ...snackbarState, open: false })}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        hide={2000}
-      />
 
       {showEmailDialog && (
         <UpdateEmailDialog

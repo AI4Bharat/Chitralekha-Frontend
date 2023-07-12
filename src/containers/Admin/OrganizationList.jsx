@@ -13,7 +13,7 @@ import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { CustomizedSnackbars, DeleteDialog } from "common";
+import { DeleteDialog } from "common";
 
 //APIs
 import {
@@ -32,12 +32,22 @@ const OrganizationList = () => {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "DELETE_ORGANIZATION") {
+          getOrgList();
+        }
+      }
+
+      setDeleteDialogOpen(false);
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const getOrgList = () => {
     const apiObj = new FetchOrganizationListAPI();
@@ -89,61 +99,18 @@ const OrganizationList = () => {
     },
   });
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   const handleDelete = async (currentOrgId) => {
     const apiObj = new DeleteOrganizationAPI(currentOrgId);
-    setLoading(true);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "DELETE",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-      setDeleteDialogOpen(false);
-      getOrgList();
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-      setDeleteDialogOpen(false);
-    }
+    dispatch(APITransport(apiObj));
   };
 
   return (
     <>
-      {renderSnackBar()}
-
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={orgList}
           columns={columns}
-          options={getOptions(apiStatus.progress)}
+          options={getOptions(apiStatus.loading)}
         />
       </ThemeProvider>
 
@@ -153,7 +120,7 @@ const OrganizationList = () => {
           handleClose={() => setDeleteDialogOpen(false)}
           submit={() => handleDelete(currentOrgId)}
           message={`Are you sure, you want to delete this Organization? All the associated videos, tasks, will be deleted.`}
-          loading={loading}
+          loading={apiStatus.loading}
         />
       )}
     </>

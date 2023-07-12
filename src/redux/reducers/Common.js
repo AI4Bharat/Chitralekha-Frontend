@@ -15,6 +15,11 @@ const initialState = {
   limit: 50,
   rangeStart: 0,
   rangeEnd: 0,
+  snackbar: {
+    open: false,
+    message: "",
+    variant: "success",
+  },
 };
 
 const reducer = (state = initialState, action) => {
@@ -104,6 +109,13 @@ const reducer = (state = initialState, action) => {
       result.rangeEnd = action.payload;
       return result;
     }
+
+    case C.SNACKBAR: {
+      let result = { ...state };
+      result.snackbar = { ...action.payload };
+      return result;
+    }
+
     default:
       return {
         ...state,

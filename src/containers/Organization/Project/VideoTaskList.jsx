@@ -37,7 +37,7 @@ const VideoTaskList = (props) => {
         title="Task List"
         data={videotaskList}
         columns={getColumns(videoTaskListColumns)}
-        options={getOptions(apiStatus.progress)}
+        options={getOptions(apiStatus.loading)}
       />
     </ThemeProvider>
   );

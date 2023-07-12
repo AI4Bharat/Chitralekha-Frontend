@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Loader from "./Spinner";
-import CustomizedSnackbars from "./Snackbar";
 
 //APIs
 import {
@@ -32,17 +31,12 @@ const SpeakerInfoDialog = ({
 }) => {
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(false);
   const [speakerDetails, setSpeakerDetails] = useState([]);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
 
   const { speaker_info: speakerInfo } = useSelector(
     (state) => state.getSpeakerInfo.data
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   useEffect(() => {
     if (taskId) {
@@ -71,60 +65,14 @@ const SpeakerInfoDialog = ({
   }, []);
 
   const handleUpdateSpeakerInfo = useCallback(async () => {
-    setLoading(true);
-
     const apiObj = new UpdateSpeakerInfoAPI(taskId, speakerDetails);
+    dispatch(APITransport(apiObj));
 
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "POST",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "An error occurred.",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
+    // eslint-disable-next-line
   }, [taskId, speakerDetails]);
-
-  const renderSnackBar = useCallback(() => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  }, [snackbar]);
 
   return (
     <>
-      {renderSnackBar()}
       <Dialog
         fullWidth={true}
         open={open}
@@ -177,7 +125,9 @@ const SpeakerInfoDialog = ({
             onClick={() => handleUpdateSpeakerInfo()}
           >
             Update
-            {loading && <Loader size={20} margin="0 0 0 5px" color="primary" />}
+            {apiStatus.loading && (
+              <Loader size={20} margin="0 0 0 5px" color="primary" />
+            )}
           </Button>
 
           <Button

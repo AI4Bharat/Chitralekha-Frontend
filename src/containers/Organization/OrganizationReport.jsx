@@ -214,7 +214,7 @@ const OrganizationReport = () => {
   };
 
   useEffect(() => {
-    let option = getOptions(apiStatus.progress);
+    let option = getOptions(apiStatus.loading);
 
     option = {
       ...option,
@@ -225,7 +225,7 @@ const OrganizationReport = () => {
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus.progress]);
+  }, [apiStatus]);
 
   return (
     <>

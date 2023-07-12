@@ -1,11 +1,13 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
+import C from "../../../constants";
 
 export default class SignupAPI extends API {
   constructor(id, data, timeout = 2000) {
     super("PATCH", timeout, false);
     this.id = id;
     this.data = data;
+    this.type = C.SIGNUP
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.signup
     }${id}/accept/`;

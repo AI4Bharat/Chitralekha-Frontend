@@ -103,7 +103,7 @@ const MemberList = () => {
         <MUIDataTable
           data={result}
           columns={columns}
-          options={getOptions(apiStatus.progress)}
+          options={getOptions(apiStatus.loading)}
         />
       </ThemeProvider>
     </>

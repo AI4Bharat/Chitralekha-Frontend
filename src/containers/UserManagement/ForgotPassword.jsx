@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
 //Styles
 import { LoginStyle } from "styles";
 
 //Components
-import { Grid, Typography, Link, Snackbar, Alert, Button } from "@mui/material";
+import { Grid, Typography, Link, Button } from "@mui/material";
 import AppInfo from "./AppInfo";
 import { OutlinedTextField } from "common";
 
@@ -15,27 +15,9 @@ import { APITransport, ForgotPasswordAPI } from "redux/actions";
 const ForgotPassword = () => {
   const classes = LoginStyle();
   const dispatch = useDispatch();
-  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState(false);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
-
-  useEffect(() => {
-    if (apiStatus.message) {
-      setSnackbarInfo({
-        ...snackbar,
-        open: true,
-        message: apiStatus.message,
-        variant: apiStatus.error ? "error" : "Success",
-      });
-    }
-    // eslint-disable-next-line
-  }, [apiStatus]);
 
   const handleChange = (value) => {
     setEmail(value);
@@ -110,26 +92,6 @@ const ForgotPassword = () => {
     );
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarInfo({
-      ...snackbar,
-      open: false,
-    });
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <Snackbar
-        open={snackbar.open}
-        handleClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={6000}
-      >
-        <Alert severity={snackbar.variant}>{snackbar.message}</Alert>
-      </Snackbar>
-    );
-  };
-
   return (
     <Grid container className={classes.loginGrid}>
       <Grid
@@ -144,7 +106,6 @@ const ForgotPassword = () => {
         <AppInfo />
       </Grid>
       <Grid item xs={12} sm={9} md={9} lg={9} className={classes.parent}>
-        {renderSnackBar()}
         {TextFields()}
       </Grid>
     </Grid>

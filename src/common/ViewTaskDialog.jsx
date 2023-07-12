@@ -19,7 +19,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import CustomizedSnackbars from "./Snackbar";
 
 //APIs
 import {
@@ -40,6 +39,7 @@ const ViewTaskDialog = ({
   fetchTaskList,
 }) => {
   const dispatch = useDispatch();
+
   const [transcriptSource, setTranscriptSource] = useState([]);
   const [file, setFile] = useState();
   const [dropDownText, setdropDownText] = useState("");
@@ -56,17 +56,6 @@ const ViewTaskDialog = ({
   const TranslationTypes = useSelector(
     (state) => state.getTranslationTypes.data
   );
-  const importApiStatus = useSelector((state) => state.apiStatus);
-
-  useEffect(() => {
-    setSnackbarInfo({
-      open: true,
-      variant: importApiStatus?.error ? "error" : "success",
-      message: importApiStatus.message,
-    });
-
-    // eslint-disable-next-line
-  }, [importApiStatus]);
 
   const transcriptTranslationType =
     taskDetail.task_type === "TRANSCRIPTION_EDIT"
@@ -103,23 +92,8 @@ const ViewTaskDialog = ({
     }, 1000);
   };
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   return (
     <>
-      {renderSnackBar()}
       <Dialog
         fullWidth={true}
         maxWidth={"md"}

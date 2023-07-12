@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { CustomizedSnackbars, TaskVideoDialog } from "common";
+import { TaskVideoDialog } from "common";
 
 //APIs
 import {
@@ -38,14 +38,8 @@ const ComparisonTable = () => {
   const dispatch = useDispatch();
 
   const [selectedTranscriptType, setSelectTranscriptType] = useState("");
-  const [loading, setLoading] = useState(false);
   const [currentLoadingSectionIndex, setCurrentLoadingSectionIndex] =
     useState("");
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -53,10 +47,28 @@ const ComparisonTable = () => {
   const comparsionData = useSelector((state) => state.setComparisonTable.data);
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progess, success, apiType, data } = apiStatus;
+
+    if (!progess) {
+      if (success) {
+        if (apiType === "COMPARISION_TABLE") {
+          navigate(`/task/${taskDetails.id}/transcript`);
+        }
+
+        if (apiType === "COMPARE_TRANSCRIPTION_SOURCE") {
+          dispatch(setComparisonTable(data));
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   useEffect(() => {
     if (comparsionData) {
-      setLoading(false);
       setCurrentLoadingSectionIndex("");
     }
   }, [comparsionData]);
@@ -132,55 +144,14 @@ const ComparisonTable = () => {
     }
 
     const projectObj = new ComparisionTableAPI(taskDetails.id, data);
-    //dispatch(APITransport(projectObj));
-
-    const res = await fetch(projectObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(projectObj.getBody()),
-      headers: projectObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      navigate(`/task/${taskDetails.id}/transcript`);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(projectObj));
   };
 
   const postCompareTranscriptionSource = (id, sourceTypeList, loadingIndex) => {
-    setLoading(true);
     setCurrentLoadingSectionIndex(loadingIndex);
+
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
-    fetch(apiObj.apiEndPoint(), {
-      method: "post",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    }).then(async (res) => {
-      const rsp_data = await res.json();
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: rsp_data?.message,
-          variant: "success",
-        });
-        dispatch(setComparisonTable(rsp_data));
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: rsp_data?.message,
-          variant: "error",
-        });
-      }
-    });
+    dispatch(APITransport(apiObj));
   };
 
   useEffect(() => {
@@ -205,19 +176,6 @@ const ComparisonTable = () => {
         return i !== indx;
       });
     });
-  };
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
   };
 
   const renderActionButton = (indx) => {
@@ -317,7 +275,7 @@ const ComparisonTable = () => {
                 </Select>
               </FormControl>
               {renderActionButton(indx)}
-              {loading && currentLoadingSectionIndex === indx ? (
+              {apiStatus.loading && currentLoadingSectionIndex === indx ? (
                 <div
                   className={classes.tableData}
                   style={{
@@ -376,8 +334,6 @@ const ComparisonTable = () => {
 
   return (
     <Grid container spacing={1} style={{ alignItems: "center" }}>
-      {/* {loading && <Spinner  />} */}
-      {renderSnackBar()}
       <Card className={classes.orgCard}>
         <TaskVideoDialog
           videoName={taskDetails.video_name}
