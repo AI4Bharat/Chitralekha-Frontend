@@ -121,8 +121,8 @@ const FilterList = ({
     updateFilters({
       taskType: [],
       status: [],
-      SrcLanguage: [],
-      TgtLanguage: [],
+      srcLanguage: [],
+      tgtLanguage: [],
     });
     handleClose();
   };
@@ -144,7 +144,7 @@ const FilterList = ({
         }}
       >
         <Grid container className={classes.filterContainer}>
-          {srcLanguageList?.length && (
+          {srcLanguageList?.length ? (
             <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
               <Typography
                 variant="body2"
@@ -174,9 +174,9 @@ const FilterList = ({
                 })}
               </FormGroup>
             </Grid>
-          )}
+          ) : null}
 
-          {tgtLanguageList?.length && (
+          {tgtLanguageList?.length ? (
             <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
               <Typography
                 variant="body2"
@@ -206,7 +206,7 @@ const FilterList = ({
                 })}
               </FormGroup>
             </Grid>
-          )}
+          ) : null}
 
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography
