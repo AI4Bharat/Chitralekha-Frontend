@@ -5,7 +5,7 @@ import C from "../../../constants";
 export default class BulkDownloadForVideoAPI extends API {
   constructor(id, type, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.CREATE_NEW_PROJECT;
+    this.type = C.BULK_VIDEO_DOWNLOAD;
     this.type = type;
     this.id = id;
     this.endpoint = `${super.apiEndPointAuto()}${

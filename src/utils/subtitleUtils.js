@@ -1,5 +1,5 @@
 import Sub from "./Sub";
-import { getUpdatedTime } from "./utils";
+import { getDateTime, getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
 import { noiseTags } from "config";
@@ -503,4 +503,99 @@ export const reGenerateTranslation = (index) => {
   copySub[index].retranslate = true;
 
   return copySub;
+};
+
+export const exportVoiceover = (url, taskDetails, exportTypes) => {
+  const { video_name: videoName, target_language: targetLanguage } =
+    taskDetails;
+
+  const { voiceover } = exportTypes;
+
+  const link = document.createElement("a");
+  link.href = url;
+
+  link.setAttribute(
+    "download",
+    `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`
+  );
+
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode.removeChild(link);
+};
+
+export const exportFile = (data, taskDetails, exportType, type) => {
+  const {
+    video: videoId,
+    src_language: sourceLanguage,
+    target_language: targetLanguage,
+  } = taskDetails;
+
+  let newBlob;
+  if (exportType === "docx") {
+    newBlob = new Blob([data], {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    });
+  } else {
+    newBlob = new Blob([data]);
+  }
+
+  const blobUrl = window.URL.createObjectURL(newBlob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+
+  const date = new Date();
+  const YYYYMMDD = date
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("");
+  const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+  const format = exportType === "docx-bilingual" ? "docx" : exportType;
+  const language = type === "transcription" ? sourceLanguage : targetLanguage;
+
+  link.setAttribute(
+    "download",
+    `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`
+  );
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode.removeChild(link);
+
+  // clean up Url
+  window.URL.revokeObjectURL(blobUrl);
+};
+
+export const exportZip = (data, type = "task", videoName) => {
+  const newBlob = new Blob([data], { type: "application/zip" });
+
+  const blobUrl = window.URL.createObjectURL(newBlob);
+
+  const link = document.createElement("a");
+  link.href = blobUrl;
+
+  const date = new Date();
+  const YYYYMMDD = date
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("");
+
+  const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+  let name = "";
+  if (type === "task") {
+    name = `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`;
+  } else {
+    name = `Chitralekha_Video_${videoName}_${YYYYMMDD}_${HHMMSS}.zip`;
+  }
+
+  link.setAttribute("download", name);
+
+  document.body.appendChild(link);
+
+  link.click();
+  link.parentNode.removeChild(link);
+  window.URL.revokeObjectURL(blobUrl);
 };

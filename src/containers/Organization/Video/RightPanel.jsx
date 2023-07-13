@@ -35,12 +35,7 @@ import {
   Select,
   useMediaQuery,
 } from "@mui/material";
-import {
-  ConfirmDialog,
-  CustomizedSnackbars,
-  TagsSuggestionList,
-  TimeBoxes,
-} from "common";
+import { ConfirmDialog, TagsSuggestionList, TimeBoxes } from "common";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -78,12 +73,8 @@ const RightPanel = ({ currentIndex }) => {
   );
   const limit = useSelector((state) => state.commonReducer.limit);
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [showPopOver, setShowPopOver] = useState(false);
   const [selectionStart, setSelectionStart] = useState();
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
@@ -91,7 +82,6 @@ const RightPanel = ({ currentIndex }) => {
   const [enableTransliteration, setTransliteration] = useState(true);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
@@ -105,6 +95,22 @@ const RightPanel = ({ currentIndex }) => {
   const [textAfterBackSlash, setTextAfterBackSlash] = useState("");
   const [enableTransliterationSuggestion, setEnableTransliterationSuggestion] =
     useState(true);
+  const [complete, setComplete] = useState(false);
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress && success && apiType === "SAVE_TRANSCRIPT" && complete) {
+      setTimeout(() => {
+        navigate(
+          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+        );
+        setComplete(false);
+      }, 2000);
+    }
+    
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   useEffect(() => {
     if (videoDetails.hasOwnProperty("video")) {
@@ -247,8 +253,6 @@ const RightPanel = ({ currentIndex }) => {
     isAutosave,
     payload = subtitles
   ) => {
-    setLoading(true);
-
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
@@ -262,55 +266,10 @@ const RightPanel = ({ currentIndex }) => {
       reqBody.final = true;
     }
 
+    setComplete(isFinal);
+
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    const res = await fetch(obj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(obj.getBody()),
-      headers: obj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message
-          ? resp?.message
-          : isAutosave
-          ? "Saved as draft"
-          : "",
-        variant: "success",
-      });
-
-      setLoading(false);
-
-      if (isFinal) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-        }, 2000);
-      }
-    } else {
-      setLoading(false);
-      setSnackbarInfo({
-        open: isAutosave,
-        message: "Failed",
-        variant: "error",
-      });
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(obj));
   };
 
   const handleTimeChange = useCallback(
@@ -415,7 +374,6 @@ const RightPanel = ({ currentIndex }) => {
 
   return (
     <>
-      {renderSnackBar()}
       <Box
         className={classes.rightPanelParentBox}
         style={{ position: "relative" }}
@@ -625,7 +583,7 @@ const RightPanel = ({ currentIndex }) => {
             handleClose={() => setOpenConfirmDialog(false)}
             submit={() => saveTranscriptHandler(true, true)}
             message={"Do you want to submit the transcript?"}
-            loading={loading}
+            loading={apiStatus.loading}
           />
         )}
 

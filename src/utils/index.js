@@ -7,6 +7,9 @@ import {
   assignSpeakerId,
   base64toBlob,
   copySubs,
+  exportFile,
+  exportVoiceover,
+  exportZip,
   fontMenu,
   formatSub,
   fullscreenUtil,
@@ -118,4 +121,7 @@ export {
   steps,
   getTagsList,
   reGenerateTranslation,
+  exportVoiceover,
+  exportFile,
+  exportZip,
 };

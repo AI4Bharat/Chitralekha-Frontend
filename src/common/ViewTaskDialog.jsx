@@ -34,8 +34,6 @@ const ViewTaskDialog = ({
   handleClose,
   compareHandler,
   id,
-  snackbar,
-  setSnackbarInfo,
   fetchTaskList,
 }) => {
   const dispatch = useDispatch();

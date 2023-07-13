@@ -26,7 +26,7 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { ConfirmDialog, CustomizedSnackbars, TimeBoxes } from "common";
+import { ConfirmDialog, TimeBoxes } from "common";
 
 //APIs
 import C from "redux/constants";
@@ -60,21 +60,39 @@ const TranslationRightPanel = ({ currentIndex }) => {
     (state) => state.getTranscriptPayload.data
   );
   const limit = useSelector((state) => state.commonReducer.limit);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [sourceText, setSourceText] = useState([]);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [enableTransliteration, setTransliteration] = useState(true);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [regenerate, setRegenerate] = useState(false);
+  const [complete, setComplete] = useState(false);
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
+      if (regenerate) {
+        getPayload(currentPage, limit);
+      }
+
+      if (complete) {
+        setTimeout(() => {
+          navigate(
+            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+          );
+          setComplete(false);
+        }, 2000);
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   useEffect(() => {
     if (currentPage) {
@@ -197,60 +215,11 @@ const TranslationRightPanel = ({ currentIndex }) => {
       reqBody.final = true;
     }
 
+    setComplete(isFinal);
+    setRegenerate(isRegenerate);
+
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    const res = await fetch(obj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(obj.getBody()),
-      headers: obj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setLoading(false);
-
-      setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message
-          ? resp?.message
-          : isAutosave
-          ? "Saved as draft"
-          : "Translation Submitted Successfully",
-        variant: "success",
-      });
-
-      if (isRegenerate) {
-        getPayload(currentPage, limit);
-      }
-
-      if (isFinal) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-        }, 2000);
-      }
-    } else {
-      setLoading(false);
-
-      setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(obj));
   };
 
   const handleTimeChange = useCallback(
@@ -347,8 +316,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
   return (
     <>
-      {renderSnackBar()}
-
       <Box
         className={classes.rightPanelParentBox}
         style={{ position: "relative" }}
@@ -571,7 +538,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
             handleClose={() => setOpenConfirmDialog(false)}
             submit={() => saveTranscriptHandler(true, false, sourceText)}
             message={"Do you want to submit the translation?"}
-            loading={loading}
+            loading={apiStatus.loading}
           />
         )}
       </Box>
