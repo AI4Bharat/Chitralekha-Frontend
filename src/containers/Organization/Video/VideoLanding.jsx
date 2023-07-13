@@ -237,7 +237,7 @@ const VideoLanding = () => {
       {renderLoader()}
 
       <Grid container direction={"row"} className={classes.parentGrid}>
-        <Grid md={8} xs={12} id="video" className={classes.videoParent}>
+        <Grid md={6} xs={12} id="video" className={classes.videoParent}>
           <Box
             style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
             className={classes.videoBox}
@@ -308,7 +308,7 @@ const VideoLanding = () => {
           </Box>
         </Grid>
 
-        <Grid md={4} xs={12} sx={{ width: "100%" }}>
+        <Grid md={6} xs={12} sx={{ width: "100%" }}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
             <RightPanel currentIndex={currentIndex} />
           ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
