@@ -3,14 +3,14 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class BulkDownloadForVideoAPI extends API {
-  constructor(id, type, timeout = 2000) {
+  constructor(id, exportType, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.BULK_VIDEO_DOWNLOAD;
-    this.type = type;
+    this.exportType = exportType;
     this.id = id;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.video
-    }download_all?video_id=${id}&export_type=${type}`;
+    }download_all?video_id=${id}&export_type=${exportType}`;
   }
 
   processResponse(res) {

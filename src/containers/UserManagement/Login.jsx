@@ -21,6 +21,7 @@ import {
   APITransport,
   FetchLoggedInUserDetailsAPI,
   LoginAPI,
+  setSnackBar,
 } from "redux/actions";
 
 const Login = () => {
@@ -51,6 +52,12 @@ const Login = () => {
         if (apiType === "GET_USER_ACCESS_TOKEN") {
           localStorage.setItem("token", data.access);
           getLoggedInUserData();
+        }
+      } else {
+        if (apiType === "GET_USER_ACCESS_TOKEN") {
+          dispatch(
+            setSnackBar({ open: true, message: data.detail, variant: "error" })
+          );
         }
       }
     }

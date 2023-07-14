@@ -12,6 +12,7 @@ import {
   FetchOrganizationDetailsAPI,
   UploadCSVAPI,
   ProjectListAPI,
+  setSnackBar,
 } from "redux/actions";
 
 //Styles
@@ -86,6 +87,7 @@ const MyOrganization = () => {
         }
       } else {
         if (apiType === "UPLOAD_CSV") {
+          dispatch(setSnackBar({ open: false }));
           setShowCSVAlert(true);
           setAlertData(data);
         }

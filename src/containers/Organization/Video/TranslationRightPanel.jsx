@@ -34,6 +34,7 @@ import {
   APITransport,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
+  setSnackBar,
   setSubtitles,
 } from "redux/actions";
 
@@ -72,11 +73,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [redoStack, setRedoStack] = useState([]);
   const [regenerate, setRegenerate] = useState(false);
   const [complete, setComplete] = useState(false);
+  const [autoSave, setAutoSave] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
 
     if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
+      if (!autoSave) {
+        dispatch(setSnackBar({ open: false }));
+      }
+
       if (regenerate) {
         getPayload(currentPage, limit);
       }
@@ -217,6 +223,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
     setComplete(isFinal);
     setRegenerate(isRegenerate);
+    setAutoSave(isAutosave);
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));

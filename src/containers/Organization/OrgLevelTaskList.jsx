@@ -67,6 +67,7 @@ import {
   exportTranscriptionAPI,
   exportTranslationAPI,
   setComparisonTable,
+  setSnackBar,
 } from "redux/actions";
 
 const OrgLevelTaskList = () => {
@@ -141,7 +142,9 @@ const OrgLevelTaskList = () => {
   const orgId = userData?.organization?.id;
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector((state) => state.getPreviewData.data);
+  const previewData = useSelector(
+    (state) => state.getPreviewData?.data?.data?.payload
+  );
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -156,8 +159,8 @@ const OrgLevelTaskList = () => {
             break;
 
           case "DELETE_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
-            handleDialogClose("exportDialog");
+            handleDialogClose("deleteDialog");
+            fetchTaskList();
             break;
 
           case "EXPORT_TRANSCRIPTION":
@@ -208,11 +211,15 @@ const OrgLevelTaskList = () => {
         }
       } else {
         if (apiType === "DELETE_TASK") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("deleteDialog")
           setDeleteMsg(data.message);
           setDeleteResponse(data.response);
         }
 
         if (apiType === "DELETE_BULK_TASK") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("deleteDialog")
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
         }

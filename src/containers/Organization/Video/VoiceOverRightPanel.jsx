@@ -87,7 +87,7 @@ const VoiceOverRightPanel = () => {
           setCanSave(false);
           setOpenConfirmDialog(false);
 
-          if (!getUpdatedAudio) {
+          if (jumpToOffset) {
             getPayloadAPI(jumpToOffset);
           }
 
@@ -103,6 +103,8 @@ const VoiceOverRightPanel = () => {
             dispatch(setSubtitlesForCheck(newSub));
             dispatch(setSubtitles(sub, C.SUBTITLES));
           }
+
+          getPayloadAPI(currentPage);
         }
       } else {
         if (apiType === "SAVE_TRANSCRIPT") {
@@ -355,10 +357,6 @@ const VoiceOverRightPanel = () => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
-            // onUndo={onUndo}
-            // onRedo={onRedo}
-            // undoStack={undoStack}
-            // redoStack={redoStack}
             durationError={durationError}
           />
         </Grid>

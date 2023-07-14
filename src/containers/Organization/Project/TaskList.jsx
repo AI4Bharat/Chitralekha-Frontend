@@ -67,6 +67,7 @@ import {
   exportTranscriptionAPI,
   exportTranslationAPI,
   setComparisonTable,
+  setSnackBar,
 } from "redux/actions";
 import constants from "redux/constants";
 
@@ -150,7 +151,9 @@ const TaskList = () => {
   } = useSelector((state) => state.getTaskList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector((state) => state.getPreviewData.data);
+  const previewData = useSelector(
+    (state) => state.getPreviewData?.data?.data?.payload
+  );
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -165,8 +168,8 @@ const TaskList = () => {
             break;
 
           case "DELETE_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
-            handleDialogClose("exportDialog");
+            handleDialogClose("deleteDialog");
+            fetchTaskList();
             break;
 
           case "EXPORT_TRANSCRIPTION":
@@ -197,7 +200,11 @@ const TaskList = () => {
             fetchTaskList();
             break;
 
-          case "EDIT_BULK_TASK_DETAILS" || "EDIT_TASK_DETAILS":
+          case "EDIT_BULK_TASK_DETAILS":
+            fetchTaskList();
+            break;
+
+          case "EDIT_TASK_DETAILS":
             fetchTaskList();
             break;
 
@@ -217,11 +224,15 @@ const TaskList = () => {
         }
       } else {
         if (apiType === "DELETE_TASK") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.response);
         }
 
         if (apiType === "DELETE_BULK_TASK") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
         }
@@ -880,7 +891,7 @@ const TaskList = () => {
           openDialog={openDialogs.deleteDialog}
           handleClose={() => handleDialogClose("deleteDialog")}
           submit={() => handleDeleteSubmit()}
-          loading={loading}
+          loading={apiStatus.loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
         />

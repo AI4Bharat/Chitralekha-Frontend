@@ -46,6 +46,7 @@ import {
   APITransport,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
+  setSnackBar,
   setSubtitles,
 } from "redux/actions";
 
@@ -96,19 +97,26 @@ const RightPanel = ({ currentIndex }) => {
   const [enableTransliterationSuggestion, setEnableTransliterationSuggestion] =
     useState(true);
   const [complete, setComplete] = useState(false);
+  const [autoSave, setAutoSave] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
 
-    if (!progress && success && apiType === "SAVE_TRANSCRIPT" && complete) {
-      setTimeout(() => {
-        navigate(
-          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-        );
-        setComplete(false);
-      }, 2000);
+    if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
+      if (!autoSave) {
+        dispatch(setSnackBar({ open: false }));
+      }
+
+      if (complete) {
+        setTimeout(() => {
+          navigate(
+            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+          );
+          setComplete(false);
+        }, 2000);
+      }
     }
-    
+
     // eslint-disable-next-line
   }, [apiStatus]);
 
@@ -267,6 +275,7 @@ const RightPanel = ({ currentIndex }) => {
     }
 
     setComplete(isFinal);
+    setAutoSave(isAutosave);
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));

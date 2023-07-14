@@ -111,13 +111,10 @@ const ComparisonTable = () => {
   ];
 
   useEffect(() => {
-    const apiObj = new FetchTaskListAPI();
-    dispatch(APITransport(apiObj));
-
     const obj = new FetchTranscriptTypesAPI();
     dispatch(APITransport(obj));
     // eslint-disable-next-line
-  }, [taskDetails]);
+  }, []);
 
   const handleSubmit = async () => {
     let data = {};

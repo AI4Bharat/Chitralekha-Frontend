@@ -120,11 +120,13 @@ const Project = () => {
         }
 
         if (apiType === "CREATE_NEW_VIDEO") {
+          dispatch(setSnackBar({ open: false }));
           setShowAlert(true);
           setAlertData(data);
         }
       } else {
         if (apiType === "UPLOAD_CSV") {
+          dispatch(setSnackBar({ open: false }));
           setShowCSVAlert(true);
           setAlertData(data);
         }

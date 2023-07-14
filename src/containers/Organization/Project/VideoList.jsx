@@ -39,6 +39,7 @@ import {
   CreateNewTaskAPI,
   DeleteVideoAPI,
   FetchTranslationExportTypesAPI,
+  setSnackBar,
 } from "redux/actions";
 
 const VideoList = ({ data, removeVideo }) => {
@@ -80,6 +81,7 @@ const VideoList = ({ data, removeVideo }) => {
 
           case "CREATE_NEW_TASk":
             if (isBulk) {
+              dispatch(setSnackBar({ open: false }));
               setShowAlert(true);
               setAlertData(data);
             }
