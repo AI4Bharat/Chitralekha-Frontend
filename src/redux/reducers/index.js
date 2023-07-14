@@ -24,7 +24,6 @@ import getSupportedLanguages from "./Project/FetchSupportedLanguage";
 import getTranscriptPayload from "./Project/FetchTranscriptPayload";
 import getVideoTaskList from "./Project/FetchVideoTaskList";
 import getManagerName from "./Project/FetchManagerName";
-import getExportTranscription from "./Project/ExportTranscription";
 import DeleteVideo from "./Project/DeleteVideo";
 import getOrganizatioUsers from "./Organization/FetchOrganizatioUsers";
 import getOrganizatioProjectManagersUser from "./Organization/FetchOrganizatioProjectManagersUser";
@@ -75,7 +74,6 @@ const rootReducer = {
     getTranscriptPayload,
     getVideoTaskList,
     getManagerName,
-    getExportTranscription,
     DeleteVideo,
     getOrganizatioUsers,
     getOrganizatioProjectManagersUser,
