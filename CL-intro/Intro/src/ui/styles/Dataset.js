@@ -75,6 +75,9 @@ const DatasetStyle = makeStyles({
     alignItems: "center",
     width: "250px",
     // border: "1px solid gray",
+    "&:hover": {
+      backgroundColor: "#E0E0E0",
+    },
   },
   featuresimg: {
     width: "150px",

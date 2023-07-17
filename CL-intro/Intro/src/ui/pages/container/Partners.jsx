@@ -1,14 +1,10 @@
 import React from "react";
-import { Grid, Typography, Button, Paper, Tooltip } from "@mui/material";
+import { Grid, Typography, Button, } from "@mui/material";
 import DatasetStyle from "../../styles/Dataset";
 import Chitralekhalogo from "../../../img/Chitralekha_Logo.png";
-// import LightTooltip from "../component/common/Tooltip";
 import { ThemeProvider } from "@mui/material";
 import themeDefault from "../../styles/theme/theme";
-import Nptel from "../../../img/Nptel.png";
-import TicTacLearn from "../../../img/TicTac.png";
-import Pratham from "../../../img/Partham.png";
-import EkStep from "../../../img/EkStep.png";
+
 
 export default function Partners() {
   const classes = DatasetStyle();
@@ -61,8 +57,8 @@ export default function Partners() {
             alignItems="center"
             justifyContent="center"
             sx={{
-              mt: 4,
-              mb: 15,
+              mt: 10,
+              mb: 10,
               display: "flex",
               justifyContent: "space-between",
             }}
@@ -70,7 +66,7 @@ export default function Partners() {
              {partnerData?.map((el, i) => (
             <Grid item xs={12} sm={12} md={3} lg={3} xl={3} >
                 <Button  onClick={()=>handleClickImg(el.link)} sx={{ textTransform: "capitalize" }}>
-                  <div component="div" style={{margin: 0, padding: 0, lineHeight: 0, }} className={classes.PartnersPaper}>
+                  <div component="div" style={{margin:0, padding:  "8px 0 8px 0px", lineHeight: 0, }} className={classes.PartnersPaper}>
                     <img
                       src={el.image}
                       alt="logo"
@@ -79,55 +75,7 @@ export default function Partners() {
                   </div>
                 </Button>
             </Grid>  ))}
-            {/* <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                  <a target="_blank" href="https://tictaclearn.org/">
-                <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.PartnersPaper}>
-                    <img
-                      src={TicTacLearn}
-                      alt="logo"
-                      className={classes.Chitralekhalogo}
-                    />
-                  </Paper>
-                </Button>
-                </a>
-             
-            </Grid> */}
-            {/* <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <Tooltip
-                arrow
-                title="Pratham"
-                placement="bottom-start"
-              >
-                <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.PartnersPaper}>
-                    <img
-                      src={Pratham}
-                      alt="logo"
-                      className={classes.Chitralekhalogo}
-                    />
-                  </Paper>
-                </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <Tooltip
-                arrow
-                title="EkStep"
-                placement="bottom-start"
-              >
-                <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.PartnersPaper}>
-                    <img
-                      src={EkStep}
-                      alt="logo"
-                      className={classes.Chitralekhalogo}
-                    />
-                  </Paper>
-                </Button>
-              </Tooltip>
-            </Grid> */}
-            
+           
           </Grid>
         </Grid>
       </div>
