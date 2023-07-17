@@ -35,6 +35,7 @@ import {
   FetchUserDetailsAPI,
   UpdateEmailAPI,
   UpdateProfileAPI,
+  UpdateUserRoleAPI,
 } from "redux/actions";
 
 const EditProfile = () => {
@@ -74,6 +75,7 @@ const EditProfile = () => {
     availability: false,
     languages: false,
   });
+  const [roleIsEdited, setRoleIsEdited] = useState(false);
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -137,14 +139,23 @@ const EditProfile = () => {
 
   const handleFieldChange = (event) => {
     event.preventDefault();
+
+    const {
+      target: { name, value },
+    } = event;
+
     setUserDetails((prev) => ({
       ...prev,
-      [event.target.name]: event.target.value,
+      [name]: value,
     }));
 
-    if (event.target.name === "email") {
-      setEmail(event.target.value);
-      event.target.value !== originalEmail
+    if (name === "role") {
+      setRoleIsEdited(true);
+    }
+
+    if (name === "email") {
+      setEmail(value);
+      value !== originalEmail
         ? setEnableVerifyEmail(true)
         : setEnableVerifyEmail(false);
     }
@@ -249,18 +260,17 @@ const EditProfile = () => {
       });
   };
 
-  const getDisabledOption = (name, value) => {
-    if (name === "role" || name === "org" || name === "availability") {
-      if (
-        loggedInUserData.role === "ADMIN" ||
-        loggedInUserData.role === "ORG_OWNER"
-      ) {
-        return !value;
+  const getDisabledOption = (name) => {
+    const { id: userId, role } = loggedInUserData;
+
+    if (userId === +id) {
+      if (role === "ADMIN" || role === "ORG_OWNER") {
+        return name === "org" || name === "availability";
       } else {
-        return true;
+        return name === "role" || name === "org" || name === "availability";
       }
     } else {
-      return !value;
+      return name !== "role";
     }
   };
 
@@ -305,7 +315,7 @@ const EditProfile = () => {
           value={userDetails?.[name]}
           MenuProps={MenuProps}
           onChange={handleFieldChange}
-          disabled={getDisabledOption(name, canEdit[name])}
+          disabled={!canEdit[name]}
           sx={{
             "& .MuiSelect-select": {
               fontSize: "1rem !important",
@@ -361,6 +371,36 @@ const EditProfile = () => {
     }
   );
 
+  const onSubmitClick = () => {
+    const { id: userId, role } = loggedInUserData;
+
+    if (userId === +id) {
+      if (role === "ADMIN" || role === "ORG_OWNER") {
+        if (roleIsEdited) {
+          updateRole();
+        }
+
+        handleSubmit();
+      } else {
+        handleSubmit();
+      }
+    } else {
+      updateRole();
+    }
+  };
+
+  const updateRole = () => {
+    setRoleIsEdited(false);
+
+    const body = {
+      user_id: id,
+      role: userDetails?.role?.value,
+    };
+
+    const apiObj = new UpdateUserRoleAPI(body);
+    dispatch(APITransport(apiObj));
+  };
+
   return (
     <Fragment>
       <Card className={classes.editProfileParentCard}>
@@ -384,12 +424,14 @@ const EditProfile = () => {
               </Grid>
 
               {(loggedInUserData.id === +id ||
-                loggedInUserData.role === "ADMIN") && (
+                loggedInUserData.role === "ADMIN" ||
+                loggedInUserData.role === "ORG_OWNER") && (
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                   <Button
                     variant="outlined"
                     className={classes.editProfileBtn}
                     onClick={() => handleFieldEdit(element.name)}
+                    disabled={getDisabledOption(element.name)}
                   >
                     <EditIcon className={classes.editIcon} />
                     Edit
@@ -400,7 +442,9 @@ const EditProfile = () => {
           );
         })}
 
-        {(loggedInUserData.id === +id || loggedInUserData.role === "ADMIN") && (
+        {(loggedInUserData.id === +id ||
+          loggedInUserData.role === "ADMIN" ||
+          loggedInUserData.role === "ORG_OWNER") && (
           <Grid
             container
             direction="row"
@@ -411,7 +455,7 @@ const EditProfile = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={handleSubmit}
+              onClick={() => onSubmitClick()}
               sx={{ borderRadius: "8px", width: "180px" }}
               className={classes.editProfileBtn}
             >
