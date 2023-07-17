@@ -15,10 +15,10 @@ const GlobalStyles = makeStyles({
   root: {
     // background: "#F8F8F8",
     flexGrow: 1,
-    height: window.innerHeight,
+    // height: window.innerHeight,
     zIndex: 1,
     position: "relative",
-    minHeight: "720px",
+    // minHeight: "720px",
     display: "flex",
     flexDirection: "column",
     // "@media (max-width:400px)": {
