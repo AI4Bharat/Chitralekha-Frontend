@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Typography, Button, Paper } from "@mui/material";
-import {Routes, Route, useNavigate,Link} from 'react-router-dom';
+import { Routes, Route, useNavigate, Link } from "react-router-dom";
 import DatasetStyle from "../../../styles/Dataset";
 import YouTube from "../../../../img/youtube.png";
 import Github from "../../../../img/gitHub.png";
@@ -10,14 +10,12 @@ function Footer() {
   const classes = DatasetStyle();
   const navigate = useNavigate();
 
-  const handleClickThanks = () =>{
-    navigate('/thanks');
-
-  }
-
+  const handleClickThanks = () => {
+    navigate("/thanks");
+  };
   return (
-    <div >
-      <Grid container direction="row"  >
+    <div>
+      <Grid container direction="row">
         <Grid
           item
           xs={12}
@@ -37,8 +35,12 @@ function Footer() {
             target="_blank"
             href="https://www.youtube.com/@chitralekha-bhashini"
           >
-            {" "}
-            <img src={YouTube} alt="logo" style={{height:"48px"}}className={classes.footerimg} />
+            <img
+              src={YouTube}
+              alt="logo"
+              style={{ height: "48px" }}
+              className={classes.footerimg}
+            />
           </a>
         </Grid>
         <Grid
@@ -52,17 +54,17 @@ function Footer() {
         >
           <Typography>
             Want to be a part of Chitralekha?
-            <a target="_blank" href={"mailto:"+"chitralekha.tool@gmail.com"} >
-            <Button
-              variant="contained"
-              sx={{
-                border: "1px solid white",
-                ml: 2,
-                textTransform: "capitalize",
-              }}
-            >
-              Contact Us
-            </Button>
+            <a target="_blank" href={"mailto:" + "chitralekha.tool@gmail.com"}>
+              <Button
+                variant="contained"
+                sx={{
+                  border: "1px solid white",
+                  ml: 2,
+                  textTransform: "capitalize",
+                }}
+              >
+                Contact Us
+              </Button>
             </a>
           </Typography>
         </Grid>
@@ -77,13 +79,23 @@ function Footer() {
           xl={2}
           className={classes.footerGrid}
         >
-           <a href="https://github.com/AI4Bharat/Chitralekha/blob/master/LICENSE" style={{color:"white",textDecoration:"none"}}>
-            <Typography variant="caption" sx={{ml:"2px"}}> License </Typography>{" "}
-          </a> <span  style={{margin:"0px 15px 0px 15px"}}>|</span>
-         
-            <Typography variant="caption" onClick={handleClickThanks} sx={{mt:1}} className={classes.thanks} > Thanks </Typography>{" "} 
-            
-          
+          <a
+            href="https://github.com/AI4Bharat/Chitralekha/blob/master/LICENSE"
+            style={{ color: "white", textDecoration: "none" }}
+          >
+            <Typography variant="caption" sx={{ ml: "2px" }}>
+              License
+            </Typography>
+          </a>
+          <span style={{ margin: "0px 15px 0px 15px" }}>|</span>
+          <Typography
+            variant="caption"
+            onClick={handleClickThanks}
+            sx={{ mt: 1 }}
+            className={classes.thanks}
+          >
+            Thanks
+          </Typography>
         </Grid>
         <Grid
           item
@@ -93,9 +105,8 @@ function Footer() {
           lg={7}
           xl={7}
           className={classes.footerGrid}
-        >
-          </Grid>
-        
+        ></Grid>
+
         <Grid
           item
           xs={12}
@@ -104,23 +115,21 @@ function Footer() {
           lg={3}
           xl={3}
           className={classes.footerGridlast}
-          
         >
-         
-          <a href="https://ai4bharat.org/"  style={{color:"white",textDecoration:"none"}}>
-            {" "}
-            <Typography variant="caption"    > AI4Bharat  </Typography>{" "}
-          </a><span  style={{margin:"0px 15px 0px 15px"}}>|</span>
-          <a href="https://ekstep.org/" style={{color:"white",textDecoration:"none"}}>
-            {" "}
+          <a
+            href="https://ai4bharat.org/"
+            style={{ color: "white", textDecoration: "none" }}
+          >
+            <Typography variant="caption"> AI4Bharat </Typography>{" "}
+          </a>
+          <span style={{ margin: "0px 15px 0px 15px" }}>|</span>
+          <a
+            href="https://ekstep.org/"
+            style={{ color: "white", textDecoration: "none" }}
+          >
             <Typography variant="caption"> EkStep </Typography>{" "}
           </a>
-        
-          
-         
-         
         </Grid>
-        
       </Grid>
     </div>
   );

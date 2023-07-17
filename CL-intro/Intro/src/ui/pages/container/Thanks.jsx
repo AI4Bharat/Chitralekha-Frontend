@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea, Grid } from "@mui/material";
 import { ThemeProvider } from "@mui/material";
 import themeDefault from "../../styles/theme/theme";
-import TeamDetails from "../../../utils/UserDetails";
+import teamDetails from "../../../utils/UserDetails";
 
 function Thanks() {
   useEffect(() => {
@@ -28,13 +28,13 @@ function Thanks() {
           Our Team
         </Typography>
         <Grid container spacing={1} sx={{ ml: "13px" }}>
-          {TeamDetails?.map((el, i) => (
+          {teamDetails?.map((el, i) => (
             <Grid item xs={6} sm={6} md={3} lg={3} xl={3} sx={{ p: 8 }}>
               <Card>
                 <CardMedia sx={{ height: 300 }} image={el.img} />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    {el.Name}
+                    {el.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {el.value}

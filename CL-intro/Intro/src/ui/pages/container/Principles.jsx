@@ -23,10 +23,7 @@ export default function Principles() {
           xl={12}
           sx={{ mt: 9, mb: 1 }}
         >
-          <Typography
-            variant="h4"
-            className={classes.titles}
-          >
+          <Typography variant="h4" className={classes.titles}>
             Principles
           </Typography>
           <Grid
@@ -37,7 +34,11 @@ export default function Principles() {
             sx={{ mt: 3 }}
           >
             <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
-              <img src={Scalable} alt="logo" className={classes.Principlesimg} />
+              <img
+                src={Scalable}
+                alt="logo"
+                className={classes.Principlesimg}
+              />
               <Typography
                 variant="h4"
                 sx={{ mt: 1, mb: 1 }}
@@ -45,14 +46,11 @@ export default function Principles() {
               >
                 Scalable
               </Typography>
-              <Typography
-                variant="body2"
-                className={classes.PrinciplesContent}
-              
-              >
-                Chitralekha has a modular & micro-service based <br/>  architecture 
-                and uses a message queue to orchestrate the tasks  <br/> & workflows.
-                 Containerization provides the <br/> option to  scale the application to infinity.
+              <Typography variant="body2" className={classes.principlesContent}>
+                Chitralekha has a modular & micro-service based <br />{" "}
+                architecture and uses a message queue to orchestrate the tasks{" "}
+                <br /> & workflows. Containerization provides the <br /> option
+                to scale the application to infinity.
               </Typography>
             </Grid>
             <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
@@ -64,14 +62,12 @@ export default function Principles() {
               >
                 Dynamic
               </Typography>
-              <Typography
-                variant="body2"
-                className={classes.PrinciplesContent}
-              >
-              Chitralekha provides an option to dynamically pick<br/>
-               the models of your choice. It also provides the <br/>
-                option to pick up the tasks dynamically across 
-                 Digitization,<br/> Translation, Checker & Super-Checker.
+              <Typography variant="body2" className={classes.principlesContent}>
+                Chitralekha provides an option to dynamically pick
+                <br />
+                the models of your choice. It also provides the <br />
+                option to pick up the tasks dynamically across Digitization,
+                <br /> Translation, Checker & Super-Checker.
               </Typography>
             </Grid>
           </Grid>
@@ -85,7 +81,11 @@ export default function Principles() {
           sx={{ mt: 2 }}
         >
           <Grid item xs={4} sm={4} md={4} lg={4} xl={4} sx={{ mt: 4 }}>
-            <img src={Extensible} alt="logo" className={classes.Principlesimg} />
+            <img
+              src={Extensible}
+              alt="logo"
+              className={classes.Principlesimg}
+            />
             <Typography
               variant="h4"
               sx={{ mt: 1, mb: 1 }}
@@ -93,13 +93,11 @@ export default function Principles() {
             >
               Extensible
             </Typography>
-            <Typography
-              variant="body2"
-              className={classes.PrinciplesContent}
-            >
-             Any new models can be plugged in to the system <br />
-              and micro-service & cloud-agnostic based <br />architecture gives 
-               flexibility to extend other capabilities with minimal code changes
+            <Typography variant="body2" className={classes.principlesContent}>
+              Any new models can be plugged in to the system <br />
+              and micro-service & cloud-agnostic based <br />
+              architecture gives flexibility to extend other capabilities with
+              minimal code changes
               <br />
             </Typography>
           </Grid>
@@ -112,13 +110,12 @@ export default function Principles() {
             >
               Elegant
             </Typography>
-            <Typography
-              variant="body2"
-              className={classes.PrinciplesContent}
-            >
-             Chitralekha portal is simple and explicit.<br/>
-              Role based hierarchical gives the flexibility to work <br/>
-               both as a team or individual. Most of the configurations and <br/> features can be easily tuned.
+            <Typography variant="body2" className={classes.principlesContent}>
+              Chitralekha portal is simple and explicit.
+              <br />
+              Role based hierarchical gives the flexibility to work <br />
+              both as a team or individual. Most of the configurations and{" "}
+              <br /> features can be easily tuned.
             </Typography>
           </Grid>
         </Grid>

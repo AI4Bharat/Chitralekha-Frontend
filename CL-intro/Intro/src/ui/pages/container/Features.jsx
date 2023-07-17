@@ -15,13 +15,9 @@ export default function Features() {
     <ThemeProvider theme={themeDefault}>
       <div>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mt: 10 }}>
-          <Typography
-            variant="h4"
-            className={classes.titles}
-          >
+          <Typography variant="h4" className={classes.titles}>
             Features
           </Typography>
-
           <Grid
             container
             direction="row"
@@ -35,7 +31,6 @@ export default function Features() {
                 alt="logo"
                 className={classes.featuresimg}
               />
-
               <Typography
                 variant="h4"
                 sx={{ mb: 3, mt: 1 }}
@@ -43,15 +38,11 @@ export default function Features() {
               >
                 Pure Python
               </Typography>
-              <Typography
-                variant="body1"
-                className={classes.featuresContent}
-               
-              >
-               Chitralekha is purely built on technologies supported by Python.
-               This offers wide variety of tech stack to be easily integrated.
-               The cloud agnostic stack also provides the flexibility to host
-               in any on-prem or cloud platforms.
+              <Typography variant="body1" className={classes.featuresContent}>
+                Chitralekha is purely built on technologies supported by Python.
+                This offers wide variety of tech stack to be easily integrated.
+                The cloud agnostic stack also provides the flexibility to host
+                in any on-prem or cloud platforms.
               </Typography>
             </Grid>
           </Grid>
@@ -70,17 +61,13 @@ export default function Features() {
                 sx={{ mb: 3, mt: 1 }}
                 className={classes.featuresTitle}
               >
-               Clean & Powerful UI
+                Clean & Powerful UI
               </Typography>
-              <Typography
-                variant="body2"
-                className={classes.featuresContent}
-              >
-              The heavy lifting is done in the background. 
-              The UI is designed to be as simple as possible,
-              but not compromising on any of the features. 
-              Easy to submit the documents for digitization, 
-              translation, review, workflow management, job monitoring etc.
+              <Typography variant="body2" className={classes.featuresContent}>
+                The heavy lifting is done in the background. The UI is designed
+                to be as simple as possible, but not compromising on any of the
+                features. Easy to submit the documents for digitization,
+                translation, review, workflow management, job monitoring etc.
               </Typography>
             </Grid>
           </Grid>
@@ -104,19 +91,14 @@ export default function Features() {
               >
                 Robust Integrations
               </Typography>
-              <Typography
-                variant="body2"
-                className={classes.featuresContent}
-              >
-               Chitralekha provides many plug-and-play features
-               that are ready to execute your digitization &
-               translation tasks using any of the available models.
-               This makes Chitralekha easy to apply to current infrastructure
-              and extend to next-gen technologies.
+              <Typography variant="body2" className={classes.featuresContent}>
+                Chitralekha provides many plug-and-play features that are ready
+                to execute your digitization & translation tasks using any of
+                the available models. This makes Chitralekha easy to apply to
+                current infrastructure and extend to next-gen technologies.
               </Typography>
             </Grid>
           </Grid>
-
           <Grid
             container
             direction="row"
@@ -133,17 +115,14 @@ export default function Features() {
               >
                 Easy to Use
               </Typography>
-              <Typography
-                variant="body2"
-                className={classes.featuresContent}
-              >
-                Anyone with basic knowledge in language can be onboarded to Chitralekha.
-                It does not limit the scope of your tasks; you can use it to build
-                 pipelines to generate the final translated version of the submitted documents.
+              <Typography variant="body2" className={classes.featuresContent}>
+                Anyone with basic knowledge in language can be onboarded to
+                Chitralekha. It does not limit the scope of your tasks; you can
+                use it to build pipelines to generate the final translated
+                version of the submitted documents.
               </Typography>
             </Grid>
           </Grid>
-
           <Grid
             container
             direction="row"
@@ -164,15 +143,12 @@ export default function Features() {
               >
                 Open Source
               </Typography>
-              <Typography
-                variant="body2"
-                className={classes.featuresContent}
-              >
-                Wherever you want to share your improvement you can 
-                do this by opening a PR. It's simple as that, no barriers, 
-                no prolonged procedures. Chitralekha has many active users who 
-                willingly share their experiences. Have any questions? Reach 
-                out to us via github or email
+              <Typography variant="body2" className={classes.featuresContent}>
+                Wherever you want to share your improvement you can do this by
+                opening a PR. It's simple as that, no barriers, no prolonged
+                procedures. Chitralekha has many active users who willingly
+                share their experiences. Have any questions? Reach out to us via
+                github or email
               </Typography>
             </Grid>
           </Grid>

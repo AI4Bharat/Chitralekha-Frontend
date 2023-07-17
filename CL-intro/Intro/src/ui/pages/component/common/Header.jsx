@@ -33,10 +33,11 @@ function Header(props) {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", mt: 3 }}>
       <Grid>
         <img src={Chitralekhalogo} style={{ maxWidth: "90px" }} alt="logo" />
-
         <Grid>
-          {" "}
-          <a target="_blank" href="https://www.youtube.com/@chitralekha-bhashini">
+          <a
+            target="_blank"
+            href="https://www.youtube.com/@chitralekha-bhashini"
+          >
             <Button
               sx={{
                 color: "#51504f",
@@ -50,11 +51,7 @@ function Header(props) {
           </a>
         </Grid>
         <Grid>
-          {" "}
-          <a
-            target="_blank"
-            href="https://github.com/AI4Bharat/Chitralekha"
-          >
+          <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha">
             <Button
               sx={{
                 color: "#51504f",
@@ -67,9 +64,7 @@ function Header(props) {
             </Button>
           </a>
         </Grid>
-
         <Grid>
-          {" "}
           <a
             target="_blank"
             href="https://github.com/AI4Bharat/Chitralekha/wiki"
@@ -87,7 +82,6 @@ function Header(props) {
           </a>
         </Grid>
         <Grid>
-          {" "}
           <Button
             onClick={handleClickUseCases}
             sx={{
@@ -121,7 +115,10 @@ function Header(props) {
         <Toolbar>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Grid>
-              <a target="_blank" href="https://www.youtube.com/@chitralekha-bhashini">
+              <a
+                target="_blank"
+                href="https://www.youtube.com/@chitralekha-bhashini"
+              >
                 <Button
                   sx={{
                     color: "#51504f",
@@ -150,7 +147,6 @@ function Header(props) {
                   CodeBase
                 </Button>
               </a>
-
               <a
                 target="_blank"
                 href="https://github.com/AI4Bharat/Chitralekha/wiki"
@@ -167,7 +163,6 @@ function Header(props) {
                   Wiki
                 </Button>
               </a>
-
               <Button
                 onClick={handleClickUseCases}
                 sx={{
@@ -207,10 +202,7 @@ function Header(props) {
             }}
           >
             <a target="_blank" href="https://chitralekha.ai4bharat.org/">
-              <Button
-                variant="contained"
-                className={classes.button}
-              >
+              <Button variant="contained" className={classes.button}>
                 Login
               </Button>
             </a>
@@ -247,5 +239,4 @@ function Header(props) {
     </Box>
   );
 }
-
 export default Header;

@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, Typography, Button, Link, Paper, Box } from "@mui/material";
 import Partners from "../container/Partners";
 import Features from "../container/Features";
 import Principles from "../container/Principles";
 import Footer from "./common/Footer";
-import Header from "./common/Header";
 import DatasetStyle from "../../styles/Dataset";
 import Chitralekhaimg from "../../../img/chiralekha-bg.png";
 
@@ -15,9 +14,12 @@ function ChitralekhaPortal() {
     window.open(url, "_blank");
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
+
   return (
     <div>
-      {/* <Header /> */}
       <Grid container direction="row" className={classes.section}>
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6} sx={{ mt: 20, mb: 20 }}>
           <Typography variant="h2" className={classes.Chitralekhatitle}>
@@ -39,7 +41,6 @@ function ChitralekhaPortal() {
             Source captions, Custom subtitle files etc) and voice over(Ex: mp3
             for audio only, mp4 for audio-video combination, etc)
           </Typography>
-
           <Button
             variant="contained"
             className={classes.buttons}
@@ -59,7 +60,6 @@ function ChitralekhaPortal() {
           </Box>
         </Grid>
       </Grid>
-
       <Principles />
       <Features />
       <Partners />
