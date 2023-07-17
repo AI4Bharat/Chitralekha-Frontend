@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Typography, Button, Link, Paper, Box } from "@mui/material";
-import Integrations from "../container/Integrations";
+import Partners from "../container/Partners";
 import Features from "../container/Features";
 import Principles from "../container/Principles";
 import Footer from "./common/Footer";
@@ -20,7 +20,7 @@ function ChitralekhaPortal() {
       {/* <Header /> */}
       <Grid container direction="row" className={classes.section}>
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6} sx={{ mt: 20, mb: 20 }}>
-          <Typography variant="h2" className={classes.Anuvaadtitle}>
+          <Typography variant="h2" className={classes.Chitralekhatitle}>
             Chitralekha
           </Typography>
           <Typography
@@ -62,7 +62,7 @@ function ChitralekhaPortal() {
 
       <Principles />
       <Features />
-      <Integrations />
+      <Partners />
       <Footer />
     </div>
   );

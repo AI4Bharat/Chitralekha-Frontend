@@ -48,7 +48,7 @@ export default function Features() {
                 className={classes.featuresContent}
                
               >
-               Anuvaad is purely built on technologies supported by Python.
+               Chitralekha is purely built on technologies supported by Python.
                This offers wide variety of tech stack to be easily integrated.
                The cloud agnostic stack also provides the flexibility to host
                in any on-prem or cloud platforms.
@@ -108,10 +108,10 @@ export default function Features() {
                 variant="body2"
                 className={classes.featuresContent}
               >
-               Anuvaad provides many plug-and-play features
+               Chitralekha provides many plug-and-play features
                that are ready to execute your digitization &
                translation tasks using any of the available models.
-               This makes Anuvaad easy to apply to current infrastructure
+               This makes Chitralekha easy to apply to current infrastructure
               and extend to next-gen technologies.
               </Typography>
             </Grid>
@@ -137,7 +137,7 @@ export default function Features() {
                 variant="body2"
                 className={classes.featuresContent}
               >
-                Anyone with basic knowledge in language can be onboarded to Anuvaad.
+                Anyone with basic knowledge in language can be onboarded to Chitralekha.
                 It does not limit the scope of your tasks; you can use it to build
                  pipelines to generate the final translated version of the submitted documents.
               </Typography>
@@ -170,7 +170,7 @@ export default function Features() {
               >
                 Wherever you want to share your improvement you can 
                 do this by opening a PR. It's simple as that, no barriers, 
-                no prolonged procedures. Anuvaad has many active users who 
+                no prolonged procedures. Chitralekha has many active users who 
                 willingly share their experiences. Have any questions? Reach 
                 out to us via github or email
               </Typography>

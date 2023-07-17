@@ -26,7 +26,7 @@ const DatasetStyle = makeStyles({
   },
 
 
-  Anuvaadtitle: {
+  Chitralekhatitle: {
     fontWeight: "500",
     fontSize: "62px",
     lineHeight: 1.17,
@@ -69,7 +69,7 @@ const DatasetStyle = makeStyles({
   
     
   },
-  integrationPaper: {
+  PartnersPaper: {
     padding: "2px 4px",
     display: "block",
     alignItems: "center",
@@ -149,7 +149,16 @@ const DatasetStyle = makeStyles({
     backgroundColor: "rgb(44, 39, 153)",
     borderRadius: "5px",
     display:"flex",
-  marginLeft:"42px"
+    marginLeft:"42px",
+    fontSize: "16px",
+    fontFamily: "roboto,sans-serif",
+    height:"35px",
+    marginTop: "8px",
+    marginRight: "30px",
+    padding:"22px",
+    "&:hover": {
+      backgroundColor:"#04115E"
+    },
    
   },
   thanks:{
@@ -166,7 +175,22 @@ const DatasetStyle = makeStyles({
 
       }
 
-  }
+  },
+
+  button: {
+    backgroundColor:"rgb(44, 39, 153)",
+    textTransform: "capitalize",
+    fontSize: "16px",
+    fontFamily: "roboto,sans-serif",
+    height:"35px",
+    marginTop: "8px",
+    marginRight: "30px",
+    padding:"22px",
+    "&:hover": {
+      backgroundColor:"#04115E"
+     
+    },
+  },
 });
 
 export default DatasetStyle;

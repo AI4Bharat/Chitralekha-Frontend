@@ -5,7 +5,6 @@ import DatasetStyle from "../../../styles/Dataset";
 import YouTube from "../../../../img/youtube.png";
 import Github from "../../../../img/gitHub.png";
 import Twitter from "../../../../img/twitter.png";
-import YouTubeIcon from '@mui/icons-material/YouTube';
 
 function Footer() {
   const classes = DatasetStyle();
@@ -31,7 +30,7 @@ function Footer() {
           <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha">
             <img src={Github} alt="logo" className={classes.footerimg} />{" "}
           </a>
-          <a target="_blank" href="https://twitter.com/hashtag/Bhashini?src=hashtag_click">
+          <a target="_blank" href=" https://twitter.com/ai4bharat">
             <img src={Twitter} alt="logo" className={classes.footerimg} />
           </a>
           <a
@@ -53,7 +52,7 @@ function Footer() {
         >
           <Typography>
             Want to be a part of Chitralekha?
-            <a target="_blank" href={"mailto:"+"Chitralekha@tarento.com"} >
+            <a target="_blank" href={"mailto:"+"chitralekha.tool@gmail.com"} >
             <Button
               variant="contained"
               sx={{

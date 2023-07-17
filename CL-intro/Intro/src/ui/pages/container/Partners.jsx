@@ -10,8 +10,40 @@ import TicTacLearn from "../../../img/TicTac.png";
 import Pratham from "../../../img/Partham.png";
 import EkStep from "../../../img/EkStep.png";
 
-export default function Integrations() {
+export default function Partners() {
   const classes = DatasetStyle();
+
+  const partnerData = [
+    {
+      image: require("../../../img/Nptel.png"),
+      title: 'Nptel',
+      link: 'https://nptel.ac.in/'
+
+    },
+    {
+      image: require("../../../img/TicTac.png"),
+      title: 'TicTacLearn',
+      link: 'https://tictaclearn.org/'
+
+    },
+    {
+      image: require("../../../img/Partham.png"),
+      title: 'Pratham' ,
+      link: ''
+
+    },
+    {
+      image: require("../../../img/EkStep.png"),
+      title: 'EkStep' ,
+      link: 'https://ekstep.org/'
+
+    }
+  ]
+
+
+ const  handleClickImg = (link) =>{
+  window.open(link);
+ }
   return (
     <ThemeProvider theme={themeDefault}>
       <div>
@@ -35,31 +67,22 @@ export default function Integrations() {
               justifyContent: "space-between",
             }}
           >
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <Tooltip
-                arrow
-                title="NPTEL"
-                placement="bottom-start"
-              >
-                <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.integrationPaper}>
+             {partnerData?.map((el, i) => (
+            <Grid item xs={12} sm={12} md={3} lg={3} xl={3} >
+                <Button  onClick={()=>handleClickImg(el.link)} sx={{ textTransform: "capitalize" }}>
+                  <div component="div" style={{margin: 0, padding: 0, lineHeight: 0, }} className={classes.PartnersPaper}>
                     <img
-                      src={Nptel}
+                      src={el.image}
                       alt="logo"
-                      style={{marginTop:"-7px"}}
+                      style={{width:"230px", aspectRatio: '1'}}
                     />
-                  </Paper>
+                  </div>
                 </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <Tooltip
-                arrow
-                title="TicTac"
-                placement="bottom-start"
-              >
+            </Grid>  ))}
+            {/* <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                  <a target="_blank" href="https://tictaclearn.org/">
                 <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.integrationPaper}>
+                  <Paper component="form" className={classes.PartnersPaper}>
                     <img
                       src={TicTacLearn}
                       alt="logo"
@@ -67,16 +90,17 @@ export default function Integrations() {
                     />
                   </Paper>
                 </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                </a>
+             
+            </Grid> */}
+            {/* <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
               <Tooltip
                 arrow
                 title="Pratham"
                 placement="bottom-start"
               >
                 <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.integrationPaper}>
+                  <Paper component="form" className={classes.PartnersPaper}>
                     <img
                       src={Pratham}
                       alt="logo"
@@ -89,11 +113,11 @@ export default function Integrations() {
             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
               <Tooltip
                 arrow
-                title="Convegenius"
+                title="EkStep"
                 placement="bottom-start"
               >
                 <Button sx={{ textTransform: "capitalize" }}>
-                  <Paper component="form" className={classes.integrationPaper}>
+                  <Paper component="form" className={classes.PartnersPaper}>
                     <img
                       src={EkStep}
                       alt="logo"
@@ -102,7 +126,7 @@ export default function Integrations() {
                   </Paper>
                 </Button>
               </Tooltip>
-            </Grid>
+            </Grid> */}
             
           </Grid>
         </Grid>

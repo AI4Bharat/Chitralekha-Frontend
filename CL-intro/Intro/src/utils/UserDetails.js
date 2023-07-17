@@ -11,6 +11,23 @@ const TeamDetails = [
       value: "Product Manager, Tarento Technologies",
       img: require("../img/aravinth.png"),
     },
+    {
+      Name: "Gokul Nc",
+      value: "Project Officer, IIT Madras",
+      img: require("../img/GokulNC.png"),
+    },
+    {
+      Name: "Ishvinder Sethi",
+      value: "Project Associate, IIT Madras",
+      img: require("../img/Ishvinder_Sethi.png"),
+    },
+    {
+      Name: "A Aparna",
+      value: "Project Associate, IIT Madras",
+      img: require("../img/Aparna.png"),
+    },
+   
+   
     
     {
       Name: "Alpana Majhi",
@@ -32,7 +49,7 @@ const TeamDetails = [
       {
         Name: "Harsh Malviya",
         value: "Senior Consultant, Tarento Technologies",
-        // img: require("../img/Vipul.png"),
+        img: require("../img/Harsh.png"),
       },
       {
         Name: "Mrigank Shekhar Shringi",

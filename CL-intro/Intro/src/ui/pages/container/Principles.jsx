@@ -50,7 +50,7 @@ export default function Principles() {
                 className={classes.PrinciplesContent}
               
               >
-                Anuvaad has a modular & micro-service based <br/>  architecture 
+                Chitralekha has a modular & micro-service based <br/>  architecture 
                 and uses a message queue to orchestrate the tasks  <br/> & workflows.
                  Containerization provides the <br/> option to  scale the application to infinity.
               </Typography>
@@ -68,7 +68,7 @@ export default function Principles() {
                 variant="body2"
                 className={classes.PrinciplesContent}
               >
-              Anuvaad provides an option to dynamically pick<br/>
+              Chitralekha provides an option to dynamically pick<br/>
                the models of your choice. It also provides the <br/>
                 option to pick up the tasks dynamically across 
                  Digitization,<br/> Translation, Checker & Super-Checker.
@@ -116,7 +116,7 @@ export default function Principles() {
               variant="body2"
               className={classes.PrinciplesContent}
             >
-             Anuvaad portal is simple and explicit.<br/>
+             Chitralekha portal is simple and explicit.<br/>
               Role based hierarchical gives the flexibility to work <br/>
                both as a team or individual. Most of the configurations and <br/> features can be easily tuned.
             </Typography>

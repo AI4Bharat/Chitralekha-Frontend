@@ -209,16 +209,7 @@ function Header(props) {
             <a target="_blank" href="https://chitralekha.ai4bharat.org/">
               <Button
                 variant="contained"
-                // className={classes.buttons}
-                sx={{
-                  textTransform: "capitalize",
-                  fontSize: "16px",
-                  fontFamily: "roboto,sans-serif",
-                  mt: 2,
-                  mr: 4,
-                  backgroundColor:"rgb(44, 39, 153)",
-                  height:"38px"
-                }}
+                className={classes.button}
               >
                 Login
               </Button>
@@ -226,7 +217,7 @@ function Header(props) {
             <Link to={`/`}>
               <img
                 src={Chitralekhalogo}
-                style={{ maxWidth: "70px" }}
+                style={{ maxWidth: "60px" }}
                 alt="logo"
               />
             </Link>
