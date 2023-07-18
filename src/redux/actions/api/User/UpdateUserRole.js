@@ -2,19 +2,20 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchUserRolesAPI extends API {
-  constructor(timeout = 2000) {
-    super("GET", timeout, false);
-    this.type = C.UPDATE_USER_ROLE;
+export default class UpdateUserRoleAPI extends API {
+  constructor(data, timeout = 2000) {
+    super("POST", timeout, false);
+    this.data = data;
+    this.type = C.UPDATE_PROFILE;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.userRoles
-    }get_roles/`;
+    }update_user_role/`;
   }
 
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-      this.report = res;
+      this.updateEmail = res;
     }
   }
 
@@ -22,7 +23,9 @@ export default class FetchUserRolesAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return this.data;
+  }
 
   getHeaders() {
     this.headers = {
@@ -35,6 +38,6 @@ export default class FetchUserRolesAPI extends API {
   }
 
   getPayload() {
-    return this.report;
+    return this.updateEmail;
   }
 }

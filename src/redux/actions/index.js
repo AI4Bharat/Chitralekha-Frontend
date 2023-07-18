@@ -96,6 +96,7 @@ import UpdateEmailAPI from "./api/User/UpdateEmail";
 import UpdateMyPasswordAPI from "./api/User/UpdateMyPassword";
 import UpdateProfileAPI from "./api/User/UpdateProfile";
 import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
+import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
 
 //Commom Actions
 import {
@@ -222,4 +223,5 @@ export {
   APITransport,
   FetchVoiceoverExportTypesAPI,
   FetchSupportedBulkTaskTypeAPI,
+  UpdateUserRoleAPI,
 };
