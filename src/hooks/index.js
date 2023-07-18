@@ -1,3 +1,4 @@
+import useAutosave from "./useAutosave";
 import { useVideoSubtitle } from "./useVideoSubtitle";
 
-export { useVideoSubtitle };
+export { useAutosave, useVideoSubtitle };

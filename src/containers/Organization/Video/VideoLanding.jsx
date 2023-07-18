@@ -42,6 +42,7 @@ import {
   FetchVideoDetailsAPI,
   FullScreen,
   FullScreenVideo,
+  SaveTranscriptAPI,
   UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
@@ -84,7 +85,39 @@ const VideoLanding = () => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const limit = useSelector((state) => state.commonReducer.limit);
+
   const ref = useRef(0);
+  const firstLoaded = useRef(false);
+
+  useEffect(() => {
+    const save = () => {
+      const reqBody = {
+        task_id: taskId,
+        offset: currentPage,
+        limit: limit,
+        payload: {
+          payload: subs,
+        },
+      };
+
+      if (firstLoaded.current) {
+        const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+        dispatch(APITransport(obj));
+      } else {
+        firstLoaded.current = true;
+      }
+    };
+
+    const autosave = setInterval(save, 60 * 1000);
+
+    return () => {
+      clearInterval(autosave);
+    };
+
+    // eslint-disable-next-line
+  }, [subs, firstLoaded, currentPage, limit]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
