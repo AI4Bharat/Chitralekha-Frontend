@@ -154,7 +154,7 @@ const OrgLevelTaskList = () => {
     const search = {
       video_name: searchedColumn?.video_name,
       description: searchedColumn?.description,
-      assignee: searchedColumn?.username,
+      assignee: searchedColumn?.user,
     };
 
     const filter = {

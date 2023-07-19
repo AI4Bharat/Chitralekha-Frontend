@@ -272,13 +272,6 @@ export const taskListColumns = [
     },
   },
   {
-    name: "video_name",
-    label: "Video Name",
-    options: {
-      customBodyRender: renderTaskListColumnCell,
-    },
-  },
-  {
     name: "created_at",
     label: "Created At",
     options: {
@@ -336,37 +329,9 @@ export const taskListColumns = [
     },
   },
   {
-    name: "user",
-    label: "Assignee",
-    options: {
-      customBodyRender: (value, tableMeta) => {
-        const { tableData: data, rowIndex } = tableMeta;
-        const selectedTask = data[rowIndex];
-
-        return (
-          <Box
-            style={{
-              color: selectedTask.is_active ? "" : "grey",
-            }}
-          >
-            {value.first_name} {value.last_name}
-          </Box>
-        );
-      },
-    },
-  },
-  {
     name: "time_spent",
     label: "Time Spent",
     options: {
-      customBodyRender: renderTaskListColumnCell,
-    },
-  },
-  {
-    name: "description",
-    label: "Description",
-    options: {
-      display: "exclude",
       customBodyRender: renderTaskListColumnCell,
     },
   },

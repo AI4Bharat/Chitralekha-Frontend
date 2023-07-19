@@ -526,7 +526,7 @@ const VideoLandingStyle = makeStyles({
 
   paginationBox: {
     position: "absolute",
-    bottom: "-9%",
+    bottom: "-62px",
     background: "#fff",
     width: "100%",
     color: "#fff",
