@@ -44,7 +44,6 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import {
   AddProjectMembers,
   AlertComponent,
-  CSVAlertComponent,
   CreateVideoDialog,
   CustomizedSnackbars,
   Loader,
@@ -76,7 +75,6 @@ const Project = () => {
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
   const [value, setValue] = useState(0);
@@ -106,6 +104,8 @@ const Project = () => {
     },
   ]);
   const [speakerType, setSpeakerType] = useState("individual");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColumn, setAlertColumn] = useState("");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -238,7 +238,9 @@ const Project = () => {
 
     if (res.ok) {
       setShowAlert(true);
-      setAlertData(resp);
+      setAlertData(resp.detailed_report);
+      setAlertMessage(resp.message);
+      setAlertColumn("createVideoAlertColumns");
       setSnackbarInfo({
         open: false,
       });
@@ -291,8 +293,10 @@ const Project = () => {
           variant: "success",
         });
       } else {
-        setShowCSVAlert(true);
-        setAlertData(resp);
+        setShowAlert(true);
+        setAlertData(resp.response);
+        setAlertMessage(resp.message);
+        setAlertColumn("csvAlertColumns");
       }
     };
     reader.readAsBinaryString(file[0]);
@@ -544,7 +548,7 @@ const Project = () => {
           setSpeakerInfo={setSpeakerInfo}
           speakerInfo={speakerInfo}
           speakerType={speakerType}
-          setSpeakerType={setSpeakerType} 
+          setSpeakerType={setSpeakerType}
         />
       )}
 
@@ -564,17 +568,9 @@ const Project = () => {
         <AlertComponent
           open={showAlert}
           onClose={() => setShowAlert(false)}
-          message={alertData.message}
-          report={alertData.detailed_report}
-        />
-      )}
-
-      {showCSVAlert && (
-        <CSVAlertComponent
-          open={showCSVAlert}
-          onClose={() => setShowCSVAlert(false)}
-          message={alertData.message}
-          report={alertData.response}
+          message={alertMessage}
+          report={alertData}
+          columns={alertColumn}
         />
       )}
     </Grid>

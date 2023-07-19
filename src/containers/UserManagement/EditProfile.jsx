@@ -23,7 +23,11 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { CustomizedSnackbars as Snackbar, UpdateEmailDialog } from "common";
+import {
+  AlertComponent,
+  CustomizedSnackbars as Snackbar,
+  UpdateEmailDialog,
+} from "common";
 import EditIcon from "@mui/icons-material/Edit";
 
 //APIs
@@ -76,7 +80,10 @@ const EditProfile = () => {
     languages: false,
   });
   const [roleIsEdited, setRoleIsEdited] = useState(false);
-
+  const [alertData, setAlertData] = useState();
+  const [alertColumn, setAlertColumn] = useState();
+  const [openAlert, setOpenAlert] = useState(false);
+  console.log(alertData, "alertData");
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
@@ -389,7 +396,7 @@ const EditProfile = () => {
     }
   };
 
-  const updateRole = () => {
+  const updateRole = async () => {
     setRoleIsEdited(false);
 
     const body = {
@@ -398,7 +405,26 @@ const EditProfile = () => {
     };
 
     const apiObj = new UpdateUserRoleAPI(body);
-    dispatch(APITransport(apiObj));
+
+    const response = await fetch(apiObj.apiEndPoint(), {
+      method: "POST",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await response.json();
+
+    if (response.ok) {
+      setSnackbarState({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    } else {
+      setOpenAlert(true);
+      setAlertData(resp);
+      setAlertColumn("updateRoleAlertColumns");
+    }
   };
 
   return (
@@ -471,6 +497,16 @@ const EditProfile = () => {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         hide={2000}
       />
+
+      {openAlert && (
+        <AlertComponent
+          open={openAlert}
+          onClose={() => setOpenAlert(false)}
+          message={alertData.message}
+          report={alertData.data}
+          columns={alertColumn}
+        />
+      )}
 
       {showEmailDialog && (
         <UpdateEmailDialog

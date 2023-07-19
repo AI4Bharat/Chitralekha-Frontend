@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
+  AlertComponent,
   CustomizedSnackbars,
   DeleteDialog,
   ExportDialog,
@@ -31,7 +32,6 @@ import {
   SpeakerInfoDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
-  UploadAlertComponent,
   UploadFormatDialog,
   ViewTaskDialog,
 } from "common";
@@ -136,10 +136,11 @@ const OrgLevelTaskList = () => {
     speakerInfo: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [alertColumn, setAlertColumn] = useState("");
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
-  console.log(exportTypes, "exportTypes");
+
   const {
     total_count: totalCount,
     tasks_list: taskList,
@@ -609,6 +610,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         setBulkSubtitleAlert(true);
         setBulkSubtitleAlertData(resp);
+        setAlertColumn("uploadAlertColumns");
       } else {
         setSnackbarInfo({
           open: true,
@@ -1238,11 +1240,12 @@ const OrgLevelTaskList = () => {
       )}
 
       {bulkSubtitleAlert && (
-        <UploadAlertComponent
+        <AlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+          columns={alertColumn}
         />
       )}
 
