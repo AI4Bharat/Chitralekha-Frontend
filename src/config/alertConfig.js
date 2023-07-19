@@ -106,7 +106,7 @@ export const uploadAlertColumns = (data) => {
       },
     },
     {
-      name: "message",
+      name: "source_language",
       label: "Language",
       customBodyRender: (value, tableMeta) => {
         const { rowIndex } = tableMeta;
@@ -123,7 +123,7 @@ export const uploadAlertColumns = (data) => {
       },
     },
     {
-      name: "message",
+      name: "status",
       label: "Status",
       customBodyRender: (value, tableMeta) => {
         const { rowIndex } = tableMeta;
