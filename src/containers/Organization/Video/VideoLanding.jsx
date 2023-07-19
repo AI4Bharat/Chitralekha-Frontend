@@ -92,6 +92,14 @@ const VideoLanding = () => {
   const firstLoaded = useRef(false);
 
   useEffect(() => {
+    let hidden = false;
+
+    const handleVisibilityChange = () => {
+      hidden = document.hidden;
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const save = () => {
       const reqBody = {
         task_id: taskId,
@@ -102,7 +110,7 @@ const VideoLanding = () => {
         },
       };
 
-      if (firstLoaded.current) {
+      if (firstLoaded.current && !hidden) {
         const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
         dispatch(APITransport(obj));
       } else {
@@ -114,6 +122,7 @@ const VideoLanding = () => {
 
     return () => {
       clearInterval(autosave);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
 
     // eslint-disable-next-line
@@ -286,7 +295,10 @@ const VideoLanding = () => {
   };
 
   return (
-    <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
+    <Grid
+      className={fullscreen ? classes.fullscreenStyle : ""}
+      id="videoLanding"
+    >
       {renderSnackBar()}
 
       {renderLoader()}
