@@ -1,3 +1,9 @@
+import {
+  createVideoAlertColumns,
+  csvAlertColumns,
+  updateRoleAlertColumns,
+  uploadAlertColumns,
+} from "./alertConfig";
 import endpoints from "./apiendpoint";
 import authenticated from "./authenticated";
 import configs from "./config";
@@ -99,4 +105,8 @@ export {
   tamilTagsSuggestionData,
   teluguTagsSuggestionData,
   noiseTags,
+  createVideoAlertColumns,
+  csvAlertColumns,
+  uploadAlertColumns,
+  updateRoleAlertColumns,
 };
