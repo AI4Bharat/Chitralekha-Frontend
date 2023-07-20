@@ -270,7 +270,6 @@ const ProjectStyle = makeStyles({
   },
 
   contentTaskType: {
-    width: "20%",
     padding: "10px",
     color: "rgba(73, 124, 39)",
     backgroundColor: "rgba(45, 191, 56 ,0.3 )",
