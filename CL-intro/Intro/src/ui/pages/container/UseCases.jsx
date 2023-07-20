@@ -62,7 +62,6 @@ const useCaseData = [
       "NPTEL is in the process of translating approximately 36,000 hours of video lectures into multiple Indic languages using Chitralekha.",
   },
 ];
-
 function UseCases() {
   const classes = DatasetStyle();
 
