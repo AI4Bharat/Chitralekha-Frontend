@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
+import {
+  createVideoAlertColumns,
+  csvAlertColumns,
+  uploadAlertColumns,
+  updateRoleAlertColumns,
+} from "config";
 
 //Styles
 import { ProjectStyle } from "styles";
+import { themeDefault } from "theme";
 
 //Components
-import { Alert, Box, Snackbar } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Snackbar,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import { createVideoAlertColumns } from "config";
-import { csvAlertColumns } from "config";
-import { uploadAlertColumns } from "config";
-import { updateRoleAlertColumns } from "config";
 
 const AlertComponent = ({ open, message, report, onClose, columns }) => {
   const classes = ProjectStyle();
@@ -56,6 +65,21 @@ const AlertComponent = ({ open, message, report, onClose, columns }) => {
       break;
   }
 
+  const getMuiTheme = () =>
+    createTheme({
+      ...themeDefault,
+      components: {
+        ...themeDefault.components,
+        MuiTableRow: {
+          styleOverrides: {
+            root: {
+              backgroundColor: "rgba(254, 191, 44, 0.1)",
+            },
+          },
+        },
+      },
+    });
+
   return (
     <Snackbar
       open={open}
@@ -79,7 +103,9 @@ const AlertComponent = ({ open, message, report, onClose, columns }) => {
         </Box>
 
         {tableData.length ? (
-          <MUIDataTable data={tableData} columns={column} options={options} />
+          <ThemeProvider theme={getMuiTheme()}>
+            <MUIDataTable data={tableData} columns={column} options={options} />
+          </ThemeProvider>
         ) : null}
       </Alert>
     </Snackbar>

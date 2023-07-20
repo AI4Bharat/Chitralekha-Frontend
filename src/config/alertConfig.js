@@ -17,6 +17,9 @@ export const createVideoAlertColumns = (data) => {
         setCellProps: () => ({
           style: { width: "30%", textAlign: "center" },
         }),
+        customBodyRender: (value, tableMeta) => {
+          return <Box className={classes.contentTaskType}>{value}</Box>;
+        },
       },
     },
     {
