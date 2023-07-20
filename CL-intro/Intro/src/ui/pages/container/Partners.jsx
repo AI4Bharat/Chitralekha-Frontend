@@ -21,7 +21,7 @@ export default function Partners() {
     {
       image: require("../../../img/Partham.png"),
       title: "Pratham",
-      link: "",
+      link: "https://www.pratham.org/",
     },
     {
       image: require("../../../img/EkStep.png"),
