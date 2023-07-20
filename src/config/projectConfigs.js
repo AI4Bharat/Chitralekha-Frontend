@@ -5,6 +5,8 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import UploadIcon from "@mui/icons-material/Upload";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 
 export const genderOptions = [
   {
@@ -94,6 +96,18 @@ export const voiceOptions = [
 ];
 
 export const buttonConfig = [
+  {
+    title: "Info",
+    color: "primary",
+    icon: <InfoOutlinedIcon />,
+    key: "Info",
+  },
+  {
+    title: "Reopen",
+    color: "primary",
+    icon: <LockOpenOutlinedIcon />,
+    key: "Reopen",
+  },
   {
     title: "Upload Subtitles to Youtube",
     color: "primary",

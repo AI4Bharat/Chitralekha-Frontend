@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
 import { getColumns, getDateTime, getOptions, roles } from "utils";
-import { buttonConfig, orgTaskListColumns, toolBarActions } from "config";
+import { buttonConfig, failInfoColumns, orgTaskListColumns, toolBarActions } from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
@@ -29,6 +29,7 @@ import {
   FilterList,
   PreviewDialog,
   SpeakerInfoDialog,
+  TableDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
   UploadAlertComponent,
@@ -57,6 +58,7 @@ import {
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
   exportTranscriptionAPI,
@@ -109,7 +111,11 @@ const OrgLevelTaskList = () => {
     editTaskDialog: false,
     uploadDialog: false,
     speakerInfoDialog: false,
+    tableDialog: false,
   });
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   //Bulk Opertaion States
   const [isBulk, setIsBulk] = useState(false);
@@ -633,6 +639,39 @@ const OrgLevelTaskList = () => {
     setUploadTaskRowIndex(rowIndex);
   };
 
+  const handleInfoButtonClick = async (id) => {
+    const apiObj = new UploadToYoutubeAPI(id);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        handleDialogClose("tableDialog");
+        setTableDialogColumn(failInfoColumns);
+        setTableDialogMessage(resp.message);
+        setTableDialogResponse(resp.data);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
+  };
+
   const handleActionButtonClick = (tableMeta, action) => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
@@ -683,6 +722,15 @@ const OrgLevelTaskList = () => {
 
       case "Delete":
         handleDeleteTask(id, false);
+        break;
+
+      case "Info":
+        handleInfoButtonClick(id);
+        break;
+
+      case "Reopen":
+        const apiObj = new ReopenTaskAPI(id);
+        dispatch(APITransport(apiObj));
         break;
 
       default:
@@ -1284,6 +1332,16 @@ const OrgLevelTaskList = () => {
           updateFilters={setSearchedColumn}
           currentFilters={searchedColumn}
           searchedCol={searchedCol}
+        />
+      )}
+
+      {openDialogs.tableDialog && (
+        <TableDialog
+          openDialog={openDialogs.tableDialog}
+          handleClose={() => handleDialogClose("tableDialog")}
+          message={tableDialogMessage}
+          response={tableDialogResponse}
+          columns={tableDialogColumn}
         />
       )}
     </>

@@ -79,6 +79,8 @@ import UpdateVideoAPI from "./api/Project/UpdateVideo";
 import UploadCSVAPI from "./api/Project/UploadCSV";
 import UploadToYoutubeAPI from "./api/Project/UploadToYoutube";
 import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskTypes";
+import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
+import ReopenTaskAPI from "./api/Project/ReopenTask";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -222,4 +224,6 @@ export {
   APITransport,
   FetchVoiceoverExportTypesAPI,
   FetchSupportedBulkTaskTypeAPI,
+  FetchTaskFailInfoAPI,
+  ReopenTaskAPI,
 };
