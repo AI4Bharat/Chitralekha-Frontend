@@ -297,7 +297,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           disabled={getDisbled()}
-          onClick={() => saveTranscriptHandler(false, true)}
+          onClick={() => saveTranscriptHandler(false)}
         >
           <SaveIcon />
         </IconButton>

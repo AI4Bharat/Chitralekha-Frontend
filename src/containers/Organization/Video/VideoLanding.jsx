@@ -42,6 +42,7 @@ import {
   FetchVideoDetailsAPI,
   FullScreen,
   FullScreenVideo,
+  SaveTranscriptAPI,
   UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
@@ -84,7 +85,59 @@ const VideoLanding = () => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const limit = useSelector((state) => state.commonReducer.limit);
+
   const ref = useRef(0);
+  const saveIntervalRef = useRef(null);
+
+  useEffect(() => {
+    const handleAutosave = () => {
+      const reqBody = {
+        task_id: taskId,
+        offset: currentPage,
+        limit: limit,
+        payload: {
+          payload: subs,
+        },
+      };
+
+      const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+      dispatch(APITransport(obj));
+    };
+
+    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+
+    const handleBeforeUnload = (event) => {
+      handleAutosave();
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Add event listener for visibility change
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Tab is active, restart the autosave interval
+        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+      } else {
+        handleAutosave();
+        // Tab is inactive, clear the autosave interval
+        clearInterval(saveIntervalRef.current);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(saveIntervalRef.current);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+
+    // eslint-disable-next-line
+  }, [currentPage, limit, subs]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -253,7 +306,10 @@ const VideoLanding = () => {
   };
 
   return (
-    <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
+    <Grid
+      className={fullscreen ? classes.fullscreenStyle : ""}
+      id="videoLanding"
+    >
       {renderSnackBar()}
 
       {renderLoader()}
