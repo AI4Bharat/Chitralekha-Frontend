@@ -89,18 +89,10 @@ const VideoLanding = () => {
   const limit = useSelector((state) => state.commonReducer.limit);
 
   const ref = useRef(0);
-  const firstLoaded = useRef(false);
+  const saveIntervalRef = useRef(null);
 
   useEffect(() => {
-    let hidden = false;
-
-    const handleVisibilityChange = () => {
-      hidden = document.hidden;
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const save = () => {
+    const handleAutosave = () => {
       const reqBody = {
         task_id: taskId,
         offset: currentPage,
@@ -110,23 +102,42 @@ const VideoLanding = () => {
         },
       };
 
-      if (firstLoaded.current && !hidden) {
-        const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
-        dispatch(APITransport(obj));
+      const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+      dispatch(APITransport(obj));
+    };
+
+    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+
+    const handleBeforeUnload = (event) => {
+      handleAutosave();
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Add event listener for visibility change
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Tab is active, restart the autosave interval
+        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
       } else {
-        firstLoaded.current = true;
+        handleAutosave();
+        // Tab is inactive, clear the autosave interval
+        clearInterval(saveIntervalRef.current);
       }
     };
 
-    const autosave = setInterval(save, 60 * 1000);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      clearInterval(autosave);
+      clearInterval(saveIntervalRef.current);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
 
     // eslint-disable-next-line
-  }, [subs, firstLoaded, currentPage, limit]);
+  }, [currentPage, limit, subs]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
