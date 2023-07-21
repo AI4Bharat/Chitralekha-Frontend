@@ -72,15 +72,18 @@ const SettingsButtonComponent = ({
   // const limit = useSelector((state) => state.commonReducer.limit);
 
   const getDisbled = (flag) => {
-    if (
-      taskData?.task_type?.includes("VOICEOVER") &&
-      transcriptPayload?.source_type !== "MACHINE_GENERATED"
-    ) {
-      if (durationError?.some((item) => item === true)) {
-        return true;
+    if (taskData?.task_type?.includes("VOICEOVER")) {
+      if (transcriptPayload?.source_type !== "MACHINE_GENERATED") {
+        if (durationError?.some((item) => item === true)) {
+          return true;
+        }
       }
 
-      if (flag && completedCount !== totalPages + 2) {
+      // if (flag && completedCount !== totalPages + 2) {
+      //   return true;
+      // }
+
+      if (flag) {
         return true;
       }
     }
@@ -316,26 +319,30 @@ const SettingsButtonComponent = ({
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
-      <Tooltip title="Undo" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          onClick={onUndo}
-          disabled={undoStack?.length === 0}
-        >
-          <UndoIcon />
-        </IconButton>
-      </Tooltip>
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <Tooltip title="Undo" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onUndo}
+            disabled={undoStack?.length === 0}
+          >
+            <UndoIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
-      <Tooltip title="Redo" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          sx={{ marginLeft: "5px" }}
-          onClick={onRedo}
-          disabled={redoStack?.length === 0}
-        >
-          <RedoIcon />
-        </IconButton>
-      </Tooltip>
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <Tooltip title="Redo" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            sx={{ marginLeft: "5px" }}
+            onClick={onRedo}
+            disabled={redoStack?.length === 0}
+          >
+            <RedoIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </>
   );
 };

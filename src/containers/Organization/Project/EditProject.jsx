@@ -25,6 +25,8 @@ import {
   Chip,
   Checkbox,
   Tooltip,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { CustomizedSnackbars, Loader } from "common";
@@ -85,6 +87,7 @@ const EditProject = () => {
     value: null,
   });
   const [taskDescription, setTaskDescription] = useState("");
+  const [integrateVideo, setIntegrateVideo] = useState(false);
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -139,6 +142,7 @@ const EditProject = () => {
       setTranslationSourceType(projectInfo?.default_translation_type);
       setVoiceOverSourceType(projectInfo?.default_voiceover_type);
       setDate(projectInfo?.default_eta);
+      setIntegrateVideo(projectInfo?.video_integration);
     }
   }, [projectInfo]);
 
@@ -166,6 +170,7 @@ const EditProject = () => {
       default_task_priority: priority.value,
       default_task_description: taskDescription,
       default_voiceover_type: voiceOverSourceType,
+      video_integration: integrateVideo,
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
@@ -222,6 +227,7 @@ const EditProject = () => {
       default_priority: projectInfo.default_priority,
       default_eta: projectInfo.default_eta,
       default_task_description: projectInfo.default_description,
+      video_integration: projectInfo.video_integration,
     };
 
     const newObj = {
@@ -236,6 +242,7 @@ const EditProject = () => {
       default_priority: priority?.value,
       default_eta: date,
       default_task_description: taskDescription,
+      video_integration: integrateVideo,
     };
 
     if (JSON.stringify(oldObj) === JSON.stringify(newObj)) {
@@ -681,6 +688,30 @@ const EditProject = () => {
                 </Button>
               </Grid>
             )}
+
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <Box
+                sx={{
+                  borderRadius: "4px",
+                  padding: "14px",
+                  color: "#000",
+                  border: "1px solid rgba(118, 118, 118, 0.3)",
+                }}
+              >
+                <FormControl fullWidth>
+                  <FormControlLabel
+                    sx={{ margin: "auto" }}
+                    control={<Switch color="primary" />}
+                    label="Enable Video Integration"
+                    labelPlacement="start"
+                    checked={integrateVideo}
+                    onChange={() =>
+                      setIntegrateVideo((prevState) => !prevState)
+                    }
+                  />
+                </FormControl>
+              </Box>
+            </Grid>
 
             <Grid container direction="row" padding="32px 0 0 32px">
               <TextField
