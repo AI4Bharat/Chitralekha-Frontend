@@ -6,7 +6,7 @@ export default class UpdateUserRoleAPI extends API {
   constructor(data, timeout = 2000) {
     super("POST", timeout, false);
     this.data = data;
-    this.type = C.UPDATE_PROFILE;
+    this.type = C.UPDATE_USER_ROLE;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.userRoles
     }update_user_role/`;
