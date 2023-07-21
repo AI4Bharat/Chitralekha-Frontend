@@ -27,7 +27,7 @@ const colors = [
   },
   {
     label: "Reopen",
-    color: "#87ceeb",
+    color: "darkblue",
   },
 ];
 

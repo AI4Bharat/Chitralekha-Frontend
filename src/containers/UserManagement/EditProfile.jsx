@@ -90,7 +90,7 @@ const EditProfile = () => {
   );
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+    (state) => state.getSupportedLanguages.translationLanguage
   );
 
   useEffect(() => {

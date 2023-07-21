@@ -5,6 +5,7 @@ export const taskStatus = [
   { value: "SELECTED_SOURCE", label: "Selected Source" },
   { value: "POST_PROCESS", label: "Post Process" },
   { value: "FAILED", label: "Failed" },
+  { value: "REOPEN", label: "Reopen" },
 ];
 
 export const taskTypes = [

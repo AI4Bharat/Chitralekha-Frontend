@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
 import { getColumns, getDateTime, getOptions, roles } from "utils";
-import { buttonConfig, failInfoColumns, orgTaskListColumns, toolBarActions } from "config";
+import {
+  buttonConfig,
+  failInfoColumns,
+  orgTaskListColumns,
+  toolBarActions,
+} from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
@@ -53,6 +58,7 @@ import {
   EditTaskDetailAPI,
   ExportVoiceoverTaskAPI,
   FetchPaginatedOrgTaskListAPI,
+  FetchSupportedLanguagesAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
@@ -78,8 +84,6 @@ const OrgLevelTaskList = () => {
   const [rows, setRows] = useState([]);
 
   //Filter States
-  const [srcLanguageList, setSrcLanguageList] = useState([]);
-  const [tgtLanguageList, setTgtLanguageList] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
     taskType: [],
@@ -147,12 +151,9 @@ const OrgLevelTaskList = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
 
-  const {
-    total_count: totalCount,
-    tasks_list: taskList,
-    src_languages_list: sourceLanguagesList,
-    target_languages_list: targetlanguagesList,
-  } = useSelector((state) => state.getOrgTaskList.data);
+  const { total_count: totalCount, tasks_list: taskList } = useSelector(
+    (state) => state.getOrgTaskList.data
+  );
 
   const fetchTaskList = () => {
     setLoading(true);
@@ -207,6 +208,12 @@ const OrgLevelTaskList = () => {
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
 
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
@@ -226,10 +233,8 @@ const OrgLevelTaskList = () => {
     if (taskList) {
       setLoading(false);
       setTableData(taskList);
-      setSrcLanguageList(sourceLanguagesList);
-      setTgtLanguageList(targetlanguagesList);
     }
-  }, [taskList, sourceLanguagesList, targetlanguagesList]);
+  }, [taskList]);
 
   const exportVoiceoverTask = async () => {
     const {
@@ -1282,8 +1287,6 @@ const OrgLevelTaskList = () => {
           updateFilters={setSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
-          srcLanguageList={srcLanguageList}
-          tgtLanguageList={tgtLanguageList}
         />
       )}
 

@@ -59,7 +59,7 @@ const CreatenewProject = () => {
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+    (state) => state.getSupportedLanguages.translationLanguage
   );
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
