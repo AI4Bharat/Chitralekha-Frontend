@@ -776,6 +776,42 @@ const TaskList = () => {
     }
   };
 
+  const handleReopenButtonClick = async (id) => {
+    const apiObj = new ReopenTaskAPI(id);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+
+        fetchTaskList();
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
+  };
+
   const handleActionButtonClick = (tableMeta, action) => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
@@ -833,8 +869,7 @@ const TaskList = () => {
         break;
 
       case "Reopen":
-        const apiObj = new ReopenTaskAPI(id);
-        dispatch(APITransport(apiObj));
+        handleReopenButtonClick(id);
         break;
 
       default:
