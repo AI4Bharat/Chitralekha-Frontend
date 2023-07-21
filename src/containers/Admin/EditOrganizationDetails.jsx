@@ -57,7 +57,7 @@ const EditOrganizationDetails = () => {
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+    (state) => state.getSupportedLanguages.translationLanguage
   );
 
   const [orgDetails, setOrgDetails] = useState({

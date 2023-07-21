@@ -55,7 +55,7 @@ const EditProject = () => {
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+    (state) => state.getSupportedLanguages.translationLanguage
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
