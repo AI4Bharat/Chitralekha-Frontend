@@ -25,6 +25,7 @@ import Search from "./Search";
 import CustomizedSnackbars from "./Snackbar";
 import SpeakerInfoDialog from "./SpeakerInfoDialog";
 import Loader from "./Spinner";
+import TableDialog from "./TableDialog";
 import TableSearchPopover from "./TableSearchPopover";
 import TagsSuggestionList from "./TagsSuggestionList";
 import TaskVideoDialog from "./TaskVideoDialog";
@@ -64,6 +65,7 @@ export {
   Search,
   CustomizedSnackbars,
   Loader,
+  TableDialog,
   SpeakerInfoDialog,
   TableSearchPopover,
   TagsSuggestionList,

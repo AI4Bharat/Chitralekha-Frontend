@@ -56,6 +56,7 @@ import {
   taskListColumns,
   taskQueueStatusColumns,
   orgTaskListColumns,
+  failInfoColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 
@@ -105,6 +106,7 @@ export {
   tamilTagsSuggestionData,
   teluguTagsSuggestionData,
   noiseTags,
+  failInfoColumns,
   createVideoAlertColumns,
   csvAlertColumns,
   uploadAlertColumns,
