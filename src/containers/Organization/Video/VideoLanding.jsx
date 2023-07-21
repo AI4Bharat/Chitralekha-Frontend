@@ -90,6 +90,7 @@ const VideoLanding = () => {
 
   const ref = useRef(0);
   const saveIntervalRef = useRef(null);
+  const timeSpentIntervalRef = useRef(null);
 
   useEffect(() => {
     const handleAutosave = () => {
@@ -106,7 +107,16 @@ const VideoLanding = () => {
       dispatch(APITransport(obj));
     };
 
+    const handleUpdateTimeSpent = () => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, 60);
+      dispatch(APITransport(apiObj));
+    };
+
     saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    timeSpentIntervalRef.current = setInterval(
+      handleUpdateTimeSpent,
+      60 * 1000
+    );
 
     const handleBeforeUnload = (event) => {
       handleAutosave();
@@ -132,6 +142,7 @@ const VideoLanding = () => {
 
     return () => {
       clearInterval(saveIntervalRef.current);
+      clearInterval(timeSpentIntervalRef.current);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
@@ -266,19 +277,27 @@ const VideoLanding = () => {
   }, [onKeyDown]);
 
   useEffect(() => {
-    window.onbeforeunload = function (e) {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    ref.current = new Date().getTime();
-    return () => {
-      const date = new Date().getTime();
-      const ms = date - ref.current;
-      const time_spent = Math.floor(ms / 1000);
+    let intervalId;
 
-      const apiObj = new UpdateTimeSpentPerTask(taskId, time_spent);
-      dispatch(APITransport(apiObj));
+    const updateTimer = () => {
+      ref.current = ref.current + 1;
     };
+
+    intervalId = setInterval(updateTimer, 1000);
+
+    setTimeout(() => {
+      clearInterval(intervalId);
+      ref.current = 0;
+
+      intervalId = setInterval(updateTimer, 1000);
+    }, 60 * 1000);
+
+    return () => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+      dispatch(APITransport(apiObj));
+      clearInterval(intervalId);
+    };
+
     // eslint-disable-next-line
   }, []);
 
