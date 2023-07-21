@@ -5,7 +5,7 @@ import C from "../../../constants";
 export default class FetchUserRolesAPI extends API {
   constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.UPDATE_USER_ROLE;
+    this.type = C.GET_USERS_ROLES;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.userRoles
     }get_roles/`;
