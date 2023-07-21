@@ -118,7 +118,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
       const sub = onSubtitleDelete(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -142,7 +142,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
       const sub = onMerge(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -175,14 +175,13 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false, arr);
+    // saveTranscriptHandler(false, false, arr);
   };
 
   const saveTranscriptHandler = async (
     isFinal,
-    isAutosave,
-    subs = sourceText,
-    isRegenerate = false
+    isRegenerate = false,
+    subs = sourceText
   ) => {
     const reqBody = {
       task_id: taskId,
@@ -208,12 +207,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
       setLoading(false);
 
       setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message
-          ? resp?.message
-          : isAutosave
-          ? "Saved as draft"
-          : "Translation Submitted Successfully",
+        open: true,
+        message: resp?.message,
         variant: "success",
       });
 
@@ -232,7 +227,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       setLoading(false);
 
       setSnackbarInfo({
-        open: isAutosave,
+        open: true,
         message: resp?.message,
         variant: "error",
       });
@@ -257,7 +252,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     (value, index, type, time) => {
       const sub = timeChange(value, index, type, time);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -268,7 +263,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       const sub = addSubtitleBox(index);
 
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
 
       setUndoStack((prevState) => [
         ...prevState,
@@ -328,7 +323,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    saveTranscriptHandler(false, true);
+    saveTranscriptHandler(false);
     getPayload(value, limit);
   };
 
@@ -339,7 +334,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       const sub = reGenerateTranslation(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
 
-      saveTranscriptHandler(false, false, sub, regenerate);
+      saveTranscriptHandler(false, regenerate, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -569,7 +564,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false, sourceText)}
+            submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the translation?"}
             loading={loading}
           />

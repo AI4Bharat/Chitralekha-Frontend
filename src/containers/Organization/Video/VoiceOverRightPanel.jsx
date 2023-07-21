@@ -153,12 +153,13 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     // saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (
-    isFinal,
-    isAutosave,
-    isGetUpdatedAudio,
-    value
-  ) => {
+  const saveTranscriptHandler = async (isFinal, isGetUpdatedAudio, value) => {
+    setSnackbarInfo({
+      open: true,
+      message: "Saving...",
+      variant: "info",
+    });
+
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -169,14 +170,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
     if (isFinal) {
       reqBody.final = true;
-    }
-
-    if (isAutosave) {
-      setSnackbarInfo({
-        open: true,
-        message: "Saving...",
-        variant: "info",
-      });
     }
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
@@ -204,12 +197,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       }
 
       setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message
-          ? resp?.message
-          : isAutosave
-          ? "Saved as draft"
-          : "Translation Submitted Successfully",
+        open: true,
+        message: resp?.message,
         variant: "success",
       });
 
@@ -236,7 +225,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       }
 
       setSnackbarInfo({
-        open: isAutosave,
+        open: true,
         message: resp?.message,
         variant: "error",
       });
@@ -254,7 +243,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   const onNavigationClick = (value) => {
     if (canSave) {
-      saveTranscriptHandler(false, true, false, value);
+      saveTranscriptHandler(false, false, value);
     } else {
       getPayloadAPI(value);
     }
@@ -633,7 +622,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false)}
+            submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the Voice Over?"}
             loading={loading}
           />

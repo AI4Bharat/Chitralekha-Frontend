@@ -13,7 +13,7 @@ const endpoints = {
   resetPassword: "/users/auth/users/reset_password/",
   confirmResetPassword: "/users/auth/users/reset_password_confirm/",
   languages: "/users/languages/fetch/",
-  userRoles: "/users/roles/get_roles/",
+  userRoles: "/users/roles/",
 
   //Video
   video: "/video/",

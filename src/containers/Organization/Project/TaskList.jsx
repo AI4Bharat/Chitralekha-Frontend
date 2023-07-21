@@ -33,6 +33,7 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
+  AlertComponent,
   CustomizedSnackbars,
   DeleteDialog,
   ExportDialog,
@@ -42,7 +43,6 @@ import {
   TableDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
-  UploadAlertComponent,
   UploadFormatDialog,
   ViewTaskDialog,
 } from "common";
@@ -149,6 +149,7 @@ const TaskList = () => {
     speakerInfo: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [alertColumn, setAlertColumn] = useState("");
 
   //Server Side Pagination States
   const [offset, setOffset] = useState(0);
@@ -692,6 +693,7 @@ const TaskList = () => {
       if (res.ok) {
         setBulkSubtitleAlert(true);
         setBulkSubtitleAlertData(resp);
+        setAlertColumn("uploadAlertColumns");
       } else {
         setSnackbarInfo({
           open: true,
@@ -1361,11 +1363,12 @@ const TaskList = () => {
       )}
 
       {bulkSubtitleAlert && (
-        <UploadAlertComponent
+        <AlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+          columns={alertColumn}
         />
       )}
 

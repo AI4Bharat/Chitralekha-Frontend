@@ -168,7 +168,7 @@ const RightPanel = ({ currentIndex }) => {
 
       const sub = onMerge(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -196,7 +196,7 @@ const RightPanel = ({ currentIndex }) => {
 
     const sub = onSplit(currentIndexToSplitTextBlock, selectionStart);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, true, sub);
+    // saveTranscriptHandler(false, true, sub);
 
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
@@ -239,14 +239,10 @@ const RightPanel = ({ currentIndex }) => {
 
     const sub = onSubtitleChange(value, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false, sub);
+    // saveTranscriptHandler(false, false, sub);
   };
 
-  const saveTranscriptHandler = async (
-    isFinal,
-    isAutosave,
-    payload = subtitles
-  ) => {
+  const saveTranscriptHandler = async (isFinal, payload = subtitles) => {
     setLoading(true);
 
     const reqBody = {
@@ -271,12 +267,8 @@ const RightPanel = ({ currentIndex }) => {
     const resp = await res.json();
     if (res.ok) {
       setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message
-          ? resp?.message
-          : isAutosave
-          ? "Saved as draft"
-          : "",
+        open: true,
+        message: resp?.message,
         variant: "success",
       });
 
@@ -292,7 +284,7 @@ const RightPanel = ({ currentIndex }) => {
     } else {
       setLoading(false);
       setSnackbarInfo({
-        open: isAutosave,
+        open: true,
         message: "Failed",
         variant: "error",
       });
@@ -317,7 +309,7 @@ const RightPanel = ({ currentIndex }) => {
     (value, index, type, time) => {
       const sub = timeChange(value, index, type, time);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -337,7 +329,7 @@ const RightPanel = ({ currentIndex }) => {
 
       const sub = onSubtitleDelete(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, false, sub);
+      // saveTranscriptHandler(false, false, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -347,7 +339,7 @@ const RightPanel = ({ currentIndex }) => {
     (index) => {
       const sub = addSubtitleBox(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, false, sub);
+      // saveTranscriptHandler(false, false, sub);
 
       setUndoStack((prevState) => [
         ...prevState,
@@ -403,14 +395,14 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    saveTranscriptHandler(false, true);
+    saveTranscriptHandler(false);
     getPayload(value, limit);
   };
 
   const handleSpeakerChange = (id, index) => {
     const sub = assignSpeakerId(id, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false, sub);
+    // saveTranscriptHandler(false, false, sub);
   };
 
   return (
@@ -623,7 +615,7 @@ const RightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, true)}
+            submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the transcript?"}
             loading={loading}
           />
@@ -638,7 +630,7 @@ const RightPanel = ({ currentIndex }) => {
             setTagSuggestionsAnchorEl={setTagSuggestionsAnchorEl}
             textWithoutBackslash={textWithoutBackSlash}
             textAfterBackSlash={textAfterBackSlash}
-            saveTranscriptHandler={saveTranscriptHandler}
+            // saveTranscriptHandler={saveTranscriptHandler}
             setEnableTransliterationSuggestion={
               setEnableTransliterationSuggestion
             }

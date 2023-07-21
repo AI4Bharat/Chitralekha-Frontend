@@ -249,11 +249,10 @@ const ProjectStyle = makeStyles({
 
   contentParent: {
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    backgroundColor: "rgba(254, 191, 44, 0.1)",
     color: "rgba(0, 0, 0, 0.87)",
     fontWeight: "normal",
-    borderBottom: "1px solid rgba(224, 224, 224, 1)",
     textAlign: "left",
   },
 
@@ -271,7 +270,6 @@ const ProjectStyle = makeStyles({
   },
 
   contentTaskType: {
-    width: "20%",
     padding: "10px",
     color: "rgba(73, 124, 39)",
     backgroundColor: "rgba(45, 191, 56 ,0.3 )",
