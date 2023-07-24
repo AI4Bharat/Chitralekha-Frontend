@@ -28,10 +28,10 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
 import {
   ConfirmDialog,
-  ConfirmErrorDialog,
   CustomizedSnackbars,
   TableDialog,
   TimeBoxes,
+  TranslationErrorDialog,
 } from "common";
 
 //APIs
@@ -637,7 +637,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
         )}
 
         {openConfirmErrorDialog && (
-          <ConfirmErrorDialog
+          <TranslationErrorDialog
             message={errorMessage}
             openDialog={openConfirmErrorDialog}
             handleClose={() => setOpenConfirmErrorDialog(false)}

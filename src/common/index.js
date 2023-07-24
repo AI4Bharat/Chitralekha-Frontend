@@ -30,6 +30,7 @@ import TableSearchPopover from "./TableSearchPopover";
 import TagsSuggestionList from "./TagsSuggestionList";
 import TaskVideoDialog from "./TaskVideoDialog";
 import TimeBoxes from "./TimeBoxes";
+import TranslationErrorDialog from "./TranslationErrorDialog";
 import TutorialTooltip from "./TutorialPlayer";
 import UpdateBulkTaskDialog from "./UpdateBulkTaskDialog";
 import UpdateEmailDialog from "./UpdateEmailDialog";
@@ -77,5 +78,6 @@ export {
   UploadFormatDialog,
   VideoDialog,
   VideoStatusTable,
+  TranslationErrorDialog,
   ViewTaskDialog,
 };
