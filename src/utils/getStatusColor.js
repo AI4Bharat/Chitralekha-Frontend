@@ -25,6 +25,10 @@ const colors = [
     label: "Failed",
     color: "#e60073",
   },
+  {
+    label: "Reopen",
+    color: "darkblue",
+  },
 ];
 
 const getColor = (status) => {

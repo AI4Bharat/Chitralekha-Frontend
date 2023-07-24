@@ -44,7 +44,7 @@ const SignUp = () => {
   const dispatch = useDispatch();
 
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+    (state) => state.getSupportedLanguages.translationLanguage
   );
   const userInfo = useSelector((state) => state.getInviteUserInfo.data);
 

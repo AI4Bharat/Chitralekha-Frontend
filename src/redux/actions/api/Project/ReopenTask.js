@@ -2,13 +2,15 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchUserRolesAPI extends API {
-  constructor(timeout = 2000) {
-    super("GET", timeout, false);
-    this.type = C.GET_USERS_ROLES;
+export default class ReopenTaskAPI extends API {
+  constructor(id, timeout = 2000) {
+    super("POST", timeout, false);
+    this.type = C.REOPEN_TASK;
+    this.id = id;
+
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.userRoles
-    }get_roles/`;
+      ENDPOINTS.task
+    }${id}/reopen_translation_task/`;
   }
 
   processResponse(res) {

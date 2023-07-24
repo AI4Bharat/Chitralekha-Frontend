@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
 import { getColumns, getDateTime, getOptions, roles } from "utils";
-import { buttonConfig, orgTaskListColumns, toolBarActions } from "config";
+import {
+  buttonConfig,
+  failInfoColumns,
+  orgTaskListColumns,
+  toolBarActions,
+} from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
@@ -23,15 +28,16 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
+  AlertComponent,
   CustomizedSnackbars,
   DeleteDialog,
   ExportDialog,
   FilterList,
   PreviewDialog,
   SpeakerInfoDialog,
+  TableDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
-  UploadAlertComponent,
   UploadFormatDialog,
   ViewTaskDialog,
 } from "common";
@@ -52,11 +58,14 @@ import {
   EditTaskDetailAPI,
   ExportVoiceoverTaskAPI,
   FetchPaginatedOrgTaskListAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTaskFailInfoAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
   exportTranscriptionAPI,
@@ -76,8 +85,6 @@ const OrgLevelTaskList = () => {
   const [rows, setRows] = useState([]);
 
   //Filter States
-  const [srcLanguageList, setSrcLanguageList] = useState([]);
-  const [tgtLanguageList, setTgtLanguageList] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
     taskType: [],
@@ -109,7 +116,11 @@ const OrgLevelTaskList = () => {
     editTaskDialog: false,
     uploadDialog: false,
     speakerInfoDialog: false,
+    tableDialog: false,
   });
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   //Bulk Opertaion States
   const [isBulk, setIsBulk] = useState(false);
@@ -136,16 +147,14 @@ const OrgLevelTaskList = () => {
     speakerInfo: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [alertColumn, setAlertColumn] = useState("");
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
-  console.log(exportTypes, "exportTypes");
-  const {
-    total_count: totalCount,
-    tasks_list: taskList,
-    src_languages_list: sourceLanguagesList,
-    target_languages_list: targetlanguagesList,
-  } = useSelector((state) => state.getOrgTaskList.data);
+
+  const { total_count: totalCount, tasks_list: taskList } = useSelector(
+    (state) => state.getOrgTaskList.data
+  );
 
   const fetchTaskList = () => {
     setLoading(true);
@@ -200,6 +209,12 @@ const OrgLevelTaskList = () => {
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
 
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
@@ -219,10 +234,8 @@ const OrgLevelTaskList = () => {
     if (taskList) {
       setLoading(false);
       setTableData(taskList);
-      setSrcLanguageList(sourceLanguagesList);
-      setTgtLanguageList(targetlanguagesList);
     }
-  }, [taskList, sourceLanguagesList, targetlanguagesList]);
+  }, [taskList]);
 
   const exportVoiceoverTask = async () => {
     const {
@@ -609,6 +622,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         setBulkSubtitleAlert(true);
         setBulkSubtitleAlertData(resp);
+        setAlertColumn("uploadAlertColumns");
       } else {
         setSnackbarInfo({
           open: true,
@@ -631,6 +645,39 @@ const OrgLevelTaskList = () => {
   const handleOpenSubtitleUploadDialog = (rowIndex) => {
     handleDialogOpen("uploadDialog");
     setUploadTaskRowIndex(rowIndex);
+  };
+
+  const handleInfoButtonClick = async (id) => {
+    const apiObj = new FetchTaskFailInfoAPI(id);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        handleDialogOpen("tableDialog");
+        setTableDialogColumn(failInfoColumns);
+        setTableDialogMessage(resp.message);
+        setTableDialogResponse(resp.data);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
   };
 
   const handleActionButtonClick = (tableMeta, action) => {
@@ -683,6 +730,15 @@ const OrgLevelTaskList = () => {
 
       case "Delete":
         handleDeleteTask(id, false);
+        break;
+
+      case "Info":
+        handleInfoButtonClick(id);
+        break;
+
+      case "Reopen":
+        const apiObj = new ReopenTaskAPI(id);
+        dispatch(APITransport(apiObj));
         break;
 
       default:
@@ -1232,17 +1288,16 @@ const OrgLevelTaskList = () => {
           updateFilters={setSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
-          srcLanguageList={srcLanguageList}
-          tgtLanguageList={tgtLanguageList}
         />
       )}
 
       {bulkSubtitleAlert && (
-        <UploadAlertComponent
+        <AlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+          columns={alertColumn}
         />
       )}
 
@@ -1284,6 +1339,16 @@ const OrgLevelTaskList = () => {
           updateFilters={setSearchedColumn}
           currentFilters={searchedColumn}
           searchedCol={searchedCol}
+        />
+      )}
+
+      {openDialogs.tableDialog && (
+        <TableDialog
+          openDialog={openDialogs.tableDialog}
+          handleClose={() => handleDialogClose("tableDialog")}
+          message={tableDialogMessage}
+          response={tableDialogResponse}
+          columns={tableDialogColumn}
         />
       )}
     </>

@@ -1,3 +1,9 @@
+import {
+  createVideoAlertColumns,
+  csvAlertColumns,
+  updateRoleAlertColumns,
+  uploadAlertColumns,
+} from "./alertConfig";
 import endpoints from "./apiendpoint";
 import authenticated from "./authenticated";
 import configs from "./config";
@@ -50,6 +56,7 @@ import {
   taskListColumns,
   taskQueueStatusColumns,
   orgTaskListColumns,
+  failInfoColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 
@@ -99,4 +106,9 @@ export {
   tamilTagsSuggestionData,
   teluguTagsSuggestionData,
   noiseTags,
+  failInfoColumns,
+  createVideoAlertColumns,
+  csvAlertColumns,
+  uploadAlertColumns,
+  updateRoleAlertColumns,
 };

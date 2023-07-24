@@ -155,10 +155,15 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   const saveTranscriptHandler = async (
     isFinal,
-    isAutosave,
     isGetUpdatedAudio,
-    value
+    value = currentPage
   ) => {
+    setSnackbarInfo({
+      open: true,
+      message: "Saving...",
+      variant: "info",
+    });
+
     const reqBody = {
       task_id: taskId,
       payload: {
@@ -169,14 +174,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
     if (isFinal) {
       reqBody.final = true;
-    }
-
-    if (isAutosave) {
-      setSnackbarInfo({
-        open: true,
-        message: "Saving...",
-        variant: "info",
-      });
     }
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
@@ -204,12 +201,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       }
 
       setSnackbarInfo({
-        open: isAutosave,
-        message: resp?.message
-          ? resp?.message
-          : isAutosave
-          ? "Saved as draft"
-          : "Translation Submitted Successfully",
+        open: true,
+        message: resp?.message,
         variant: "success",
       });
 
@@ -236,25 +229,25 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       }
 
       setSnackbarInfo({
-        open: isAutosave,
+        open: true,
         message: resp?.message,
         variant: "error",
       });
     }
   };
 
-  const getPayloadAPI = (value) => {
+  const getPayloadAPI = (offset = currentPage) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
-      value
+      offset
     );
     dispatch(APITransport(payloadObj));
   };
 
   const onNavigationClick = (value) => {
     if (canSave) {
-      saveTranscriptHandler(false, true, false, value);
+      saveTranscriptHandler(false, false, value);
     } else {
       getPayloadAPI(value);
     }
@@ -626,6 +619,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
             durationError={durationError}
             completedCount={completedCount}
+            current={currentPage}
           />
         </Box>
 
@@ -633,7 +627,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false)}
+            submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the Voice Over?"}
             loading={loading}
           />

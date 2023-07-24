@@ -9,7 +9,12 @@ import {
   getOptions,
   roles,
 } from "utils";
-import { buttonConfig, taskListColumns, toolBarActions } from "config";
+import {
+  buttonConfig,
+  taskListColumns,
+  toolBarActions,
+  failInfoColumns,
+} from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
@@ -28,15 +33,16 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
+  AlertComponent,
   CustomizedSnackbars,
   DeleteDialog,
   ExportDialog,
   FilterList,
   PreviewDialog,
   SpeakerInfoDialog,
+  TableDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
-  UploadAlertComponent,
   UploadFormatDialog,
   ViewTaskDialog,
 } from "common";
@@ -56,12 +62,15 @@ import {
   EditBulkTaskDetailAPI,
   EditTaskDetailAPI,
   ExportVoiceoverTaskAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTaskFailInfoAPI,
   FetchTaskListAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
   exportTranscriptionAPI,
@@ -85,8 +94,6 @@ const TaskList = () => {
   const [rows, setRows] = useState([]);
 
   //Filter States
-  const [srcLanguageList, setSrcLanguageList] = useState([]);
-  const [tgtLanguageList, setTgtLanguageList] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
     taskType: [],
@@ -118,7 +125,11 @@ const TaskList = () => {
     editTaskDialog: false,
     uploadDialog: false,
     speakerInfoDialog: false,
+    tableDialog: false,
   });
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   //Bulk Opertaion States
   const [isBulk, setIsBulk] = useState(false);
@@ -137,6 +148,7 @@ const TaskList = () => {
     speakerInfo: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [alertColumn, setAlertColumn] = useState("");
 
   //Server Side Pagination States
   const [offset, setOffset] = useState(0);
@@ -147,12 +159,9 @@ const TaskList = () => {
   const [columnDisplay, setColumnDisplay] = useState(false);
 
   //Data from Redux
-  const {
-    total_count: totalCount,
-    tasks_list: taskList,
-    src_languages_list: sourceLanguagesList,
-    target_languages_list: targetlanguagesList,
-  } = useSelector((state) => state.getTaskList.data);
+  const { total_count: totalCount, tasks_list: taskList } = useSelector(
+    (state) => state.getTaskList.data
+  );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   const fetchTaskList = () => {
@@ -208,6 +217,12 @@ const TaskList = () => {
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
 
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+
     return () => {
       dispatch({ type: constants.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };
@@ -224,10 +239,8 @@ const TaskList = () => {
     if (taskList) {
       setLoading(false);
       setTableData(taskList);
-      setSrcLanguageList(sourceLanguagesList);
-      setTgtLanguageList(targetlanguagesList);
     }
-  }, [taskList, sourceLanguagesList, targetlanguagesList]);
+  }, [taskList]);
 
   useEffect(() => {
     const option = getOptions(loading);
@@ -238,7 +251,7 @@ const TaskList = () => {
         ?.showSelectCheckbox
         ? "multiple"
         : "none",
-      search: true,
+      search: false,
       serverSide: true,
       page: offset,
       rowsSelected: rows,
@@ -680,6 +693,7 @@ const TaskList = () => {
       if (res.ok) {
         setBulkSubtitleAlert(true);
         setBulkSubtitleAlertData(resp);
+        setAlertColumn("uploadAlertColumns");
       } else {
         setSnackbarInfo({
           open: true,
@@ -732,6 +746,74 @@ const TaskList = () => {
     );
   };
 
+  const handleInfoButtonClick = async (id) => {
+    const apiObj = new FetchTaskFailInfoAPI(id);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        handleDialogOpen("tableDialog");
+        setTableDialogColumn(failInfoColumns);
+        setTableDialogMessage(resp.message);
+        setTableDialogResponse(resp.data);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
+  };
+
+  const handleReopenButtonClick = async (id) => {
+    const apiObj = new ReopenTaskAPI(id);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "POST",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "success",
+        });
+
+        fetchTaskList();
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
+  };
+
   const handleActionButtonClick = (tableMeta, action) => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
@@ -782,6 +864,14 @@ const TaskList = () => {
 
       case "Delete":
         handleDeleteTask(id, false);
+        break;
+
+      case "Info":
+        handleInfoButtonClick(id);
+        break;
+
+      case "Reopen":
+        handleReopenButtonClick(id);
         break;
 
       default:
@@ -1267,17 +1357,16 @@ const TaskList = () => {
           updateFilters={setSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
-          srcLanguageList={srcLanguageList}
-          tgtLanguageList={tgtLanguageList}
         />
       )}
 
       {bulkSubtitleAlert && (
-        <UploadAlertComponent
+        <AlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+          columns={alertColumn}
         />
       )}
 
@@ -1319,6 +1408,16 @@ const TaskList = () => {
           updateFilters={setSearchedColumn}
           currentFilters={searchedColumn}
           searchedCol={searchedCol}
+        />
+      )}
+
+      {openDialogs.tableDialog && (
+        <TableDialog
+          openDialog={openDialogs.tableDialog}
+          handleClose={() => handleDialogClose("tableDialog")}
+          message={tableDialogMessage}
+          response={tableDialogResponse}
+          columns={tableDialogColumn}
         />
       )}
     </>

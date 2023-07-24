@@ -36,7 +36,7 @@ import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import {
   AddOrganizationMember,
-  CSVAlertComponent,
+  AlertComponent,
   CustomizedSnackbars,
   Loader,
 } from "common";
@@ -74,7 +74,9 @@ const MyOrganization = () => {
     variant: "success",
   });
   const [showCSVAlert, setShowCSVAlert] = useState(false);
-  const [alertData, setAlertData] = useState({});
+  const [alertData, setAlertData] = useState([]);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColumn, setAlertColumn] = useState([]);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -198,7 +200,9 @@ const MyOrganization = () => {
         });
       } else {
         setShowCSVAlert(true);
-        setAlertData(resp);
+        setAlertData(resp.response);
+        setAlertMessage(resp.message);
+        setAlertColumn("csvAlertColumns");
       }
     };
     reader.readAsBinaryString(file[0]);
@@ -375,11 +379,12 @@ const MyOrganization = () => {
       )}
 
       {showCSVAlert && (
-        <CSVAlertComponent
+        <AlertComponent
           open={showCSVAlert}
           onClose={() => setShowCSVAlert(false)}
-          message={alertData.message}
-          report={alertData.response}
+          message={alertMessage}
+          report={alertData}
+          columns={alertColumn}
         />
       )}
     </Grid>

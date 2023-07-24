@@ -4,8 +4,15 @@ import C from "../../../constants";
 export default class FetchSupportedLanguagesAPI extends API {
   constructor(taskType = "TRANSLATION", timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_SUPPORTED_LANGUAGES;
     this.taskType = taskType;
+
+    this.type = this.taskType.includes("TRANSCRIPTION")
+      ? C.GET_SUPPORTED_TRANSCRIPTION_LANGUAGES
+      : this.taskType.includes("TRANSLATION")
+      ? C.GET_SUPPORTED_TRANSLATION_LANGUAGES
+      : C.GET_SUPPORTED_VOICEOVER_LANGUAGES;
+
+
     this.query = this.taskType.includes("TRANSCRIPTION")
       ? "transcript/get_transcription_supported_languages"
       : this.taskType.includes("TRANSLATION")

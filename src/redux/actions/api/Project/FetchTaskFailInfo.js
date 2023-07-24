@@ -2,13 +2,16 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchUserRolesAPI extends API {
-  constructor(timeout = 2000) {
+export default class FetchTaskFailInfoAPI extends API {
+  constructor(id, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_USERS_ROLES;
+    this.type = C.GET_TASK_FAIL_INFO;
+
+    this.id = id;
+
     this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.userRoles
-    }get_roles/`;
+      ENDPOINTS.task
+    }${id}/get_fail_info/`;
   }
 
   processResponse(res) {

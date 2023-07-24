@@ -455,3 +455,30 @@ export const taskQueueStatusColumns = [
     label: "Video Duration",
   },
 ];
+
+export const failInfoColumns = [
+  {
+    name: "index",
+    label: "Id",
+  },
+  {
+    name: "page_number",
+    label: "Page Number",
+  },
+  {
+    name: "start_time",
+    label: "Start Time",
+  },
+  {
+    name: "end_time",
+    label: "End Time",
+  },
+  {
+    name: "text",
+    label: "Source Text",
+  },
+  {
+    name: "target_text",
+    label: "Target Text",
+  },
+];

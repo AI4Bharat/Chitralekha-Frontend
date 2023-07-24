@@ -54,8 +54,11 @@ const CreateTaskDialog = ({
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+  const translationLanguage = useSelector(
+    (state) => state.getSupportedLanguages.translationLanguage
+  );
+  const voiceoverLanguage = useSelector(
+    (state) => state.getSupportedLanguages.voiceoverLanguage
   );
   const bulkTaskTypes = useSelector(
     (state) => state.getSupportedBulkTaskTypes.data
@@ -289,11 +292,17 @@ const CreateTaskDialog = ({
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
                 >
-                  {supportedLanguages?.map((item, index) => (
-                    <MenuItem key={index} value={item.value}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
+                  {taskType.includes("TRANSLATION")
+                    ? translationLanguage?.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))
+                    : voiceoverLanguage?.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
                 </Select>
               </FormControl>
             </Box>

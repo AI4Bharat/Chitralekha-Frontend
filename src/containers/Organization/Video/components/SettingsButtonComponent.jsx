@@ -25,6 +25,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { FindAndReplace } from "common";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const anchorOrigin = {
   vertical: "top",
@@ -53,6 +54,7 @@ const SettingsButtonComponent = ({
   onSplitClick,
   showPopOver,
   showSplit,
+  handleInfoButtonClick
 }) => {
   const classes = VideoLandingStyle();
   // const dispatch = useDispatch();
@@ -72,18 +74,15 @@ const SettingsButtonComponent = ({
   // const limit = useSelector((state) => state.commonReducer.limit);
 
   const getDisbled = (flag) => {
-    if (taskData?.task_type?.includes("VOICEOVER")) {
-      if (transcriptPayload?.source_type !== "MACHINE_GENERATED") {
-        if (durationError?.some((item) => item === true)) {
-          return true;
-        }
+    if (
+      taskData?.task_type?.includes("VOICEOVER") &&
+      transcriptPayload?.source_type !== "MACHINE_GENERATED"
+    ) {
+      if (durationError?.some((item) => item === true)) {
+        return true;
       }
 
-      // if (flag && completedCount !== totalPages + 2) {
-      //   return true;
-      // }
-
-      if (flag) {
+      if (flag && completedCount !== totalPages + 2) {
         return true;
       }
     }
@@ -160,6 +159,20 @@ const SettingsButtonComponent = ({
           </IconButton>
         </Tooltip>
       )}
+
+      {/* {taskData?.task_type?.includes("TRANSLATION_EDIT") && (
+        <Tooltip title="Incorrect Subtitles Info" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={handleInfoButtonClick}
+            sx={{
+              marginRight: "5px",
+            }}
+          >
+            <InfoOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+      )} */}
 
       <Tooltip title="Settings" placement="bottom">
         <IconButton
@@ -300,7 +313,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           disabled={getDisbled()}
-          onClick={() => saveTranscriptHandler(false, true)}
+          onClick={() => saveTranscriptHandler(false)}
         >
           <SaveIcon />
         </IconButton>

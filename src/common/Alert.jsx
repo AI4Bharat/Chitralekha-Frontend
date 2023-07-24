@@ -1,15 +1,84 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import {
+  createVideoAlertColumns,
+  csvAlertColumns,
+  uploadAlertColumns,
+  updateRoleAlertColumns,
+} from "config";
 
 //Styles
 import { ProjectStyle } from "styles";
+import { themeDefault } from "theme";
 
 //Components
-import { Alert, Box, Snackbar } from "@mui/material";
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import {
+  Alert,
+  Box,
+  Snackbar,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
+import MUIDataTable from "mui-datatables";
 
-const AlertComponent = ({ open, message, report, onClose }) => {
+const AlertComponent = ({ open, message, report, onClose, columns }) => {
   const classes = ProjectStyle();
+
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    if (report?.length) {
+      setTableData(report);
+    }
+  }, [report]);
+
+  const options = {
+    pagination: false,
+    fixedHeader: false,
+    download: false,
+    print: false,
+    filter: false,
+    viewColumns: false,
+    search: false,
+    sort: false,
+    selectableRows: "none",
+  };
+
+  let column = [];
+  switch (columns) {
+    case "createVideoAlertColumns":
+      column = createVideoAlertColumns(report);
+      break;
+
+    case "csvAlertColumns":
+      column = csvAlertColumns();
+      break;
+
+    case "uploadAlertColumns":
+      column = uploadAlertColumns(report);
+      break;
+
+    case "updateRoleAlertColumns":
+      column = updateRoleAlertColumns(report);
+      break;
+
+    default:
+      break;
+  }
+
+  const getMuiTheme = () =>
+    createTheme({
+      ...themeDefault,
+      components: {
+        ...themeDefault.components,
+        MuiTableRow: {
+          styleOverrides: {
+            root: {
+              backgroundColor: "rgba(254, 191, 44, 0.1)",
+            },
+          },
+        },
+      },
+    });
 
   return (
     <Snackbar
@@ -33,59 +102,11 @@ const AlertComponent = ({ open, message, report, onClose }) => {
           {message}
         </Box>
 
-        {report?.length > 0 && (
-          <Box>
-            <Box className={classes.headerParent}>
-              <Box className={classes.header} style={{ width: "28%" }}>
-                Task Type
-              </Box>
-              <Box className={classes.header}>Status</Box>
-              <Box className={classes.header} style={{ width: "50%" }}>
-                Message
-              </Box>
-            </Box>
-
-            <Box
-              style={{
-                maxHeight: "200px",
-                overflowY:
-                report?.length > 3 ? "scroll" : "",
-              }}
-            >
-              <Box display="flex" flexDirection="column" backgroundColor="#fff">
-                {report?.map((item, index) => {
-                  return (
-                    <Box key={index} className={classes.contentParent}>
-                      <Box
-                        className={classes.contentTaskType}
-                        style={{ width: "25%" }}
-                      >
-                        {item.task_type}
-                      </Box>
-                      <Box className={classes.contentStatus}>
-                        <Box className={classes.contentStatusTop}>
-                        {
-                          !item.task_type.includes("Transcription")
-                            ? `${item.source_language} - ${item.target_language}`
-                            : item.source_language
-                        }
-                        </Box>
-                        <Box>
-                          {item.status === "Fail" ? (
-                            <CancelOutlinedIcon color="error" />
-                          ) : (
-                            <TaskAltIcon color="success" />
-                          )}
-                        </Box>
-                      </Box>
-                      <Box className={classes.content2}>{item.message}</Box>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </Box>
-          </Box>
-        )}
+        {tableData.length ? (
+          <ThemeProvider theme={getMuiTheme()}>
+            <MUIDataTable data={tableData} columns={column} options={options} />
+          </ThemeProvider>
+        ) : null}
       </Alert>
     </Snackbar>
   );
