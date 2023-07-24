@@ -31,6 +31,7 @@ import {
   CustomizedSnackbars,
   TableDialog,
   TimeBoxes,
+  TranslationErrorDialog,
 } from "common";
 
 //APIs
@@ -86,6 +87,9 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorResponse, setErrorResponse] = useState([]);
 
   useEffect(() => {
     if (currentPage) {
@@ -236,6 +240,13 @@ const TranslationRightPanel = ({ currentIndex }) => {
       }
     } else {
       setLoading(false);
+      setOpenConfirmDialog(false);
+
+      if (isFinal) {
+        setOpenConfirmErrorDialog(true);
+        setErrorMessage(resp.message);
+        setErrorResponse(resp.data);
+      }
 
       setSnackbarInfo({
         open: true,
@@ -622,6 +633,15 @@ const TranslationRightPanel = ({ currentIndex }) => {
             message={tableDialogMessage}
             response={tableDialogResponse}
             columns={tableDialogColumn}
+          />
+        )}
+
+        {openConfirmErrorDialog && (
+          <TranslationErrorDialog
+            message={errorMessage}
+            openDialog={openConfirmErrorDialog}
+            handleClose={() => setOpenConfirmErrorDialog(false)}
+            response={errorResponse}
           />
         )}
       </Box>
