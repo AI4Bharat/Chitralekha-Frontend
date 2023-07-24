@@ -160,7 +160,7 @@ const SettingsButtonComponent = ({
         </Tooltip>
       )}
 
-      {taskData?.task_type?.includes("TRANSLATION_EDIT") && (
+      {/* {taskData?.task_type?.includes("TRANSLATION_EDIT") && (
         <Tooltip title="Incorrect Subtitles Info" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
@@ -172,7 +172,7 @@ const SettingsButtonComponent = ({
             <InfoOutlinedIcon />
           </IconButton>
         </Tooltip>
-      )}
+      )} */}
 
       <Tooltip title="Settings" placement="bottom">
         <IconButton
