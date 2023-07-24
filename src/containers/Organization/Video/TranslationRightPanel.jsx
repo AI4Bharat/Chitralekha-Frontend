@@ -26,16 +26,23 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { ConfirmDialog, CustomizedSnackbars, TimeBoxes } from "common";
+import {
+  ConfirmDialog,
+  CustomizedSnackbars,
+  TableDialog,
+  TimeBoxes,
+} from "common";
 
 //APIs
 import C from "redux/constants";
 import {
   APITransport,
+  FetchTaskFailInfoAPI,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
   setSubtitles,
 } from "redux/actions";
+import { failInfoColumns } from "config";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -75,6 +82,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [openInfoDialog, setOpenInfoDialog] = useState(false);
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   useEffect(() => {
     if (currentPage) {
@@ -340,6 +351,39 @@ const TranslationRightPanel = ({ currentIndex }) => {
     [limit, currentOffset]
   );
 
+  const handleInfoButtonClick = async () => {
+    const apiObj = new FetchTaskFailInfoAPI(taskId);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setOpenInfoDialog(true);
+        setTableDialogColumn(failInfoColumns);
+        setTableDialogMessage(resp.message);
+        setTableDialogResponse(resp.data);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -362,6 +406,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
             onRedo={onRedo}
             undoStack={undoStack}
             redoStack={redoStack}
+            handleInfoButtonClick={handleInfoButtonClick}
           />
         </Grid>
 
@@ -567,6 +612,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
             submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the translation?"}
             loading={loading}
+          />
+        )}
+
+        {openInfoDialog && (
+          <TableDialog
+            openDialog={openInfoDialog}
+            handleClose={() => setOpenInfoDialog(false)}
+            message={tableDialogMessage}
+            response={tableDialogResponse}
+            columns={tableDialogColumn}
           />
         )}
       </Box>

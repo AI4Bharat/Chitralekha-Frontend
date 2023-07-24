@@ -25,6 +25,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { FindAndReplace } from "common";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const anchorOrigin = {
   vertical: "top",
@@ -53,6 +54,7 @@ const SettingsButtonComponent = ({
   onSplitClick,
   showPopOver,
   showSplit,
+  handleInfoButtonClick
 }) => {
   const classes = VideoLandingStyle();
   // const dispatch = useDispatch();
@@ -154,6 +156,20 @@ const SettingsButtonComponent = ({
             }}
           >
             <SplitscreenIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {taskData?.task_type?.includes("TRANSLATION_EDIT") && (
+        <Tooltip title="Incorrect Subtitles Info" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={handleInfoButtonClick}
+            sx={{
+              marginRight: "5px",
+            }}
+          >
+            <InfoOutlinedIcon />
           </IconButton>
         </Tooltip>
       )}

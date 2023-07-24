@@ -59,6 +59,7 @@ import {
   ExportVoiceoverTaskAPI,
   FetchPaginatedOrgTaskListAPI,
   FetchSupportedLanguagesAPI,
+  FetchTaskFailInfoAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
@@ -647,11 +648,11 @@ const OrgLevelTaskList = () => {
   };
 
   const handleInfoButtonClick = async (id) => {
-    const apiObj = new UploadToYoutubeAPI(id);
+    const apiObj = new FetchTaskFailInfoAPI(id);
 
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
-        method: "POST",
+        method: "GET",
         body: JSON.stringify(apiObj.getBody()),
         headers: apiObj.getHeaders().headers,
       });
@@ -659,7 +660,7 @@ const OrgLevelTaskList = () => {
       const resp = await res.json();
 
       if (res.ok) {
-        handleDialogClose("tableDialog");
+        handleDialogOpen("tableDialog");
         setTableDialogColumn(failInfoColumns);
         setTableDialogMessage(resp.message);
         setTableDialogResponse(resp.data);

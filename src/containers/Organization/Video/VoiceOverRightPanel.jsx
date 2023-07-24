@@ -153,7 +153,11 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     // saveTranscriptHandler(false, false);
   };
 
-  const saveTranscriptHandler = async (isFinal, isGetUpdatedAudio, value) => {
+  const saveTranscriptHandler = async (
+    isFinal,
+    isGetUpdatedAudio,
+    value = currentPage
+  ) => {
     setSnackbarInfo({
       open: true,
       message: "Saving...",
@@ -232,11 +236,11 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     }
   };
 
-  const getPayloadAPI = (value) => {
+  const getPayloadAPI = (offset = currentPage) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
-      value
+      offset
     );
     dispatch(APITransport(payloadObj));
   };
@@ -615,6 +619,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
             durationError={durationError}
             completedCount={completedCount}
+            current={currentPage}
           />
         </Box>
 
