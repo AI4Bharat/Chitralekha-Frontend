@@ -31,7 +31,6 @@ import {
   CustomizedSnackbars,
   TableDialog,
   TimeBoxes,
-  TranslationErrorDialog,
 } from "common";
 
 //APIs
@@ -87,9 +86,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
-  const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorResponse, setErrorResponse] = useState([]);
 
   useEffect(() => {
     if (currentPage) {
@@ -243,16 +239,17 @@ const TranslationRightPanel = ({ currentIndex }) => {
       setOpenConfirmDialog(false);
 
       if (isFinal) {
-        setOpenConfirmErrorDialog(true);
-        setErrorMessage(resp.message);
-        setErrorResponse(resp.data);
+        setOpenInfoDialog(true);
+        setTableDialogColumn(failInfoColumns);
+        setTableDialogMessage(resp.message);
+        setTableDialogResponse(resp.data);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
       }
-
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
     }
   };
 
@@ -633,15 +630,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
             message={tableDialogMessage}
             response={tableDialogResponse}
             columns={tableDialogColumn}
-          />
-        )}
-
-        {openConfirmErrorDialog && (
-          <TranslationErrorDialog
-            message={errorMessage}
-            openDialog={openConfirmErrorDialog}
-            handleClose={() => setOpenConfirmErrorDialog(false)}
-            response={errorResponse}
           />
         )}
       </Box>

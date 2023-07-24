@@ -462,6 +462,10 @@ export const failInfoColumns = [
     label: "Id",
   },
   {
+    name: "page_number",
+    label: "Page Number",
+  },
+  {
     name: "start_time",
     label: "Start Time",
   },
