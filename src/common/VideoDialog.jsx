@@ -201,6 +201,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
   const handleplayVideo = (e) => {
     var btn = document.getElementById("myBtn");
+    e.preventDefault();
     if (btn.paused) {
       btn.play();
     } else {
@@ -208,23 +209,23 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     }
   };
 
-  const onKeyDown = useCallback((e) => {
-    var video = document.getElementById("myBtn");
-    if (e.which === 32 && e.target.id !== "description") {
-      if (video.paused) {
-        e.preventDefault();
-        video.play();
-      } else {
-        e.preventDefault();
-        video.pause();
-      }
-    }
-  }, []);
-
   useEffect(() => {
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onKeyDown]);
+    const handleKeyDown = (e) => {
+      if (e.which === 32 &&  e.target.id !== "description" && document.activeElement !== ref.current) {
+        e.preventDefault();
+        var video = document.getElementById("myBtn")
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const updateVideoHandler = () => {
     const updateData = {
@@ -327,7 +328,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
               src={video.direct_video_url}
               className={classes.video}
               onTimeUpdate={handleProgress}
-              onClick={() => handleplayVideo()}
+              onClick={handleplayVideo}
             />
 
             <div
