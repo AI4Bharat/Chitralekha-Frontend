@@ -241,11 +241,11 @@ export default memo(
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
 
-            if (index > 0 && endTime <= DT.t2d(next.start_time)) {
+            if (index >= 0 && endTime <= DT.t2d(next.start_time)) {
               updateSub(lastSub, { end_time });
             }
 
-            if (index === 0) {
+            if (index === subtitles.length - 1) {
               updateSub(lastSub, { end_time });
             }
           } else {
