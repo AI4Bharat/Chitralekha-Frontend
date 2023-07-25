@@ -103,9 +103,10 @@ const FindAndReplace = (props) => {
     const updatedSubtitleData = [];
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices[currentFound] === index) {
+        //this is correct logic don't change this
         const textToReplace = ele[subtitleDataKey].replace(
-          new RegExp(findValue, "gi"),
-          replaceValue
+          new RegExp(`${findValue.trim()} `, "gi"),
+          `${replaceValue.trim()} `
         );
         ele[subtitleDataKey] = textToReplace;
       }
@@ -123,8 +124,9 @@ const FindAndReplace = (props) => {
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices?.includes(index)) {
         const textToReplace = ele[subtitleDataKey].replace(
-          new RegExp(findValue, "gi"),
-          replaceValue
+          //this is correct logic don't change this
+          new RegExp(`${findValue.trim()} `, "gi"),
+          `${replaceValue.trim()} `
         );
         ele[subtitleDataKey] = textToReplace;
       }
