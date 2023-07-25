@@ -71,22 +71,19 @@ const SettingsButtonComponent = ({
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
-  // const limit = useSelector((state) => state.commonReducer.limit);
 
   const getDisbled = (flag) => {
-    if (
-      taskData?.task_type?.includes("VOICEOVER") &&
-      transcriptPayload?.source_type !== "MACHINE_GENERATED"
-    ) {
-      if (durationError?.some((item) => item === true)) {
-        return true;
+    if (taskData?.task_type?.includes("VOICEOVER")) {
+      if (transcriptPayload?.source_type !== "MACHINE_GENERATED") {
+        if (durationError?.some((item) => item === true)) {
+          return true;
+        }
       }
 
-      if (flag && completedCount !== totalPages + 2) {
+      if (flag) {
         return true;
       }
     }
-
     if (
       !taskData?.task_type?.includes("VOICEOVER") &&
       transcriptPayload?.source_type === "MACHINE_GENERATED"
@@ -95,7 +92,6 @@ const SettingsButtonComponent = ({
         return true;
       }
     }
-
     return false;
   };
 
