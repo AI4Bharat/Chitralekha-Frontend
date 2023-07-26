@@ -35,7 +35,7 @@ const FilterList = ({
   const translationLanguage = useSelector(
     (state) => state.getSupportedLanguages.translationLanguage
   );
-  console.log(transcriptionLanguage, transcriptionLanguage);
+
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
   const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
