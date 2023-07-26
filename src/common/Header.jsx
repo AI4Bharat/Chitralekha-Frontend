@@ -130,7 +130,7 @@ const Header = () => {
         handleCloseUserMenu();
         localStorage.clear();
         dispatch({ type: C.LOGOUT });
-        navigate("/");
+        navigate("/login");
       },
     },
   ];
@@ -157,7 +157,7 @@ const Header = () => {
               <Box
                 display="flex"
                 alignItems="center"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/login")}
                 style={{cursor: "pointer"}}
               >
                 <img
