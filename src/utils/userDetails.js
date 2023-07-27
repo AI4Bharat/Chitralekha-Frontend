@@ -1,11 +1,11 @@
 import ganavi from "../assets/profileImages/Ganavi.png";
 
 const teamDetails = [
-  {
-    name: "Vivek Raghavan",
-    value: "Chief Mentor and Evangelist, EkStep Foundation",
-    img: require("../assets/profileImages/vivek.jpg"),
-  },
+  // {
+  //   name: "Vivek Raghavan",
+  //   value: "Chief Mentor and Evangelist, EkStep Foundation",
+  //   img: require("../assets/profileImages/vivek.jpg"),
+  // },
   {
     name: "Aravinth Bheemaraj",
     value: "Product Manager, Tarento Technologies",

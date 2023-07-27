@@ -95,16 +95,16 @@ function UseCases() {
                 ))}
               </List>
             </Grid>
-            <Typography align="center" className={classes.usecaseNote}>
+            {/* <Typography align="center" className={classes.usecaseNote}>
               Note - These points highlight the key features, benefits, and
               impact of Chitralekha in enabling video transcription, translation
               etc in Indic languages.
-            </Typography>
+            </Typography> */}
             <Typography
               variant="h5"
               align="left"
               className={classes.usecaseTitle}
-              sx={{ mt: 7 }}
+              sx={{ mt: 8 }}
             >
               Chitralekha can be used in various sectors as follows:
             </Typography>
