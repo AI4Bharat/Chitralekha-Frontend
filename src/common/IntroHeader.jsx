@@ -144,7 +144,7 @@ function IntroHeader(props) {
                     ml: 3,
                   }}
                 >
-                  CodeBase
+                  Codebase
                 </Button>
               </a>
               <a
