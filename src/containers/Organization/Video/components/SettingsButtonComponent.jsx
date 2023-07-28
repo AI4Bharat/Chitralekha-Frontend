@@ -221,6 +221,20 @@ const SettingsButtonComponent = ({
             }
           />
         </MenuItem>
+        <MenuItem>
+          <FormControlLabel
+            label="Subscript/Superscript"
+            control={
+              <Checkbox
+                checked={enableRTL_Typing}
+                onChange={() => {
+                  setAnchorElSettings(null);
+                  setRTL_Typing(!enableRTL_Typing);
+                }}
+              />
+            }
+          />
+        </MenuItem>
       </Menu>
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />

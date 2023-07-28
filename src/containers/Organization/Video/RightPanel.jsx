@@ -90,6 +90,7 @@ const RightPanel = ({ currentIndex }) => {
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
+  const [subSuperScript, setSubSuperScript] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
@@ -417,7 +418,9 @@ const RightPanel = ({ currentIndex }) => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             setRTL_Typing={setRTL_Typing}
+            setSubSuperScript={setSubSuperScript}
             enableRTL_Typing={enableRTL_Typing}
+            subSuperScript={subSuperScript}
             setFontSize={setFontSize}
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
