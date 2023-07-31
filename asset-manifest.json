@@ -1,14 +1,37 @@
 {
   "files": {
     "main.css": "/static/css/main.f06e1f73.css",
-    "main.js": "/static/js/main.00eb4e4a.js",
+    "main.js": "/static/js/main.51cf50b8.js",
+    "static/media/Ganavi.png": "/static/media/Ganavi.2ee88c339dcf51b9b22f.png",
+    "static/media/chiralekha-bg.png": "/static/media/chiralekha-bg.be4d1188e3aac2636abd.png",
+    "static/media/Chitralekha_Logo.png": "/static/media/Chitralekha_Logo.186deb6fe7ab10b0eb0e.png",
+    "static/media/aravinth.png": "/static/media/aravinth.93bd3ae869c646ae9373.png",
+    "static/media/mrigank.png": "/static/media/mrigank.6bae7160446a83582cb1.png",
+    "static/media/TicTac.png": "/static/media/TicTac.1542b557834ec6a9c635.png",
+    "static/media/Harsh.png": "/static/media/Harsh.12e176c962dc0ebc26b8.png",
+    "static/media/Nptel.png": "/static/media/Nptel.e899763acf2cae1d88fe.png",
+    "static/media/EkStep.png": "/static/media/EkStep.e0868145c2d109a9e9af.png",
+    "static/media/Alpana.png": "/static/media/Alpana.c825b040ecc2a5532c3a.png",
+    "static/media/Dynamic.svg": "/static/media/Dynamic.fc5000c605f07268e767d237c9387624.svg",
+    "static/media/Shruti.png": "/static/media/Shruti.26549e6e423ecc9542c7.png",
+    "static/media/youtube.png": "/static/media/youtube.82cba176af0592e340b6.png",
+    "static/media/Partham.png": "/static/media/Partham.cabd3ac8c1a20c113af3.png",
+    "static/media/Extensible.svg": "/static/media/Extensible.61423ffc9a248617567d1e3d3c34edfd.svg",
+    "static/media/Aparna.png": "/static/media/Aparna.b792bfaac19dd3a55ef9.png",
+    "static/media/Elegant.svg": "/static/media/Elegant.54ff54ba5842c9126ffb884c3fe949ae.svg",
+    "static/media/OpenSource.svg": "/static/media/OpenSource.bb0463a6cbb522ab0561ebf1286eff4d.svg",
+    "static/media/Scalable.svg": "/static/media/Scalable.f3db98b0847a0b82b773e6cc2b4d730a.svg",
+    "static/media/EasytoUse.svg": "/static/media/EasytoUse.27866cd07e4b56077bf3e1a873993716.svg",
+    "static/media/RobustIntegrations.svg": "/static/media/RobustIntegrations.36b15441117727a9e2f40a4d65c50d70.svg",
+    "static/media/UsefulUI.svg": "/static/media/UsefulUI.3e1417e50e31b999baf7e093b93638af.svg",
+    "static/media/PurePython.svg": "/static/media/PurePython.450e227143b0bef1f7a82a1b8ac72f45.svg",
     "index.html": "/index.html",
     "static/media/Card.svg": "/static/media/Card.93f0e69be62a5b18d067c6ba14e983e2.svg",
     "main.f06e1f73.css.map": "/static/css/main.f06e1f73.css.map",
-    "main.00eb4e4a.js.map": "/static/js/main.00eb4e4a.js.map"
+    "main.51cf50b8.js.map": "/static/js/main.51cf50b8.js.map"
   },
   "entrypoints": [
     "static/css/main.f06e1f73.css",
-    "static/js/main.00eb4e4a.js"
+    "static/js/main.51cf50b8.js"
   ]
 }
