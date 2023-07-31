@@ -482,3 +482,18 @@ export const failInfoColumns = [
     label: "Target Text",
   },
 ];
+
+export const voiceoverFailInfoColumns = [
+  {
+    name: "index",
+    label: "Id",
+  },
+  {
+    name: "reason",
+    label: "Reason",
+  },
+  {
+    name: "sentence",
+    label: "Sentence",
+  },
+];

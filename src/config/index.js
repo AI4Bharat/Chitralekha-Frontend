@@ -57,6 +57,7 @@ import {
   taskQueueStatusColumns,
   orgTaskListColumns,
   failInfoColumns,
+  voiceoverFailInfoColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 
@@ -111,4 +112,5 @@ export {
   csvAlertColumns,
   uploadAlertColumns,
   updateRoleAlertColumns,
+  voiceoverFailInfoColumns,
 };
