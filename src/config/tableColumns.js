@@ -489,6 +489,10 @@ export const voiceoverFailInfoColumns = [
     label: "Id",
   },
   {
+    name: "page_number",
+    label: "Page Number",
+  },
+  {
     name: "reason",
     label: "Reason",
   },

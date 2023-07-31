@@ -257,17 +257,25 @@ const OrgLevelTaskList = () => {
       const resp = await res.json();
 
       if (res.ok) {
-        const link = document.createElement("a");
-        link.href = resp.azure_url;
+        if (resp.azure_url) {
+          const link = document.createElement("a");
+          link.href = resp.azure_url;
 
-        link.setAttribute(
-          "download",
-          `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.mp4`
-        );
+          link.setAttribute(
+            "download",
+            `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.mp4`
+          );
 
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+        } else {
+          setSnackbarInfo({
+            open: true,
+            message: resp?.message,
+            variant: "success",
+          });
+        }
       } else {
         setSnackbarInfo({
           open: true,
@@ -281,6 +289,8 @@ const OrgLevelTaskList = () => {
         message: "Something went wrong!!",
         variant: "error",
       });
+    } finally {
+      handleDialogClose("exportDialog");
     }
   };
 
