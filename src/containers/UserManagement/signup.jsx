@@ -161,7 +161,7 @@ const SignUp = () => {
             variant: "success",
           });
           localStorage.clear();
-          navigate("/");
+          navigate("/login");
           setValues({
             UserName: "",
             email: "",
@@ -226,7 +226,7 @@ const SignUp = () => {
 
   const handleAlreadyhaveaccount = () => {
     localStorage.clear();
-    navigate("/");
+    navigate("/login");
   };
 
   const renderSnackBar = () => {

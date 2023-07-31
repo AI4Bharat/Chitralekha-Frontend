@@ -395,7 +395,6 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    saveTranscriptHandler(false);
     getPayload(value, limit);
   };
 

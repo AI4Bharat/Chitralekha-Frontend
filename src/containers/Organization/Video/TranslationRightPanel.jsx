@@ -342,7 +342,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    saveTranscriptHandler(false);
     getPayload(value, limit);
   };
 

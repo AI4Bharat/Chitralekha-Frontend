@@ -93,6 +93,30 @@ const VideoLanding = () => {
   const timeSpentIntervalRef = useRef(null);
 
   useEffect(() => {
+    let intervalId;
+
+    const updateTimer = () => {
+      ref.current = ref.current + 1;
+    };
+
+    intervalId = setInterval(updateTimer, 1000);
+
+    setInterval(() => {
+      clearInterval(intervalId);
+      ref.current = 0;
+
+      intervalId = setInterval(updateTimer, 1000);
+    }, 60 * 1000);
+
+    return () => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+      dispatch(APITransport(apiObj));
+      clearInterval(intervalId);
+      ref.current = 0;
+    };
+  }, []);
+
+  useEffect(() => {
     const handleAutosave = () => {
       const reqBody = {
         task_id: taskId,
@@ -107,8 +131,8 @@ const VideoLanding = () => {
       dispatch(APITransport(obj));
     };
 
-    const handleUpdateTimeSpent = () => {
-      const apiObj = new UpdateTimeSpentPerTask(taskId, 60);
+    const handleUpdateTimeSpent = (time = 60) => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, time);
       dispatch(APITransport(apiObj));
     };
 
@@ -120,8 +144,10 @@ const VideoLanding = () => {
 
     const handleBeforeUnload = (event) => {
       handleAutosave();
+      handleUpdateTimeSpent(ref.current);
       event.preventDefault();
       event.returnValue = "";
+      ref.current = 0;
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -131,10 +157,17 @@ const VideoLanding = () => {
       if (!document.hidden) {
         // Tab is active, restart the autosave interval
         saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        timeSpentIntervalRef.current = setInterval(
+          handleUpdateTimeSpent,
+          60 * 1000
+        );
       } else {
         handleAutosave();
+        handleUpdateTimeSpent(ref.current);
         // Tab is inactive, clear the autosave interval
         clearInterval(saveIntervalRef.current);
+        clearInterval(timeSpentIntervalRef.current);
+        ref.current = 0;
       }
     };
 
@@ -148,7 +181,7 @@ const VideoLanding = () => {
     };
 
     // eslint-disable-next-line
-  }, [currentPage, limit, subs]);
+  }, [currentPage, limit, subs, taskId]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -275,31 +308,6 @@ const VideoLanding = () => {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
-
-  useEffect(() => {
-    let intervalId;
-
-    const updateTimer = () => {
-      ref.current = ref.current + 1;
-    };
-
-    intervalId = setInterval(updateTimer, 1000);
-
-    setTimeout(() => {
-      clearInterval(intervalId);
-      ref.current = 0;
-
-      intervalId = setInterval(updateTimer, 1000);
-    }, 60 * 1000);
-
-    return () => {
-      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
-      dispatch(APITransport(apiObj));
-      clearInterval(intervalId);
-    };
-
-    // eslint-disable-next-line
-  }, []);
 
   const handleFullscreen = () => {
     const res = fullscreenUtil(document.documentElement);

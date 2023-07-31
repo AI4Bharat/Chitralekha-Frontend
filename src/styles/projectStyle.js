@@ -22,7 +22,6 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#19ab27",
   },
 
-
   videoPlayer: {
     position: "relative",
     zIndex: "10",
@@ -32,8 +31,7 @@ const ProjectStyle = makeStyles({
     boxShadow: "0px 5px 25px 5px rgb(0 0 0 / 80%)",
     backgroundColor: " #000",
     cursor: "pointer",
-  },  
-
+  },
 
   duration: {
     position: "absolute",
@@ -53,8 +51,6 @@ const ProjectStyle = makeStyles({
     padding: "5px 10px",
     backgroundColor: "rgb(0 0 0 / 50%)",
   },
-
-
 
   headerMenu: {
     width: "80%",
@@ -102,19 +98,10 @@ const ProjectStyle = makeStyles({
     },
   },
 
-  
-
   subIllegal: {
     backgroundColor: "rgba(199, 81, 35, 0.5)",
   },
 
-
-
-
-
-
-
- 
   fullscreenStyle: {
     position: "relative",
     top: "55%",
@@ -137,7 +124,6 @@ const ProjectStyle = makeStyles({
       "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
   },
 
-
   fullscreenVideoBtns: {
     position: "absolute",
     bottom: "5%",
@@ -153,8 +139,6 @@ const ProjectStyle = makeStyles({
       backgroundColor: "black",
     },
   },
-
-
 
   playbackRate: {
     position: "absolute",
@@ -212,7 +196,7 @@ const ProjectStyle = makeStyles({
       textAlign: "center",
       color: "#fff",
       fontSize: "1rem",
-      padding: "5px 0"
+      padding: "5px 0",
     },
     "& .MuiInput-root:after": {
       border: "none",
@@ -223,11 +207,11 @@ const ProjectStyle = makeStyles({
     "& .MuiInput-root:before": {
       border: "none",
     },
-    '& .MuiInput-input': {
-      '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
-        '-webkit-appearance': 'none',
+    "& .MuiInput-input": {
+      "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+        "-webkit-appearance": "none",
       },
-     }
+    },
   },
 
   taskBox: {
@@ -304,7 +288,7 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#F8F8FA !important",
     color: "rgba(0, 0, 0, 0.87)",
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
-    alignItems: "center"
+    alignItems: "center",
   },
 
   message: {
@@ -325,7 +309,41 @@ const ProjectStyle = makeStyles({
     "-webkit-box-orient": "vertical",
     overflow: "hidden",
     textOverflow: "ellipsis",
-  }
+  },
+
+  findReplaceButton: {
+    backgroundColor: "#2C2799",
+    borderRadius: "50%",
+    color: "#fff",
+    margin: "0 5px",
+    "&:hover": {
+      backgroundColor: "#271e4f",
+    },
+  },
+
+  findReplaceTextbox: {
+    width: "-webkit-fill-available",
+    height: "50px",
+    paddingInline: "10px",
+    font: "inherit",
+    fontSize: "1.25rem",
+  },
+
+  findReplaceTextboxLabel: {
+    backgroundColor: "white",
+    position: "absolute",
+    left: "10px",
+    top: "-10px",
+    paddingInline: "5px",
+  },
+
+  matchTypeSwitch: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingBottom: "30px",
+  },
 });
 
 export default ProjectStyle;

@@ -2,10 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { translate } from "config";
+import { useLocation } from "react-router-dom";
+
 
 //Styles
 import { LoginStyle } from "styles";
 import { themeDefault } from "theme";
+
 
 //Components
 import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
@@ -39,6 +42,7 @@ const Login = () => {
   const accessToken = localStorage.getItem("token");
   const userInfo = JSON.parse(localStorage.getItem("userData"));
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  let location = useLocation();
 
   const navigate = useNavigate();
 
@@ -79,7 +83,7 @@ const Login = () => {
     if (userData && accessToken) {
       if (userData.role === "ADMIN") {
         navigate(`/admin`);
-      } else {
+      }else{
         navigate(`/my-organization/${userInfo?.organization?.id}`);
       }
     }

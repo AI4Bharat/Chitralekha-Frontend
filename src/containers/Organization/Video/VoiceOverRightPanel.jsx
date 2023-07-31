@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
 import { Sub, base64toBlob, getSubtitleRange, setAudioContent } from "utils";
+import { voiceoverFailInfoColumns } from "config";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -17,7 +18,12 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import { ConfirmDialog, ConfirmErrorDialog, CustomizedSnackbars } from "common";
+import {
+  ConfirmDialog,
+  ConfirmErrorDialog,
+  CustomizedSnackbars,
+  TableDialog,
+} from "common";
 
 //APIs
 import C from "redux/constants";
@@ -31,6 +37,7 @@ import {
   setSubtitlesForCheck,
   setTotalPages,
   SaveTranscriptAPI,
+  FetchTaskFailInfoAPI,
 } from "redux/actions";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
@@ -81,6 +88,10 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
   const [canSave, setCanSave] = useState(false);
+  const [openInfoDialog, setOpenInfoDialog] = useState(false);
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   const isDisabled = (index) => {
     if (next && sourceText.length - 1 === index) {
@@ -246,11 +257,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    if (canSave) {
-      saveTranscriptHandler(false, false, value);
-    } else {
-      getPayloadAPI(value);
-    }
+    getPayloadAPI(value);
   };
 
   // const onUndo = useCallback(() => {
@@ -385,6 +392,39 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
       ?.querySelector(`#container-1`),
   ]);
 
+  const handleInfoButtonClick = async () => {
+    const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        body: JSON.stringify(apiObj.getBody()),
+        headers: apiObj.getHeaders().headers,
+      });
+
+      const resp = await res.json();
+
+      if (res.ok) {
+        setOpenInfoDialog(true);
+        setTableDialogColumn(voiceoverFailInfoColumns);
+        setTableDialogMessage(resp.message);
+        setTableDialogResponse(resp.data);
+      } else {
+        setSnackbarInfo({
+          open: true,
+          message: resp?.message,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbarInfo({
+        open: true,
+        message: "Something went wrong!!",
+        variant: "error",
+      });
+    }
+  };
+
   return (
     <>
       {renderSnackBar()}
@@ -408,6 +448,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             // undoStack={undoStack}
             // redoStack={redoStack}
             durationError={durationError}
+            handleInfoButtonClick={handleInfoButtonClick}
           />
         </Grid>
 
@@ -639,6 +680,16 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             openDialog={openConfirmErrorDialog}
             handleClose={() => setOpenConfirmErrorDialog(false)}
             response={errorResponse}
+          />
+        )}
+
+        {openInfoDialog && (
+          <TableDialog
+            openDialog={openInfoDialog}
+            handleClose={() => setOpenInfoDialog(false)}
+            message={tableDialogMessage}
+            response={tableDialogResponse}
+            columns={tableDialogColumn}
           />
         )}
       </Box>
