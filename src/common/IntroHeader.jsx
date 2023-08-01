@@ -1,22 +1,28 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { Grid } from "@mui/material";
-import DatasetStyle from "../styles/introDataset";
-import Chitralekhalogo from "../assets/profileImages/Chitralekha_Logo.png";
 import { Routes, Route, useNavigate, Link } from "react-router-dom";
+
+//Styles
+import { IntroDatasetStyle } from "styles";
+//Icons
+import MenuIcon from "@mui/icons-material/Menu";
+import Chitralekhalogo from "../assets/profileImages/Chitralekha_Logo.png";
+
+//Components
+import {
+  Grid,
+  AppBar,
+  Box,
+  CssBaseline,
+  Drawer,
+  Toolbar,
+  IconButton,
+  Button,
+} from "@mui/material";
 
 const drawerWidth = 240;
 
 function IntroHeader(props) {
-  const classes = DatasetStyle();
+  const classes = IntroDatasetStyle();
   const navigate = useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -201,11 +207,11 @@ function IntroHeader(props) {
               mt: 2,
             }}
           >
-             <Link to={`/login`}>
+            <Link to={`/login`}>
               <Button variant="contained" className={classes.button}>
                 Login
               </Button>
-              </Link>
+            </Link>
             <Link to={`/`}>
               <img
                 src={Chitralekhalogo}

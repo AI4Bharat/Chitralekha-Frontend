@@ -1,18 +1,23 @@
 import React from "react";
-import { Grid, Typography } from "@mui/material";
+
+//Styles
+import { IntroDatasetStyle } from "styles";
+import { introTheme } from "theme";
+
+//Icons
 import Scalable from "../../assets/Scalable.svg";
 import Dynamic from "../../assets/Dynamic.svg";
 import Elegant from "../../assets/Elegant.svg";
 import Extensible from "../../assets/Extensible.svg";
-import DatasetStyle from "../../styles/introDataset";
-import { ThemeProvider } from "@mui/material";
-import themeDefault from "../../theme/introTheme";
 
-export default function Principles() {
-  const classes = DatasetStyle();
+//Components
+import { Grid, Typography, ThemeProvider } from "@mui/material";
+
+const Principles = () => {
+  const classes = IntroDatasetStyle();
 
   return (
-    <ThemeProvider theme={themeDefault}>
+    <ThemeProvider theme={introTheme}>
       <div>
         <Grid
           item
@@ -122,4 +127,6 @@ export default function Principles() {
       </div>
     </ThemeProvider>
   );
-}
+};
+
+export default Principles;

@@ -1,20 +1,26 @@
 import React, { useEffect } from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { CardActionArea, Grid } from "@mui/material";
-import { ThemeProvider } from "@mui/material";
-import themeDefault from "../../theme/introTheme";
+
+//Styles
+import { introTheme } from "theme";
+
+//Components
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Grid,
+  ThemeProvider,
+} from "@mui/material";
 import teamDetails from "../../utils/userDetails";
 
-function Thanks() {
+const Thanks = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
 
   return (
-    <ThemeProvider theme={themeDefault}>
+    <ThemeProvider theme={introTheme}>
       <Grid sx={{ mt: 15 }}>
         <Typography
           variant="h4"
@@ -47,5 +53,5 @@ function Thanks() {
       </Grid>
     </ThemeProvider>
   );
-}
+};
 export default Thanks;

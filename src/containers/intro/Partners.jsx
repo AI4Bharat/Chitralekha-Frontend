@@ -1,40 +1,21 @@
 import React from "react";
-import { Grid, Typography, Button } from "@mui/material";
-import DatasetStyle from "../../styles/introDataset";
-import { ThemeProvider } from "@mui/material";
-import themeDefault from "../../theme/introTheme";
 
-export default function Partners() {
-  const classes = DatasetStyle();
+//Styles
+import { IntroDatasetStyle } from "styles";
+import { introTheme } from "theme";
 
-  const partnerData = [
-    {
-      image: require("../../assets/profileImages/Nptel.png"),
-      title: "Nptel",
-      link: "https://nptel.ac.in/",
-    },
-    {
-      image: require("../../assets/profileImages/TicTac.png"),
-      title: "TicTacLearn",
-      link: "https://tictaclearn.org/",
-    },
-    {
-      image: require("../../assets/profileImages/Partham.png"),
-      title: "Pratham",
-      link: "https://www.pratham.org/",
-    },
-    {
-      image: require("../../assets/profileImages/EkStep.png"),
-      title: "EkStep",
-      link: "https://ekstep.org/",
-    },
-  ];
+//Components
+import { Grid, Typography, Button, ThemeProvider } from "@mui/material";
+import { partnerData } from "../../utils/introUtils";
+
+const Partners = () => {
+  const classes = IntroDatasetStyle();
 
   const handleClickImg = (link) => {
     window.open(link);
   };
   return (
-    <ThemeProvider theme={themeDefault}>
+    <ThemeProvider theme={introTheme}>
       <div>
         <Grid sx={{ mt: 10, mb: 10 }}>
           <Typography variant="h4" className={classes.titles}>
@@ -82,4 +63,6 @@ export default function Partners() {
       </div>
     </ThemeProvider>
   );
-}
+};
+
+export default Partners;

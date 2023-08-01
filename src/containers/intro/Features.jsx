@@ -1,18 +1,23 @@
 import React from "react";
-import { Grid, Typography } from "@mui/material";
+
+//Styles
+import { IntroDatasetStyle } from "styles";
+import { introTheme } from "theme";
+
+//Icons
 import PurePython from "../../assets/PurePython.svg";
 import UsefulUI from "../../assets/UsefulUI.svg";
 import RobustIntegrations from "../../assets/RobustIntegrations.svg";
 import EasytoUse from "../../assets/EasytoUse.svg";
 import OpenSource from "../../assets/OpenSource.svg";
-import DatasetStyle from "../../styles/introDataset";
-import { ThemeProvider } from "@mui/material";
-import themeDefault from "../../theme/introTheme";
 
-export default function Features() {
-  const classes = DatasetStyle();
+//Components
+import { Grid, Typography, ThemeProvider } from "@mui/material";
+
+const Features = () => {
+  const classes = IntroDatasetStyle();
   return (
-    <ThemeProvider theme={themeDefault}>
+    <ThemeProvider theme={introTheme}>
       <div>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mt: 10 }}>
           <Typography variant="h4" className={classes.titles}>
@@ -156,4 +161,6 @@ export default function Features() {
       </div>
     </ThemeProvider>
   );
-}
+};
+
+export default Features;
