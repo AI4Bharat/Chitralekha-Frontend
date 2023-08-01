@@ -1,14 +1,16 @@
 import React, { useEffect } from "react";
-import { Grid, Typography, Button, Link, Paper, Box } from "@mui/material";
-import Partners from "../containers/intro/Partners";
-import Features from "../containers/intro/Features";
-import Principles from "../containers/intro/Principles";
-import Footer from "../common/Footer";
-import DatasetStyle from "../styles/introDataset";
-import Chitralekhaimg from "../assets/profileImages/chiralekha-bg.png";
 
-function ChitralekhaPortal() {
-  const classes = DatasetStyle();
+//Styles
+import { IntroDatasetStyle } from "styles";
+
+//Components
+import { Grid, Typography, Button, Box } from "@mui/material";
+import { Partners, Features, Principles } from "containers/intro/index";
+import Footer from "../common/Footer";
+import { Chitralekhaimg } from "assets/profileImages/index";
+
+const ChitralekhaPortal = () => {
+  const classes = IntroDatasetStyle();
   const handleWatchDemoVideo = () => {
     const url = "https://www.youtube.com/watch?v=hf5M6tApDlo";
     window.open(url, "_blank");
@@ -17,10 +19,9 @@ function ChitralekhaPortal() {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
-  
 
   return (
-    <div style={{backgroundColor:"white"}}>
+    <div style={{ backgroundColor: "white" }}>
       <Grid container direction="row" className={classes.section}>
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6} sx={{ mt: 20, mb: 20 }}>
           <Typography variant="h2" className={classes.Chitralekhatitle}>
@@ -37,10 +38,10 @@ function ChitralekhaPortal() {
             <b>Chitralekha</b> is an <b>open source</b> platform for video
             subtitling across various Indic languages, using ML model support
             (ASR for Transcription, NMT for Translation and TTS for Voice Over).
-            Chitralekha offers support for multiple input sources (Ex:
-            Youtube, local etc), transcription generation process (Ex: Models,
-            Source captions, Custom subtitle files etc) and voice over(Ex: mp3
-            for audio only, mp4 for audio-video combination, etc)
+            Chitralekha offers support for multiple input sources (Ex: Youtube,
+            local etc), transcription generation process (Ex: Models, Source
+            captions, Custom subtitle files etc) and voice over(Ex: mp3 for
+            audio only, mp4 for audio-video combination, etc)
           </Typography>
           <Button
             variant="contained"
@@ -67,5 +68,5 @@ function ChitralekhaPortal() {
       <Footer />
     </div>
   );
-}
+};
 export default ChitralekhaPortal;

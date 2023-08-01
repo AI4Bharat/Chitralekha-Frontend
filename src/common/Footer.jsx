@@ -1,13 +1,15 @@
 import React from "react";
-import { Grid, Typography, Button, Paper } from "@mui/material";
-import { Routes, Route, useNavigate, Link } from "react-router-dom";
-import DatasetStyle from "../styles/introDataset";
-import YouTube from "../assets/profileImages/youtube.png";
-import Github from "../assets/profileImages/gitHub.png";
-import Twitter from "../assets/profileImages/twitter.png";
+import { useNavigate } from "react-router-dom";
 
-function Footer() {
-  const classes = DatasetStyle();
+//Styles
+import { IntroDatasetStyle } from "styles";
+
+//Components
+import { Grid, Typography, Button } from "@mui/material";
+import { YouTube, Github, Twitter } from "assets/profileImages/index";
+
+const Footer = () => {
+  const classes = IntroDatasetStyle();
   const navigate = useNavigate();
 
   const handleClickThanks = () => {
@@ -83,7 +85,7 @@ function Footer() {
             href="https://github.com/AI4Bharat/Chitralekha/blob/master/LICENSE"
             style={{ color: "white", textDecoration: "none" }}
           >
-            <Typography variant="caption" sx={{ ml: "2px" ,color: "white"}}>
+            <Typography variant="caption" sx={{ ml: "2px", color: "white" }}>
               License
             </Typography>
           </a>
@@ -120,18 +122,24 @@ function Footer() {
             href="https://ai4bharat.org/"
             style={{ color: "white", textDecoration: "none" }}
           >
-            <Typography variant="caption" sx={{ color: "white"}}> AI4Bharat </Typography>{" "}
+            <Typography variant="caption" sx={{ color: "white" }}>
+              {" "}
+              AI4Bharat{" "}
+            </Typography>{" "}
           </a>
           <span style={{ margin: "0px 15px 0px 15px" }}>|</span>
           <a
             href="https://ekstep.org/"
             style={{ color: "white", textDecoration: "none" }}
           >
-            <Typography variant="caption" sx={{ color: "white"}}> EkStep </Typography>{" "}
+            <Typography variant="caption" sx={{ color: "white" }}>
+              {" "}
+              EkStep{" "}
+            </Typography>{" "}
           </a>
         </Grid>
       </Grid>
     </div>
   );
-}
+};
 export default Footer;
