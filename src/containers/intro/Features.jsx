@@ -4,15 +4,15 @@ import React from "react";
 import { IntroDatasetStyle } from "styles";
 import { introTheme } from "theme";
 
-//Icons
-import PurePython from "../../assets/PurePython.svg";
-import UsefulUI from "../../assets/UsefulUI.svg";
-import RobustIntegrations from "../../assets/RobustIntegrations.svg";
-import EasytoUse from "../../assets/EasytoUse.svg";
-import OpenSource from "../../assets/OpenSource.svg";
-
 //Components
 import { Grid, Typography, ThemeProvider } from "@mui/material";
+import {
+  PurePython,
+  UsefulUI,
+  RobustIntegrations,
+  EasytoUse,
+  OpenSource,
+} from "assets/index";
 
 const Features = () => {
   const classes = IntroDatasetStyle();

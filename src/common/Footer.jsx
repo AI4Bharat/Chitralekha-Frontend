@@ -6,9 +6,7 @@ import { IntroDatasetStyle } from "styles";
 
 //Components
 import { Grid, Typography, Button } from "@mui/material";
-import YouTube from "../assets/profileImages/youtube.png";
-import Github from "../assets/profileImages/gitHub.png";
-import Twitter from "../assets/profileImages/twitter.png";
+import { YouTube, Github, Twitter } from "assets/profileImages/index";
 
 const Footer = () => {
   const classes = IntroDatasetStyle();

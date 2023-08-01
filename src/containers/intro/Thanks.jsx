@@ -12,7 +12,7 @@ import {
   Grid,
   ThemeProvider,
 } from "@mui/material";
-import teamDetails from "../../utils/userDetails";
+import { teamDetails } from "utils/index";
 
 const Thanks = () => {
   useEffect(() => {

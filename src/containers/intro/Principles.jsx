@@ -4,14 +4,9 @@ import React from "react";
 import { IntroDatasetStyle } from "styles";
 import { introTheme } from "theme";
 
-//Icons
-import Scalable from "../../assets/Scalable.svg";
-import Dynamic from "../../assets/Dynamic.svg";
-import Elegant from "../../assets/Elegant.svg";
-import Extensible from "../../assets/Extensible.svg";
-
 //Components
 import { Grid, Typography, ThemeProvider } from "@mui/material";
+import { Scalable, Dynamic, Elegant, Extensible } from "assets/index";
 
 const Principles = () => {
   const classes = IntroDatasetStyle();

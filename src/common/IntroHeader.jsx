@@ -5,7 +5,7 @@ import { Routes, Route, useNavigate, Link } from "react-router-dom";
 import { IntroDatasetStyle } from "styles";
 //Icons
 import MenuIcon from "@mui/icons-material/Menu";
-import Chitralekhalogo from "../assets/profileImages/Chitralekha_Logo.png";
+import { Chitralekhalogo } from "assets/profileImages/index";
 
 //Components
 import {

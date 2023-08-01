@@ -37,6 +37,9 @@ import UploadFormatDialog from "./UploadFormatDialog";
 import VideoDialog from "./VideoDialog";
 import VideoStatusTable from "./VideoStatusTable";
 import ViewTaskDialog from "./ViewTaskDialog";
+import IntroHeader from "./IntroHeader";
+import Footer from "./Footer";
+import ChitralekhaPortal from "./ChitralekhaPortal"
 
 export {
   AddOrganizationMember,
@@ -78,4 +81,7 @@ export {
   VideoDialog,
   VideoStatusTable,
   ViewTaskDialog,
+  IntroHeader,
+  Footer,
+  ChitralekhaPortal,
 };

@@ -21,7 +21,7 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import { useCaseData } from "../../utils/introUtils";
+import { useCaseData } from "utils/index";
 
 const UseCases = () => {
   const classes = IntroDatasetStyle();

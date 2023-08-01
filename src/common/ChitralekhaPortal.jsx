@@ -5,11 +5,9 @@ import { IntroDatasetStyle } from "styles";
 
 //Components
 import { Grid, Typography, Button, Box } from "@mui/material";
-import Partners from "../containers/intro/Partners";
-import Features from "../containers/intro/Features";
-import Principles from "../containers/intro/Principles";
+import { Partners, Features, Principles } from "containers/intro/index";
 import Footer from "../common/Footer";
-import Chitralekhaimg from "../assets/profileImages/chiralekha-bg.png";
+import { Chitralekhaimg } from "assets/profileImages/index";
 
 const ChitralekhaPortal = () => {
   const classes = IntroDatasetStyle();

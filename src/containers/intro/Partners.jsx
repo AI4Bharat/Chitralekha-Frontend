@@ -6,7 +6,7 @@ import { introTheme } from "theme";
 
 //Components
 import { Grid, Typography, Button, ThemeProvider } from "@mui/material";
-import { partnerData } from "../../utils/introUtils";
+import { partnerData } from "utils/index";
 
 const Partners = () => {
   const classes = IntroDatasetStyle();
