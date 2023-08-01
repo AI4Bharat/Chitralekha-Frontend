@@ -58,7 +58,7 @@ const Pagination = ({
     <div
       style={{
         display: "flex",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "center",
         width: "95%",
         ...(!xl && {

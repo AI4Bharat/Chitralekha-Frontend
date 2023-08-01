@@ -54,7 +54,7 @@ const SettingsButtonComponent = ({
   onSplitClick,
   showPopOver,
   showSplit,
-  handleInfoButtonClick
+  handleInfoButtonClick,
 }) => {
   const classes = VideoLandingStyle();
   // const dispatch = useDispatch();
@@ -160,7 +160,8 @@ const SettingsButtonComponent = ({
         </Tooltip>
       )}
 
-      {taskData?.task_type?.includes("TRANSLATION_EDIT") && (
+      {(taskData?.task_type?.includes("TRANSLATION_EDIT") ||
+        taskData?.task_type?.includes("VOICEOVER")) && (
         <Tooltip title="Incorrect Subtitles Info" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
