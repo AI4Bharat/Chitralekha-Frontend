@@ -332,6 +332,19 @@ const VideoLanding = () => {
     }
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("canReload") === "true") {
+      localStorage.setItem("canReload", false);
+      window.location.reload(true);
+    } else {
+      localStorage.setItem("canReload", true);
+    }
+
+    return () => {
+      localStorage.setItem("canReload", true);
+    };
+  }, []);
+
   return (
     <Grid
       className={fullscreen ? classes.fullscreenStyle : ""}
