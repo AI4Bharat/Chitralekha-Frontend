@@ -53,6 +53,7 @@ import {
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
+  setTotalSentences,
 } from "redux/actions";
 import C from "redux/constants";
 
@@ -230,6 +231,7 @@ const VideoLanding = () => {
     dispatch(setRangeStart(transcriptPayload?.start));
     dispatch(setRangeEnd(transcriptPayload?.end));
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setTotalSentences(transcriptPayload?.sentences_count));
 
     // eslint-disable-next-line
   }, [transcriptPayload?.payload?.payload]);

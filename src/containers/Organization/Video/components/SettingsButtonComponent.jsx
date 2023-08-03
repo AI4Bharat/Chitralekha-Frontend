@@ -67,9 +67,11 @@ const SettingsButtonComponent = ({
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
-  const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
+  );
+  const totalSentences = useSelector(
+    (state) => state.commonReducer.totalSentences
   );
   // const limit = useSelector((state) => state.commonReducer.limit);
 
@@ -82,7 +84,7 @@ const SettingsButtonComponent = ({
         return true;
       }
 
-      if (flag && completedCount !== totalPages + 2) {
+      if (flag && completedCount !== totalSentences) {
         return true;
       }
     }
