@@ -115,6 +115,7 @@ import {
   setLimitInStore,
   setRangeStart,
   setRangeEnd,
+  setTotalSentences,
 } from "./Common";
 
 import APITransport from "./apitransport/apitransport";
@@ -228,4 +229,5 @@ export {
   FetchTaskFailInfoAPI,
   ReopenTaskAPI,
   UpdateUserRoleAPI,
+  setTotalSentences,
 };

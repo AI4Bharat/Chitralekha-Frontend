@@ -38,6 +38,7 @@ import {
   setTotalPages,
   SaveTranscriptAPI,
   FetchTaskFailInfoAPI,
+  setTotalSentences,
 } from "redux/actions";
 
 const VoiceOverRightPanel = ({ currentIndex }) => {
@@ -63,6 +64,9 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const previous = useSelector((state) => state.commonReducer.previousPage);
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
+  );
+  const totalSentences = useSelector(
+    (state) => state.commonReducer.totalSentences
   );
 
   const [sourceText, setSourceText] = useState([]);
@@ -228,6 +232,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
         dispatch(setTotalPages(resp?.count));
         dispatch(setSubtitlesForCheck(newSub));
         dispatch(setSubtitles(sub, C.SUBTITLES));
+        dispatch(setTotalSentences(resp?.sentences_count));
       }
     } else {
       setLoading(false);
@@ -661,6 +666,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             durationError={durationError}
             completedCount={completedCount}
             current={currentPage}
+            totalSentences={totalSentences}
           />
         </Box>
 

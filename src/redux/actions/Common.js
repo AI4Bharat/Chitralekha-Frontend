@@ -90,3 +90,10 @@ export const setRangeEnd = (data) => {
     payload: data,
   }
 }
+
+export const setTotalSentences = (data) => {
+  return {
+    type: C.TOTAL_SENTENCES,
+    payload: data,
+  };
+};
