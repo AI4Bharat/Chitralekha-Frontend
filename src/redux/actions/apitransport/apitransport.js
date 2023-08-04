@@ -1,135 +1,169 @@
 import axios from "axios";
 import C from "../../constants";
-import Strings from "../../string";
+import strings from "../../string";
+import { setSnackBar } from "../Common";
 
-function dispatchAPIAsync(api) {
+const dispatchAPIAsync = (api) => {
   return {
     type: api.type,
     endpoint: api.apiEndPoint(),
-    payload: api.getPayload()
+    payload: api.getPayload(),
   };
-}
+};
 
-function apiStatusAsync(progress, errors, message, res = null, unauthrized = false, loading = false) {
-  if (res === null || !(res.status && res.status.statusCode && res.status.statusCode !== 200 && res.status.statusCode !== 201)) {
-    return {
-      type: C.APISTATUS,
-      payload: {
-        progress,
-        error: errors,
-        message: res && res.status && res.status.statusMessage ? res.status.statusMessage : message,
-        unauthrized: unauthrized,
-        loading: loading,
-        
-      }
-    };
-  }
+const apiStatusAsync = (payload) => {
   return {
     type: C.APISTATUS,
-    payload: {
-      progress,
-      error: res.status.statusCode === 200 || res.status.statusCode === 201,
-      message: res.status.statusCode === 200 || res.status.statusCode === 201 ? message : res.status.errorMessage,
-      unauthrized: unauthrized,
-      loading: loading
-    }
+    payload,
   };
-}
+};
 
-function success(res, api, dispatch) {
-  api.processResponse(res.data);
-  dispatch(apiStatusAsync(false, false, api.message, res.data, null, false));
+const success = (res, api, dispatch) => {
+  const { data, status } = res;
+
+  api.processResponse(data);
+
+  const payload = {
+    progress: false,
+    loading: false,
+    errors: false,
+    message: data.message,
+    unauthorized: false,
+    apiType: api.type,
+    data,
+    success: true,
+  };
+
+  dispatch(apiStatusAsync(payload));
+
   if (api.type) {
     dispatch(dispatchAPIAsync(api));
   }
-  if (typeof api.processNextSuccessStep === "function" && res.status && (res.status === 200 || res.status === 201))
-    api.processNextSuccessStep(res.data);
-}
 
-function error(err, api, dispatch) {
-  let errorMsg = ((err.response && err.response.data && err.response.data.message) ? err.response.data.message : ((err.response && err.response.status&& Object.keys(Strings.error.message.http).includes(Number(err.response.status))) ? Strings.error.message.http[Number(err.response.status)]:Strings.error.message.http.default));
-  if (api.errorMsg || api.errorMsg === null) {
-    errorMsg = api.errorMsg === null ? "" : api.errorMsg;
+  if (data.message) {
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: data.message,
+        variant: "success",
+      })
+    );
   }
-  dispatch(apiStatusAsync(false, true, errorMsg, null, err.response && err.response.status === 401 ? true : false));
+
+  if (
+    typeof api.processNextSuccessStep === "function" &&
+    (status === 200 || status === 201)
+  ) {
+    api.processNextSuccessStep(data);
+  }
+};
+
+const error = (err, api, dispatch) => {
+  const {
+    response: {
+      data: { message },
+      status,
+    },
+  } = err;
+
+  const {
+    error: {
+      message: { http },
+    },
+  } = strings;
+
+  let errorMsg = message ?? http[status];
+
+  const payload = {
+    progress: false,
+    loading: false,
+    errors: true,
+    message: errorMsg,
+    unauthorized: status === 401,
+    apiType: api.type,
+    data: err.response.data,
+    success: false,
+  };
+
+  dispatch(apiStatusAsync(payload));
+
   if (typeof api.processNextErrorStep === "function") {
     api.processNextErrorStep();
   }
-}
+
+  dispatch(
+    setSnackBar({
+      open: true,
+      message: errorMsg,
+      variant: "error",
+    })
+  );
+
+  if (status === 401) {
+    window.location.replace("/");
+  }
+};
 
 export const updateMessage = apiStatusAsync;
 
 export default function dispatchAPI(api) {
-  if (api.method === "MULTIPART") {
-    return dispatch => {
-      dispatch(apiStatusAsync(api.dontShowApiLoader() ? false : true, false, ""));
-      axios
-        .post(api.apiEndPoint(), api.getFormData(), api.getHeaders())
-        .then(res => {
-          success(res, api, dispatch);
-        })
-        .catch(err => {
-          error(err, api, dispatch);
-        });
+  return (dispatch) => {
+    const { method } = api;
+
+    const payload = {
+      progress: true,
+      loading: true,
+      errors: false,
+      message: "",
+      unauthorized: false,
+      apiType: "",
+      data: "",
+      success: false,
     };
-  } else if (api.method === "PATCH") {
-    return dispatch => {
-      dispatch(apiStatusAsync(api.dontShowApiLoader() ? false : true, false, ""));
-      axios
-        .patch(api.apiEndPoint(), api.getBody(), api.getHeaders())
-        .then(res => {
-          success(res, api, dispatch);
-        })
-        .catch(err => {
-          error(err, api, dispatch);
-        });
-    };
-  } else if (api.method === "POST") {
-    return dispatch => {
-      dispatch(apiStatusAsync(api.dontShowApiLoader() ? false : true, false, "", null, null, true));
-      axios
-        .post(api.apiEndPoint(), api.getBody(), api.getHeaders())
-        .then(res => {
-          success(res, api, dispatch);
-        })
-        .catch(err => {
-          error(err, api, dispatch);
-        });
-    };
-  } else if (api.method === "PUT") {
-    return dispatch => {
-      dispatch(apiStatusAsync(api.dontShowApiLoader() ? false : true, false, ""));
-      axios
-        .put(api.apiEndPoint(), api.getBody(), api.getHeaders())
-        .then(res => {
-          success(res, api, dispatch);
-        })
-        .catch(err => {
-          error(err, api, dispatch);
-        });
-    };
-  } else if (api.method === "DELETE") {
-    return dispatch => {
-      dispatch(apiStatusAsync(api.dontShowApiLoader() ? false : true, false, ""));
-      axios
-        .delete(api.apiEndPoint(), api.getHeaders())
-        .then(res => {
-          success(res, api, dispatch);
-        })
-        .catch(err => {
-          error(err, api, dispatch);
-        });
-    };
-  }
-  return dispatch => {
-    dispatch(apiStatusAsync(api.dontShowApiLoader() ? false : true, false, ""));
-    axios
-      .get(api.apiEndPoint(), api.getHeaders())
-      .then(res => {
-        success(res, api, dispatch);
-      })
-      .catch(err => {
-        error(err, api, dispatch);
-      });
+
+    dispatch(apiStatusAsync(payload));
+
+    let request;
+    switch (method) {
+      case "MULTIPART":
+        request = axios.post(
+          api.apiEndPoint(),
+          api.getFormData(),
+          api.getHeaders()
+        );
+        break;
+
+      case "PATCH":
+        request = axios.patch(
+          api.apiEndPoint(),
+          api.getBody(),
+          api.getHeaders()
+        );
+        break;
+
+      case "POST":
+        request = axios.post(
+          api.apiEndPoint(),
+          api.getBody(),
+          api.getHeaders()
+        );
+        break;
+
+      case "PUT":
+        request = axios.put(api.apiEndPoint(), api.getBody(), api.getHeaders());
+        break;
+
+      case "DELETE":
+        request = axios.delete(api.apiEndPoint(), api.getHeaders());
+        break;
+
+      default:
+        request = axios.get(api.apiEndPoint(), api.getHeaders());
+        break;
+    }
+
+    request
+      .then((res) => success(res, api, dispatch))
+      .catch((err) => error(err, api, dispatch));
   };
 }

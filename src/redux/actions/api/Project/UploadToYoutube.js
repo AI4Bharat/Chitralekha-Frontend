@@ -1,9 +1,13 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
+import constants from "redux/constants";
 
 export default class UploadToYoutubeAPI extends API {
   constructor(taskId, exportType, timeout = 2000) {
     super("POST", timeout, false);
+
+    this.type = constants.UPLOAD_TO_YOUTUBE;
+
     this.taskId = taskId;
     this.exportType = exportType;
     this.endpoint = `${super.apiEndPointAuto()}${

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 //Styles
 import { LoginStyle } from "styles";
@@ -12,8 +12,6 @@ import {
   InputAdornment,
   FormHelperText,
   IconButton,
-  Snackbar,
-  Alert,
   Button,
 } from "@mui/material";
 import AppInfo from "./AppInfo";
@@ -23,12 +21,12 @@ import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
 import { OutlinedTextField } from "common";
 
 //APIs
-import { ConfirmForgotPasswordAPI } from "redux/actions";
+import { APITransport, ConfirmForgotPasswordAPI } from "redux/actions";
 
 const ConfirmForgetPassword = () => {
+  const dispatch = useDispatch();
   const classes = LoginStyle();
   const { key, token } = useParams();
-  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [values, setValues] = useState({
     password: "",
@@ -37,11 +35,6 @@ const ConfirmForgetPassword = () => {
   const [error, setError] = useState({
     password: false,
     confirmPassword: false,
-  });
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
   });
 
   const handleChange = (prop) => (event) => {
@@ -57,39 +50,9 @@ const ConfirmForgetPassword = () => {
     event.preventDefault();
   };
 
-  useEffect(() => {
-    if (apiStatus.message) {
-      setSnackbarInfo({
-        ...snackbar,
-        open: true,
-        message: apiStatus.message,
-        variant: apiStatus.error ? "error" : "Success",
-      });
-    }
-    // eslint-disable-next-line
-  }, [apiStatus]);
-
   const handleSubmit = async () => {
     let obj = new ConfirmForgotPasswordAPI(key, token, values.confirmPassword);
-    const res = await fetch(obj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(obj.getBody()),
-      headers: obj.getHeaders().headers,
-    });
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: "Password Updated Successfully!",
-        variant: "success",
-      });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong, please try again",
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(obj));
   };
 
   const handleConfirmForgetPassword = () => {
@@ -106,30 +69,9 @@ const ConfirmForgetPassword = () => {
     }
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarInfo({
-      ...snackbar,
-      open: false,
-    });
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <Snackbar
-        open={snackbar.open}
-        handleClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={3000}
-      >
-        <Alert severity={snackbar.variant}>{snackbar.message}</Alert>
-      </Snackbar>
-    );
-  };
-
   const TextFields = () => {
     return (
       <Grid container spacing={4} style={{ marginTop: "2px", width: "40%" }}>
-        <Grid>{renderSnackBar()}</Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Typography variant="h3" align="center">
             Confirm Forgot Password

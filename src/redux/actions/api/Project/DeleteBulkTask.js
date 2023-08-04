@@ -5,7 +5,7 @@ import C from "../../../constants";
 export default class DeleteBulkTaskAPI extends API {
   constructor(flag, taskId, timeout = 2000) {
     super("DELETE", timeout, false);
-    this.type = C.DELETE_BULK_TASk;
+    this.type = C.DELETE_BULK_TASK;
     this.taskId = taskId;
     this.flag = flag;
     this.endpoint = `${super.apiEndPointAuto()}${

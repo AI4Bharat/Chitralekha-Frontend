@@ -1,9 +1,13 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
+import constants from "redux/constants";
 
 export default class GenerateTranslationOutputAPI extends API {
   constructor(id, timeout = 2000) {
     super("POST", timeout, false);
+
+    this.type = constants.GENERATE_TRANSLATION_OUTPUT;
+    
     this.id = id;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.translation

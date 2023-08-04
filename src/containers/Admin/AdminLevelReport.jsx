@@ -104,7 +104,7 @@ const AdminLevelReport = () => {
   const options = {
     textLabels: {
       body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No records",
+        noMatch: apiStatus.loading ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",

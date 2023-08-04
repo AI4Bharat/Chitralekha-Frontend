@@ -1,9 +1,16 @@
 // OrgLevelTaskList
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
-import { getColumns, getDateTime, getOptions, roles } from "utils";
+import {
+  exportFile,
+  exportVoiceover,
+  exportZip,
+  getColumns,
+  getOptions,
+  roles,
+} from "utils";
 import {
   buttonConfig,
   failInfoColumns,
@@ -20,7 +27,6 @@ import { tableTheme } from "theme";
 import {
   ThemeProvider,
   Box,
-  Grid,
   Divider,
   Tooltip,
   IconButton,
@@ -29,7 +35,6 @@ import {
 import MUIDataTable from "mui-datatables";
 import {
   AlertComponent,
-  CustomizedSnackbars,
   DeleteDialog,
   ExportDialog,
   FilterList,
@@ -71,6 +76,7 @@ import {
   exportTranscriptionAPI,
   exportTranslationAPI,
   setComparisonTable,
+  setSnackBar,
 } from "redux/actions";
 
 const OrgLevelTaskList = () => {
@@ -94,16 +100,11 @@ const OrgLevelTaskList = () => {
 
   const [loading, setLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState([]);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
-  const [previewData, setPreviewData] = useState([]);
   const [currentSelectedTasks, setCurrentSelectedTasks] = useState([]);
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
 
@@ -151,6 +152,102 @@ const OrgLevelTaskList = () => {
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
+
+  const apiStatus = useSelector((state) => state.apiStatus);
+  const previewData = useSelector(
+    (state) => state.getPreviewData?.data?.data?.payload
+  );
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+    if (!progress) {
+      const { transcription, translation } = exportTypes;
+
+      if (success) {
+        switch (apiType) {
+          case "EXPORT_VOICEOVER_TASK":
+            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
+            handleDialogClose("exportDialog");
+            break;
+
+          case "DELETE_TASK":
+            handleDialogClose("deleteDialog");
+            fetchTaskList();
+            break;
+
+          case "EXPORT_TRANSCRIPTION":
+            exportFile(
+              data,
+              currentTaskDetails,
+              transcription,
+              "transcription"
+            );
+            break;
+
+          case "EXPORT_TRANLATION":
+            exportFile(data, currentTaskDetails, translation, "translation");
+            break;
+
+          case "GENERATE_TRANSLATION_OUTPUT":
+            navigate(`/task/${currentTaskDetails?.id}/translate`);
+            break;
+
+          case "UPLOAD_TO_YOUTUBE":
+            setBulkSubtitleAlert(true);
+            setBulkSubtitleAlertData(data);
+            setAlertColumn("uploadAlertColumns");
+            break;
+
+          case "DELETE_BULK_TASK":
+            setRows([]);
+            setShowEditTaskBtn(false);
+            fetchTaskList();
+            break;
+
+          case "EDIT_BULK_TASK_DETAILS" || "EDIT_TASK_DETAILS":
+            fetchTaskList();
+            break;
+
+          case "BULK_TASK_EXPORT":
+            exportZip(data);
+            break;
+
+          case "COMPARE_TRANSCRIPTION_SOURCE":
+            dispatch(setComparisonTable(data));
+            if (isSubmit) {
+              onTranslationTaskTypeSubmit(currentTaskDetails?.id, data);
+            }
+            break;
+
+          case "GET_TASK_FAIL_INFO":
+            handleDialogOpen("tableDialog");
+            setTableDialogColumn(failInfoColumns);
+            setTableDialogMessage(data.message);
+            setTableDialogResponse(data.data);
+            break;
+
+          default:
+            break;
+        }
+      } else {
+        if (apiType === "DELETE_TASK") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("deleteDialog");
+          setDeleteMsg(data.message);
+          setDeleteResponse(data.response);
+        }
+
+        if (apiType === "DELETE_BULK_TASK") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("deleteDialog");
+          setDeleteMsg(data.message);
+          setDeleteResponse(data.error_report);
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const { total_count: totalCount, tasks_list: taskList } = useSelector(
     (state) => state.getOrgTaskList.data
@@ -238,68 +335,15 @@ const OrgLevelTaskList = () => {
   }, [taskList]);
 
   const exportVoiceoverTask = async () => {
-    const {
-      id: taskId,
-      video_name: videoName,
-      target_language: targetLanguage,
-    } = currentTaskDetails;
+    const { id: taskId } = currentTaskDetails;
     const { voiceover } = exportTypes;
 
     const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover);
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        if (resp.azure_url) {
-          const link = document.createElement("a");
-          link.href = resp.azure_url;
-
-          link.setAttribute(
-            "download",
-            `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.mp4`
-          );
-
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode.removeChild(link);
-        } else {
-          setSnackbarInfo({
-            open: true,
-            message: resp?.message,
-            variant: "success",
-          });
-        }
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      handleDialogClose("exportDialog");
-    }
+    dispatch(APITransport(apiObj));
   };
 
   const handleTranscriptExport = async () => {
-    const {
-      id: taskId,
-      video: videoId,
-      src_language: sourceLanguage,
-    } = currentTaskDetails;
+    const { id: taskId } = currentTaskDetails;
     const { transcription, speakerInfo } = exportTypes;
 
     const apiObj = new exportTranscriptionAPI(
@@ -307,136 +351,17 @@ const OrgLevelTaskList = () => {
       transcription,
       speakerInfo
     );
+    dispatch(APITransport(apiObj));
     handleDialogClose("exportDialog");
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      if (res.ok) {
-        const resp = await res.blob();
-
-        let newBlob;
-        if (transcription === "docx") {
-          newBlob = new Blob([resp], {
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          });
-        } else {
-          newBlob = new Blob([resp]);
-        }
-
-        const blobUrl = window.URL.createObjectURL(newBlob);
-        const link = document.createElement("a");
-        link.href = blobUrl;
-
-        const date = new Date();
-        const YYYYMMDD = date
-          .toLocaleDateString("en-GB")
-          .split("/")
-          .reverse()
-          .join("");
-
-        const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-        link.setAttribute(
-          "download",
-          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${sourceLanguage}.${transcription}`
-        );
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-
-        // clean up Url
-        window.URL.revokeObjectURL(blobUrl);
-      } else {
-        const resp = await res.json();
-
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    }
   };
 
   const handleTranslationExport = async () => {
-    const {
-      id: taskId,
-      video: videoId,
-      target_language: targetLanguage,
-    } = currentTaskDetails;
+    const { id: taskId } = currentTaskDetails;
     const { translation, speakerInfo } = exportTypes;
 
     const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
+    dispatch(APITransport(apiObj));
     handleDialogClose("exportDialog");
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      if (res.ok) {
-        const resp = await res.blob();
-
-        let newBlob;
-        if (translation === "docx") {
-          newBlob = new Blob([resp], {
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          });
-        } else {
-          newBlob = new Blob([resp]);
-        }
-
-        const blobUrl = window.URL.createObjectURL(newBlob);
-        const link = document.createElement("a");
-        link.href = blobUrl;
-
-        const date = new Date();
-        const YYYYMMDD = date
-          .toLocaleDateString("en-GB")
-          .split("/")
-          .reverse()
-          .join("");
-        const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-
-        const format = translation === "docx-bilingual" ? "docx" : translation;
-
-        link.setAttribute(
-          "download",
-          `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${targetLanguage}.${format}`
-        );
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-
-        window.URL.revokeObjectURL(blobUrl);
-      } else {
-        const resp = await res.json();
-
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    }
   };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
@@ -453,25 +378,16 @@ const OrgLevelTaskList = () => {
   };
 
   const getTranscriptionSourceComparison = (id, source, isSubmitCall) => {
+    setIsSubmit(isSubmitCall);
+
     const sourceTypeList = source.map((el) => {
       return el.toUpperCase().split(" ").join("_");
     });
+
     const apiObj = new CompareTranscriptionSource(id, sourceTypeList);
+    dispatch(APITransport(apiObj));
+
     localStorage.setItem("sourceTypeList", JSON.stringify(sourceTypeList));
-    fetch(apiObj.apiEndPoint(), {
-      method: "post",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    }).then(async (res) => {
-      const rsp_data = await res.json();
-      if (res.ok) {
-        dispatch(setComparisonTable(rsp_data));
-        if (isSubmitCall) {
-          // --------------------- if task type is translation, submit translation with trg lang ------------- //
-          await onTranslationTaskTypeSubmit(id, rsp_data);
-        }
-      }
-    });
   };
 
   const handleDeleteTask = async (id, flag) => {
@@ -479,74 +395,14 @@ const OrgLevelTaskList = () => {
     setIsBulkTaskDelete(false);
 
     const apiObj = new DeleteTaskAPI(id, flag);
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "DELETE",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-        handleDialogClose("deleteDialog");
-        fetchTaskList();
-      } else {
-        handleDialogOpen("deleteDialog");
-        setDeleteMsg(resp.message);
-        setDeleteResponse(resp.response);
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
+    dispatch(APITransport(apiObj));
   };
 
   const handlePreviewTask = async (id, taskType, targetlanguage) => {
-    setPreviewData([]);
     handleDialogOpen("previewDialog");
 
     const taskObj = new FetchpreviewTaskAPI(id, taskType, targetlanguage);
-
-    try {
-      const res = await fetch(taskObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(taskObj.getBody()),
-        headers: taskObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setPreviewData(resp.data.payload);
-      } else {
-        handleDialogClose("previewDialog");
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
+    dispatch(APITransport(taskObj));
   };
 
   const handleShowSearch = (col, event) => {
@@ -580,32 +436,7 @@ const OrgLevelTaskList = () => {
   const generateTranslationCall = async (id, taskStatus) => {
     if (taskStatus === "SELECTED_SOURCE") {
       const apiObj = new GenerateTranslationOutputAPI(id);
-
-      try {
-        const res = await fetch(apiObj.apiEndPoint(), {
-          method: "POST",
-          body: JSON.stringify(apiObj.getBody()),
-          headers: apiObj.getHeaders().headers,
-        });
-
-        const resp = await res.json();
-
-        if (res.ok) {
-          navigate(`/task/${id}/translate`);
-        } else {
-          setSnackbarInfo({
-            open: true,
-            message: resp?.message,
-            variant: "error",
-          });
-        }
-      } catch (error) {
-        setSnackbarInfo({
-          open: true,
-          message: "Something went wrong!!",
-          variant: "error",
-        });
-      }
+      dispatch(APITransport(apiObj));
     } else {
       navigate(`/task/${id}/translate`);
     }
@@ -619,75 +450,15 @@ const OrgLevelTaskList = () => {
     setUploadLoading(loadingArray);
 
     const apiObj = new UploadToYoutubeAPI(id, exportType);
+    dispatch(APITransport(apiObj));
 
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "POST",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setBulkSubtitleAlert(true);
-        setBulkSubtitleAlertData(resp);
-        setAlertColumn("uploadAlertColumns");
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      loadingArray[rowIndex] = false;
-      setUploadLoading(loadingArray);
-    }
+    loadingArray[rowIndex] = false;
+    setUploadLoading(loadingArray);
   };
 
   const handleOpenSubtitleUploadDialog = (rowIndex) => {
     handleDialogOpen("uploadDialog");
     setUploadTaskRowIndex(rowIndex);
-  };
-
-  const handleInfoButtonClick = async (id) => {
-    const apiObj = new FetchTaskFailInfoAPI(id);
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        handleDialogOpen("tableDialog");
-        setTableDialogColumn(failInfoColumns);
-        setTableDialogMessage(resp.message);
-        setTableDialogResponse(resp.data);
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    }
   };
 
   const handleActionButtonClick = (tableMeta, action) => {
@@ -743,7 +514,8 @@ const OrgLevelTaskList = () => {
         break;
 
       case "Info":
-        handleInfoButtonClick(id);
+        const infoObj = new FetchTaskFailInfoAPI(id);
+        dispatch(APITransport(infoObj));
         break;
 
       case "Reopen":
@@ -890,40 +662,9 @@ const OrgLevelTaskList = () => {
     setIsBulkTaskDelete(true);
 
     const apiObj = new DeleteBulkTaskAPI(flag, taskIds);
+    dispatch(APITransport(apiObj));
 
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "DELETE",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-        handleDialogClose("deleteDialog");
-        setRows([]);
-        setShowEditTaskBtn(false);
-        fetchTaskList();
-      } else {
-        handleDialogOpen("deleteDialog");
-        setDeleteMsg(resp.message);
-        setDeleteResponse(resp.error_report);
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
+    handleDialogClose("deleteDialog");
   };
 
   const handleToolbarButtonClick = (key) => {
@@ -1037,20 +778,6 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, [loading, rows]);
 
-  const renderSnackBar = useCallback(() => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  }, [snackbar]);
-
   const handleUpdateTask = async (data) => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
@@ -1069,40 +796,9 @@ const OrgLevelTaskList = () => {
     } else {
       userObj = new EditTaskDetailAPI(body, taskId);
     }
+    dispatch(APITransport(userObj));
 
-    try {
-      const res = await fetch(userObj.apiEndPoint(), {
-        method: "PATCH",
-        body: JSON.stringify(userObj.getBody()),
-        headers: userObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-        fetchTaskList();
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-      handleDialogClose("editTaskDialog");
-    }
+    handleDialogClose("editTaskDialog");
   };
 
   const handleBulkTaskDownload = async () => {
@@ -1110,60 +806,7 @@ const OrgLevelTaskList = () => {
     const { translation } = exportTypes;
 
     const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      if (res.ok) {
-        const resp = await res.blob();
-        const newBlob = new Blob([resp], { type: "application/zip" });
-
-        const blobUrl = window.URL.createObjectURL(newBlob);
-
-        const link = document.createElement("a");
-        link.href = blobUrl;
-
-        const date = new Date();
-        const YYYYMMDD = date
-          .toLocaleDateString("en-GB")
-          .split("/")
-          .reverse()
-          .join("");
-
-        const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-
-        link.setAttribute(
-          "download",
-          `Chitralekha_Tasks_${YYYYMMDD}_${HHMMSS}.zip`
-        );
-
-        document.body.appendChild(link);
-
-        link.click();
-        link.parentNode.removeChild(link);
-        window.URL.revokeObjectURL(blobUrl);
-      } else {
-        const resp = await res.json();
-
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
+    dispatch(APITransport(apiObj));
   };
 
   const handleExportRadioButtonChange = (event) => {
@@ -1218,8 +861,6 @@ const OrgLevelTaskList = () => {
 
   return (
     <>
-      <Grid>{renderSnackBar()}</Grid>
-
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={tableData}
@@ -1240,8 +881,6 @@ const OrgLevelTaskList = () => {
             !isSubmitCall && navigate(`/comparison-table/${id}`);
           }}
           id={currentTaskDetails?.id}
-          snackbar={snackbar}
-          setSnackbarInfo={setSnackbarInfo}
           fetchTaskList={fetchTaskList}
         />
       )}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { videoListColumns } from "config";
-import { getColumns, roles } from "utils";
+import { exportZip, getColumns, roles } from "utils";
 
 //Themes
 import { DatasetStyle } from "styles";
@@ -25,7 +25,6 @@ import MUIDataTable from "mui-datatables";
 import {
   AlertComponent,
   CreateTaskDialog,
-  CustomizedSnackbars,
   DeleteDialog,
   ExportAllDialog,
   Loader,
@@ -40,6 +39,7 @@ import {
   CreateNewTaskAPI,
   DeleteVideoAPI,
   FetchTranslationExportTypesAPI,
+  setSnackBar,
 } from "redux/actions";
 
 const VideoList = ({ data, removeVideo }) => {
@@ -50,16 +50,10 @@ const VideoList = ({ data, removeVideo }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentVideoDetails, setCurrentVideoDetails] = useState([]);
   const [openCreateTaskDialog, setOpenCreateTaskDialog] = useState(false);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [projectid, setprojectid] = useState([]);
   const [isBulk, setIsBulk] = useState(false);
   const [showCreateTaskBtn, setShowCreateTaskBtn] = useState(false);
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [openExportDialog, setOpenExportDialog] = useState(false);
@@ -74,41 +68,46 @@ const VideoList = ({ data, removeVideo }) => {
     (state) => state.getTranslationExportTypes.data.export_types
   );
 
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        switch (apiType) {
+          case "DELETE_VIDEO":
+            removeVideo();
+            setOpenDialog(false);
+            break;
+
+          case "CREATE_NEW_TASk":
+            if (isBulk) {
+              dispatch(setSnackBar({ open: false }));
+              setShowAlert(true);
+              setAlertData(data);
+            }
+            break;
+
+          case "BULK_VIDEO_DOWNLOAD":
+            exportZip(data, "video", videoName);
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
+
   const handleVideoDialog = (item) => {
     setOpen(true);
     setCurrentVideoDetails([item]);
   };
 
-  const handleClose = () => {
-    setOpenDialog(false);
-  };
-
-  const handleok = async (id) => {
-    setLoading(true);
+  const handleDelete = async (id) => {
     const apiObj = new DeleteVideoAPI({ video_id: id });
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-      setOpenDialog(false);
-      removeVideo();
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
+    dispatch(APITransport(apiObj));
   };
 
   const handleDeleteVideo = (id) => {
@@ -131,54 +130,9 @@ const VideoList = ({ data, removeVideo }) => {
 
   const handleDownload = async () => {
     setOpenExportDialog(false);
-    setLoading(true);
 
     const obj = new BulkDownloadForVideoAPI(videoIdForDowload, exportType);
-    const res = await fetch(obj.apiEndPoint(), {
-      method: "GET",
-      headers: obj.getHeaders().headers,
-    });
-    const resp = await res.blob();
-    if (res.ok) {
-      //  const resp = await res.blob();
-      const newBlob = new Blob([resp], { type: "application/zip" });
-
-      const blobUrl = window.URL.createObjectURL(newBlob);
-
-      const link = document.createElement("a");
-      link.href = blobUrl;
-
-      const date = new Date();
-      const YYYYMMDD = date
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("");
-
-      const HHMMSS = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-
-      link.setAttribute(
-        "download",
-        `Chitralekha_Video_${videoName}_${YYYYMMDD}_${HHMMSS}.zip`
-      );
-
-      document.body.appendChild(link);
-
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-
-      setLoading(false);
-    } else {
-      //const resp = await res.json();
-
-      setLoading(false);
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(obj));
   };
 
   const result = data?.map((item, i) => {
@@ -235,44 +189,8 @@ const VideoList = ({ data, removeVideo }) => {
 
   const createTaskHandler = async (data) => {
     const apiObj = new CreateNewTaskAPI(data);
-    // dispatch(APITransport(apiObj));
-    setLoading(true);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-
-    if (res.ok) {
-      setLoading(false);
-      setOpenCreateTaskDialog(false);
-
-      if (isBulk) {
-        setShowAlert(true);
-        setAlertData(resp);
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      }
-    } else {
-      setLoading(false);
-      setOpenCreateTaskDialog(false);
-      if (isBulk) {
-        setShowAlert(true);
-        setAlertData(resp);
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    }
+    dispatch(APITransport(apiObj));
+    setOpenCreateTaskDialog(false);
   };
 
   const handleRowClick = (_currentRow, allRow) => {
@@ -392,20 +310,6 @@ const VideoList = ({ data, removeVideo }) => {
     },
   };
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   return (
     <>
       <ThemeProvider theme={tableTheme}>
@@ -424,7 +328,7 @@ const VideoList = ({ data, removeVideo }) => {
           exportType={exportType}
           handleExportRadioButton={setExportType}
           handleExport={() => handleDownload()}
-          loading={loading}
+          loading={apiStatus.loading}
         />
       )}
 
@@ -443,17 +347,16 @@ const VideoList = ({ data, removeVideo }) => {
           createTaskHandler={createTaskHandler}
           videoDetails={currentVideoDetails}
           isBulk={isBulk}
-          loading={loading}
+          loading={apiStatus.loading}
         />
       )}
-      {renderSnackBar()}
 
       {openDialog && (
         <DeleteDialog
           openDialog={openDialog}
-          handleClose={() => handleClose()}
-          submit={() => handleok(projectid)}
-          loading={loading}
+          handleClose={() => setOpenDialog(false)}
+          submit={() => handleDelete(projectid)}
+          loading={apiStatus.loading}
           message={`Are you sure, you want to delete this video? All the associated tasks, will be deleted.`}
         />
       )}

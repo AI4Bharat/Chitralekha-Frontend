@@ -5,7 +5,7 @@ import C from "../../../constants";
 export default class DeleteTaskAPI extends API {
   constructor(taskId, flag, data,timeout = 2000) {
     super("DELETE", timeout, false);
-    this.type = C.DELETE_TASk;
+    this.type = C.DELETE_TASK;
     this.data = data;
     this.flag = flag;
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${taskId}/delete_task/?flag=${flag}`;

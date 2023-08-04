@@ -29,7 +29,7 @@ import {
   Switch,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { CustomizedSnackbars, Loader } from "common";
+import { Loader } from "common";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 //Styles
@@ -64,12 +64,8 @@ const EditProject = () => {
   );
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [projectDetails, setProjectDetails] = useState({
     title: "",
     description: "",
@@ -80,7 +76,6 @@ const EditProject = () => {
   const [translationSourceType, setTranslationSourceType] = useState("");
   const [voiceOverSourceType, setVoiceOverSourceType] = useState("");
   const [defaultTask, setDefaultTask] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment().format());
   const [priority, setPriority] = useState({
     label: null,
@@ -155,8 +150,6 @@ const EditProject = () => {
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
-
     const updateProjectReqBody = {
       title: projectDetails.title,
       description: projectDetails.description,
@@ -174,44 +167,7 @@ const EditProject = () => {
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
-
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(apiObj));
   };
 
   const showBtn = () => {
@@ -272,27 +228,7 @@ const EditProject = () => {
       };
 
       const tokenObj = new StoreAccessTokenAPI(data);
-      const res = await fetch(tokenObj.apiEndPoint(), {
-        method: "POST",
-        body: JSON.stringify(tokenObj.getBody()),
-        headers: tokenObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
+      dispatch(APITransport(tokenObj));
     },
     scope: process.env.REACT_APP_SCOPE,
     flow: "auth-code",
@@ -324,7 +260,6 @@ const EditProject = () => {
         justifyContent="center"
         alignItems="center"
       >
-        {renderSnackBar()}
         <Card
           sx={{
             width: "100%",
@@ -358,7 +293,7 @@ const EditProject = () => {
                 }}
               >
                 Update Project{" "}
-                {loading && (
+                {apiStatus.loading && (
                   <Loader size={20} margin="0 0 0 10px" color="secondary" />
                 )}
               </Button>
@@ -807,7 +742,7 @@ const EditProject = () => {
                   style={{ borderRadius: 6 }}
                 >
                   Update Project{" "}
-                  {loading && (
+                  {apiStatus.loading && (
                     <Loader size={20} margin="0 0 0 10px" color="secondary" />
                   )}
                 </Button>

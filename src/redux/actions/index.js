@@ -115,6 +115,7 @@ import {
   setLimitInStore,
   setRangeStart,
   setRangeEnd,
+  setSnackBar,
   setTotalSentences,
 } from "./Common";
 
@@ -226,6 +227,7 @@ export {
   APITransport,
   FetchVoiceoverExportTypesAPI,
   FetchSupportedBulkTaskTypeAPI,
+  setSnackBar,
   FetchTaskFailInfoAPI,
   ReopenTaskAPI,
   UpdateUserRoleAPI,

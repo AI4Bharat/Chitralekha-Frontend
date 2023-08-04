@@ -1,17 +1,47 @@
-import { ThemeProvider, Grid } from "@mui/material";
-import Header from "./common/Header";
-import GlobalStyles from "./styles/layoutStyles";
-import themeDefault from "./theme/theme";
-import BackButton from "./common/BackButton";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Joyride, { STATUS } from "react-joyride";
-import { steps } from "./utils/utils";
-import TutorialTooltip from "common/TutorialPlayer";
-import IntroHeader from "./common/IntroHeader";
+import { steps } from "utils";
+
+import themeDefault from "./theme/theme";
+import { Grid, ThemeProvider } from "@mui/material";
+import GlobalStyles from "./styles/layoutStyles";
+
+import {
+  BackButton,
+  CustomizedSnackbars,
+  Header,
+  IntroHeader,
+  TutorialTooltip,
+} from "common";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+import { setSnackBar } from "redux/actions";
 
 const App = (props) => {
   const { component, Backbutton, backPressNavigationPath, isDrawer } = props;
   const classes = GlobalStyles();
+
+  const dispatch = useDispatch();
+
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
+console.log(snackbar,'snackbar');
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
+
   return (
     <div>
       {localStorage.getItem("token") === null ? (
@@ -23,6 +53,8 @@ const App = (props) => {
         </div>
       ) : (
         <ThemeProvider theme={themeDefault}>
+          {renderSnackBar()}
+
           <div className={classes.root}>
             <Header />
             {localStorage.getItem("tutorialDone") ? (

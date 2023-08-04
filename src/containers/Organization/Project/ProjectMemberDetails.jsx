@@ -13,11 +13,7 @@ import MUIDataTable from "mui-datatables";
 import { Box } from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
-import {
-  CustomizedSnackbars,
-  DeleteDialog,
-  DeleteMemberErrorDialog,
-} from "common";
+import { DeleteDialog, DeleteMemberErrorDialog } from "common";
 
 //APIs
 import {
@@ -30,13 +26,7 @@ const ProjectMemberDetails = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
 
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [memberId, setMemberId] = useState("");
   const [openMemberErrorDialog, setOpenMemberErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -50,34 +40,31 @@ const ProjectMemberDetails = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const projectDetails = useSelector((state) => state.getProjectDetails.data);
 
-  const removeProjectMember = async (id) => {
-    setLoading(true);
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
 
-    const apiObj = new RemoveProjectMemberAPI(projectId, id);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
+    if (!progress) {
+      if (success) {
+        if (apiType === "REMOVE_PROJECT_MEMBER") {
+          getProjectMembers();
+        }
+      } else {
+        if (apiType === "REMOVE_PROJECT_MEMBER") {
+          setErrorResponse(data.response);
+          setErrorMessage(data.message);
+          setOpenMemberErrorDialog(true);
+        }
+      }
 
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
       setOpenDeleteDialog(false);
-      setLoading(false);
-      getProjectMembers();
-    } else {
-      setErrorResponse(resp.response);
-      setErrorMessage(resp.message);
-      setOpenMemberErrorDialog(true);
-      setOpenDeleteDialog(false);
-      setLoading(false);
     }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
+
+  const removeProjectMember = async (id) => {
+    const apiObj = new RemoveProjectMemberAPI(projectId, id);
+    dispatch(APITransport(apiObj));
   };
 
   const getProjectMembers = () => {
@@ -137,38 +124,22 @@ const ProjectMemberDetails = () => {
 
   const columns = [...getColumns(usersColumns), actionColumn];
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={projectMembersList}
           columns={columns}
-          options={getOptions(apiStatus.progress)}
+          options={getOptions(apiStatus.loading)}
         />
       </ThemeProvider>
-
-      {renderSnackBar()}
 
       {openDeleteDialog && (
         <DeleteDialog
           openDialog={openDeleteDialog}
           handleClose={() => setOpenDeleteDialog(false)}
           submit={() => removeProjectMember(memberId)}
-          loading={loading}
+          loading={apiStatus.loading}
           message={`Are you sure, you want to delete this member?`}
         />
       )}

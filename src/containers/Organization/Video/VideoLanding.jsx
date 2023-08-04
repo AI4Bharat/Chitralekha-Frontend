@@ -32,7 +32,6 @@ import TranslationRightPanel from "./TranslationRightPanel";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import VideoName from "./components/VideoName";
-import { CustomizedSnackbars } from "common";
 
 //APIs
 import {
@@ -61,13 +60,9 @@ const VideoLanding = () => {
   const { taskId } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
+
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [currentSubs, setCurrentSubs] = useState();
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [fontSize, setFontSize] = useState("large");
@@ -78,7 +73,6 @@ const VideoLanding = () => {
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
-
   const fullscreen = useSelector((state) => state.commonReducer.fullscreen);
   const fullscreenVideo = useSelector(
     (state) => state.commonReducer.fullscreenVideo
@@ -247,20 +241,6 @@ const VideoLanding = () => {
     subs && setCurrentSubs(subs[currentIndex]);
   }, [subs, currentIndex]);
 
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  };
-
   const onKeyDown = useCallback(
     (event) => {
       const keyCode = getKeyCode(event);
@@ -348,12 +328,7 @@ const VideoLanding = () => {
   }, []);
 
   return (
-    <Grid
-      className={fullscreen ? classes.fullscreenStyle : ""}
-      id="videoLanding"
-    >
-      {renderSnackBar()}
-
+    <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderLoader()}
 
       <Grid container direction={"row"} className={classes.parentGrid}>
