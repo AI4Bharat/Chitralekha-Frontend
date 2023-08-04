@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
 import { throttle } from "lodash";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 //Styles
 import { VideoLandingStyle } from "styles";
@@ -12,9 +12,6 @@ import { Box } from "@mui/material";
 import WFPlayer from "wfplayer";
 import Metronome from "./components/Metronome";
 import SubtitleBoxes from "./components/SubtitleBoxes";
-
-//APIs
-import { APITransport, FetchPayloadFromTimelineAPI } from "redux/actions";
 
 const WaveForm = memo(({ setWaveform, setRender }) => {
   const classes = VideoLandingStyle();
@@ -55,30 +52,10 @@ const WaveForm = memo(({ setWaveform, setRender }) => {
 
 const Progress = memo(({ waveform, currentTime, subtitle = [] }) => {
   const classes = VideoLandingStyle();
-  const firstLoaded = useRef(false);
-  const dispatch = useDispatch();
 
   const player = useSelector((state) => state.commonReducer.player);
-  const limit = useSelector((state) => state.commonReducer.limit);
-  const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
   const [grabbing, setGrabbing] = useState(false);
-
-  useEffect(() => {
-    if (firstLoaded.current && !grabbing) {
-      const apiObj = new FetchPayloadFromTimelineAPI(
-        taskDetails?.id,
-        taskDetails?.task_type,
-        DT.d2t(player.currentTime),
-        limit
-      );
-      dispatch(APITransport(apiObj));
-    } else {
-      firstLoaded.current = true;
-    }
-
-    // eslint-disable-next-line
-  }, [grabbing]);
 
   const onProgressClick = useCallback(
     (event) => {
@@ -87,18 +64,10 @@ const Progress = memo(({ waveform, currentTime, subtitle = [] }) => {
         (event.pageX / document.body.clientWidth) * player.duration;
       player.currentTime = currentTime;
       waveform.seek(currentTime);
-
-      const apiObj = new FetchPayloadFromTimelineAPI(
-        taskDetails?.id,
-        taskDetails?.task_type,
-        DT.d2t(currentTime),
-        limit
-      );
-      dispatch(APITransport(apiObj));
     },
 
     // eslint-disable-next-line
-    [player, waveform, limit]
+    [player, waveform]
   );
 
   const onGrabDown = useCallback(
@@ -169,12 +138,8 @@ const Progress = memo(({ waveform, currentTime, subtitle = [] }) => {
 
 const Grab = memo(({ waveform }) => {
   const classes = VideoLandingStyle();
-  const dispatch = useDispatch();
-  const firstLoaded = useRef(false);
 
   const player = useSelector((state) => state.commonReducer.player);
-  const limit = useSelector((state) => state.commonReducer.limit);
-  const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
   const [grabStartX, setGrabStartX] = useState(0);
   const [grabStartTime, setGrabStartTime] = useState(0);
@@ -189,22 +154,6 @@ const Grab = memo(({ waveform }) => {
     },
     [player]
   );
-
-  useEffect(() => {
-    if (firstLoaded.current && !grabbing) {
-      const apiObj = new FetchPayloadFromTimelineAPI(
-        taskDetails?.id,
-        taskDetails?.task_type,
-        DT.d2t(player.currentTime),
-        limit
-      );
-      dispatch(APITransport(apiObj));
-    } else {
-      firstLoaded.current = true;
-    }
-
-    // eslint-disable-next-line
-  }, [grabbing]);
 
   const onGrabUp = () => {
     setGrabStartX(0);

@@ -95,7 +95,7 @@ export default memo(
         const isLastSub =
           player?.currentTime > subtitles[subtitles?.length - 1]?.endTime;
 
-        if (next && isPlaying(player) && isLastSub) {
+        if (next && isLastSub) {
           const payloadObj = new FetchTranscriptPayloadAPI(
             taskDetails.id,
             taskDetails.task_type,
