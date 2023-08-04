@@ -11,7 +11,12 @@ import {
   getOptions,
   roles,
 } from "utils";
-import { buttonConfig, taskListColumns, toolBarActions } from "config";
+import {
+  buttonConfig,
+  taskListColumns,
+  toolBarActions,
+  failInfoColumns,
+} from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
@@ -29,14 +34,15 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
+  AlertComponent,
   DeleteDialog,
   ExportDialog,
   FilterList,
   PreviewDialog,
   SpeakerInfoDialog,
+  TableDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
-  UploadAlertComponent,
   UploadFormatDialog,
   ViewTaskDialog,
 } from "common";
@@ -56,12 +62,15 @@ import {
   EditBulkTaskDetailAPI,
   EditTaskDetailAPI,
   ExportVoiceoverTaskAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTaskFailInfoAPI,
   FetchTaskListAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
   exportTranscriptionAPI,
@@ -86,8 +95,6 @@ const TaskList = () => {
   const [rows, setRows] = useState([]);
 
   //Filter States
-  const [srcLanguageList, setSrcLanguageList] = useState([]);
-  const [tgtLanguageList, setTgtLanguageList] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
     taskType: [],
@@ -114,7 +121,11 @@ const TaskList = () => {
     editTaskDialog: false,
     uploadDialog: false,
     speakerInfoDialog: false,
+    tableDialog: false,
   });
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   //Bulk Opertaion States
   const [isBulk, setIsBulk] = useState(false);
@@ -133,6 +144,7 @@ const TaskList = () => {
     speakerInfo: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [alertColumn, setAlertColumn] = useState("");
 
   //Server Side Pagination States
   const [offset, setOffset] = useState(0);
@@ -143,12 +155,9 @@ const TaskList = () => {
   const [columnDisplay, setColumnDisplay] = useState(false);
 
   //Data from Redux
-  const {
-    total_count: totalCount,
-    tasks_list: taskList,
-    src_languages_list: sourceLanguagesList,
-    target_languages_list: targetlanguagesList,
-  } = useSelector((state) => state.getTaskList.data);
+  const { total_count: totalCount, tasks_list: taskList } = useSelector(
+    (state) => state.getTaskList.data
+  );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const previewData = useSelector(
@@ -192,6 +201,7 @@ const TaskList = () => {
           case "UPLOAD_TO_YOUTUBE":
             setBulkSubtitleAlert(true);
             setBulkSubtitleAlertData(data);
+            setAlertColumn("uploadAlertColumns");
             break;
 
           case "DELETE_BULK_TASK":
@@ -217,6 +227,13 @@ const TaskList = () => {
             if (isSubmit) {
               onTranslationTaskTypeSubmit(currentTaskDetails?.id, data);
             }
+            break;
+
+          case "GET_TASK_FAIL_INFO":
+            handleDialogOpen("tableDialog");
+            setTableDialogColumn(failInfoColumns);
+            setTableDialogMessage(data.message);
+            setTableDialogResponse(data.data);
             break;
 
           default:
@@ -295,6 +312,12 @@ const TaskList = () => {
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
 
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+
     return () => {
       dispatch({ type: constants.CLEAR_PROJECT_TASK_LIST, payload: [] });
     };
@@ -311,10 +334,8 @@ const TaskList = () => {
     if (taskList) {
       setLoading(false);
       setTableData(taskList);
-      setSrcLanguageList(sourceLanguagesList);
-      setTgtLanguageList(targetlanguagesList);
     }
-  }, [taskList, sourceLanguagesList, targetlanguagesList]);
+  }, [taskList]);
 
   useEffect(() => {
     const option = getOptions(loading);
@@ -325,7 +346,7 @@ const TaskList = () => {
         ?.showSelectCheckbox
         ? "multiple"
         : "none",
-      search: true,
+      search: false,
       serverSide: true,
       page: offset,
       rowsSelected: rows,
@@ -576,6 +597,16 @@ const TaskList = () => {
 
       case "Delete":
         handleDeleteTask(id, false);
+        break;
+
+      case "Info":
+        const infoObj = new FetchTaskFailInfoAPI(id);
+        dispatch(APITransport(infoObj));
+        break;
+
+      case "Reopen":
+        const reopenObj = new ReopenTaskAPI(id);
+        dispatch(APITransport(reopenObj));
         break;
 
       default:
@@ -927,17 +958,16 @@ const TaskList = () => {
           updateFilters={setSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
-          srcLanguageList={srcLanguageList}
-          tgtLanguageList={tgtLanguageList}
         />
       )}
 
       {bulkSubtitleAlert && (
-        <UploadAlertComponent
+        <AlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+          columns={alertColumn}
         />
       )}
 
@@ -979,6 +1009,16 @@ const TaskList = () => {
           updateFilters={setSearchedColumn}
           currentFilters={searchedColumn}
           searchedCol={searchedCol}
+        />
+      )}
+
+      {openDialogs.tableDialog && (
+        <TableDialog
+          openDialog={openDialogs.tableDialog}
+          handleClose={() => handleDialogClose("tableDialog")}
+          message={tableDialogMessage}
+          response={tableDialogResponse}
+          columns={tableDialogColumn}
         />
       )}
     </>

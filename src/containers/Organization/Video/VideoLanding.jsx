@@ -41,6 +41,7 @@ import {
   FetchVideoDetailsAPI,
   FullScreen,
   FullScreenVideo,
+  SaveTranscriptAPI,
   UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
@@ -51,6 +52,7 @@ import {
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
+  setTotalSentences,
 } from "redux/actions";
 import C from "redux/constants";
 
@@ -78,7 +80,103 @@ const VideoLanding = () => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
+  const currentPage = useSelector((state) => state.commonReducer.currentPage);
+  const limit = useSelector((state) => state.commonReducer.limit);
+
   const ref = useRef(0);
+  const saveIntervalRef = useRef(null);
+  const timeSpentIntervalRef = useRef(null);
+
+  useEffect(() => {
+    let intervalId;
+
+    const updateTimer = () => {
+      ref.current = ref.current + 1;
+    };
+
+    intervalId = setInterval(updateTimer, 1000);
+
+    setInterval(() => {
+      clearInterval(intervalId);
+      ref.current = 0;
+
+      intervalId = setInterval(updateTimer, 1000);
+    }, 60 * 1000);
+
+    return () => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+      dispatch(APITransport(apiObj));
+      clearInterval(intervalId);
+      ref.current = 0;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleAutosave = () => {
+      const reqBody = {
+        task_id: taskId,
+        offset: currentPage,
+        limit: limit,
+        payload: {
+          payload: subs,
+        },
+      };
+
+      const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+      dispatch(APITransport(obj));
+    };
+
+    const handleUpdateTimeSpent = (time = 60) => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, time);
+      dispatch(APITransport(apiObj));
+    };
+
+    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    timeSpentIntervalRef.current = setInterval(
+      handleUpdateTimeSpent,
+      60 * 1000
+    );
+
+    const handleBeforeUnload = (event) => {
+      handleAutosave();
+      handleUpdateTimeSpent(ref.current);
+      event.preventDefault();
+      event.returnValue = "";
+      ref.current = 0;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Add event listener for visibility change
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Tab is active, restart the autosave interval
+        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        timeSpentIntervalRef.current = setInterval(
+          handleUpdateTimeSpent,
+          60 * 1000
+        );
+      } else {
+        handleAutosave();
+        handleUpdateTimeSpent(ref.current);
+        // Tab is inactive, clear the autosave interval
+        clearInterval(saveIntervalRef.current);
+        clearInterval(timeSpentIntervalRef.current);
+        ref.current = 0;
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(saveIntervalRef.current);
+      clearInterval(timeSpentIntervalRef.current);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+
+    // eslint-disable-next-line
+  }, [currentPage, limit, subs, taskId]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
@@ -127,6 +225,7 @@ const VideoLanding = () => {
     dispatch(setRangeStart(transcriptPayload?.start));
     dispatch(setRangeEnd(transcriptPayload?.end));
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setTotalSentences(transcriptPayload?.sentences_count));
 
     // eslint-disable-next-line
   }, [transcriptPayload?.payload?.payload]);
@@ -192,23 +291,6 @@ const VideoLanding = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onKeyDown]);
 
-  useEffect(() => {
-    window.onbeforeunload = function (e) {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    ref.current = new Date().getTime();
-    return () => {
-      const date = new Date().getTime();
-      const ms = date - ref.current;
-      const time_spent = Math.floor(ms / 1000);
-
-      const apiObj = new UpdateTimeSpentPerTask(taskId, time_spent);
-      dispatch(APITransport(apiObj));
-    };
-    // eslint-disable-next-line
-  }, []);
-
   const handleFullscreen = () => {
     const res = fullscreenUtil(document.documentElement);
     dispatch(FullScreen(res, C.FULLSCREEN));
@@ -231,6 +313,19 @@ const VideoLanding = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("canReload") === "true") {
+      localStorage.setItem("canReload", false);
+      window.location.reload(true);
+    } else {
+      localStorage.setItem("canReload", true);
+    }
+
+    return () => {
+      localStorage.setItem("canReload", true);
+    };
+  }, []);
 
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>

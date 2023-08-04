@@ -25,6 +25,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { FindAndReplace } from "common";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const anchorOrigin = {
   vertical: "top",
@@ -53,6 +54,7 @@ const SettingsButtonComponent = ({
   onSplitClick,
   showPopOver,
   showSplit,
+  handleInfoButtonClick,
 }) => {
   const classes = VideoLandingStyle();
   // const dispatch = useDispatch();
@@ -65,11 +67,12 @@ const SettingsButtonComponent = ({
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
-  const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
-  // const limit = useSelector((state) => state.commonReducer.limit);
+  const totalSentences = useSelector(
+    (state) => state.commonReducer.totalSentences
+  )
 
   const getDisbled = (flag) => {
     if (
@@ -80,7 +83,7 @@ const SettingsButtonComponent = ({
         return true;
       }
 
-      if (flag && completedCount !== totalPages + 2) {
+      if (flag && completedCount !== totalSentences) {
         return true;
       }
     }
@@ -96,7 +99,7 @@ const SettingsButtonComponent = ({
 
     return false;
   };
-
+  
   return (
     <>
       {/* {!taskData?.task_type?.includes("VOICEOVER") && (
@@ -154,6 +157,21 @@ const SettingsButtonComponent = ({
             }}
           >
             <SplitscreenIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {(taskData?.task_type?.includes("TRANSLATION_EDIT") ||
+        taskData?.task_type?.includes("VOICEOVER")) && (
+        <Tooltip title="Incorrect Subtitles Info" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={handleInfoButtonClick}
+            sx={{
+              marginRight: "5px",
+            }}
+          >
+            <InfoOutlinedIcon />
           </IconButton>
         </Tooltip>
       )}
@@ -297,7 +315,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           disabled={getDisbled()}
-          onClick={() => saveTranscriptHandler(false, true)}
+          onClick={() => saveTranscriptHandler(false)}
         >
           <SaveIcon />
         </IconButton>
@@ -316,26 +334,30 @@ const SettingsButtonComponent = ({
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
-      <Tooltip title="Undo" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          onClick={onUndo}
-          disabled={undoStack?.length === 0}
-        >
-          <UndoIcon />
-        </IconButton>
-      </Tooltip>
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <Tooltip title="Undo" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onUndo}
+            disabled={undoStack?.length === 0}
+          >
+            <UndoIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
-      <Tooltip title="Redo" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          sx={{ marginLeft: "5px" }}
-          onClick={onRedo}
-          disabled={redoStack?.length === 0}
-        >
-          <RedoIcon />
-        </IconButton>
-      </Tooltip>
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <Tooltip title="Redo" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            sx={{ marginLeft: "5px" }}
+            onClick={onRedo}
+            disabled={redoStack?.length === 0}
+          >
+            <RedoIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </>
   );
 };

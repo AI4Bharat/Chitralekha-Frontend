@@ -1,9 +1,4 @@
-import {
-  HashRouter,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
 import MyOrganization from "./containers/Organization/MyOrganization";
 import EditProfile from "./containers/UserManagement/EditProfile";
 import Login from "./containers/UserManagement/Login";
@@ -25,23 +20,45 @@ import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";
 import TaskQueueStatus from "./containers/Organization/TaskQueueStatus";
+import Thanks from "./containers/intro/Thanks";
+import UseCases from "./containers/intro/UseCases";
+import ChitralekhaPortal from "./common/ChitralekhaPortal";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
     if (!authenticateUser()) {
-      return <Navigate to="/" />;
+      return <Navigate to="/login" />;
     }
     return children;
   };
 
+  const PublicRoute = ({user, children}) =>{
+    if (authenticateUser()) {
+     const orgId = JSON.parse(localStorage.getItem("userData"))?.organization.id;
+     return <Navigate to={`/my-organization/${orgId}`} />;
+    }
+    return children;
+  };
+  
   const ProtectedRouteWrapper = (component) => {
     return <ProtectedRoute>{component}</ProtectedRoute>;
+  };
+
+  const PublicRouteWrapper = (component) => {
+    return <PublicRoute>{component}</PublicRoute>;
   };
 
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route
+          
+          path="/"
+          element={PublicRouteWrapper(<Layout component={<ChitralekhaPortal />} />)}
+        />
+        <Route path="/Thanks" element={<Layout component={<Thanks />} />} />
+        <Route path="/useCases" element={<Layout component={<UseCases />} />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/profile/:id"
           element={ProtectedRouteWrapper(
@@ -144,8 +161,11 @@ const RootRouter = () => {
         />
 
         <Route path="/invite/:invitecode" element={<SignUp />} />
-      
-        <Route path="/forget-password/confirm/:uid/:token" element={<ConfirmForgetPassword />} />
+
+        <Route
+          path="/forget-password/confirm/:uid/:token"
+          element={<ConfirmForgetPassword />}
+        />
 
         <Route
           path="/task-queue-status"

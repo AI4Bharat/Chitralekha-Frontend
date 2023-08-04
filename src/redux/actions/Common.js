@@ -94,6 +94,12 @@ export const setRangeEnd = (data) => {
 export const setSnackBar = (data) => {
   return {
     type: C.SNACKBAR,
+  }
+}
+
+export const setTotalSentences = (data) => {
+  return {
+    type: C.TOTAL_SENTENCES,
     payload: data,
   };
 };

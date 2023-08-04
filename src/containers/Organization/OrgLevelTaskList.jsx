@@ -11,7 +11,12 @@ import {
   getOptions,
   roles,
 } from "utils";
-import { buttonConfig, orgTaskListColumns, toolBarActions } from "config";
+import {
+  buttonConfig,
+  failInfoColumns,
+  orgTaskListColumns,
+  toolBarActions,
+} from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
@@ -29,14 +34,15 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
+  AlertComponent,
   DeleteDialog,
   ExportDialog,
   FilterList,
   PreviewDialog,
   SpeakerInfoDialog,
+  TableDialog,
   TableSearchPopover,
   UpdateBulkTaskDialog,
-  UploadAlertComponent,
   UploadFormatDialog,
   ViewTaskDialog,
 } from "common";
@@ -57,11 +63,14 @@ import {
   EditTaskDetailAPI,
   ExportVoiceoverTaskAPI,
   FetchPaginatedOrgTaskListAPI,
+  FetchSupportedLanguagesAPI,
+  FetchTaskFailInfoAPI,
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
   exportTranscriptionAPI,
@@ -82,8 +91,6 @@ const OrgLevelTaskList = () => {
   const [rows, setRows] = useState([]);
 
   //Filter States
-  const [srcLanguageList, setSrcLanguageList] = useState([]);
-  const [tgtLanguageList, setTgtLanguageList] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
     taskType: [],
@@ -110,7 +117,11 @@ const OrgLevelTaskList = () => {
     editTaskDialog: false,
     uploadDialog: false,
     speakerInfoDialog: false,
+    tableDialog: false,
   });
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   //Bulk Opertaion States
   const [isBulk, setIsBulk] = useState(false);
@@ -137,6 +148,7 @@ const OrgLevelTaskList = () => {
     speakerInfo: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
+  const [alertColumn, setAlertColumn] = useState("");
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const orgId = userData?.organization?.id;
@@ -183,6 +195,7 @@ const OrgLevelTaskList = () => {
           case "UPLOAD_TO_YOUTUBE":
             setBulkSubtitleAlert(true);
             setBulkSubtitleAlertData(data);
+            setAlertColumn("uploadAlertColumns");
             break;
 
           case "DELETE_BULK_TASK":
@@ -206,20 +219,27 @@ const OrgLevelTaskList = () => {
             }
             break;
 
+          case "GET_TASK_FAIL_INFO":
+            handleDialogOpen("tableDialog");
+            setTableDialogColumn(failInfoColumns);
+            setTableDialogMessage(data.message);
+            setTableDialogResponse(data.data);
+            break;
+
           default:
             break;
         }
       } else {
         if (apiType === "DELETE_TASK") {
           dispatch(setSnackBar({ open: false }));
-          handleDialogOpen("deleteDialog")
+          handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.response);
         }
 
         if (apiType === "DELETE_BULK_TASK") {
           dispatch(setSnackBar({ open: false }));
-          handleDialogOpen("deleteDialog")
+          handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
         }
@@ -229,12 +249,9 @@ const OrgLevelTaskList = () => {
     // eslint-disable-next-line
   }, [apiStatus]);
 
-  const {
-    total_count: totalCount,
-    tasks_list: taskList,
-    src_languages_list: sourceLanguagesList,
-    target_languages_list: targetlanguagesList,
-  } = useSelector((state) => state.getOrgTaskList.data);
+  const { total_count: totalCount, tasks_list: taskList } = useSelector(
+    (state) => state.getOrgTaskList.data
+  );
 
   const fetchTaskList = () => {
     setLoading(true);
@@ -289,6 +306,12 @@ const OrgLevelTaskList = () => {
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
 
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+
     return () => {
       dispatch({ type: C.CLEAR_ORG_TASK_LIST, payload: [] });
     };
@@ -308,10 +331,8 @@ const OrgLevelTaskList = () => {
     if (taskList) {
       setLoading(false);
       setTableData(taskList);
-      setSrcLanguageList(sourceLanguagesList);
-      setTgtLanguageList(targetlanguagesList);
     }
-  }, [taskList, sourceLanguagesList, targetlanguagesList]);
+  }, [taskList]);
 
   const exportVoiceoverTask = async () => {
     const { id: taskId } = currentTaskDetails;
@@ -490,6 +511,16 @@ const OrgLevelTaskList = () => {
 
       case "Delete":
         handleDeleteTask(id, false);
+        break;
+
+      case "Info":
+        const infoObj = new FetchTaskFailInfoAPI(id);
+        dispatch(APITransport(infoObj));
+        break;
+
+      case "Reopen":
+        const apiObj = new ReopenTaskAPI(id);
+        dispatch(APITransport(apiObj));
         break;
 
       default:
@@ -906,17 +937,16 @@ const OrgLevelTaskList = () => {
           updateFilters={setSelectedFilters}
           currentFilters={selectedFilters}
           taskList={taskList}
-          srcLanguageList={srcLanguageList}
-          tgtLanguageList={tgtLanguageList}
         />
       )}
 
       {bulkSubtitleAlert && (
-        <UploadAlertComponent
+        <AlertComponent
           open={bulkSubtitleAlert}
           onClose={() => setBulkSubtitleAlert(false)}
           message={bulkSubtitleAlertData.message}
           report={bulkSubtitleAlertData}
+          columns={alertColumn}
         />
       )}
 
@@ -958,6 +988,16 @@ const OrgLevelTaskList = () => {
           updateFilters={setSearchedColumn}
           currentFilters={searchedColumn}
           searchedCol={searchedCol}
+        />
+      )}
+
+      {openDialogs.tableDialog && (
+        <TableDialog
+          openDialog={openDialogs.tableDialog}
+          handleClose={() => handleDialogClose("tableDialog")}
+          message={tableDialogMessage}
+          response={tableDialogResponse}
+          columns={tableDialogColumn}
         />
       )}
     </>

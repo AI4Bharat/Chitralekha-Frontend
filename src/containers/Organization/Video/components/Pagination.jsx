@@ -24,6 +24,7 @@ const Pagination = ({
   durationError,
   completedCount,
   current = 1,
+  totalSentences,
 }) => {
   const [page, setPage] = useState(current);
 
@@ -58,7 +59,7 @@ const Pagination = ({
     <div
       style={{
         display: "flex",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "center",
         width: "95%",
         ...(!xl && {
@@ -73,7 +74,7 @@ const Pagination = ({
         {taskData?.task_type?.includes("VOICEOVER") &&
           transcriptPayload.source_type !== "MACHINE_GENERATED" && (
             <Typography variant="body2" margin="0 5px 0 0">
-              Completed: {completedCount} / {rows}
+              Completed: {completedCount} / {totalSentences}
             </Typography>
           )}
       </Box>

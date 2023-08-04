@@ -16,8 +16,8 @@ import {
   Typography,
   Tooltip,
   IconButton,
+  Switch,
 } from "@mui/material";
-import OutlinedTextField from "./OutlinedTextField";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
@@ -27,6 +27,7 @@ import { setSubtitles } from "redux/actions";
 
 const FindAndReplace = (props) => {
   const classes = ProjectStyle();
+
   const dispatch = useDispatch();
 
   const { subtitleDataKey, taskType } = { ...props };
@@ -40,6 +41,7 @@ const FindAndReplace = (props) => {
   const [replaceValue, setReplaceValue] = useState("");
   const [foundIndices, setFoundIndices] = useState([]);
   const [currentFound, setCurrentFound] = useState();
+  const [replaceFullWord, setReplaceFullWord] = useState(true);
 
   const onReplacementDone = (updatedSource) => {
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
@@ -103,10 +105,21 @@ const FindAndReplace = (props) => {
     const updatedSubtitleData = [];
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices[currentFound] === index) {
-        const textToReplace = ele[subtitleDataKey].replace(
-          new RegExp(findValue, "gi"),
-          replaceValue
-        );
+        //this is correct logic don't change this
+
+        let textToReplace;
+        if (replaceFullWord) {
+          textToReplace = ele[subtitleDataKey].replace(
+            new RegExp(` ${findValue.trim()} `, "gi"),
+            ` ${replaceValue.trim()} `
+          );
+        } else {
+          textToReplace = ele[subtitleDataKey].replace(
+            new RegExp(findValue.trim(), "gi"),
+            replaceValue.trim()
+          );
+        }
+
         ele[subtitleDataKey] = textToReplace;
       }
 
@@ -122,10 +135,20 @@ const FindAndReplace = (props) => {
     const updatedSubtitleData = [];
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices?.includes(index)) {
-        const textToReplace = ele[subtitleDataKey].replace(
-          new RegExp(findValue, "gi"),
-          replaceValue
-        );
+
+        let textToReplace;
+        if (replaceFullWord) {
+          textToReplace = ele[subtitleDataKey].replace(
+            new RegExp(` ${findValue.trim()} `, "gi"),
+            ` ${replaceValue.trim()} `
+          );
+        } else {
+          textToReplace = ele[subtitleDataKey].replace(
+            new RegExp(findValue.trim(), "gi"),
+            replaceValue.trim()
+          );
+        }
+        
         ele[subtitleDataKey] = textToReplace;
       }
       updatedSubtitleData.push(ele);
@@ -139,15 +162,7 @@ const FindAndReplace = (props) => {
     <>
       <Tooltip title="Find/Replace" placement="bottom">
         <IconButton
-          sx={{
-            backgroundColor: "#2C2799",
-            marginX: "5px",
-            borderRadius: "50%",
-            color: "#fff",
-            "&:hover": {
-              backgroundColor: "#271e4f",
-            },
-          }}
+          className={classes.findReplaceButton}
           onClick={handleOpenModel}
         >
           <FindReplaceIcon />
@@ -181,53 +196,33 @@ const FindAndReplace = (props) => {
         >
           <Grid container flexDirection={"flex"} justifyContent="space-around">
             <Grid item md={4} sx={{ margin: 2 }}>
-              {transliterationLanguage !== "en" ? (
-                <IndicTransliterate
-                  lang={transliterationLanguage}
-                  value={findValue}
-                  onChangeText={(text) => {
-                    setFindValue(text);
-                  }}
-                  style={{
-                    width: "-webkit-fill-available",
-                    height: 50,
-                    paddingInline: 10,
-                    font: "inherit",
-                    fontSize: "1.25rem",
-                  }}
-                  renderComponent={(props) => (
-                    <>
-                      <label
-                        style={{
-                          backgroundColor: "white",
-                          position: "absolute",
-                          left: 10,
-                          top: -10,
-                          paddingInline: 5,
-                        }}
-                      >
-                        Find
-                      </label>
-                      <div>
-                        <input {...props} />
-                      </div>
-                    </>
-                  )}
+              <Box className={classes.matchTypeSwitch}>
+                <Typography variant="body2">Partial Word Replace</Typography>
+                <Switch
+                  checked={replaceFullWord}
+                  onChange={(event) => setReplaceFullWord(event.target.checked)}
+                  inputProps={{ "aria-label": "controlled" }}
                 />
-              ) : (
-                <OutlinedTextField
-                  autoFocus
-                  value={findValue}
-                  onChange={(e) => setFindValue(e.target.value)}
-                  margin="dense"
-                  id="name"
-                  label="Find"
-                  type="Find"
-                  fullWidth
-                  variant="standard"
-                />
-              )}
+                <Typography variant="body2">Full Word Replace</Typography>
+              </Box>
 
+              <IndicTransliterate
+                lang={transliterationLanguage}
+                value={findValue}
+                onChangeText={(text) => setFindValue(text)}
+                enabled={transliterationLanguage !== "en"}
+                className={classes.findReplaceTextbox}
+                renderComponent={(props) => (
+                  <>
+                    <label className={classes.findReplaceTextboxLabel}>
+                      Find
+                    </label>
+                    <div>
+                      <input {...props} />
+                    </div>
+                  </>
+                )}
+              />
               <Typography
                 variant="caption"
                 display={"flex"}
@@ -274,53 +269,26 @@ const FindAndReplace = (props) => {
                   </Button>
                 )}
               </Grid>
-              {transliterationLanguage !== "en" ? (
-                <IndicTransliterate
-                  lang={transliterationLanguage}
-                  value={replaceValue}
-                  onChangeText={(text) => {
-                    setReplaceValue(text);
-                  }}
-                  disabled={!(foundIndices?.length > 0)}
-                  style={{
-                    width: "-webkit-fill-available",
-                    height: 50,
-                    paddingInline: 10,
-                    font: "inherit",
-                    fontSize: "1.25rem",
-                  }}
-                  renderComponent={(props) => (
-                    <>
-                      <label
-                        style={{
-                          backgroundColor: "white",
-                          position: "absolute",
-                          left: 10,
-                          top: -10,
-                          paddingInline: 5,
-                        }}
-                      >
-                        Replace
-                      </label>
-                      <div>
-                        <input {...props} />
-                      </div>
-                    </>
-                  )}
-                />
-              ) : (
-                <OutlinedTextField
-                  value={replaceValue}
-                  onChange={(e) => setReplaceValue(e.target.value)}
-                  margin="dense"
-                  id="name"
-                  label="Replace"
-                  type="Replace"
-                  fullWidth
-                  variant="standard"
-                  disabled={!(foundIndices?.length > 0)}
-                />
-              )}
+
+              <IndicTransliterate
+                lang={transliterationLanguage}
+                value={replaceValue}
+                onChangeText={(text) => setReplaceValue(text)}
+                disabled={!(foundIndices?.length > 0)}
+                enabled={transliterationLanguage !== "en"}
+                className={classes.findReplaceTextbox}
+                renderComponent={(props) => (
+                  <>
+                    <label className={classes.findReplaceTextboxLabel}>
+                      Replace
+                    </label>
+                    <div>
+                      <input {...props} />
+                    </div>
+                  </>
+                )}
+              />
+
               <Grid
                 display={"flex"}
                 flexDirection={"row"}
@@ -348,6 +316,7 @@ const FindAndReplace = (props) => {
                 </Button>
               </Grid>
             </Grid>
+
             <Grid
               item
               md={7}

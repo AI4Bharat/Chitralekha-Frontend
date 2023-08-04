@@ -7,6 +7,7 @@ import { translate } from "config";
 import { LoginStyle } from "styles";
 import { themeDefault } from "theme";
 
+
 //Components
 import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -89,7 +90,7 @@ const Login = () => {
     if (userData && accessToken) {
       if (userData.role === "ADMIN") {
         navigate(`/admin`);
-      } else {
+      }else{
         navigate(`/my-organization/${userInfo?.organization?.id}`);
       }
     }

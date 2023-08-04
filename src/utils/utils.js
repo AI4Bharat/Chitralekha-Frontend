@@ -308,7 +308,7 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     const durationOfCurrent = DT.t2d(newTime);
     const durationOfEndTime = DT.t2d(subtitles[index].end_time);
 
-    if (durationOfPrevious >= durationOfCurrent) {
+    if (durationOfPrevious > durationOfCurrent) {
       newTime = subtitles[index].start_time;
     }
 
@@ -322,7 +322,7 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     const durationOfCurrent = DT.t2d(newTime);
     const durationOfStartTime = DT.t2d(subtitles[index].start_time);
 
-    if (durationOfNext <= durationOfCurrent) {
+    if (durationOfNext < durationOfCurrent) {
       newTime = subtitles[index + 1].start_time;
     }
 

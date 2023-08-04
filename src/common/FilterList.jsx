@@ -16,6 +16,7 @@ import {
   Checkbox,
   Grid,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const FilterList = ({
   id,
@@ -24,11 +25,16 @@ const FilterList = ({
   currentFilters,
   updateFilters,
   taskList,
-  srcLanguageList,
-  tgtLanguageList,
   handleClose,
 }) => {
   const classes = DatasetStyle();
+
+  const transcriptionLanguage = useSelector(
+    (state) => state.getSupportedLanguages.transcriptionLanguage
+  );
+  const translationLanguage = useSelector(
+    (state) => state.getSupportedLanguages.translationLanguage
+  );
 
   const [selectedType, setSelectedType] = useState(currentFilters.taskType);
   const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
@@ -144,69 +150,65 @@ const FilterList = ({
         }}
       >
         <Grid container className={classes.filterContainer}>
-          {srcLanguageList?.length ? (
-            <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-              <Typography
-                variant="body2"
-                sx={{ mr: 5, mb: 1, fontWeight: "900" }}
-                className={classes.filterTypo}
-              >
-                Source Language
-              </Typography>
-              <FormGroup>
-                {srcLanguageList?.map((type, index) => {
-                  return (
-                    <FormControlLabel
-                      key={index}
-                      control={
-                        <Checkbox
-                          checked={isChecked(type, "SrcLanguage")}
-                          onChange={(e) => handleSrcLanguageChange(e)}
-                          name={type}
-                        />
-                      }
-                      label={type}
-                      sx={{
-                        fontSize: "1rem",
-                      }}
-                    />
-                  );
-                })}
-              </FormGroup>
-            </Grid>
-          ) : null}
+          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Typography
+              variant="body2"
+              sx={{ mr: 5, mb: 1, fontWeight: "900" }}
+              className={classes.filterTypo}
+            >
+              Source Language
+            </Typography>
+            <FormGroup>
+              {transcriptionLanguage?.map((type, index) => {
+                return (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={isChecked(type.label, "SrcLanguage")}
+                        onChange={(e) => handleSrcLanguageChange(e)}
+                        name={type.label}
+                      />
+                    }
+                    label={type.label}
+                    sx={{
+                      fontSize: "1rem",
+                    }}
+                  />
+                );
+              })}
+            </FormGroup>
+          </Grid>
 
-          {tgtLanguageList?.length ? (
-            <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-              <Typography
-                variant="body2"
-                sx={{ mr: 5, mb: 1, fontWeight: "900" }}
-                className={classes.filterTypo}
-              >
-                Target Language
-              </Typography>
-              <FormGroup>
-                {tgtLanguageList?.map((type, index) => {
-                  return (
-                    <FormControlLabel
-                      key={index}
-                      control={
-                        <Checkbox
-                          checked={isChecked(type, "TgtLanguage")}
-                          onChange={(e) => handleTgtLanguageChange(e)}
-                          name={type}
-                        />
-                      }
-                      label={type}
-                      sx={{
-                        fontSize: "1rem",
-                      }}
-                    />
-                  );
-                })}
-              </FormGroup>
-            </Grid>
-          ) : null}
+          <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+            <Typography
+              variant="body2"
+              sx={{ mr: 5, mb: 1, fontWeight: "900" }}
+              className={classes.filterTypo}
+            >
+              Target Language
+            </Typography>
+            <FormGroup>
+              {translationLanguage?.map((type, index) => {
+                return (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={isChecked(type.label, "TgtLanguage")}
+                        onChange={(e) => handleTgtLanguageChange(e)}
+                        name={type.label}
+                      />
+                    }
+                    label={type.label}
+                    sx={{
+                      fontSize: "1rem",
+                    }}
+                  />
+                );
+              })}
+            </FormGroup>
+          </Grid>
 
           <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
             <Typography

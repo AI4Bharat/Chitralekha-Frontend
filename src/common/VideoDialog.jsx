@@ -40,6 +40,7 @@ import {
   APITransport,
   UpdateVideoAPI,
 } from "redux/actions";
+import CustomizedSnackbars from "./Snackbar";
 
 const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
@@ -53,6 +54,11 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const [darkAndLightMood, setDarkAndLightMood] = useState(true);
   const [videoDescription, setVideoDescription] = useState("");
   const [voice, setVoice] = useState("");
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   const ref = useRef(null);
   const { subtitle } = useVideoSubtitle(videoDetails[0].id);
@@ -201,6 +207,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
 
   const handleplayVideo = (e) => {
     var btn = document.getElementById("myBtn");
+    e.preventDefault();
     if (btn.paused) {
       btn.play();
     } else {
@@ -208,25 +215,29 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     }
   };
 
-  const onKeyDown = useCallback((e) => {
-    var video = document.getElementById("myBtn");
-    if (e.which === 32 && e.target.id !== "description") {
-      if (video.paused) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        e.which === 32 &&
+        e.target.id !== "description" &&
+        document.activeElement !== ref.current
+      ) {
         e.preventDefault();
-        video.play();
-      } else {
-        e.preventDefault();
-        video.pause();
+        var video = document.getElementById("myBtn");
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
       }
-    }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onKeyDown]);
-
-  const updateVideoHandler = () => {
+  const updateVideoHandler = async () => {
     const updateData = {
       gender: voice,
       description: videoDescription,
@@ -234,181 +245,228 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     };
 
     const apiObj = new UpdateVideoAPI(updateData);
-    dispatch(APITransport(apiObj));
+    const res = await fetch(apiObj.apiEndPoint(), {
+      method: "PATCH",
+      body: JSON.stringify(apiObj.getBody()),
+      headers: apiObj.getHeaders().headers,
+    });
+
+    const resp = await res.json();
+
+    if (res.ok) {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "success",
+      });
+    } else {
+      setSnackbarInfo({
+        open: true,
+        message: resp?.message,
+        variant: "error",
+      });
+    }
   };
 
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  }, [snackbar]);
+
   return (
-    <Dialog
-      fullScreen={fullScreen}
-      maxWidth={"lg"}
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="responsive-dialog-title"
-      scroll="paper"
-      PaperProps={{
-        style: {
-          overflowY: "hidden",
-          borderRadius: "10px",
-        },
-      }}
-    >
-      <DialogTitle
-        id="responsive-dialog-title"
-        display="flex"
-        alignItems={"center"}
+    <>
+      {renderSnackBar()}
+
+      <Dialog
+        fullScreen={fullScreen}
+        maxWidth={"lg"}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+        scroll="paper"
+        PaperProps={{
+          style: {
+            overflowY: "hidden",
+            borderRadius: "10px",
+          },
+        }}
       >
-        <Tooltip title={videoDetails[0].name}>
-          <Typography
-            variant="h4"
-            style={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
+        <DialogTitle
+          id="responsive-dialog-title"
+          display="flex"
+          alignItems={"center"}
+        >
+          <Tooltip title={videoDetails[0].name}>
+            <Typography
+              variant="h4"
+              style={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {videoDetails[0].name}
+            </Typography>
+          </Tooltip>
+
+          <IconButton aria-label="close" onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent>
+          <Grid
+            container
+            width={"100%"}
+            alignItems="center"
+            marginBottom="20px"
           >
-            {videoDetails[0].name}
-          </Typography>
-        </Tooltip>
-
-        <IconButton aria-label="close" onClick={handleClose}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-
-      <DialogContent>
-        <Grid container width={"100%"} alignItems="center" marginBottom="20px">
-          <Grid margin="auto">
-            <TextField
-              id="description"
-              label="Description"
-              fullWidth
-              multiline
-              rows={3}
-              value={videoDescription}
-              onChange={(event) => setVideoDescription(event.target.value)}
-              sx={{ mb: 3, mt: 3 }}
-            />
-
-            <FormControl fullWidth>
-              <InputLabel id="select-voice">Voice Selection</InputLabel>
-              <Select
+            <Grid margin="auto">
+              <TextField
+                id="description"
+                label="Description"
                 fullWidth
-                labelId="select-voice"
-                label="Voice Selection"
-                value={voice}
-                onChange={(event) => setVoice(event.target.value)}
-                style={{ zIndex: "0" }}
-                inputProps={{ "aria-label": "Without label" }}
-                MenuProps={MenuProps}
-              >
-                {voiceOptions?.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Button
-              variant="contained"
-              sx={{ display: "flex", borderRadius: "8px", m: "24px auto 0 0" }}
-              onClick={() => updateVideoHandler()}
-            >
-              Update Details
-            </Button>
-          </Grid>
-
-          <Grid className={classes.videoBox} id="myvideo">
-            <video
-              id="myBtn"
-              ref={ref}
-              style={fullScreenMode ? { width: "100%" } : { width: "600px" }}
-              controls
-              src={video.direct_video_url}
-              className={classes.video}
-              onTimeUpdate={handleProgress}
-              onClick={() => handleplayVideo()}
-            />
-
-            <div
-              className={
-                fullScreenMode
-                  ? darkAndLightMood === false
-                    ? classes.lightmodesubtitle
-                    : classes.darkmodesubtitle
-                  : classes.darkmodesubtitle
-              }
-              style={
-                fullScreenMode
-                  ? {
-                      zIndex: 100,
-                      fontSize: "35px",
-                      position: "absolute",
-                      bottom: "100px",
-                      width: "100%",
-                    }
-                  : {}
-              }
-            >
-              {highlightedSubtitle.length ? (
-                highlightedSubtitle.map((s) => s)
-              ) : (
-                <></>
-              )}
-            </div>
-
-            <Box>
-              {fullScreenMode ? (
-                <Button
-                  className={classes.fullscreenVideoBtns}
-                  aria-label="fullscreen"
-                  onClick={() => handleFullscreenVideo()}
-                  variant="contained"
-                  style={{
-                    right: fullScreenMode ? "9%" : "",
-                    bottom: fullScreenMode ? "5.5%" : "",
-                  }}
-                >
-                  <FullscreenExitIcon sx={{ fontSize: "40px" }} />
-                </Button>
-              ) : (
-                <Button
-                  className={classes.fullscreenVideoBtns}
-                  aria-label="fullscreenExit"
-                  onClick={() => handleFullscreenVideo()}
-                  variant="contained"
-                >
-                  <FullscreenIcon />
-                </Button>
-              )}
-            </Box>
-
-            {fullScreenMode && (
-              <CustomSwitchDarkBackground
-                sx={{ position: "relative", bottom: "7%", left: "34%" }}
-                labelPlacement="start"
-                checked={darkAndLightMood}
-                onChange={() =>
-                  darkAndLightMood === false
-                    ? setDarkAndLightMood(true)
-                    : setDarkAndLightMood(false)
-                }
+                multiline
+                rows={3}
+                value={videoDescription}
+                onChange={(event) => setVideoDescription(event.target.value)}
+                sx={{ mb: 3, mt: 3 }}
               />
-            )}
+
+              <FormControl fullWidth>
+                <InputLabel id="select-voice">Voice Selection</InputLabel>
+                <Select
+                  fullWidth
+                  labelId="select-voice"
+                  label="Voice Selection"
+                  value={voice}
+                  onChange={(event) => setVoice(event.target.value)}
+                  style={{ zIndex: "0" }}
+                  inputProps={{ "aria-label": "Without label" }}
+                  MenuProps={MenuProps}
+                >
+                  {voiceOptions?.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Button
+                variant="contained"
+                sx={{
+                  display: "flex",
+                  borderRadius: "8px",
+                  m: "24px auto 0 0",
+                }}
+                onClick={() => updateVideoHandler()}
+              >
+                Update Details
+              </Button>
+            </Grid>
+
+            <Grid className={classes.videoBox} id="myvideo">
+              <video
+                id="myBtn"
+                ref={ref}
+                style={fullScreenMode ? { width: "100%" } : { width: "600px" }}
+                controls
+                src={video.direct_video_url}
+                className={classes.video}
+                onTimeUpdate={handleProgress}
+                onClick={handleplayVideo}
+              />
+
+              <div
+                className={
+                  fullScreenMode
+                    ? darkAndLightMood === false
+                      ? classes.lightmodesubtitle
+                      : classes.darkmodesubtitle
+                    : classes.darkmodesubtitle
+                }
+                style={
+                  fullScreenMode
+                    ? {
+                        zIndex: 100,
+                        fontSize: "35px",
+                        position: "absolute",
+                        bottom: "100px",
+                        width: "100%",
+                      }
+                    : {}
+                }
+              >
+                {highlightedSubtitle.length ? (
+                  highlightedSubtitle.map((s) => s)
+                ) : (
+                  <></>
+                )}
+              </div>
+
+              <Box>
+                {fullScreenMode ? (
+                  <Button
+                    className={classes.fullscreenVideoBtns}
+                    aria-label="fullscreen"
+                    onClick={() => handleFullscreenVideo()}
+                    variant="contained"
+                    style={{
+                      right: fullScreenMode ? "9%" : "",
+                      bottom: fullScreenMode ? "5.5%" : "",
+                    }}
+                  >
+                    <FullscreenExitIcon sx={{ fontSize: "40px" }} />
+                  </Button>
+                ) : (
+                  <Button
+                    className={classes.fullscreenVideoBtns}
+                    aria-label="fullscreenExit"
+                    onClick={() => handleFullscreenVideo()}
+                    variant="contained"
+                  >
+                    <FullscreenIcon />
+                  </Button>
+                )}
+              </Box>
+
+              {fullScreenMode && (
+                <CustomSwitchDarkBackground
+                  sx={{ position: "relative", bottom: "7%", left: "34%" }}
+                  labelPlacement="start"
+                  checked={darkAndLightMood}
+                  onChange={() =>
+                    darkAndLightMood === false
+                      ? setDarkAndLightMood(true)
+                      : setDarkAndLightMood(false)
+                  }
+                />
+              )}
+            </Grid>
           </Grid>
-        </Grid>
 
-        <div>
-          <VideoTaskList videoDetails={videoDetails[0].id} />
-        </div>
-      </DialogContent>
+          <div>
+            <VideoTaskList videoDetails={videoDetails[0].id} />
+          </div>
+        </DialogContent>
 
-      <DialogActions style={{ padding: "24px" }}>
-        {/* <Button autoFocus onClick={handleClose}>
+        <DialogActions style={{ padding: "24px" }}>
+          {/* <Button autoFocus onClick={handleClose}>
           Close
         </Button> */}
-      </DialogActions>
-    </Dialog>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

@@ -79,6 +79,8 @@ import UpdateVideoAPI from "./api/Project/UpdateVideo";
 import UploadCSVAPI from "./api/Project/UploadCSV";
 import UploadToYoutubeAPI from "./api/Project/UploadToYoutube";
 import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskTypes";
+import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
+import ReopenTaskAPI from "./api/Project/ReopenTask";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -96,6 +98,7 @@ import UpdateEmailAPI from "./api/User/UpdateEmail";
 import UpdateMyPasswordAPI from "./api/User/UpdateMyPassword";
 import UpdateProfileAPI from "./api/User/UpdateProfile";
 import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
+import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
 
 //Commom Actions
 import {
@@ -113,6 +116,7 @@ import {
   setRangeStart,
   setRangeEnd,
   setSnackBar,
+  setTotalSentences,
 } from "./Common";
 
 import APITransport from "./apitransport/apitransport";
@@ -224,4 +228,8 @@ export {
   FetchVoiceoverExportTypesAPI,
   FetchSupportedBulkTaskTypeAPI,
   setSnackBar,
+  FetchTaskFailInfoAPI,
+  ReopenTaskAPI,
+  UpdateUserRoleAPI,
+  setTotalSentences,
 };

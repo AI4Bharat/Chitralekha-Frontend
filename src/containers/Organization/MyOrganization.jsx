@@ -35,7 +35,11 @@ import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { AddOrganizationMember, CSVAlertComponent, Loader } from "common";
+import {
+  AddOrganizationMember,
+  AlertComponent,
+  Loader,
+} from "common";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -65,7 +69,9 @@ const MyOrganization = () => {
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("");
   const [showCSVAlert, setShowCSVAlert] = useState(false);
-  const [alertData, setAlertData] = useState({});
+  const [alertData, setAlertData] = useState([]);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColumn, setAlertColumn] = useState([]);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -89,7 +95,9 @@ const MyOrganization = () => {
         if (apiType === "UPLOAD_CSV") {
           dispatch(setSnackBar({ open: false }));
           setShowCSVAlert(true);
-          setAlertData(data);
+          setAlertData(data.response);
+          setAlertMessage(data.message);
+          setAlertColumn("csvAlertColumns");
         }
       }
     }
@@ -327,11 +335,12 @@ const MyOrganization = () => {
       )}
 
       {showCSVAlert && (
-        <CSVAlertComponent
+        <AlertComponent
           open={showCSVAlert}
           onClose={() => setShowCSVAlert(false)}
-          message={alertData.message}
-          report={alertData.response}
+          message={alertMessage}
+          report={alertData}
+          columns={alertColumn}
         />
       )}
     </Grid>

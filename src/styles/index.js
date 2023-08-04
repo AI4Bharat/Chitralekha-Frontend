@@ -5,6 +5,7 @@ import LoginStyle from "./loginStyle";
 import ProjectStyle from "./projectStyle";
 import TableStyles from "./tableStyles";
 import VideoLandingStyle from "./videoLandingStyles";
+import IntroDatasetStyle from "./introDataset";
 
 export {
   DatasetStyle,
@@ -14,4 +15,5 @@ export {
   ProjectStyle,
   TableStyles,
   VideoLandingStyle,
+  IntroDatasetStyle,
 };

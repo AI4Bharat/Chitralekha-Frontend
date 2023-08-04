@@ -63,6 +63,8 @@ import {
   snakeToTitleCase,
   steps,
 } from "./utils";
+import {partnerData,useCaseData} from "./introUtils";
+import teamDetails from "./userDetails";
 
 export {
   assignSpeakerId,
@@ -124,4 +126,7 @@ export {
   exportVoiceover,
   exportFile,
   exportZip,
+  teamDetails,
+  partnerData,
+  useCaseData,
 };

@@ -26,17 +26,18 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { ConfirmDialog, TimeBoxes } from "common";
+import { ConfirmDialog, TableDialog, TimeBoxes } from "common";
 
 //APIs
 import C from "redux/constants";
 import {
   APITransport,
+  FetchTaskFailInfoAPI,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
-  setSnackBar,
   setSubtitles,
 } from "redux/actions";
+import { failInfoColumns } from "config";
 
 const TranslationRightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -73,27 +74,58 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [redoStack, setRedoStack] = useState([]);
   const [regenerate, setRegenerate] = useState(false);
   const [complete, setComplete] = useState(false);
-  const [autoSave, setAutoSave] = useState(false);
+  const [openInfoDialog, setOpenInfoDialog] = useState(false);
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   useEffect(() => {
-    const { progress, success, apiType } = apiStatus;
+    const { progress, success, apiType, data } = apiStatus;
 
-    if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
-      if (!autoSave) {
-        dispatch(setSnackBar({ open: false }));
-      }
+    if (!progress) {
+      if (success) {
+        switch (apiType) {
+          case "SAVE_TRANSCRIPT":
+            if (regenerate) {
+              getPayload(currentPage, limit);
+            }
 
-      if (regenerate) {
-        getPayload(currentPage, limit);
-      }
+            if (complete) {
+              setTimeout(() => {
+                navigate(
+                  `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+                );
+                setComplete(false);
+              }, 2000);
+            }
+            break;
 
-      if (complete) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-          setComplete(false);
-        }, 2000);
+          case "GET_TASK_FAIL_INFO":
+            setOpenInfoDialog(true);
+            setTableDialogColumn(failInfoColumns);
+            setTableDialogMessage(data.message);
+            setTableDialogResponse(data.data);
+            break;
+
+          default:
+            break;
+        }
+      } else {
+        switch (apiType) {
+          case "SAVE_TRANSCRIPT":
+            setOpenConfirmDialog(false);
+
+            if (complete) {
+              setOpenInfoDialog(true);
+              setTableDialogColumn(failInfoColumns);
+              setTableDialogMessage(data.message);
+              setTableDialogResponse(data.data);
+            }
+            break;
+
+          default:
+            break;
+        }
       }
     }
 
@@ -142,7 +174,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
       const sub = onSubtitleDelete(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -166,7 +198,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
       const sub = onMerge(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -199,14 +231,13 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    saveTranscriptHandler(false, false, arr);
+    // saveTranscriptHandler(false, false, arr);
   };
 
   const saveTranscriptHandler = async (
     isFinal,
-    isAutosave,
-    subs = sourceText,
-    isRegenerate = false
+    isRegenerate = false,
+    subs = sourceText
   ) => {
     const reqBody = {
       task_id: taskId,
@@ -223,7 +254,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
     setComplete(isFinal);
     setRegenerate(isRegenerate);
-    setAutoSave(isAutosave);
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
@@ -233,7 +263,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     (value, index, type, time) => {
       const sub = timeChange(value, index, type, time);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -244,7 +274,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
       const sub = addSubtitleBox(index);
 
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      saveTranscriptHandler(false, true, sub);
+      // saveTranscriptHandler(false, true, sub);
 
       setUndoStack((prevState) => [
         ...prevState,
@@ -304,7 +334,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
-    saveTranscriptHandler(false, true);
     getPayload(value, limit);
   };
 
@@ -315,11 +344,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
       const sub = reGenerateTranslation(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
 
-      saveTranscriptHandler(false, false, sub, regenerate);
+      saveTranscriptHandler(false, regenerate, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
   );
+
+  const handleInfoButtonClick = async () => {
+    const apiObj = new FetchTaskFailInfoAPI(taskId);
+    dispatch(APITransport(apiObj));
+  };
 
   return (
     <>
@@ -341,6 +375,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
             onRedo={onRedo}
             undoStack={undoStack}
             redoStack={redoStack}
+            handleInfoButtonClick={handleInfoButtonClick}
           />
         </Grid>
 
@@ -543,9 +578,19 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false, sourceText)}
+            submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the translation?"}
             loading={apiStatus.loading}
+          />
+        )}
+
+        {openInfoDialog && (
+          <TableDialog
+            openDialog={openInfoDialog}
+            handleClose={() => setOpenInfoDialog(false)}
+            message={tableDialogMessage}
+            response={tableDialogResponse}
+            columns={tableDialogColumn}
           />
         )}
       </Box>

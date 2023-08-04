@@ -45,7 +45,6 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import {
   AddProjectMembers,
   AlertComponent,
-  CSVAlertComponent,
   CreateVideoDialog,
   Loader,
 } from "common";
@@ -76,7 +75,6 @@ const Project = () => {
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
   const [value, setValue] = useState(0);
@@ -101,6 +99,8 @@ const Project = () => {
     },
   ]);
   const [speakerType, setSpeakerType] = useState("individual");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColumn, setAlertColumn] = useState("");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -123,11 +123,14 @@ const Project = () => {
           dispatch(setSnackBar({ open: false }));
           setShowAlert(true);
           setAlertData(data);
+          setAlertMessage(data.message);
+          setAlertColumn("createVideoAlertColumns");
         }
       } else {
         if (apiType === "UPLOAD_CSV") {
           dispatch(setSnackBar({ open: false }));
-          setShowCSVAlert(true);
+          setShowAlert(true);
+          setAlertMessage(data.message);
           setAlertData(data);
         }
       }
@@ -514,17 +517,9 @@ const Project = () => {
         <AlertComponent
           open={showAlert}
           onClose={() => setShowAlert(false)}
-          message={alertData.message}
-          report={alertData.detailed_report}
-        />
-      )}
-
-      {showCSVAlert && (
-        <CSVAlertComponent
-          open={showCSVAlert}
-          onClose={() => setShowCSVAlert(false)}
-          message={alertData.message}
-          report={alertData.response}
+          message={alertMessage}
+          report={alertData}
+          columns={alertColumn}
         />
       )}
     </Grid>

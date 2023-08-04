@@ -67,7 +67,7 @@ const CreateVideoDialog = ({
   }, []);
 
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+    (state) => state.getSupportedLanguages.transcriptionLanguage
   );
 
   const handleClear = () => {

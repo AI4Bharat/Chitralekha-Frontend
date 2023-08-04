@@ -20,6 +20,7 @@ const initialState = {
     message: "",
     variant: "success",
   },
+  totalSentences: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -113,6 +114,12 @@ const reducer = (state = initialState, action) => {
     case C.SNACKBAR: {
       let result = { ...state };
       result.snackbar = { ...action.payload };
+      return result;
+    }
+
+    case C.TOTAL_SENTENCES: {
+      let result = { ...state };
+      result.totalSentences = action.payload;
       return result;
     }
 

@@ -1,5 +1,3 @@
-
-
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
@@ -8,7 +6,9 @@ export default class FetchUserRolesAPI extends API {
   constructor(timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_USERS_ROLES;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.userRoles}`;
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.userRoles
+    }get_roles/`;
   }
 
   processResponse(res) {
@@ -28,7 +28,7 @@ export default class FetchUserRolesAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };
     return this.headers;

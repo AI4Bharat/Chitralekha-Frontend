@@ -23,7 +23,7 @@ const TagsSuggestionList = ({
   setTagSuggestionsAnchorEl,
   textWithoutBackslash,
   textAfterBackSlash,
-  saveTranscriptHandler,
+  // saveTranscriptHandler,
   setEnableTransliterationSuggestion,
 }) => {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ const TagsSuggestionList = ({
 
     const sub = onSubtitleChange(modifiedText, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-    saveTranscriptHandler(false, false, sub);
+    // saveTranscriptHandler(false, false, sub);
 
     setEnableTransliterationSuggestion(true);
     setTagSuggestionsAnchorEl(null);

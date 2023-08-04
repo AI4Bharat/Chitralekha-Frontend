@@ -26,16 +26,17 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CloseIcon from "@mui/icons-material/Close";
 import Loader from "./Spinner";
+import WarningIcon from "@mui/icons-material/Warning";
 
 //APIs
 import {
   APITransport,
   FetchAllowedTasksAPI,
-  FetchSupportedBulkTaskTypeAPI,
   FetchPriorityTypesAPI,
   FetchProjectMembersAPI,
   FetchSupportedLanguagesAPI,
   FetchTaskTypeAPI,
+  FetchBulkTaskTypeAPI,
 } from "redux/actions";
 
 const CreateTaskDialog = ({
@@ -54,12 +55,13 @@ const CreateTaskDialog = ({
   const tasklist = useSelector((state) => state.getTaskTypes.data);
   const allowedTasklist = useSelector((state) => state.getAllowedTasks.data);
   const PriorityTypes = useSelector((state) => state.getPriorityTypes.data);
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.data
+  const translationLanguage = useSelector(
+    (state) => state.getSupportedLanguages.translationLanguage
   );
-  const bulkTaskTypes = useSelector(
-    (state) => state.getSupportedBulkTaskTypes.data
+  const voiceoverLanguage = useSelector(
+    (state) => state.getSupportedLanguages.voiceoverLanguage
   );
+  const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
 
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
@@ -69,6 +71,7 @@ const CreateTaskDialog = ({
   const [date, setDate] = useState(moment().format());
   const [allowedTaskType, setAllowedTaskType] = useState("");
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
+  const [showLimitWarning, setShowLimitWarning] = useState(false);
 
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
@@ -77,7 +80,7 @@ const CreateTaskDialog = ({
     const priorityTypesObj = new FetchPriorityTypesAPI();
     dispatch(APITransport(priorityTypesObj));
 
-    const bulkTaskObj = new FetchSupportedBulkTaskTypeAPI();
+    const bulkTaskObj = new FetchBulkTaskTypeAPI();
     dispatch(APITransport(bulkTaskObj));
 
     // eslint-disable-next-line
@@ -113,6 +116,12 @@ const CreateTaskDialog = ({
     } = event;
 
     setTaskType(value);
+
+    if (videoDetails.length > 10) {
+      value.includes("TRANSCRIPTION_EDIT")
+        ? setShowLimitWarning(true)
+        : setShowLimitWarning(false);
+    }
 
     if (isBulk && value.includes("TRANSCRIPTION")) {
       const obj = new FetchProjectMembersAPI(projectId, value, "", "");
@@ -245,6 +254,21 @@ const CreateTaskDialog = ({
           justifyContent="center"
           alignItems="center"
         >
+          {showLimitWarning && (
+            <Box display="flex" alignItems="center" marginRight="auto">
+              <WarningIcon color="error" />
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                color="error"
+                marginLeft="5px"
+              >
+                A maximum of 10 Transcription Edit tasks can be created
+                simultaneously.
+              </Typography>
+            </Box>
+          )}
+
           <Box width={"100%"} sx={{ mt: 3 }}>
             <FormControl fullWidth>
               <InputLabel id="select-task">Select Task Type*</InputLabel>
@@ -289,11 +313,17 @@ const CreateTaskDialog = ({
                   style={{ zIndex: "0" }}
                   inputProps={{ "aria-label": "Without label" }}
                 >
-                  {supportedLanguages?.map((item, index) => (
-                    <MenuItem key={index} value={item.value}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
+                  {taskType.includes("TRANSLATION")
+                    ? translationLanguage?.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))
+                    : voiceoverLanguage?.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
                 </Select>
               </FormControl>
             </Box>
@@ -404,7 +434,7 @@ const CreateTaskDialog = ({
           autoFocus
           variant="contained"
           sx={{ borderRadius: 2 }}
-          disabled={isBulk ? false : disableBtn()}
+          disabled={isBulk ? showLimitWarning : disableBtn()}
           onClick={() => submitHandler()}
         >
           Create Task{" "}

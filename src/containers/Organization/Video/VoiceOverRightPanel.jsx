@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
 import { Sub, base64toBlob, getSubtitleRange, setAudioContent } from "utils";
+import { voiceoverFailInfoColumns } from "config";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -17,7 +18,7 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import { ConfirmDialog, ConfirmErrorDialog } from "common";
+import { ConfirmDialog, ConfirmErrorDialog, TableDialog } from "common";
 
 //APIs
 import C from "redux/constants";
@@ -31,6 +32,9 @@ import {
   setSubtitlesForCheck,
   setTotalPages,
   SaveTranscriptAPI,
+  FetchTaskFailInfoAPI,
+  setTotalSentences,
+  setSnackBar,
 } from "redux/actions";
 
 const VoiceOverRightPanel = () => {
@@ -58,6 +62,9 @@ const VoiceOverRightPanel = () => {
     (state) => state.commonReducer.completedCount
   );
   const apiStatus = useSelector((state) => state.apiStatus);
+  const totalSentences = useSelector(
+    (state) => state.commonReducer.totalSentences
+  );
 
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
@@ -77,6 +84,10 @@ const VoiceOverRightPanel = () => {
   const [complete, setComplete] = useState(false);
   const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
   const [jumpToOffset, setJumpToOffset] = useState(0);
+  const [openInfoDialog, setOpenInfoDialog] = useState(false);
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -86,6 +97,12 @@ const VoiceOverRightPanel = () => {
         if (apiType === "SAVE_TRANSCRIPT") {
           setCanSave(false);
           setOpenConfirmDialog(false);
+
+          if (complete) {
+            navigate(
+              `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+            );
+          }
 
           if (jumpToOffset) {
             getPayloadAPI(jumpToOffset);
@@ -102,9 +119,17 @@ const VoiceOverRightPanel = () => {
             dispatch(setTotalPages(data?.count));
             dispatch(setSubtitlesForCheck(newSub));
             dispatch(setSubtitles(sub, C.SUBTITLES));
+            dispatch(setTotalSentences(data?.sentences_count));
           }
 
           getPayloadAPI(currentPage);
+        }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          setOpenInfoDialog(true);
+          setTableDialogColumn(voiceoverFailInfoColumns);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(data.data);
         }
       } else {
         if (apiType === "SAVE_TRANSCRIPT") {
@@ -196,15 +221,23 @@ const VoiceOverRightPanel = () => {
 
   const saveTranscriptHandler = async (
     isFinal,
-    isAutosave,
-    isGetUpdatedAudio
+    isGetUpdatedAudio,
+    value = currentPage
   ) => {
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: "Saving...",
+        variant: "info",
+      })
+    );
+
     const reqBody = {
       task_id: taskId,
       payload: {
         payload: sourceText,
       },
-      offset: currentPage,
+      offset: value,
     };
 
     if (isFinal) {
@@ -216,31 +249,20 @@ const VoiceOverRightPanel = () => {
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
-
-    if (isFinal) {
-      navigate(
-        `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-      );
-    }
   };
 
-  const getPayloadAPI = (value) => {
+  const getPayloadAPI = (offset = currentPage) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
-      value
+      offset
     );
     dispatch(APITransport(payloadObj));
   };
 
   const onNavigationClick = (value) => {
     setJumpToOffset(value);
-
-    if (canSave) {
-      saveTranscriptHandler(false, true, false);
-    } else {
-      getPayloadAPI(value);
-    }
+    getPayloadAPI(value);
   };
 
   const handleStartRecording = (index) => {
@@ -341,6 +363,11 @@ const VoiceOverRightPanel = () => {
       ?.querySelector(`#container-1`),
   ]);
 
+  const handleInfoButtonClick = async () => {
+    const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
+    dispatch(APITransport(apiObj));
+  };
+
   return (
     <>
       <Box
@@ -358,6 +385,7 @@ const VoiceOverRightPanel = () => {
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
+            handleInfoButtonClick={handleInfoButtonClick}
           />
         </Grid>
 
@@ -569,6 +597,8 @@ const VoiceOverRightPanel = () => {
             jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
             durationError={durationError}
             completedCount={completedCount}
+            current={currentPage}
+            totalSentences={totalSentences}
           />
         </Box>
 
@@ -576,7 +606,7 @@ const VoiceOverRightPanel = () => {
           <ConfirmDialog
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
-            submit={() => saveTranscriptHandler(true, false)}
+            submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the Voice Over?"}
             loading={apiStatus.loading}
           />
@@ -588,6 +618,16 @@ const VoiceOverRightPanel = () => {
             openDialog={openConfirmErrorDialog}
             handleClose={() => setOpenConfirmErrorDialog(false)}
             response={errorResponse}
+          />
+        )}
+
+        {openInfoDialog && (
+          <TableDialog
+            openDialog={openInfoDialog}
+            handleClose={() => setOpenInfoDialog(false)}
+            message={tableDialogMessage}
+            response={tableDialogResponse}
+            columns={tableDialogColumn}
           />
         )}
       </Box>
