@@ -72,8 +72,7 @@ const SettingsButtonComponent = ({
   );
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
-  );
-  // const limit = useSelector((state) => state.commonReducer.limit);
+  )
 
   const getDisbled = (flag) => {
     if (
@@ -100,7 +99,7 @@ const SettingsButtonComponent = ({
 
     return false;
   };
-
+  
   return (
     <>
       {/* {!taskData?.task_type?.includes("VOICEOVER") && (
