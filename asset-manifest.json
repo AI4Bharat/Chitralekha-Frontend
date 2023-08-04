@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.f06e1f73.css",
-    "main.js": "/static/js/main.51cf50b8.js",
+    "main.js": "/static/js/main.484121cc.js",
     "static/media/Ganavi.png": "/static/media/Ganavi.2ee88c339dcf51b9b22f.png",
     "static/media/chiralekha-bg.png": "/static/media/chiralekha-bg.be4d1188e3aac2636abd.png",
     "static/media/Chitralekha_Logo.png": "/static/media/Chitralekha_Logo.186deb6fe7ab10b0eb0e.png",
@@ -13,6 +13,7 @@
     "static/media/EkStep.png": "/static/media/EkStep.e0868145c2d109a9e9af.png",
     "static/media/Alpana.png": "/static/media/Alpana.c825b040ecc2a5532c3a.png",
     "static/media/Dynamic.svg": "/static/media/Dynamic.fc5000c605f07268e767d237c9387624.svg",
+    "static/media/logo.svg": "/static/media/logo.2968ade084e575085d672ccac19c6b74.svg",
     "static/media/Shruti.png": "/static/media/Shruti.26549e6e423ecc9542c7.png",
     "static/media/youtube.png": "/static/media/youtube.82cba176af0592e340b6.png",
     "static/media/Partham.png": "/static/media/Partham.cabd3ac8c1a20c113af3.png",
@@ -28,10 +29,10 @@
     "index.html": "/index.html",
     "static/media/Card.svg": "/static/media/Card.93f0e69be62a5b18d067c6ba14e983e2.svg",
     "main.f06e1f73.css.map": "/static/css/main.f06e1f73.css.map",
-    "main.51cf50b8.js.map": "/static/js/main.51cf50b8.js.map"
+    "main.484121cc.js.map": "/static/js/main.484121cc.js.map"
   },
   "entrypoints": [
     "static/css/main.f06e1f73.css",
-    "static/js/main.51cf50b8.js"
+    "static/js/main.484121cc.js"
   ]
 }
