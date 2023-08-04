@@ -75,6 +75,16 @@ const EditProfile = () => {
   const [alertColumn, setAlertColumn] = useState();
   const [openAlert, setOpenAlert] = useState(false);
 
+  const userData = useSelector((state) => state.getUserDetails.data);
+  const loggedInUserData = useSelector(
+    (state) => state.getLoggedInUserDetails.data
+  );
+  const orgList = useSelector((state) => state.getOrganizationList.data);
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.translationLanguage
+  );
+  const apiStatus = useSelector((state) => state.apiStatus);
+
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
     if (!progress) {
@@ -88,16 +98,6 @@ const EditProfile = () => {
     }
     // eslint-disable-next-line
   }, [apiStatus]);
-
-  const userData = useSelector((state) => state.getUserDetails.data);
-  const loggedInUserData = useSelector(
-    (state) => state.getLoggedInUserDetails.data
-  );
-  const orgList = useSelector((state) => state.getOrganizationList.data);
-  const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.translationLanguage
-  );
-  const apiStatus = useSelector((state) => state.apiStatus);
 
   useEffect(() => {
     orgList.forEach((element) => (element.label = element.title));

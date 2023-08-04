@@ -94,6 +94,7 @@ export const setRangeEnd = (data) => {
 export const setSnackBar = (data) => {
   return {
     type: C.SNACKBAR,
+    payload: data,
   }
 }
 
