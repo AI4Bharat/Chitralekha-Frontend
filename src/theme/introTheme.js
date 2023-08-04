@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-const themeDefault = createTheme({
+const introTheme = createTheme({
   typography: {
     fontFamily: "rubik,sans-serif",
     fontWeight: "500",
@@ -90,4 +90,4 @@ const themeDefault = createTheme({
     },
   },
 });
-export default themeDefault;
+export default introTheme;

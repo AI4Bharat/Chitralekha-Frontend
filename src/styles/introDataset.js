@@ -1,7 +1,7 @@
 import { makeStyles } from "@mui/styles";
 import ChitralekhabackgroundImage from "../assets/profileImages/Slide.png";
 
-const DatasetStyle = makeStyles({
+const IntroDatasetStyle = makeStyles({
   Chitralekhalogo: {
     width: "100%",
     height: "100%",
@@ -240,4 +240,4 @@ const DatasetStyle = makeStyles({
   },
 });
 
-export default DatasetStyle;
+export default IntroDatasetStyle;

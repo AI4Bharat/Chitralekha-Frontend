@@ -53,6 +53,7 @@ import {
   setSubtitles,
   setSubtitlesForCheck,
   setTotalPages,
+  setTotalSentences,
 } from "redux/actions";
 import C from "redux/constants";
 
@@ -230,6 +231,7 @@ const VideoLanding = () => {
     dispatch(setRangeStart(transcriptPayload?.start));
     dispatch(setRangeEnd(transcriptPayload?.end));
     dispatch(setSubtitles(sub, C.SUBTITLES));
+    dispatch(setTotalSentences(transcriptPayload?.sentences_count));
 
     // eslint-disable-next-line
   }, [transcriptPayload?.payload?.payload]);
@@ -331,6 +333,19 @@ const VideoLanding = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("canReload") === "true") {
+      localStorage.setItem("canReload", false);
+      window.location.reload(true);
+    } else {
+      localStorage.setItem("canReload", true);
+    }
+
+    return () => {
+      localStorage.setItem("canReload", true);
+    };
+  }, []);
 
   return (
     <Grid
