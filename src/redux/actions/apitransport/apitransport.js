@@ -99,8 +99,8 @@ const error = (err, api, dispatch) => {
     })
   );
 
-  if (status === 401) {
-    window.location.replace("/");
+  if (status === 401 && api.type !== "GET_USER_ACCESS_TOKEN") {
+    window.location.replace("/#/login");
   }
 };
 

@@ -122,16 +122,18 @@ const Project = () => {
         if (apiType === "CREATE_NEW_VIDEO") {
           dispatch(setSnackBar({ open: false }));
           setShowAlert(true);
-          setAlertData(data);
+          setAlertData(data.detailed_report);
           setAlertMessage(data.message);
           setAlertColumn("createVideoAlertColumns");
+          getProjectVideoList();
         }
       } else {
         if (apiType === "UPLOAD_CSV") {
           dispatch(setSnackBar({ open: false }));
           setShowAlert(true);
           setAlertMessage(data.message);
-          setAlertData(data);
+          setAlertData(data.response);
+          setAlertColumn("csvAlertColumns");
         }
       }
     }
@@ -236,7 +238,6 @@ const Project = () => {
     dispatch(APITransport(apiObj));
 
     setCreateVideoDialog(false);
-    getProjectVideoList();
     setIsAudio(false);
   };
 
@@ -516,7 +517,10 @@ const Project = () => {
       {showAlert && (
         <AlertComponent
           open={showAlert}
-          onClose={() => setShowAlert(false)}
+          onClose={() => {
+            setAlertData([]);
+            setShowAlert(false);
+          }}
           message={alertMessage}
           report={alertData}
           columns={alertColumn}

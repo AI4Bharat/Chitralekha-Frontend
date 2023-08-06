@@ -22,7 +22,7 @@ const TaskQueueStatus = () => {
     if (!progess) {
       if (success) {
         if (apiType === "GET_TASK_QUEUE_STATUS") {
-          const result = data.map((item, index) => {
+          const result = data.data.map((item, index) => {
             return [
               index + 1,
               item.task_id,
