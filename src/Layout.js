@@ -25,7 +25,7 @@ const App = (props) => {
   const dispatch = useDispatch();
 
   const snackbar = useSelector((state) => state.commonReducer.snackbar);
-console.log(snackbar,'snackbar');
+
   const renderSnackBar = useCallback(() => {
     return (
       <CustomizedSnackbars

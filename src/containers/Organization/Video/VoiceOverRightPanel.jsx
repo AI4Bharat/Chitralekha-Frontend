@@ -122,7 +122,8 @@ const VoiceOverRightPanel = () => {
             dispatch(setTotalSentences(data?.sentences_count));
           }
 
-          getPayloadAPI(currentPage);
+          // getPayloadAPI(currentPage);
+          setGetUpdatedAudio(false);
         }
 
         if (apiType === "GET_TASK_FAIL_INFO") {
@@ -245,7 +246,6 @@ const VoiceOverRightPanel = () => {
     }
 
     setComplete(isFinal);
-    setGetUpdatedAudio(isGetUpdatedAudio);
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
@@ -278,7 +278,8 @@ const VoiceOverRightPanel = () => {
   const onStopRecording = (data, index) => {
     updateRecorderState(RecordState.STOP, index);
     setCanSave(true);
-
+    setGetUpdatedAudio(true);
+    
     if (data && data.hasOwnProperty("url")) {
       const updatedArray = Object.assign([], data);
       updatedArray[index] = data.url;

@@ -511,17 +511,19 @@ export const exportVoiceover = (url, taskDetails, exportTypes) => {
 
   const { voiceover } = exportTypes;
 
-  const link = document.createElement("a");
-  link.href = url;
-
-  link.setAttribute(
-    "download",
-    `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`
-  );
-
-  document.body.appendChild(link);
-  link.click();
-  link.parentNode.removeChild(link);
+  if(url) {
+    const link = document.createElement("a");
+    link.href = url;
+  
+    link.setAttribute(
+      "download",
+      `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`
+    );
+  
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  }
 };
 
 export const exportFile = (data, taskDetails, exportType, type) => {

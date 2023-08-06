@@ -15,7 +15,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppInfo from "./AppInfo";
-import { CustomCard, Loader, OutlinedTextField } from "common";
+import { CustomCard, CustomizedSnackbars, Loader, OutlinedTextField } from "common";
 
 //APIs
 import {
@@ -34,6 +34,7 @@ const Login = () => {
   const userInfo = JSON.parse(localStorage.getItem("userData"));
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
 
   const [values, setValues] = useState({
     password: "",
@@ -194,8 +195,25 @@ const Login = () => {
     </CustomCard>
   );
 
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
+
   return (
     <ThemeProvider theme={themeDefault}>
+      {renderSnackBar()}
       <Grid container>
         <Grid
           item
