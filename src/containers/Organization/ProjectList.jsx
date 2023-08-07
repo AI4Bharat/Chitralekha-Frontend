@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { getColumns, getOptions } from "utils";
 import { Link, useParams } from "react-router-dom";
 import { projectColumns } from "config";
@@ -14,63 +14,39 @@ import PreviewIcon from "@mui/icons-material/Preview";
 //Components
 import { ThemeProvider, Tooltip, IconButton } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import { CustomizedSnackbars, DeleteDialog } from "common";
+import { DeleteDialog } from "common";
 
 //APIs
 import DeleteProjectAPI from "redux/actions/api/Project/DeleteProject";
+import { APITransport } from "redux/actions";
 
 const ProjectList = ({ data, removeProjectList }) => {
   const { id } = useParams();
+  const dispatch = useDispatch();
 
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
 
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const handleok = async (id) => {
-    setLoading(true);
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
 
-    const apiObj = new DeleteProjectAPI(id);
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "DELETE",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "success",
-        });
-        removeProjectList();
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
+    if (!progress) {
+      if (success) {
+        if (apiType === "DELETE_Project") {
+          removeProjectList();
+        }
       }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
       setOpen(false);
     }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
+
+  const handleok = async (id) => {
+    const apiObj = new DeleteProjectAPI(id);
+    dispatch(APITransport(apiObj));
   };
 
   const handleClose = () => {
@@ -119,37 +95,22 @@ const ProjectList = ({ data, removeProjectList }) => {
 
   const columns = [...getColumns(projectColumns), actionColumn];
 
-  const renderSnackBar = useCallback(() => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
-  }, [snackbar]);
-
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={data}
           columns={columns}
-          options={getOptions(apiStatus.progress)}
+          options={getOptions(apiStatus.loading)}
         />
       </ThemeProvider>
-      {renderSnackBar()}
 
       {open && (
         <DeleteDialog
           openDialog={open}
           handleClose={() => handleClose()}
           submit={() => handleok(projectid)}
-          loading={loading}
+          loading={apiStatus.loading}
           message={`Are you sure, you want to delete this project? All the associated
           video and tasks will be deleted.`}
         />

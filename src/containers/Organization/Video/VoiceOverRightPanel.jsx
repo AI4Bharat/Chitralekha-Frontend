@@ -18,12 +18,7 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import {
-  ConfirmDialog,
-  ConfirmErrorDialog,
-  CustomizedSnackbars,
-  TableDialog,
-} from "common";
+import { ConfirmDialog, ConfirmErrorDialog, TableDialog } from "common";
 
 //APIs
 import C from "redux/constants";
@@ -39,9 +34,10 @@ import {
   SaveTranscriptAPI,
   FetchTaskFailInfoAPI,
   setTotalSentences,
+  setSnackBar,
 } from "redux/actions";
 
-const VoiceOverRightPanel = ({ currentIndex }) => {
+const VoiceOverRightPanel = () => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -65,25 +61,18 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const completedCount = useSelector(
     (state) => state.commonReducer.completedCount
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   );
 
   const [sourceText, setSourceText] = useState([]);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [enableTransliteration, setTransliteration] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [data, setData] = useState([]);
   const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
-  // const [undoStack, setUndoStack] = useState([]);
-  // const [redoStack, setRedoStack] = useState([]);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
@@ -92,10 +81,73 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
   const [canSave, setCanSave] = useState(false);
+  const [complete, setComplete] = useState(false);
+  const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
+  const [jumpToOffset, setJumpToOffset] = useState(0);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+
+  useEffect(() => {
+    const { progress, success, data, apiType } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "SAVE_TRANSCRIPT") {
+          setCanSave(false);
+          setOpenConfirmDialog(false);
+
+          if (complete) {
+            navigate(
+              `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+            );
+          }
+
+          if (jumpToOffset) {
+            getPayloadAPI(jumpToOffset);
+          }
+
+          if (getUpdatedAudio) {
+            const sub = data?.payload?.payload.map((item) => new Sub(item));
+
+            const newSub = cloneDeep(sub);
+
+            dispatch(setCurrentPage(data?.current));
+            dispatch(setNextPage(data?.next));
+            dispatch(setPreviousPage(data?.previous));
+            dispatch(setTotalPages(data?.count));
+            dispatch(setSubtitlesForCheck(newSub));
+            dispatch(setSubtitles(sub, C.SUBTITLES));
+            dispatch(setTotalSentences(data?.sentences_count));
+          }
+
+          // getPayloadAPI(currentPage);
+          setGetUpdatedAudio(false);
+        }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          setOpenInfoDialog(true);
+          setTableDialogColumn(voiceoverFailInfoColumns);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(data.data);
+        }
+      } else {
+        if (apiType === "SAVE_TRANSCRIPT") {
+          setOpenConfirmDialog(false);
+
+          if (complete) {
+            setOpenConfirmErrorDialog(true);
+            setErrorMessage(data.message);
+            setErrorResponse(data.missing_cards_info);
+            setComplete(false);
+          }
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const isDisabled = (index) => {
     if (next && sourceText.length - 1 === index) {
@@ -173,83 +225,30 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
     isGetUpdatedAudio,
     value = currentPage
   ) => {
-    setSnackbarInfo({
-      open: true,
-      message: "Saving...",
-      variant: "info",
-    });
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: "Saving...",
+        variant: "info",
+      })
+    );
 
     const reqBody = {
       task_id: taskId,
       payload: {
         payload: sourceText,
       },
-      offset: currentPage,
+      offset: value,
     };
 
     if (isFinal) {
       reqBody.final = true;
     }
 
+    setComplete(isFinal);
+
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    const res = await fetch(obj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(obj.getBody()),
-      headers: obj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setCanSave(false);
-      setLoading(false);
-      setOpenConfirmDialog(false);
-
-      if (isFinal) {
-        navigate(
-          `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-        );
-      }
-
-      if (!isGetUpdatedAudio) {
-        getPayloadAPI(value);
-      }
-
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-
-      if (isGetUpdatedAudio) {
-        const sub = resp?.payload?.payload.map((item) => new Sub(item));
-
-        const newSub = cloneDeep(sub);
-
-        dispatch(setCurrentPage(resp?.current));
-        dispatch(setNextPage(resp?.next));
-        dispatch(setPreviousPage(resp?.previous));
-        dispatch(setTotalPages(resp?.count));
-        dispatch(setSubtitlesForCheck(newSub));
-        dispatch(setSubtitles(sub, C.SUBTITLES));
-        dispatch(setTotalSentences(resp?.sentences_count));
-      }
-    } else {
-      setLoading(false);
-      setOpenConfirmDialog(false);
-
-      if (isFinal) {
-        setOpenConfirmErrorDialog(true);
-        setErrorMessage(resp.message);
-        setErrorResponse(resp.missing_cards_info);
-      }
-
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(obj));
   };
 
   const getPayloadAPI = (offset = currentPage) => {
@@ -262,41 +261,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
+    setJumpToOffset(value);
     getPayloadAPI(value);
-  };
-
-  // const onUndo = useCallback(() => {
-  //   if (undoStack.length > 0) {
-  //     const lastAction = undoStack[undoStack.length - 1];
-  //     const sub = onUndoAction(lastAction);
-  //     dispatch(setSubtitles(sub, C.SUBTITLES));
-  //     setUndoStack(undoStack.slice(0, undoStack.length - 1));
-  //     setRedoStack([...redoStack, lastAction]);
-  //   }
-  // }, [undoStack, redoStack]);
-
-  // const onRedo = useCallback(() => {
-  //   if (redoStack.length > 0) {
-  //     const lastAction = redoStack[redoStack.length - 1];
-  //     const sub = onRedoAction(lastAction);
-  //     dispatch(setSubtitles(sub, C.SUBTITLES));
-  //     setRedoStack(redoStack.slice(0, redoStack.length - 1));
-  //     setUndoStack([...undoStack, lastAction]);
-  //   }
-  // }, [undoStack, redoStack]);
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
   };
 
   const handleStartRecording = (index) => {
@@ -312,7 +278,8 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
   const onStopRecording = (data, index) => {
     updateRecorderState(RecordState.STOP, index);
     setCanSave(true);
-
+    setGetUpdatedAudio(true);
+    
     if (data && data.hasOwnProperty("url")) {
       const updatedArray = Object.assign([], data);
       updatedArray[index] = data.url;
@@ -399,41 +366,11 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
 
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
-
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        body: JSON.stringify(apiObj.getBody()),
-        headers: apiObj.getHeaders().headers,
-      });
-
-      const resp = await res.json();
-
-      if (res.ok) {
-        setOpenInfoDialog(true);
-        setTableDialogColumn(voiceoverFailInfoColumns);
-        setTableDialogMessage(resp.message);
-        setTableDialogResponse(resp.data);
-      } else {
-        setSnackbarInfo({
-          open: true,
-          message: resp?.message,
-          variant: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbarInfo({
-        open: true,
-        message: "Something went wrong!!",
-        variant: "error",
-      });
-    }
+    dispatch(APITransport(apiObj));
   };
 
   return (
     <>
-      {renderSnackBar()}
-
       <Box
         className={classes.rightPanelParentBox}
         style={{ position: "relative" }}
@@ -448,10 +385,6 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
             setOpenConfirmDialog={setOpenConfirmDialog}
-            // onUndo={onUndo}
-            // onRedo={onRedo}
-            // undoStack={undoStack}
-            // redoStack={redoStack}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
           />
@@ -676,7 +609,7 @@ const VoiceOverRightPanel = ({ currentIndex }) => {
             handleClose={() => setOpenConfirmDialog(false)}
             submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the Voice Over?"}
-            loading={loading}
+            loading={apiStatus.loading}
           />
         )}
 

@@ -1,9 +1,13 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
+import constants from "redux/constants";
 
 export default class EditTaskDetailAPI extends API {
   constructor(updateData, id, timeout = 2000) {
     super("PATCH", timeout, false);
+
+    this.type = constants.EDIT_TASK_DETAILS;
+
     this.updateData = updateData;
     this.id = id;
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}${id}/`;

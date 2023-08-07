@@ -1,27 +1,58 @@
 import { useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { APITransport, SaveTranscriptAPI } from "redux/actions";
 
-function useAutosave(callback, delay = 1000, deps = []) {
-  const savedCallback = useRef();
+export const useAutosave = (
+  taskId,
+  currentPage,
+  limit,
+  subs,
+  taskDetails,
+) => {
+  const dispatch = useDispatch();
+  const saveIntervalRef = useRef(null);
 
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  useEffect(() => {
-    const runCallback = () => {
-      savedCallback.current();
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subs,
+      },
     };
 
-    if (typeof delay === "number") {
-      let interval = setInterval(runCallback, delay);
+    const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+    dispatch(APITransport(obj));
+  };
 
-      return () => {
-        clearInterval(interval);
-      };
-    }
+  useEffect(() => {
+    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
 
-    //eslint-disable-next-line
-  }, [delay, ...deps]);
-}
+    const handleBeforeUnload = (event) => {
+      handleAutosave();
+      event.preventDefault();
+      event.returnValue = "";
+    };
 
-export default useAutosave;
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+      } else {
+        handleAutosave();
+        clearInterval(saveIntervalRef.current);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(saveIntervalRef.current);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+    
+    // eslint-disable-next-line
+  }, [taskId, currentPage, limit, subs, taskDetails, dispatch]);
+};

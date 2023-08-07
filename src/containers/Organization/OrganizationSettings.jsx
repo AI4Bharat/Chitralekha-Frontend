@@ -23,7 +23,7 @@ import {
   Chip,
   Checkbox,
 } from "@mui/material";
-import { CustomizedSnackbars, Loader } from "common";
+import { Loader } from "common";
 
 //APIs
 import {
@@ -49,12 +49,8 @@ const OrganizationSettings = () => {
   const translationTypes = useSelector(
     (state) => state.getTranslationTypes.data
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [orgDetails, setOrgDetails] = useState({
     title: "",
     emailDomainName: "",
@@ -63,7 +59,6 @@ const OrganizationSettings = () => {
   const [transcriptSourceType, setTranscriptSourceType] = useState("");
   const [translationSourceType, setTranslationSourceType] = useState("");
   const [defaultTask, setDefaultTask] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [voiceOverSourceType, setVoiceOverSourceType] = useState("");
 
   useEffect(() => {
@@ -119,8 +114,6 @@ const OrganizationSettings = () => {
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
-
     const body = {
       title: orgDetails.title,
       email_domain_name: orgDetails.emailDomainName,
@@ -132,44 +125,7 @@ const OrganizationSettings = () => {
     };
 
     const userObj = new EditOrganizationDetailsAPI(id, body);
-
-    const res = await fetch(userObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(userObj.getBody()),
-      headers: userObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(userObj));
   };
 
   const showBtn = () => {
@@ -214,7 +170,6 @@ const OrganizationSettings = () => {
         justifyContent="center"
         alignItems="center"
       >
-        {renderSnackBar()}
         <Card
           sx={{
             width: "100%",
@@ -307,7 +262,7 @@ const OrganizationSettings = () => {
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <FormControl fullWidth>
                 <InputLabel id="Voiceover-source-type">
-                   Default Voiceover Source
+                  Default Voiceover Source
                 </InputLabel>
                 <Select
                   labelId="Voiceover-source-type"
@@ -414,7 +369,7 @@ const OrganizationSettings = () => {
                   style={{ borderRadius: 6 }}
                 >
                   Update Organization{" "}
-                  {loading && (
+                  {apiStatus.loading && (
                     <Loader size={20} margin="0 0 0 10px" color="secondary" />
                   )}
                 </Button>

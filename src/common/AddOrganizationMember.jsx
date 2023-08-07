@@ -109,7 +109,7 @@ const AddOrganizationMember = ({
           onClick={() => {
             handleUserDialogClose();
             handleTextField("");
-            handleSelectField("");
+            handleSelectField && handleSelectField("");
           }}
           sx={{ borderRadius: "8px" }}
         >

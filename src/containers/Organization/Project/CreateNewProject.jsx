@@ -18,7 +18,7 @@ import {
   Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { CustomizedSnackbars, Loader, OutlinedTextField } from "common";
+import { Loader, OutlinedTextField } from "common";
 
 //APIs
 import {
@@ -64,24 +64,35 @@ const CreatenewProject = () => {
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [managerUsername, setManagerUsername] = useState([]);
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [transcriptSourceType, setTranscriptSourceType] =
     useState("MACHINE_GENERATED");
   const [translationSourceType, setTranslationSourceType] =
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [voiceOverSourceType, setVoiceOverSourceType] =
     useState("MACHINE_GENERATED");
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "CREATE_NEW_PROJECT") {
+          navigate(`/my-organization/${orgId}/project/${data.project_id}`, {
+            replace: true,
+          });
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   const disableBtn = () => {
     if (!title || managerUsername.length <= 0) {
@@ -151,7 +162,6 @@ const CreatenewProject = () => {
   }, [organizationDetails]);
 
   const handleCreateProject = async () => {
-    setLoading(true);
     const newPrjectReqBody = {
       title: title,
       description: description,
@@ -165,49 +175,11 @@ const CreatenewProject = () => {
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-      navigate(`/my-organization/${orgId}/project/${resp.project_id}`, {
-        replace: true,
-      });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(apiObj));
   };
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
       <Card className={classes.workspaceCard}>
         <Typography variant="h2" gutterBottom component="div">
           Create a Project
@@ -404,7 +376,7 @@ const CreatenewProject = () => {
             disabled={disableBtn()}
           >
             Create Project{" "}
-            {loading && (
+            {apiStatus.loading && (
               <Loader size={20} margin="0 0 0 10px" color="secondary" />
             )}
           </Button>

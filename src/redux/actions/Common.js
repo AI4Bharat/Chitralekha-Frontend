@@ -74,19 +74,26 @@ export const setLimitInStore = (data) => {
   return {
     type: C.LIMIT,
     payload: data,
-  }
-}
+  };
+};
 
 export const setRangeStart = (data) => {
   return {
     type: C.RANGE_START,
     payload: data,
-  }
-}
+  };
+};
 
 export const setRangeEnd = (data) => {
   return {
     type: C.RANGE_END,
+    payload: data,
+  };
+};
+
+export const setSnackBar = (data) => {
+  return {
+    type: C.SNACKBAR,
     payload: data,
   }
 }

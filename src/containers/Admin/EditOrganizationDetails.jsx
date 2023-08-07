@@ -19,7 +19,7 @@ import {
   Switch,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { CustomizedSnackbars, Loader } from "common";
+import { Loader } from "common";
 
 //APIs
 import {
@@ -59,24 +59,19 @@ const EditOrganizationDetails = () => {
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.translationLanguage
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const [orgDetails, setOrgDetails] = useState({
     title: "",
     emailDomainName: "",
   });
   const [owner, setOwner] = useState({});
-  const [snackbar, setSnackbarInfo] = useState({
-    open: false,
-    message: "",
-    variant: "success",
-  });
   const [transcriptSourceType, setTranscriptSourceType] =
     useState("MACHINE_GENERATED");
   const [translationSourceType, setTranslationSourceType] =
     useState("MACHINE_GENERATED");
   const [defaultTask, setDefaultTask] = useState([]);
   const [translationLanguage, setTranslationLanguage] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [enableCSVUpload, setEnableCSVUpload] = useState(false);
 
   useEffect(() => {
@@ -146,8 +141,6 @@ const EditOrganizationDetails = () => {
   };
 
   const handleOrgUpdate = async () => {
-    setLoading(true);
-
     const body = {
       title: orgDetails.title,
       email_domain_name: orgDetails.emailDomainName,
@@ -159,74 +152,18 @@ const EditOrganizationDetails = () => {
     };
 
     const userObj = new EditOrganizationDetailsAPI(orgId, body);
-
-    const res = await fetch(userObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(userObj.getBody()),
-      headers: userObj.getHeaders().headers,
-    });
-
-    const resp = await res.json();
-
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-      setLoading(false);
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-      setLoading(false);
-    }
-  };
-
-  const renderSnackBar = () => {
-    return (
-      <CustomizedSnackbars
-        open={snackbar.open}
-        handleClose={() =>
-          setSnackbarInfo({ open: false, message: "", variant: "" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant={snackbar.variant}
-        message={snackbar.message}
-      />
-    );
+    dispatch(APITransport(userObj));
   };
 
   const handleCSVToggle = async () => {
     setEnableCSVUpload(!enableCSVUpload);
-    const apiObj = new ToggleCSVUploadAPI(orgId, !enableCSVUpload);
-    const res = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-    const resp = await res.json();
 
-    if (res.ok) {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "success",
-      });
-    } else {
-      setSnackbarInfo({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    }
+    const apiObj = new ToggleCSVUploadAPI(orgId, !enableCSVUpload);
+    dispatch(APITransport(apiObj));
   };
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
-      {renderSnackBar()}
       <Card
         sx={{
           width: "100%",
@@ -452,7 +389,7 @@ const EditOrganizationDetails = () => {
               style={{ borderRadius: "8px" }}
             >
               Update Organization{" "}
-              {loading && (
+              {apiStatus.loading && (
                 <Loader size={20} margin="0 0 0 10px" color="secondary" />
               )}
             </Button>

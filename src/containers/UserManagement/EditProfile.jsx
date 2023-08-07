@@ -23,11 +23,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import {
-  AlertComponent,
-  CustomizedSnackbars as Snackbar,
-  UpdateEmailDialog,
-} from "common";
+import { AlertComponent, UpdateEmailDialog } from "common";
 import EditIcon from "@mui/icons-material/Edit";
 
 //APIs
@@ -39,6 +35,7 @@ import {
   FetchUserDetailsAPI,
   UpdateEmailAPI,
   UpdateProfileAPI,
+  setSnackBar,
   UpdateUserRoleAPI,
 } from "redux/actions";
 
@@ -47,16 +44,10 @@ const EditProfile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const [snackbarState, setSnackbarState] = useState({
-    open: false,
-    message: "",
-    variant: "",
-  });
   const [email, setEmail] = useState("");
   const [originalEmail, setOriginalEmail] = useState("");
   const [enableVerifyEmail, setEnableVerifyEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [emailVerifyLoading, setEmailVerifyLoading] = useState("");
   const [userDetails, setUserDetails] = useState({
     first_name: "",
     last_name: "",
@@ -83,7 +74,7 @@ const EditProfile = () => {
   const [alertData, setAlertData] = useState();
   const [alertColumn, setAlertColumn] = useState();
   const [openAlert, setOpenAlert] = useState(false);
-  console.log(alertData, "alertData");
+
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
@@ -92,6 +83,21 @@ const EditProfile = () => {
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.translationLanguage
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+    if (!progress) {
+      if (!success) {
+        if (apiType === "UPDATE_USER_ROLE") {
+          setOpenAlert(true);
+          setAlertData(data);
+          setAlertColumn("updateRoleAlertColumns");
+        }
+      }
+    }
+    // eslint-disable-next-line
+  }, [apiStatus]);
 
   useEffect(() => {
     orgList.forEach((element) => (element.label = element.title));
@@ -123,7 +129,7 @@ const EditProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (userData?.email && userData?.role && userData?.organization) {
+    if (userData?.email && userData?.role) {
       setUserDetails(userData);
       setOriginalEmail(userData.email);
 
@@ -131,7 +137,7 @@ const EditProfile = () => {
         ...prev,
         role: roles.filter((value) => value.value === userData.role)[0],
         org: orgList.filter(
-          (value) => value.title === userData.organization.title
+          (value) => value.title === userData?.organization?.title
         )[0],
         availability: availability.filter(
           (value) => value.value === userData.availability_status
@@ -176,44 +182,20 @@ const EditProfile = () => {
   };
 
   const handleUpdateEmail = () => {
-    setEmailVerifyLoading(true);
     const apiObj = new UpdateEmailAPI(email);
-
-    fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (res) => {
-        setEmailVerifyLoading(false);
-        if (!res.ok) throw await res.json();
-        else return await res.json();
-      })
-      .then((res) => {
-        setSnackbarState({
-          open: true,
-          message: res.message,
-          variant: "success",
-        });
-        setShowEmailDialog(true);
-      })
-      .catch((err) => {
-        setSnackbarState({
-          open: true,
-          message: err.message,
-          variant: "error",
-        });
-      });
+    dispatch(APITransport(apiObj));
   };
 
   const handleVerificationSuccess = () => {
     setEnableVerifyEmail(false);
     setOriginalEmail(email);
-    setSnackbarState({
-      open: true,
-      message: "Email successfully updated",
-      variant: "success",
-    });
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: "Email successfully updated",
+        variant: "success",
+      })
+    );
   };
 
   const handleSubmit = () => {
@@ -242,29 +224,7 @@ const EditProfile = () => {
       apiObj = new UpdateProfileAPI(updateProfileReqBody);
     }
 
-    fetch(apiObj.apiEndPoint(), {
-      method: "PATCH",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    })
-      .then(async (res) => {
-        if (!res.ok) throw await res.json();
-        else return await res.json();
-      })
-      .then((res) => {
-        setSnackbarState({
-          open: true,
-          message: res.message,
-          variant: "success",
-        });
-      })
-      .catch((err) => {
-        setSnackbarState({
-          open: true,
-          message: err.message,
-          variant: "error",
-        });
-      });
+    dispatch(APITransport(apiObj));
   };
 
   const getDisabledOption = (name) => {
@@ -300,7 +260,7 @@ const EditProfile = () => {
                 onClick={handleUpdateEmail}
                 sx={{ gap: "4px" }}
               >
-                {emailVerifyLoading && (
+                {apiStatus.loading && (
                   <CircularProgress size="1rem" color="primary" />
                 )}
                 VERIFY EMAIL
@@ -405,26 +365,7 @@ const EditProfile = () => {
     };
 
     const apiObj = new UpdateUserRoleAPI(body);
-
-    const response = await fetch(apiObj.apiEndPoint(), {
-      method: "POST",
-      body: JSON.stringify(apiObj.getBody()),
-      headers: apiObj.getHeaders().headers,
-    });
-
-    const resp = await response.json();
-
-    if (response.ok) {
-      setSnackbarState({
-        open: true,
-        message: resp?.message,
-        variant: "error",
-      });
-    } else {
-      setOpenAlert(true);
-      setAlertData(resp);
-      setAlertColumn("updateRoleAlertColumns");
-    }
+    dispatch(APITransport(apiObj));
   };
 
   return (
@@ -490,13 +431,6 @@ const EditProfile = () => {
           </Grid>
         )}
       </Card>
-
-      <Snackbar
-        {...snackbarState}
-        handleClose={() => setSnackbarState({ ...snackbarState, open: false })}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        hide={2000}
-      />
 
       {openAlert && (
         <AlertComponent
