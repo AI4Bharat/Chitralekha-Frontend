@@ -129,7 +129,7 @@ const EditProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (userData?.email && userData?.role && userData?.organization) {
+    if (userData?.email && userData?.role) {
       setUserDetails(userData);
       setOriginalEmail(userData.email);
 
@@ -137,7 +137,7 @@ const EditProfile = () => {
         ...prev,
         role: roles.filter((value) => value.value === userData.role)[0],
         org: orgList.filter(
-          (value) => value.title === userData.organization.title
+          (value) => value.title === userData?.organization?.title
         )[0],
         availability: availability.filter(
           (value) => value.value === userData.availability_status

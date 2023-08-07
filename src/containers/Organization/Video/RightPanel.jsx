@@ -103,10 +103,6 @@ const RightPanel = ({ currentIndex }) => {
     const { progress, success, apiType } = apiStatus;
 
     if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
-      if (!autoSave) {
-        dispatch(setSnackBar({ open: false }));
-      }
-
       if (complete) {
         setTimeout(() => {
           navigate(
