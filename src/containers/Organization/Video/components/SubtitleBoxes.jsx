@@ -86,10 +86,9 @@ export default memo(
 
     useEffect(() => {
       if (subtitles) {
-        const isLastSub =
-          player?.currentTime > subtitles[subtitles?.length - 1]?.endTime;
+        const isLastSub = player.currentTime > subtitles[subtitles?.length - 1]?.endTime
 
-        if (next && isLastSub) {
+        if (next && isLastSub && isPlaying(player)) {
           const payloadObj = new FetchTranscriptPayloadAPI(
             taskDetails.id,
             taskDetails.task_type,

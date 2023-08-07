@@ -143,7 +143,14 @@ const RightPanel = ({ currentIndex }) => {
       ?.scrollIntoView(true, { block: "start" });
   }, [currentIndex]);
 
+  const prevOffsetRef = useRef(currentOffset);
   const getPayload = (offset = currentOffset, lim = limit) => {
+    if (prevOffsetRef.current !== currentOffset) {
+      setUndoStack([]);
+      setRedoStack([]);
+      prevOffsetRef.current = currentOffset;
+    }
+
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
@@ -152,17 +159,6 @@ const RightPanel = ({ currentIndex }) => {
     );
     dispatch(APITransport(payloadObj));
   };
-
-  const prevOffsetRef = useRef(currentOffset);
-  useEffect(() => {
-    if (prevOffsetRef.current !== currentOffset) {
-      setUndoStack([]);
-      setRedoStack([]);
-      prevOffsetRef.current = currentOffset;
-    }
-    getPayload(currentOffset, limit);
-    // eslint-disable-next-line
-  }, [limit, currentOffset]);
 
   const onMergeClick = useCallback(
     (index) => {
