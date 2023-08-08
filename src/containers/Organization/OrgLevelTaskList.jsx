@@ -161,8 +161,6 @@ const OrgLevelTaskList = () => {
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
     if (!progress) {
-      const { transcription, translation } = exportTypes;
-
       if (success) {
         switch (apiType) {
           case "EXPORT_VOICEOVER_TASK":
@@ -173,19 +171,6 @@ const OrgLevelTaskList = () => {
           case "DELETE_TASK":
             handleDialogClose("deleteDialog");
             fetchTaskList();
-            break;
-
-          case "EXPORT_TRANSCRIPTION":
-            exportFile(
-              data,
-              currentTaskDetails,
-              transcription,
-              "transcription"
-            );
-            break;
-
-          case "EXPORT_TRANLATION":
-            exportFile(data, currentTaskDetails, translation, "translation");
             break;
 
           case "GENERATE_TRANSLATION_OUTPUT":
@@ -351,8 +336,38 @@ const OrgLevelTaskList = () => {
       transcription,
       speakerInfo
     );
-    dispatch(APITransport(apiObj));
     handleDialogClose("exportDialog");
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+
+        exportFile(resp, currentTaskDetails, transcription, "transcription");
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "success",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
   };
 
   const handleTranslationExport = async () => {
@@ -360,8 +375,38 @@ const OrgLevelTaskList = () => {
     const { translation, speakerInfo } = exportTypes;
 
     const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
-    dispatch(APITransport(apiObj));
     handleDialogClose("exportDialog");
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+
+        exportFile(resp, currentTaskDetails, translation, "translation");
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "success",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
   };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
