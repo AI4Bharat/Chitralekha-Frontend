@@ -260,7 +260,6 @@ export const taskListColumns = [
     name: "id",
     label: "Id",
     options: {
-      display: "exclude",
       customBodyRender: renderTaskListColumnCell,
     },
   },
@@ -342,7 +341,6 @@ export const orgTaskListColumns = [
     name: "id",
     label: "Id",
     options: {
-      display: "exclude",
       customBodyRender: renderTaskListColumnCell,
     },
   },
