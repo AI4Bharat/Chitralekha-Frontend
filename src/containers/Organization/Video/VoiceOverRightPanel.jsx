@@ -83,7 +83,6 @@ const VoiceOverRightPanel = () => {
   const [canSave, setCanSave] = useState(false);
   const [complete, setComplete] = useState(false);
   const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
-  const [jumpToOffset, setJumpToOffset] = useState(0);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -102,10 +101,6 @@ const VoiceOverRightPanel = () => {
             navigate(
               `/my-organization/${assignedOrgId}/project/${taskData?.project}`
             );
-          }
-
-          if (jumpToOffset) {
-            getPayloadAPI(jumpToOffset);
           }
 
           if (getUpdatedAudio) {
@@ -261,7 +256,6 @@ const VoiceOverRightPanel = () => {
   };
 
   const onNavigationClick = (value) => {
-    setJumpToOffset(value);
     getPayloadAPI(value);
   };
 
