@@ -61,6 +61,12 @@ const IntroDatasetStyle = makeStyles({
       padding: "3px 3px 3px 3px",
     },
   },
+  hover: {
+    "&:hover": {
+      textDecoration: 'underline'
+    }
+  },
+
   partnersPaper: {
     padding: "2px 4px",
     display: "block",
@@ -157,7 +163,7 @@ const IntroDatasetStyle = makeStyles({
   thanks: {
     color: "white",
     "&:hover": {
-      // textDecoration: "underline",
+      textDecoration: "underline",
       cursor: "pointer",
     },
     userImg: {
