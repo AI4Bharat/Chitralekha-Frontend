@@ -76,7 +76,7 @@ const VideoLanding = () => {
   const limit = useSelector((state) => state.commonReducer.limit);
 
   useTimer(1000, 60 * 1000, taskId);
-  useAutosave(taskId, currentPage, limit, subs, taskDetails);
+  useAutosave(taskId, currentPage, limit, taskDetails);
   useUpdateTimeSpent(taskId);
 
   useEffect(() => {
