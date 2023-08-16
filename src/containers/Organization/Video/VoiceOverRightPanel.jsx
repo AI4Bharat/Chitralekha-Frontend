@@ -275,8 +275,8 @@ const VoiceOverRightPanel = () => {
     setGetUpdatedAudio(true);
     
     if (data && data.hasOwnProperty("url")) {
-      const updatedArray = Object.assign([], data);
-      updatedArray[index] = data.url;
+      // const updatedArray = Object.assign([], data);
+      // updatedArray[index] = data.url;
 
       const reader = new FileReader();
 
@@ -285,12 +285,11 @@ const VoiceOverRightPanel = () => {
       reader.onloadend = function () {
         base64data = reader.result;
         const encode = base64data.replace("data:audio/wav;base64,", "");
-        updatedArray.audioContent = encode;
         const updatedSourceText = setAudioContent(index, encode);
         dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
       };
 
-      setData(updatedArray);
+      // setData(updatedArray);
     }
     setTimeout(() => {
       const temp = [...durationError];
