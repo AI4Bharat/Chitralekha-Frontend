@@ -31,7 +31,7 @@ const Partners = () => {
               mt: 10,
               mb: 10,
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "space-around",
             }}
           >
             {partnerData?.map((el, i) => (
