@@ -273,7 +273,7 @@ const VoiceOverRightPanel = () => {
     updateRecorderState(RecordState.STOP, index);
     setCanSave(true);
     setGetUpdatedAudio(true);
-    
+    console.log(data.url,'data.url');
     if (data && data.hasOwnProperty("url")) {
       // const updatedArray = Object.assign([], data);
       // updatedArray[index] = data.url;
@@ -522,7 +522,7 @@ const VoiceOverRightPanel = () => {
                     }}
                   >
                     <div className={classes.recorder}>
-                      <div style={{ display: "none" }}>
+                      <div>
                         <AudioReactRecorder
                           state={recordAudio[index]}
                           onStop={(data) => onStopRecording(data, index)}
@@ -535,8 +535,12 @@ const VoiceOverRightPanel = () => {
                             ? {
                                 alignItems: "center",
                                 flexDirection: "row",
+                                justifyContent: "flex-start"
                               }
-                            : {}
+                            : {
+                              justifyContent: "flex-start"
+
+                            }
                         }
                       >
                         <audio

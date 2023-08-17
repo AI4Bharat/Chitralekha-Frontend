@@ -116,8 +116,8 @@ const FindAndReplace = (props) => {
             );
           } else {
             textToReplace = ele[subtitleDataKey]
-              .split(originalWord)
-              .join(replacementWord);
+              .split(findValue.trim())
+              .join(replaceValue.trim());
           }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
@@ -154,8 +154,8 @@ const FindAndReplace = (props) => {
             );
           } else {
             textToReplace = ele[subtitleDataKey]
-              .split(originalWord)
-              .join(replacementWord);
+              .split(findValue.trim())
+              .join(replaceValue.trim());
           }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
