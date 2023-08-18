@@ -34,6 +34,9 @@ import {
   MenuItem,
   Select,
   useMediaQuery,
+  Popover,
+  Typography,
+  Button
 } from "@mui/material";
 import { ConfirmDialog, TagsSuggestionList, TimeBoxes } from "common";
 import ButtonComponent from "./components/ButtonComponent";
@@ -56,7 +59,9 @@ const RightPanel = ({ currentIndex }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const xl = useMediaQuery("(min-width:1800px)");
-
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? ' -popover' : undefined;
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -163,6 +168,64 @@ const RightPanel = ({ currentIndex }) => {
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
   }, [limit, currentOffset]);
+
+  useEffect(() => {
+    var selectedText = "";
+    document.addEventListener("mouseup", function (event) {
+      selectedText = getSelectedText();
+      if(!!selectedText){
+        setAnchorEl(event.target);
+      }
+    });
+  }, []);
+
+  const getSelectedText = ()=>{
+    var selectedText = '';
+    if (window.getSelection) { // For modern browsers
+      selectedText = window.getSelection().toString();
+    } else if (document.selection && document.selection.type !== 'Control') { // For older IE versions
+      selectedText = document.selection.createRange().text;
+    }
+    return selectedText;
+  }
+
+  const replaceSelectedText = (text)=>{
+    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const beforeSelection = textarea.value.substring(0, start);
+    const afterSelection = textarea.value.substring(end, textarea.value.length);
+
+    textarea.value = beforeSelection + text + afterSelection;
+    textarea.selectionStart = start + text.length;
+    textarea.selectionEnd = start + text.length;
+    textarea.focus();
+  }
+
+  const handleSubscript=()=>{
+    const selectedText = window.getSelection().toString();
+    console.log("selectedText", selectedText);
+    if (selectedText) {
+      const subscriptText = selectedText.replace(/[0-9]/g, (char) => {
+        const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉' };
+        return subscriptMap[char];
+      });
+      replaceSelectedText(subscriptText); 
+    }
+  }
+
+  const handleSuperscript=()=>{
+    const selectedText = window.getSelection().toString();
+    if (selectedText) {
+      const superscriptText = selectedText.replace(/[0-9]/g, (char) => {
+        const superscriptMap = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+        return superscriptMap[char];
+      });
+      replaceSelectedText(superscriptText);
+    }
+  }
+
+  
 
   const onMergeClick = useCallback(
     (index) => {
@@ -378,6 +441,10 @@ const RightPanel = ({ currentIndex }) => {
     const sub = assignSpeakerId(id, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // saveTranscriptHandler(false, false, sub);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -610,6 +677,27 @@ const RightPanel = ({ currentIndex }) => {
             }
           />
         )}
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+        >
+          <Button variant="contained" onClick={handleSubscript}>
+            Subscript
+          </Button>
+          <Button variant="contained" onClick={handleSuperscript}>
+            Superscript
+          </Button>
+        </Popover>
       </Box>
     </>
   );

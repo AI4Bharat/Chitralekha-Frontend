@@ -160,7 +160,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
   }, [limit, currentOffset]);
 
-  const onDelete = useCallback(
+  useEffect(() => {
+    window.addEventListener("keydown",(e)=>{
+      console.log('event', e);
+    })
+  }, []);
+
+
+ const onDelete = useCallback(
     (index) => {
       setUndoStack((prevState) => [
         ...prevState,
@@ -353,6 +360,18 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId);
     dispatch(APITransport(apiObj));
+  };
+
+  const getSelectedText = () => {
+    let txt = "";
+    if (window.getSelection) {
+      txt = window.getSelection();
+    } else if (window.document.getSelection) {
+      txt = window.document.getSelection();
+    } else if (window.document.selection) {
+      txt = window.document.selection.createRange().text;
+    }
+    return txt;
   };
 
   return (
