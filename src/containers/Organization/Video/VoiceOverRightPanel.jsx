@@ -19,6 +19,7 @@ import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { ConfirmDialog, ConfirmErrorDialog, TableDialog } from "common";
+import AudioRecorder from "../../../common/RecorderComponent";
 
 //APIs
 import C from "redux/constants";
@@ -153,6 +154,7 @@ const VoiceOverRightPanel = () => {
   };
 
   useEffect(() => {
+    console.log('$audioRef.current', $audioRef.current);
     setAudioPlayer($audioRef.current);
     // eslint-disable-next-line
   }, [$audioRef.current]);
@@ -256,6 +258,7 @@ const VoiceOverRightPanel = () => {
   };
 
   const onNavigationClick = (value) => {
+    setRecordAudio([]);
     getPayloadAPI(value);
   };
 
@@ -270,29 +273,23 @@ const VoiceOverRightPanel = () => {
   };
 
   const onStopRecording = (data, index) => {
-    updateRecorderState(RecordState.STOP, index);
     setCanSave(true);
     setGetUpdatedAudio(true);
-    console.log(data.url,'data.url');
-    if (data && data.hasOwnProperty("url")) {
-      // const updatedArray = Object.assign([], data);
-      // updatedArray[index] = data.url;
-
       const reader = new FileReader();
-
       let base64data;
-      reader.readAsDataURL(data.blob);
+      reader.readAsDataURL(data);
       reader.onloadend = function () {
         base64data = reader.result;
-        const encode = base64data.replace("data:audio/wav;base64,", "");
+        console.log("base64data",base64data);
+        const encode = base64data.split(",")[1];
         const updatedSourceText = setAudioContent(index, encode);
         dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
       };
 
       // setData(updatedArray);
-    }
     setTimeout(() => {
       const temp = [...durationError];
+      console.log('audioPlayer', audioPlayer);
       if (subtitles[index].time_difference < audioPlayer[index].duration) {
         temp[index] = true;
       } else {
@@ -413,18 +410,10 @@ const VoiceOverRightPanel = () => {
                     Duration: {item.time_difference} sec
                   </Typography>
 
-                  <ButtonComponent
-                    index={index}
-                    handleStartRecording={handleStartRecording}
-                    handleStopRecording={handleStopRecording}
-                    recordAudio={recordAudio}
-                    showChangeBtn={textChangeBtn[index]}
-                    saveTranscriptHandler={saveTranscriptHandler}
-                    showSpeedChangeBtn={speedChangeBtn[index]}
-                    handlePauseRecording={handlePauseRecording}
-                    durationError={durationError}
-                    handleFileUpload={handleFileUpload}
-                    isDisabled={isDisabled(index)}
+                  <AudioRecorder 
+                  index={index} 
+                  onStopRecording={onStopRecording} 
+                  durationError={durationError}
                   />
                 </Box>
 
@@ -522,12 +511,6 @@ const VoiceOverRightPanel = () => {
                     }}
                   >
                     <div className={classes.recorder}>
-                      <div>
-                        <AudioReactRecorder
-                          state={recordAudio[index]}
-                          onStop={(data) => onStopRecording(data, index)}
-                        />
-                      </div>
                       <div
                         className={classes.audioBox}
                         style={
