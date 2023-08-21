@@ -40,7 +40,6 @@ import {
   setTotalSentences,
   setSnackBar,
 } from "redux/actions";
-import RecordRTC from "recordrtc";
 
 const VoiceOverRightPanel = () => {
   const { taskId } = useParams();
