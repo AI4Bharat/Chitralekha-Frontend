@@ -24,7 +24,7 @@ useEffect(() => {
     if (!recordingBlob) return;
     // recordingBlob will be present at this point after 'stopRecording' has been called
 }, [recordingBlob])
-console.log(durationError[index], recordingTime);
+// console.log(durationError[index], recordingTime);
 return (
     <div>
         {taskData.task_type.includes("VOICEOVER") && durationError[index] && (
