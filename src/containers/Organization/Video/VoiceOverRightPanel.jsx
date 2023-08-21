@@ -13,12 +13,16 @@ import { VideoLandingStyle } from "styles";
 
 //Components
 import { Box, CardContent, Grid, Typography } from "@mui/material";
-import AudioReactRecorder, { RecordState } from "audio-react-recorder";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
-import { ConfirmDialog, ConfirmErrorDialog, TableDialog } from "common";
+import {
+  ConfirmDialog,
+  ConfirmErrorDialog,
+  RecorderComponent,
+  TableDialog,
+} from "common";
 
 //APIs
 import C from "redux/constants";
@@ -256,11 +260,8 @@ const VoiceOverRightPanel = () => {
   };
 
   const onNavigationClick = (value) => {
+    setRecordAudio([]);
     getPayloadAPI(value);
-  };
-
-  const handleStartRecording = (index) => {
-    updateRecorderState(RecordState.START, index);
   };
 
   const updateRecorderState = (newState, index) => {
@@ -270,44 +271,30 @@ const VoiceOverRightPanel = () => {
   };
 
   const onStopRecording = (data, index) => {
-    updateRecorderState(RecordState.STOP, index);
     setCanSave(true);
     setGetUpdatedAudio(true);
-    console.log(data.url,'data.url');
-    if (data && data.hasOwnProperty("url")) {
-      // const updatedArray = Object.assign([], data);
-      // updatedArray[index] = data.url;
+    const reader = new FileReader();
 
-      const reader = new FileReader();
+    let base64data;
+    reader.readAsDataURL(data);
+    reader.onloadend = function () {
+      base64data = reader.result;
 
-      let base64data;
-      reader.readAsDataURL(data.blob);
-      reader.onloadend = function () {
-        base64data = reader.result;
-        const encode = base64data.replace("data:audio/wav;base64,", "");
-        const updatedSourceText = setAudioContent(index, encode);
-        dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
-      };
+      const encode = base64data.split(",")[1];
+      const updatedSourceText = setAudioContent(index, encode);
+      dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
+    };
 
-      // setData(updatedArray);
-    }
     setTimeout(() => {
       const temp = [...durationError];
+
       if (subtitles[index].time_difference < audioPlayer[index].duration) {
         temp[index] = true;
       } else {
         temp[index] = false;
       }
       setDurationError(temp);
-    }, 1000);
-  };
-
-  const handleStopRecording = (index) => {
-    updateRecorderState(RecordState.STOP, index);
-  };
-
-  const handlePauseRecording = (index) => {
-    updateRecorderState(RecordState.PAUSE, index);
+    }, 5000);
   };
 
   const handleFileUpload = (event, index) => {
@@ -413,19 +400,23 @@ const VoiceOverRightPanel = () => {
                     Duration: {item.time_difference} sec
                   </Typography>
 
-                  <ButtonComponent
-                    index={index}
-                    handleStartRecording={handleStartRecording}
-                    handleStopRecording={handleStopRecording}
-                    recordAudio={recordAudio}
-                    showChangeBtn={textChangeBtn[index]}
-                    saveTranscriptHandler={saveTranscriptHandler}
-                    showSpeedChangeBtn={speedChangeBtn[index]}
-                    handlePauseRecording={handlePauseRecording}
-                    durationError={durationError}
-                    handleFileUpload={handleFileUpload}
-                    isDisabled={isDisabled(index)}
-                  />
+                  {taskData.source_type === "MACHINE_GENERATED" ? (
+                    <ButtonComponent
+                      index={index}
+                      showChangeBtn={textChangeBtn[index]}
+                      saveTranscriptHandler={saveTranscriptHandler}
+                      showSpeedChangeBtn={speedChangeBtn[index]}
+                    />
+                  ) : (
+                    <RecorderComponent
+                      index={index}
+                      onStopRecording={onStopRecording}
+                      durationError={durationError}
+                      handleFileUpload={handleFileUpload}
+                      updateRecorderState={updateRecorderState}
+                      isDisabled={isDisabled(index)}
+                    />
+                  )}
                 </Box>
 
                 <CardContent
@@ -522,12 +513,6 @@ const VoiceOverRightPanel = () => {
                     }}
                   >
                     <div className={classes.recorder}>
-                      <div>
-                        <AudioReactRecorder
-                          state={recordAudio[index]}
-                          onStop={(data) => onStopRecording(data, index)}
-                        />
-                      </div>
                       <div
                         className={classes.audioBox}
                         style={
@@ -535,12 +520,8 @@ const VoiceOverRightPanel = () => {
                             ? {
                                 alignItems: "center",
                                 flexDirection: "row",
-                                justifyContent: "flex-start"
                               }
-                            : {
-                              justifyContent: "flex-start"
-
-                            }
+                            : {}
                         }
                       >
                         <audio
