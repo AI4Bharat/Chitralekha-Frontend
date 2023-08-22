@@ -5,11 +5,7 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import { IconButton, Tooltip } from "@mui/material";
 
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
-import StopIcon from "@mui/icons-material/Stop";
-import PauseIcon from "@mui/icons-material/Pause";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const RecorderComponent = ({
   index,
@@ -17,94 +13,38 @@ const RecorderComponent = ({
   durationError,
   handleFileUpload,
   isDisabled,
-  updateRecorderState,
 }) => {
   const recorderControls = useAudioRecorder();
-  const {
-    startRecording,
-    stopRecording,
-    togglePauseResume,
-    isRecording,
-    isPaused,
-  } = recorderControls;
+  const { recordingTime } = recorderControls;
 
   const classes = VideoLandingStyle();
   const $audioFile = useRef(null);
+  const timeRef = useRef(0);
 
-  const handleStartRecording = () => {
-    updateRecorderState("start", index);
-    startRecording();
-  };
+  if (recordingTime !== 0) {
+    timeRef.current = recordingTime;
+  }
 
-  const handleStopRecording = () => {
-    updateRecorderState("stop", index);
-    stopRecording();
-  };
-
-  const handlePauseRecording = () => {
-    updateRecorderState("pause", index);
-    togglePauseResume();
+  const handleStopRecording = (blob) => {
+    onStopRecording(blob, index, timeRef.current);
+    timeRef.current = 0;
   };
 
   return (
-    <div>
-      {/* {durationError[index] && (
-        <Tooltip
-          title="Audio length should be equal or less than duration"
-          placement="bottom"
-        >
-          <IconButton
-            className={classes.optionIconBtn}
-            style={{ backgroundColor: "red", color: "#fff" }}
-          >
-            <ReportProblemIcon />
-          </IconButton>
-        </Tooltip>
-      )} */}
-
-      {isRecording && (
-        <Tooltip title="Stop Recording" placement="bottom">
-          <IconButton
-            className={classes.optionIconBtn}
-            onClick={() => handleStopRecording()}
-          >
-            <StopIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {!isRecording && (
-        <Tooltip title="Record Audio" placement="bottom">
-          <IconButton
-            className={classes.optionIconBtn}
-            onClick={() => handleStartRecording()}
-          >
-            <MicIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {!isPaused && isRecording && (
-        <Tooltip title="Pause Recording" placement="bottom">
-          <IconButton
-            className={classes.optionIconBtn}
-            onClick={() => handlePauseRecording()}
-          >
-            <PauseIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {isPaused && (
-        <Tooltip title="Play Recording" placement="bottom">
-          <IconButton
-            className={classes.optionIconBtn}
-            onClick={() => handlePauseRecording()}
-          >
-            <PlayArrowIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+    <div style={{ display: "flex" }}>
+      <div
+        className={classes.optionIconBtn}
+        style={{ display: isDisabled ? "none" : "" }}
+      >
+        <AudioRecorder
+          onRecordingComplete={(blob) => handleStopRecording(blob)}
+          recorderControls={recorderControls}
+          audioTrackConstraints={{
+            noiseSuppression: true,
+            echoCancellation: true,
+          }}
+        />
+      </div>
 
       <Tooltip title="Upload Audio" placement="bottom">
         <IconButton
@@ -123,16 +63,19 @@ const RecorderComponent = ({
         </IconButton>
       </Tooltip>
 
-      <div style={{display: "none"}}>
-        <AudioRecorder
-          onRecordingComplete={(blob) => onStopRecording(blob, index)}
-          recorderControls={recorderControls}
-          audioTrackConstraints={{
-            noiseSuppression: true,
-            echoCancellation: true,
-          }}
-        />
-      </div>
+      {durationError[index] && (
+        <Tooltip
+          title="Audio length should be equal or less than duration"
+          placement="bottom"
+        >
+          <IconButton
+            className={classes.optionIconBtn}
+            style={{ backgroundColor: "red", color: "#fff" }}
+          >
+            <ReportProblemIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </div>
   );
 };

@@ -75,7 +75,6 @@ const VoiceOverRightPanel = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [data, setData] = useState([]);
-  const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
@@ -176,7 +175,6 @@ const VoiceOverRightPanel = () => {
 
     if (!!subtitles) {
       const recorderArray = subtitles.map(() => "stop");
-      setRecordAudio(recorderArray);
       setData(new Array(recorderArray.length));
       updatedArray = subtitles.map(() => "");
     }
@@ -260,17 +258,10 @@ const VoiceOverRightPanel = () => {
   };
 
   const onNavigationClick = (value) => {
-    setRecordAudio([]);
     getPayloadAPI(value);
   };
 
-  const updateRecorderState = (newState, index) => {
-    const updatedArray = Object.assign([], recordAudio);
-    updatedArray[index] = newState;
-    setRecordAudio(updatedArray);
-  };
-
-  const onStopRecording = (data, index) => {
+  const onStopRecording = (data, index, recordingTime) => {
     setCanSave(true);
     setGetUpdatedAudio(true);
     const reader = new FileReader();
@@ -285,16 +276,14 @@ const VoiceOverRightPanel = () => {
       dispatch(setSubtitles(updatedSourceText, C.SUBTITLES));
     };
 
-    setTimeout(() => {
-      const temp = [...durationError];
+    const temp = [...durationError];
 
-      if (subtitles[index].time_difference < audioPlayer[index].duration) {
-        temp[index] = true;
-      } else {
-        temp[index] = false;
-      }
-      setDurationError(temp);
-    }, 5000);
+    if (subtitles[index].time_difference < recordingTime) {
+      temp[index] = true;
+    } else {
+      temp[index] = false;
+    }
+    setDurationError(temp);
   };
 
   const handleFileUpload = (event, index) => {
@@ -413,7 +402,6 @@ const VoiceOverRightPanel = () => {
                       onStopRecording={onStopRecording}
                       durationError={durationError}
                       handleFileUpload={handleFileUpload}
-                      updateRecorderState={updateRecorderState}
                       isDisabled={isDisabled(index)}
                     />
                   )}
@@ -532,24 +520,11 @@ const VoiceOverRightPanel = () => {
                             ($audioRef.current[index] = element)
                           }
                           style={{
-                            display: isDisabled(index)
-                              ? "none"
-                              : recordAudio[index] === "stop"
-                              ? ""
-                              : "none",
+                            display: isDisabled(index) ? "none" : "",
                             width: index === 2 ? "91%" : "",
                             margin: index === 2 ? "0 auto 25px auto" : "",
                           }}
                         />
-                      </div>
-                      <div
-                        style={{
-                          color: "#fff",
-                          margin: "18px auto",
-                          display: recordAudio[index] === "stop" ? "none" : "",
-                        }}
-                      >
-                        Recording Audio....
                       </div>
                     </div>
                   </Box>
