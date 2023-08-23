@@ -248,6 +248,7 @@ const TaskList = () => {
     setLoading(true);
 
     const search = {
+      task_id: searchedColumn?.id,
       video_name: searchedColumn?.video_name,
       description: searchedColumn?.description,
       assignee: searchedColumn?.user,
@@ -660,6 +661,21 @@ const TaskList = () => {
   };
 
   const initColumns = () => {
+    const taskIdColumn = {
+      name: "id",
+      label: "Id",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: renderTaskListColumnCell,
+      },
+    }
+
     const videoName = {
       name: "video_name",
       label: "Video Name",
@@ -762,6 +778,7 @@ const TaskList = () => {
     };
 
     const columns = [...getColumns(taskListColumns), actionColumn];
+    columns.splice(0, 0, taskIdColumn);
     columns.splice(2, 0, videoName);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);

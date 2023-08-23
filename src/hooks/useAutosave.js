@@ -1,17 +1,18 @@
 import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { APITransport, SaveTranscriptAPI } from "redux/actions";
 
 export const useAutosave = (
   taskId,
   currentPage,
   limit,
-  subs,
   taskDetails,
 ) => {
   const dispatch = useDispatch();
   const saveIntervalRef = useRef(null);
 
+  const subs = useSelector((state) => state.commonReducer.subtitles);
+  
   const handleAutosave = () => {
     const reqBody = {
       task_id: taskId,

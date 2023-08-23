@@ -10,6 +10,11 @@ export const partnerData = [
       title: `TicTacLearn`,
       link: `https://tictaclearn.org/`,
     },
+    // {
+    //   image: require(`../assets/profileImages/Partham.png`),
+    //   title: `Pratham`,
+    //   link: `https://www.pratham.org/`,
+    // },
     {
       image: require(`../assets/profileImages/EkStep.png`),
       title: `EkStep`,
