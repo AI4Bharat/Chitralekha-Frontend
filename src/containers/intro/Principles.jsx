@@ -66,8 +66,8 @@ const Principles = () => {
                 Chitralekha provides an option to dynamically pick
                 <br />
                 the models of your choice. It also provides the <br />
-                option to pick up the tasks dynamically across Digitization,
-                <br /> Translation, Checker & Super-Checker.
+                It also provides the option to pick up the tasks like transcription, translation and voice-over.
+                <br /> 
               </Typography>
             </Grid>
           </Grid>

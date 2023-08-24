@@ -56,7 +56,7 @@ const Footer = () => {
         >
           <Typography>
             Want to be a part of Chitralekha?
-            <a target="_blank" href={"mailto:" + "chitralekha.tool@gmail.com"}>
+            <a target="_blank" href={"mailto:" + "chitralekha.tool@gmail.com"} >
               <Button
                 variant="contained"
                 sx={{
@@ -85,7 +85,7 @@ const Footer = () => {
             href="https://github.com/AI4Bharat/Chitralekha/blob/master/LICENSE"
             style={{ color: "white", textDecoration: "none" }}
           >
-            <Typography variant="caption" sx={{ ml: "2px", color: "white" }}>
+            <Typography variant="caption" sx={{ ml: "2px", color: "white" }}  className={classes.hover}>
               License
             </Typography>
           </a>
@@ -122,7 +122,7 @@ const Footer = () => {
             href="https://ai4bharat.iitm.ac.in/"
             style={{ color: "white", textDecoration: "none" }}
           >
-            <Typography variant="caption" sx={{ color: "white" }}>
+            <Typography variant="caption" sx={{ color: "white" }}  className={classes.hover}>
               {" "}
               AI4Bharat{" "}
             </Typography>{" "}
@@ -132,7 +132,7 @@ const Footer = () => {
             href="https://ekstep.org/"
             style={{ color: "white", textDecoration: "none" }}
           >
-            <Typography variant="caption" sx={{ color: "white" }}>
+            <Typography variant="caption" sx={{ color: "white" }} className={classes.hover}>
               {" "}
               EkStep{" "}
             </Typography>{" "}
