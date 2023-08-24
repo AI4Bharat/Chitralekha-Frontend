@@ -389,7 +389,7 @@ const VoiceOverRightPanel = () => {
                     Duration: {item.time_difference} sec
                   </Typography>
 
-                  {taskData.source_type === "MACHINE_GENERATED" ? (
+                  {taskData.source_type === "Machine Generated" ? (
                     <ButtonComponent
                       index={index}
                       showChangeBtn={textChangeBtn[index]}
