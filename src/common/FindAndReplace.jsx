@@ -168,6 +168,7 @@ const FindAndReplace = (props) => {
       }
       updatedSubtitleData.push(ele);
     });
+    
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
