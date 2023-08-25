@@ -243,6 +243,7 @@ const VoiceOverRightPanel = () => {
     }
 
     setComplete(isFinal);
+    setGetUpdatedAudio(isGetUpdatedAudio);
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
