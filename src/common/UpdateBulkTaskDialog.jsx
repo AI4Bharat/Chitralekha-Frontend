@@ -64,10 +64,10 @@ const UpdateBulkTaskDialog = ({
       const userObj = new FetchProjectMembersAPI(projectId);
       dispatch(APITransport(userObj));
     }
-    
+
     if (!isBulk) {
       const { id: taskId } = currentTaskDetails;
-     
+
       const taskObj = new FetchTaskDetailsAPI(taskId);
       dispatch(APITransport(taskObj));
     }

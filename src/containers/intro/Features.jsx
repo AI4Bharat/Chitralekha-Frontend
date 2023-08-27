@@ -69,10 +69,9 @@ const Features = () => {
                 Clean & Powerful UI
               </Typography>
               <Typography variant="body2" className={classes.featuresContent}>
-                The heavy lifting is done in the background. The UI is designed
-                to be as simple as possible, but not compromising on any of the
-                features. Easy to submit the documents for digitization,
-                translation, review, workflow management, job monitoring etc.
+              Easy to generate transcript and translation subtitles and
+               voice-over in translation language for a video, easy to do 
+               workflow management and performance tracking of tasks.
               </Typography>
             </Grid>
           </Grid>
@@ -123,8 +122,8 @@ const Features = () => {
               <Typography variant="body2" className={classes.featuresContent}>
                 Anyone with basic knowledge in language can be onboarded to
                 Chitralekha. It does not limit the scope of your tasks; you can
-                use it to build pipelines to generate the final translated
-                version of the submitted documents.
+                use it to build pipelines to generate the final subtitles and 
+                voice-over for the submitted videos.
               </Typography>
             </Grid>
           </Grid>
