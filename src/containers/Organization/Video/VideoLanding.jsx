@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { cloneDeep } from "lodash";
@@ -34,6 +41,8 @@ import {
   FetchVideoDetailsAPI,
   FullScreen,
   FullScreenVideo,
+  SaveTranscriptAPI,
+  UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
   setNextPage,
@@ -46,7 +55,6 @@ import {
   setTotalSentences,
 } from "redux/actions";
 import C from "redux/constants";
-import { useAutosave, useTimer, useUpdateTimeSpent } from "hooks";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -75,9 +83,100 @@ const VideoLanding = () => {
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const limit = useSelector((state) => state.commonReducer.limit);
 
-  useTimer(1000, 60 * 1000, taskId);
-  useAutosave(taskId, currentPage, limit, taskDetails);
-  useUpdateTimeSpent(taskId);
+  const ref = useRef(0);
+  const saveIntervalRef = useRef(null);
+  const timeSpentIntervalRef = useRef(null);
+
+  useEffect(() => {
+    let intervalId;
+
+    const updateTimer = () => {
+      ref.current = ref.current + 1;
+    };
+
+    intervalId = setInterval(updateTimer, 1000);
+
+    setInterval(() => {
+      clearInterval(intervalId);
+      ref.current = 0;
+
+      intervalId = setInterval(updateTimer, 1000);
+    }, 60 * 1000);
+
+    return () => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+      dispatch(APITransport(apiObj));
+      clearInterval(intervalId);
+      ref.current = 0;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleAutosave = () => {
+      const reqBody = {
+        task_id: taskId,
+        offset: currentPage,
+        limit: limit,
+        payload: {
+          payload: subs,
+        },
+      };
+
+      const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+      dispatch(APITransport(obj));
+    };
+
+    const handleUpdateTimeSpent = (time = 60) => {
+      const apiObj = new UpdateTimeSpentPerTask(taskId, time);
+      dispatch(APITransport(apiObj));
+    };
+
+    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    timeSpentIntervalRef.current = setInterval(
+      handleUpdateTimeSpent,
+      60 * 1000
+    );
+
+    const handleBeforeUnload = (event) => {
+      handleAutosave();
+      handleUpdateTimeSpent(ref.current);
+      event.preventDefault();
+      event.returnValue = "";
+      ref.current = 0;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Add event listener for visibility change
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Tab is active, restart the autosave interval
+        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        timeSpentIntervalRef.current = setInterval(
+          handleUpdateTimeSpent,
+          60 * 1000
+        );
+      } else {
+        handleAutosave();
+        handleUpdateTimeSpent(ref.current);
+        // Tab is inactive, clear the autosave interval
+        clearInterval(saveIntervalRef.current);
+        clearInterval(timeSpentIntervalRef.current);
+        ref.current = 0;
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(saveIntervalRef.current);
+      clearInterval(timeSpentIntervalRef.current);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+
+    // eslint-disable-next-line
+  }, [currentPage, limit, subs, taskId]);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
