@@ -4,8 +4,12 @@ import { VideoLandingStyle } from "styles";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import { IconButton, Tooltip } from "@mui/material";
 
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import MicIcon from "@mui/icons-material/MicOutlined";
 import UploadIcon from "@mui/icons-material/UploadOutlined";
+import StopIcon from "@mui/icons-material/Stop";
+import PauseIcon from "@mui/icons-material/Pause";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 const RecorderComponent = ({
   index,
@@ -13,9 +17,17 @@ const RecorderComponent = ({
   durationError,
   handleFileUpload,
   isDisabled,
+  updateRecorderState,
 }) => {
   const recorderControls = useAudioRecorder();
-  const { recordingTime } = recorderControls;
+  const {
+    recordingTime,
+    startRecording,
+    stopRecording,
+    togglePauseResume,
+    isRecording,
+    isPaused,
+  } = recorderControls;
 
   const classes = VideoLandingStyle();
   const $audioFile = useRef(null);
@@ -25,26 +37,82 @@ const RecorderComponent = ({
     timeRef.current = recordingTime;
   }
 
+  const handleStartRecording = () => {
+    updateRecorderState("start", index);
+    startRecording();
+  };
+
+  const handlePlayPauseRecording = () => {
+    updateRecorderState("pause", index);
+    togglePauseResume();
+  };
+
   const handleStopRecording = (blob) => {
+    updateRecorderState("stop", index);
     onStopRecording(blob, index, timeRef.current);
     timeRef.current = 0;
   };
 
   return (
     <div style={{ display: "flex" }}>
-      <div
-        className={classes.optionIconBtn}
-        style={{ display: isDisabled ? "none" : "" }}
-      >
-        <AudioRecorder
-          onRecordingComplete={(blob) => handleStopRecording(blob)}
-          recorderControls={recorderControls}
-          audioTrackConstraints={{
-            noiseSuppression: true,
-            echoCancellation: true,
-          }}
-        />
-      </div>
+      {durationError[index] && (
+        <Tooltip
+          title="Audio length should be equal or less than duration"
+          placement="bottom"
+        >
+          <IconButton
+            className={classes.optionIconBtn}
+            style={{ backgroundColor: "red", color: "#fff" }}
+          >
+            <ReportProblemIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {!isRecording && (
+        <Tooltip title="Record Audio" placement="bottom">
+          <IconButton
+            style={{ display: isDisabled ? "none" : "" }}
+            className={classes.optionIconBtn}
+            onClick={() => handleStartRecording()}
+          >
+            <MicIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {isRecording && (
+        <Tooltip title="Stop Recording" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={() => stopRecording()}
+          >
+            <StopIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {!isPaused && isRecording && (
+        <Tooltip title="Pause Recording" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={() => handlePlayPauseRecording()}
+          >
+            <PauseIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {isPaused && (
+        <Tooltip title="Play Recording" placement="bottom">
+          <IconButton
+            className={classes.optionIconBtn}
+            onClick={() => handlePlayPauseRecording()}
+          >
+            <PlayArrowIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
       <Tooltip title="Upload Audio" placement="bottom">
         <IconButton
@@ -63,19 +131,16 @@ const RecorderComponent = ({
         </IconButton>
       </Tooltip>
 
-      {durationError[index] && (
-        <Tooltip
-          title="Audio length should be equal or less than duration"
-          placement="bottom"
-        >
-          <IconButton
-            className={classes.optionIconBtn}
-            style={{ backgroundColor: "red", color: "#fff" }}
-          >
-            <ReportProblemIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      <div style={{ display: "none" }}>
+        <AudioRecorder
+          onRecordingComplete={(blob) => handleStopRecording(blob)}
+          recorderControls={recorderControls}
+          audioTrackConstraints={{
+            noiseSuppression: true,
+            echoCancellation: true,
+          }}
+        />
+      </div>
     </div>
   );
 };
