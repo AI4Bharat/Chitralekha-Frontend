@@ -75,6 +75,7 @@ const VoiceOverRightPanel = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [fontSize, setFontSize] = useState("large");
   const [data, setData] = useState([]);
+  const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
@@ -175,6 +176,7 @@ const VoiceOverRightPanel = () => {
 
     if (!!subtitles) {
       const recorderArray = subtitles.map(() => "stop");
+      setRecordAudio(recorderArray);
       setData(new Array(recorderArray.length));
       updatedArray = subtitles.map(() => "");
     }
@@ -259,6 +261,12 @@ const VoiceOverRightPanel = () => {
 
   const onNavigationClick = (value) => {
     getPayloadAPI(value);
+  };
+
+  const updateRecorderState = (newState, index) => {
+    const updatedArray = Object.assign([], recordAudio);
+    updatedArray[index] = newState;
+    setRecordAudio(updatedArray);
   };
 
   const onStopRecording = (data, index, recordingTime) => {
@@ -403,6 +411,7 @@ const VoiceOverRightPanel = () => {
                       durationError={durationError}
                       handleFileUpload={handleFileUpload}
                       isDisabled={isDisabled(index)}
+                      updateRecorderState={updateRecorderState}
                     />
                   )}
                 </Box>
@@ -520,11 +529,24 @@ const VoiceOverRightPanel = () => {
                             ($audioRef.current[index] = element)
                           }
                           style={{
-                            display: isDisabled(index) ? "none" : "",
+                            display: isDisabled(index)
+                              ? "none"
+                              : recordAudio[index] === "stop"
+                              ? ""
+                              : "none",
                             width: index === 2 ? "91%" : "",
                             margin: index === 2 ? "0 auto 25px auto" : "",
                           }}
                         />
+                      </div>
+                      <div
+                        style={{
+                          color: "#fff",
+                          margin: "18px auto",
+                          display: recordAudio[index] === "stop" ? "none" : "",
+                        }}
+                      >
+                        Recording Audio....
                       </div>
                     </div>
                   </Box>
