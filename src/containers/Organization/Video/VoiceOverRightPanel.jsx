@@ -374,7 +374,13 @@ const VoiceOverRightPanel = () => {
               <div
                 key={index}
                 className={isDisabled(index) ? classes.disabledCard : ""}
-                style={{ borderBottom: "1px solid grey" }}
+                style={{
+                  borderBottom: "1px solid grey",
+                  backgroundColor:
+                    index % 2 === 0
+                      ? "rgb(214, 238, 255)"
+                      : "rgb(233, 247, 239)",
+                }}
                 id={`container-${index}`}
               >
                 <Box
@@ -529,6 +535,7 @@ const VoiceOverRightPanel = () => {
                           ref={(element) =>
                             ($audioRef.current[index] = element)
                           }
+                          className={classes.audioPlayer}
                           style={{
                             display: isDisabled(index)
                               ? "none"

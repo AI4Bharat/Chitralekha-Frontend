@@ -587,6 +587,12 @@ const VideoLandingStyle = makeStyles({
     alignItems: "center",
     borderBottom: "1px solid lightgrey",
   },
+
+  audioPlayer: {
+    "&::-webkit-media-controls-panel": {
+      backgroundColor: "orange",
+    }
+  }
 });
 
 export default VideoLandingStyle;

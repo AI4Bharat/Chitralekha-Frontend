@@ -72,7 +72,7 @@ const RecorderComponent = ({
       {!isRecording && (
         <Tooltip title="Record Audio" placement="bottom">
           <IconButton
-            style={{ display: isDisabled ? "none" : "" }}
+            style={{ display: isDisabled ? "none" : "", background: "orange" }}
             className={classes.optionIconBtn}
             onClick={() => handleStartRecording()}
           >
@@ -84,6 +84,7 @@ const RecorderComponent = ({
       {isRecording && (
         <Tooltip title="Stop Recording" placement="bottom">
           <IconButton
+            style={{ background: "orange" }}
             className={classes.optionIconBtn}
             onClick={() => stopRecording()}
           >
@@ -95,6 +96,7 @@ const RecorderComponent = ({
       {!isPaused && isRecording && (
         <Tooltip title="Pause Recording" placement="bottom">
           <IconButton
+            style={{ background: "orange" }}
             className={classes.optionIconBtn}
             onClick={() => handlePlayPauseRecording()}
           >
@@ -106,6 +108,7 @@ const RecorderComponent = ({
       {isPaused && (
         <Tooltip title="Play Recording" placement="bottom">
           <IconButton
+            style={{ background: "orange" }}
             className={classes.optionIconBtn}
             onClick={() => handlePlayPauseRecording()}
           >
@@ -116,7 +119,7 @@ const RecorderComponent = ({
 
       <Tooltip title="Upload Audio" placement="bottom">
         <IconButton
-          style={{ display: isDisabled ? "none" : "" }}
+          style={{ display: isDisabled ? "none" : "", background: "orange" }}
           className={classes.optionIconBtn}
           onClick={() => $audioFile.current.click()}
         >
