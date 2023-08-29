@@ -119,7 +119,7 @@ const Footer = () => {
           className={classes.footerGridlast}
         >
           <a
-            href="https://ai4bharat.org/"
+            href="https://ai4bharat.iitm.ac.in/"
             style={{ color: "white", textDecoration: "none" }}
           >
             <Typography variant="caption" sx={{ color: "white" }}>
