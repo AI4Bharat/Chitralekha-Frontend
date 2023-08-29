@@ -1,7 +1,9 @@
 {
   "files": {
     "main.css": "/static/css/main.f06e1f73.css",
-    "main.js": "/static/js/main.40f27653.js",
+    "main.js": "/static/js/main.4e4a6982.js",
+    "static/js/850.195368b5.chunk.js": "/static/js/850.195368b5.chunk.js",
+    "static/js/353.a8afe15a.chunk.js": "/static/js/353.a8afe15a.chunk.js",
     "static/media/Ganavi.png": "/static/media/Ganavi.2ee88c339dcf51b9b22f.png",
     "static/media/chiralekha-bg.png": "/static/media/chiralekha-bg.be4d1188e3aac2636abd.png",
     "static/media/Chitralekha_Logo.png": "/static/media/Chitralekha_Logo.186deb6fe7ab10b0eb0e.png",
@@ -16,7 +18,6 @@
     "static/media/logo.svg": "/static/media/logo.2968ade084e575085d672ccac19c6b74.svg",
     "static/media/Shruti.png": "/static/media/Shruti.26549e6e423ecc9542c7.png",
     "static/media/youtube.png": "/static/media/youtube.82cba176af0592e340b6.png",
-    "static/media/Partham.png": "/static/media/Partham.cabd3ac8c1a20c113af3.png",
     "static/media/Extensible.svg": "/static/media/Extensible.61423ffc9a248617567d1e3d3c34edfd.svg",
     "static/media/Aparna.png": "/static/media/Aparna.b792bfaac19dd3a55ef9.png",
     "static/media/Elegant.svg": "/static/media/Elegant.54ff54ba5842c9126ffb884c3fe949ae.svg",
@@ -29,10 +30,12 @@
     "index.html": "/index.html",
     "static/media/Card.svg": "/static/media/Card.93f0e69be62a5b18d067c6ba14e983e2.svg",
     "main.f06e1f73.css.map": "/static/css/main.f06e1f73.css.map",
-    "main.40f27653.js.map": "/static/js/main.40f27653.js.map"
+    "main.4e4a6982.js.map": "/static/js/main.4e4a6982.js.map",
+    "850.195368b5.chunk.js.map": "/static/js/850.195368b5.chunk.js.map",
+    "353.a8afe15a.chunk.js.map": "/static/js/353.a8afe15a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f06e1f73.css",
-    "static/js/main.40f27653.js"
+    "static/js/main.4e4a6982.js"
   ]
 }
