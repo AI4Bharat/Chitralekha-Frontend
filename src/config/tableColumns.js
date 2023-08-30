@@ -256,6 +256,13 @@ export const renderTaskListColumnCell = (value, tableMeta) => {
 };
 
 export const taskListColumns = [
+  {	
+    name: "id",	
+    label: "Id",	
+    options: {	
+      customBodyRender: renderTaskListColumnCell,	
+    },	
+  },
   {
     name: "task_type_label",
     label: "Task Type",
@@ -330,6 +337,13 @@ export const taskListColumns = [
 ];
 
 export const orgTaskListColumns = [
+  {	
+    name: "id",	
+    label: "Id",	
+    options: {	
+      customBodyRender: renderTaskListColumnCell,	
+    },	
+  },
   {
     name: "task_type_label",
     label: "Task Type",
