@@ -41,7 +41,6 @@ import {
   FetchVideoDetailsAPI,
   FullScreen,
   FullScreenVideo,
-  SaveTranscriptAPI,
   UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
@@ -55,6 +54,7 @@ import {
   setTotalSentences,
 } from "redux/actions";
 import C from "redux/constants";
+import { useAutoSave, useUpdateTimeSpent } from "hooks";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -80,12 +80,8 @@ const VideoLanding = () => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
-  const currentPage = useSelector((state) => state.commonReducer.currentPage);
-  const limit = useSelector((state) => state.commonReducer.limit);
 
   const ref = useRef(0);
-  const saveIntervalRef = useRef(null);
-  const timeSpentIntervalRef = useRef(null);
 
   useEffect(() => {
     let intervalId;
@@ -109,74 +105,11 @@ const VideoLanding = () => {
       clearInterval(intervalId);
       ref.current = 0;
     };
+    // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
-    const handleAutosave = () => {
-      const reqBody = {
-        task_id: taskId,
-        offset: currentPage,
-        limit: limit,
-        payload: {
-          payload: subs,
-        },
-      };
-
-      const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
-      dispatch(APITransport(obj));
-    };
-
-    const handleUpdateTimeSpent = (time = 60) => {
-      const apiObj = new UpdateTimeSpentPerTask(taskId, time);
-      dispatch(APITransport(apiObj));
-    };
-
-    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
-    timeSpentIntervalRef.current = setInterval(
-      handleUpdateTimeSpent,
-      60 * 1000
-    );
-
-    const handleBeforeUnload = (event) => {
-      handleAutosave();
-      handleUpdateTimeSpent(ref.current);
-      event.preventDefault();
-      event.returnValue = "";
-      ref.current = 0;
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    // Add event listener for visibility change
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Tab is active, restart the autosave interval
-        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
-        timeSpentIntervalRef.current = setInterval(
-          handleUpdateTimeSpent,
-          60 * 1000
-        );
-      } else {
-        handleAutosave();
-        handleUpdateTimeSpent(ref.current);
-        // Tab is inactive, clear the autosave interval
-        clearInterval(saveIntervalRef.current);
-        clearInterval(timeSpentIntervalRef.current);
-        ref.current = 0;
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      clearInterval(saveIntervalRef.current);
-      clearInterval(timeSpentIntervalRef.current);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-
-    // eslint-disable-next-line
-  }, [currentPage, limit, subs, taskId]);
+  useAutoSave();
+  useUpdateTimeSpent(ref);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
