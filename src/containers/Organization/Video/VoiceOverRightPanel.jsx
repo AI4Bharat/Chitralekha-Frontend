@@ -443,7 +443,7 @@ const VoiceOverRightPanel = () => {
                   <Box
                     sx={{
                       width: index === 2 ? "100%" : "50%",
-                      ...(!xl && { width: "100%" }),
+                      ...(!xl && { width: "100%", margin: "25px 0" }),
                     }}
                   >
                     <div className={classes.relative} style={{ width: "100%" }}>
@@ -513,7 +513,7 @@ const VoiceOverRightPanel = () => {
                   <Box
                     sx={{
                       width: index === 2 ? "100%" : "50%",
-                      ...(!xl && { width: "100%" }),
+                      ...(!xl && { width: "100%", margin: "0 0 25px 0" }),
                     }}
                   >
                     <div className={classes.recorder}>
