@@ -590,7 +590,7 @@ const VideoLandingStyle = makeStyles({
 
   audioPlayer: {
     "&::-webkit-media-controls-panel": {
-      backgroundColor: "orange",
+      backgroundColor: "#fcf7e9",
     }
   }
 });
