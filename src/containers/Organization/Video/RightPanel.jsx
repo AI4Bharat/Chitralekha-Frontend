@@ -61,7 +61,7 @@ const RightPanel = ({ currentIndex }) => {
   const xl = useMediaQuery("(min-width:1800px)");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const id = open ? ' -popover' : undefined;
+  const id = open ? '-popover' : undefined;
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -86,6 +86,7 @@ const RightPanel = ({ currentIndex }) => {
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
+  const[subsuper,setsubsuper] = useState(false)
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [fontSize, setFontSize] = useState("large");
@@ -195,6 +196,7 @@ const RightPanel = ({ currentIndex }) => {
     const end = textarea.selectionEnd;
     const beforeSelection = textarea.value.substring(0, start);
     const afterSelection = textarea.value.substring(end, textarea.value.length);
+    console.log(start,end,beforeSelection,afterSelection);
 
     textarea.value = beforeSelection + text + afterSelection;
     textarea.selectionStart = start + text.length;
@@ -456,6 +458,8 @@ const RightPanel = ({ currentIndex }) => {
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
+            subSuper={subsuper}
+            setsubSuper={setsubsuper}
             enableTransliteration={enableTransliteration}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
@@ -677,7 +681,7 @@ const RightPanel = ({ currentIndex }) => {
             }
           />
         )}
-        <Popover
+        {subsuper==true?<Popover
           id={id}
           open={open}
           anchorEl={anchorEl}
@@ -697,7 +701,7 @@ const RightPanel = ({ currentIndex }) => {
           <Button variant="contained" onClick={handleSuperscript}>
             Superscript
           </Button>
-        </Popover>
+        </Popover>:null}
       </Box>
     </>
   );
