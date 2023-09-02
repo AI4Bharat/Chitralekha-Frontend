@@ -59,9 +59,6 @@ const RightPanel = ({ currentIndex }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const xl = useMediaQuery("(min-width:1800px)");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const id = open ? '-popover' : undefined;
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -86,7 +83,7 @@ const RightPanel = ({ currentIndex }) => {
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
-  const[subsuper,setsubsuper] = useState(false)
+  const [subsuper, setsubsuper] = useState(false)
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [fontSize, setFontSize] = useState("large");
@@ -104,6 +101,10 @@ const RightPanel = ({ currentIndex }) => {
     useState(true);
   const [complete, setComplete] = useState(false);
   const [autoSave, setAutoSave] = useState(false);
+  const myRef = React.createRef()
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? '-popover' : undefined;
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
@@ -174,13 +175,13 @@ const RightPanel = ({ currentIndex }) => {
     var selectedText = "";
     document.addEventListener("mouseup", function (event) {
       selectedText = getSelectedText();
-      if(!!selectedText){
+      if (!!selectedText) {
         setAnchorEl(event.target);
       }
     });
   }, []);
 
-  const getSelectedText = ()=>{
+  const getSelectedText = () => {
     var selectedText = '';
     if (window.getSelection) { // For modern browsers
       selectedText = window.getSelection().toString();
@@ -190,13 +191,13 @@ const RightPanel = ({ currentIndex }) => {
     return selectedText;
   }
 
-  const replaceSelectedText = (text)=>{
+  const replaceSelectedText = (text) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const beforeSelection = textarea.value.substring(0, start);
     const afterSelection = textarea.value.substring(end, textarea.value.length);
-    console.log(start,end,beforeSelection,afterSelection);
+    console.log(textarea, start, end, beforeSelection, afterSelection);
 
     textarea.value = beforeSelection + text + afterSelection;
     textarea.selectionStart = start + text.length;
@@ -204,22 +205,29 @@ const RightPanel = ({ currentIndex }) => {
     textarea.focus();
   }
 
-  const handleSubscript=()=>{
-    const selectedText = window.getSelection().toString();
-    console.log("selectedText", selectedText);
-    if (selectedText) {
-      const subscriptText = selectedText.replace(/[0-9]/g, (char) => {
+  const handleSubscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let Text = textVal.value.substring(cursorStart, cursorEnd)
+    console.log(Text)
+    if (Text != "") {
+      const subscriptText = Text.replace(/[0-9]/g, (char) => {
         const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉' };
         return subscriptMap[char];
       });
-      replaceSelectedText(subscriptText); 
+      replaceSelectedText(subscriptText);
     }
   }
 
-  const handleSuperscript=()=>{
-    const selectedText = window.getSelection().toString();
-    if (selectedText) {
-      const superscriptText = selectedText.replace(/[0-9]/g, (char) => {
+  const handleSuperscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let Text = textVal.value.substring(cursorStart, cursorEnd)
+    console.log(Text)
+    if (Text != "") {
+      const superscriptText = Text.replace(/[0-9]/g, (char) => {
         const superscriptMap = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
         return superscriptMap[char];
       });
@@ -227,7 +235,7 @@ const RightPanel = ({ currentIndex }) => {
     }
   }
 
-  
+
 
   const onMergeClick = useCallback(
     (index) => {
@@ -458,8 +466,8 @@ const RightPanel = ({ currentIndex }) => {
         <Grid className={classes.rightPanelParentGrid}>
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
-            subSuper={subsuper}
-            setsubSuper={setsubsuper}
+            subsuper={subsuper}
+            setsubsuper={setsubsuper}
             enableTransliteration={enableTransliteration}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
@@ -528,6 +536,24 @@ const RightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
+                  {subsuper != false ?
+                    <Popover
+                      id={id}
+                      open={open}
+                      anchorEl={anchorEl}
+                      onClose={handleClose}
+                      anchorReference="anchorPosition"
+                      anchorPosition={{ top: 200, left: 800 }}
+                      
+                    >
+                      <Button variant="contained" onClick={handleSubscript}>
+                        Subscript
+                      </Button>
+                      <Button variant="contained" onClick={handleSuperscript}>
+                        Superscript
+                      </Button>
+                    </Popover>
+                     : null} 
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       lang={taskData?.src_language}
@@ -536,7 +562,7 @@ const RightPanel = ({ currentIndex }) => {
                         changeTranscriptHandler(event, index);
                       }}
                       enabled={enableTransliterationSuggestion}
-                      onChangeText={() => {}}
+                      onChangeText={() => { }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
                       onBlur={() =>
@@ -547,12 +573,12 @@ const RightPanel = ({ currentIndex }) => {
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
-                            className={`${classes.customTextarea} ${
-                              currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                            className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                              }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             onMouseUp={(e) => onMouseUp(e, index)}
+                            ref={myRef}
                             onBlur={() =>
                               setTimeout(() => {
                                 setShowPopOver(false);
@@ -574,11 +600,11 @@ const RightPanel = ({ currentIndex }) => {
                           changeTranscriptHandler(event, index);
                         }}
                         onMouseUp={(e) => onMouseUp(e, index)}
+                        ref={myRef}
                         value={item.text}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
-                        className={`${classes.customTextarea} ${
-                          currentIndex === index ? classes.boxHighlight : ""
-                        }`}
+                        className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                         style={{
                           fontSize: fontSize,
                           height: "120px",
@@ -681,7 +707,7 @@ const RightPanel = ({ currentIndex }) => {
             }
           />
         )}
-        {subsuper==true?<Popover
+        {/* <Popover
           id={id}
           open={open}
           anchorEl={anchorEl}
@@ -701,7 +727,7 @@ const RightPanel = ({ currentIndex }) => {
           <Button variant="contained" onClick={handleSuperscript}>
             Superscript
           </Button>
-        </Popover>:null}
+        </Popover> */}
       </Box>
     </>
   );

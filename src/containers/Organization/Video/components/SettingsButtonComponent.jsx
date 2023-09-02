@@ -40,8 +40,8 @@ const transformOrigin = {
 const SettingsButtonComponent = ({
   setTransliteration,
   enableTransliteration,
-  subSuper,
-  setsubSuper,
+  subsuper,
+  setsubsuper,
   setRTL_Typing,
   enableRTL_Typing,
   setFontSize,
@@ -230,10 +230,11 @@ const SettingsButtonComponent = ({
             label="Sub-Script and Super-Script"
             control={
               <Checkbox
-                checked={subSuper}
+                checked={subsuper}
                 onChange={() => {
                   setAnchorElSettings(null);
-                  setsubSuper(!subSuper);
+                  console.log(subsuper);
+                  setsubsuper(!subsuper);
                 }}
               />
             }
