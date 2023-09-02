@@ -31,8 +31,15 @@ const Partners = () => {
               mt: 10,
               mb: 10,
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "space-around",
             }}
+
+            // sx={{
+            //   mt: 10,
+            //   mb: 10,
+            //   display: "flex",
+            //   justifyContent: "space-between",
+            // }}
           >
             {partnerData?.map((el, i) => (
               <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>

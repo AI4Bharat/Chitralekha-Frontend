@@ -97,6 +97,7 @@ export default React.memo(
               end_time,
               text: "SUB_TEXT",
               target_text: "SUB_TEXT",
+              speaker_id: "",
             })
           );
 

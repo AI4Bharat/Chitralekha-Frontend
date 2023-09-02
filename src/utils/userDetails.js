@@ -23,7 +23,7 @@ const teamDetails = [
   },
   {
     name: "A Aparna",
-    value: "Project Associate, IIT Madras",
+    value: "Project Officer, IIT Madras",
     img: require("../assets/profileImages/Aparna.png"),
   },
   {

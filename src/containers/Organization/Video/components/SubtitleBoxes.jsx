@@ -87,9 +87,9 @@ export default memo(
     useEffect(() => {
       if (subtitles) {
         const isLastSub =
-          player?.currentTime > subtitles[subtitles?.length - 1]?.endTime;
+          player.currentTime > subtitles[subtitles?.length - 1]?.endTime;
 
-        if (next && isLastSub) {
+        if (next && isLastSub && isPlaying(player)) {
           const payloadObj = new FetchTranscriptPayloadAPI(
             taskDetails.id,
             taskDetails.task_type,
@@ -122,7 +122,6 @@ export default memo(
         const index = hasSub(sub);
         const res = onSubtitleDelete(index);
         dispatch(setSubtitles(res, C.SUBTITLES));
-        saveTranscript(taskDetails?.task_type, res);
       },
       // eslint-disable-next-line
       [limit, currentPage]
@@ -133,28 +132,22 @@ export default memo(
         const index = hasSub(sub);
         const res = onMerge(index);
         dispatch(setSubtitles(res, C.SUBTITLES));
-        saveTranscript(taskDetails?.task_type, res);
       },
       // eslint-disable-next-line
       [limit, currentPage]
     );
 
-    const updateSub = useCallback(
-      (sub, obj) => {
-        const index = hasSub(sub);
-        const copySub = [...subtitles];
+    const updateSub = (sub, obj) => {
+      const index = hasSub(sub);
+      const copySub = [...subtitles];
 
-        if (index < 0) return;
+      if (index < 0) return;
 
-        Object.assign(sub, obj);
+      Object.assign(sub, obj);
 
-        copySub[index] = sub;
-        dispatch(setSubtitles(copySub, C.SUBTITLES));
-        saveTranscript(taskDetails?.task_type, copySub);
-      },
-      // eslint-disable-next-line
-      [limit, currentPage]
-    );
+      copySub[index] = sub;
+      dispatch(setSubtitles(copySub, C.SUBTITLES));
+    };
 
     const onMouseDown = (sub, event, type) => {
       lastSub = sub;
@@ -216,11 +209,11 @@ export default memo(
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
 
-            if (index >= 0 && endTime <= DT.t2d(next.start_time)) {
+            if (index >= 0 && index !== subtitles.length - 1 && endTime <= DT.t2d(next.start_time)) {
               updateSub(lastSub, { end_time });
             }
 
-            if (index === subtitles.length - 1) {
+            if(index === subtitles.length - 1 && endTime < lastSub.endTime) {
               updateSub(lastSub, { end_time });
             }
           } else {

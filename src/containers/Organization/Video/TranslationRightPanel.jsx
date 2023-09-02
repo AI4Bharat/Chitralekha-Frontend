@@ -88,6 +88,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
           case "SAVE_TRANSCRIPT":
             if (regenerate) {
               getPayload(currentPage, limit);
+              setRegenerate(false);
             }
 
             if (complete) {

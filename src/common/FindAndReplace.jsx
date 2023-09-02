@@ -103,16 +103,22 @@ const FindAndReplace = (props) => {
   const onReplaceClick = () => {
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
+
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices[currentFound] === index) {
-        //this is correct logic don't change this
-
         let textToReplace;
+
         if (replaceFullWord) {
-          textToReplace = ele[subtitleDataKey].replace(
-            new RegExp(` ${findValue.trim()} `, "gi"),
-            ` ${replaceValue.trim()} `
-          );
+          if (transliterationLanguage === "en") {
+            textToReplace = ele[subtitleDataKey].replace(
+              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+              replaceValue.trim()
+            );
+          } else {
+            textToReplace = ele[subtitleDataKey]
+              .split(findValue.trim())
+              .join(replaceValue.trim());
+          }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
             new RegExp(findValue.trim(), "gi"),
@@ -125,6 +131,7 @@ const FindAndReplace = (props) => {
 
       updatedSubtitleData.push(ele);
     });
+
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
@@ -133,26 +140,35 @@ const FindAndReplace = (props) => {
   const onReplaceAllClick = () => {
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
+
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices?.includes(index)) {
 
         let textToReplace;
+        
         if (replaceFullWord) {
-          textToReplace = ele[subtitleDataKey].replace(
-            new RegExp(` ${findValue.trim()} `, "gi"),
-            ` ${replaceValue.trim()} `
-          );
+          if (transliterationLanguage === "en") {
+            textToReplace = ele[subtitleDataKey].replace(
+              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+              replaceValue.trim()
+            );
+          } else {
+            textToReplace = ele[subtitleDataKey]
+              .split(findValue.trim())
+              .join(replaceValue.trim());
+          }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
             new RegExp(findValue.trim(), "gi"),
             replaceValue.trim()
           );
         }
-        
+
         ele[subtitleDataKey] = textToReplace;
       }
       updatedSubtitleData.push(ele);
     });
+    
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();

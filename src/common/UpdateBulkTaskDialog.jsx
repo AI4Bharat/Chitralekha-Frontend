@@ -65,9 +65,9 @@ const UpdateBulkTaskDialog = ({
       dispatch(APITransport(userObj));
     }
 
-    const { id: taskId } = currentTaskDetails;
-
     if (!isBulk) {
+      const { id: taskId } = currentTaskDetails;
+
       const taskObj = new FetchTaskDetailsAPI(taskId);
       dispatch(APITransport(taskObj));
     }

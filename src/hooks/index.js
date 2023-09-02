@@ -1,4 +1,5 @@
-import useAutosave from "./useAutosave";
+import { useAutoSave } from "./useAutoSave";
+import { useUpdateTimeSpent } from "./useUpdateTimeSpent";
 import { useVideoSubtitle } from "./useVideoSubtitle";
 
-export { useAutosave, useVideoSubtitle };
+export { useAutoSave, useUpdateTimeSpent, useVideoSubtitle };

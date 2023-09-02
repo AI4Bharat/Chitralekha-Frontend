@@ -39,7 +39,8 @@ import VideoStatusTable from "./VideoStatusTable";
 import ViewTaskDialog from "./ViewTaskDialog";
 import IntroHeader from "./IntroHeader";
 import Footer from "./Footer";
-import ChitralekhaPortal from "./ChitralekhaPortal"
+import ChitralekhaPortal from "./ChitralekhaPortal";
+import RecorderComponent from "./RecorderComponent";
 
 export {
   AddOrganizationMember,
@@ -84,4 +85,5 @@ export {
   IntroHeader,
   Footer,
   ChitralekhaPortal,
+  RecorderComponent,
 };

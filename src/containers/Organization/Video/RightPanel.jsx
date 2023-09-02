@@ -110,10 +110,6 @@ const RightPanel = ({ currentIndex }) => {
     const { progress, success, apiType } = apiStatus;
 
     if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
-      if (!autoSave) {
-        dispatch(setSnackBar({ open: false }));
-      }
-
       if (complete) {
         setTimeout(() => {
           navigate(
@@ -150,7 +146,14 @@ const RightPanel = ({ currentIndex }) => {
       ?.scrollIntoView(true, { block: "start" });
   }, [currentIndex]);
 
+  const prevOffsetRef = useRef(currentOffset);
   const getPayload = (offset = currentOffset, lim = limit) => {
+    if (prevOffsetRef.current !== currentOffset) {
+      setUndoStack([]);
+      setRedoStack([]);
+      prevOffsetRef.current = currentOffset;
+    }
+
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
@@ -160,7 +163,6 @@ const RightPanel = ({ currentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
-  const prevOffsetRef = useRef(currentOffset);
   useEffect(() => {
     if (prevOffsetRef.current !== currentOffset) {
       setUndoStack([]);
@@ -170,72 +172,6 @@ const RightPanel = ({ currentIndex }) => {
     getPayload(currentOffset, limit);
     // eslint-disable-next-line
   }, [limit, currentOffset]);
-
-  useEffect(() => {
-    var selectedText = "";
-    document.addEventListener("mouseup", function (event) {
-      selectedText = getSelectedText();
-      if (!!selectedText) {
-        setAnchorEl(event.target);
-      }
-    });
-  }, []);
-
-  const getSelectedText = () => {
-    var selectedText = '';
-    if (window.getSelection) { // For modern browsers
-      selectedText = window.getSelection().toString();
-    } else if (document.selection && document.selection.type !== 'Control') { // For older IE versions
-      selectedText = document.selection.createRange().text;
-    }
-    return selectedText;
-  }
-
-  const replaceSelectedText = (text) => {
-    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const beforeSelection = textarea.value.substring(0, start);
-    const afterSelection = textarea.value.substring(end, textarea.value.length);
-    console.log(textarea, start, end, beforeSelection, afterSelection);
-
-    textarea.value = beforeSelection + text + afterSelection;
-    textarea.selectionStart = start + text.length;
-    textarea.selectionEnd = start + text.length;
-    textarea.focus();
-  }
-
-  const handleSubscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-    let cursorStart = textVal.selectionStart;
-    let cursorEnd = textVal.selectionEnd;
-    let Text = textVal.value.substring(cursorStart, cursorEnd)
-    console.log(Text)
-    if (Text != "") {
-      const subscriptText = Text.replace(/[0-9]/g, (char) => {
-        const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉' };
-        return subscriptMap[char];
-      });
-      replaceSelectedText(subscriptText);
-    }
-  }
-
-  const handleSuperscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-    let cursorStart = textVal.selectionStart;
-    let cursorEnd = textVal.selectionEnd;
-    let Text = textVal.value.substring(cursorStart, cursorEnd)
-    console.log(Text)
-    if (Text != "") {
-      const superscriptText = Text.replace(/[0-9]/g, (char) => {
-        const superscriptMap = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
-        return superscriptMap[char];
-      });
-      replaceSelectedText(superscriptText);
-    }
-  }
-
-
 
   const onMergeClick = useCallback(
     (index) => {

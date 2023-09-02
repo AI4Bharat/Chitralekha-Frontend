@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getColumns, getOptions } from "utils";
+import { getColumns, getOptions, roles } from "utils";
 import { Link, useParams } from "react-router-dom";
 import { projectColumns } from "config";
 
@@ -28,6 +28,7 @@ const ProjectList = ({ data, removeProjectList }) => {
   const [open, setOpen] = useState(false);
 
   const apiStatus = useSelector((state) => state.apiStatus);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
@@ -82,11 +83,14 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            <Tooltip title="Delete">
-              <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
-                <DeleteIcon color="error" />
-              </IconButton>
-            </Tooltip>
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.canDeleteProject && (
+              <Tooltip title="Delete">
+                <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
         );
       },
