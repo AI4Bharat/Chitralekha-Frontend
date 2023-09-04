@@ -7,6 +7,7 @@ import {
   getSubtitleRangeTranscript,
   onMerge,
   onSubtitleDelete,
+  onSubtitleChange,
   timeChange,
   onUndoAction,
   onRedoAction,
@@ -72,12 +73,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
+  useState();
   const [regenerate, setRegenerate] = useState(false);
   const [complete, setComplete] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [subsuper, setsubsuper] = useState(true)
+
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -266,6 +271,62 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
   };
+  // useEffect(() => {
+  //   var selectedText = "";
+  //   document.addEventListener("mouseup", function (event) {
+  //     selectedText = getSelectedText();
+      // if (!!selectedText) {
+      //   setAnchorEl(event.target);
+      // }
+  //   });
+  // }, []);
+
+  const replaceSelectedText = (text,index) => {
+    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const beforeSelection = textarea.value.substring(0, start);
+    const afterSelection = textarea.value.substring(end, textarea.value.length);
+
+    textarea.value = beforeSelection + text + afterSelection;
+    textarea.selectionStart = start + text.length;
+    textarea.selectionEnd = start + text.length;
+    textarea.focus();
+    console.log(textarea.value,index);
+    const sub = onSubtitleChange(textarea.value, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    console.log(subtitles);
+    // saveTranscriptHandler(true, true, sub);
+  }
+
+  const handleSubscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    console.log("selectedText", selectedText);
+    if (selectedText!="") {
+      const subscriptText = selectedText.replace(/[0-9]/g, (char) => {
+        const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'};
+        return subscriptMap[char];
+      });
+      replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
+    }
+  }
+
+  const handleSuperscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    if (selectedText!="") {
+      const superscriptText = selectedText.replace(/[0-9]/g, (char) => {
+        const superscriptMap = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+        return superscriptMap[char];
+      });
+      replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
+    }
+  }
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
@@ -374,6 +435,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
     }
     return txt;
   };
+  const onMouseUp = (e, blockIdx) => {
+    if (e.target.selectionStart < e.target.value.length) {
+      e.preventDefault();
+      setCurrentIndexToSplitTextBlock(blockIdx);
+    }
+  };
 
   return (
     <>
@@ -385,6 +452,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
+            setsubsuper={setsubsuper}
+            subsuper={subsuper}
+            handleSubscript={handleSubscript}
+            handleSuperscript={handleSuperscript}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
             setFontSize={setFontSize}
@@ -468,6 +539,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       className={`${classes.textAreaTransliteration} ${
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
@@ -504,6 +576,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       containerStyles={{
                         width: "100%",
                       }}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -540,6 +613,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        onMouseUp={(e) => onMouseUp(e, index)}
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(

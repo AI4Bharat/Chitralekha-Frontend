@@ -236,16 +236,7 @@ const RightPanel = ({ currentIndex }) => {
     }
   }
 
-// const textval=()=>{
-//   if(subsuper==true){
-//  const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
-//   // if(textVal.value!=""){
-//   let cursorStart = textVal.selectionStart;
-//   let cursorEnd = textVal.selectionEnd;
-//   settext(textVal.value.substring(cursorStart, cursorEnd))
-//   }
-// }
-//  window.onload=textval()
+
 
   const onMergeClick = useCallback(
     (index) => {
