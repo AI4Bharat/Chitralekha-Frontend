@@ -458,6 +458,7 @@ const VideoLandingStyle = makeStyles({
     borderColor: "rgba(0, 0, 0, 0.23)",
     outlineColor: "#2C2799",
     resize: "none",
+    marginTop:"1.3rem",
     fontFamily: "Roboto, sans-serif",
     width: "95.5%",
   },
@@ -466,6 +467,7 @@ const VideoLandingStyle = makeStyles({
     backgroundColor: "rgb(0 87 158)",
     border: "1px solid rgba(255, 255, 255, 0.3)",
     color: "#fff !important",
+    marginTop:"1.3rem",
   },
 
   wordCount: {

@@ -85,6 +85,7 @@ const RightPanel = ({ currentIndex }) => {
   const [selectionStart, setSelectionStart] = useState();
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
+  const [text,settext] = useState("")
   const [enableTransliteration, setTransliteration] = useState(true);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -210,7 +211,7 @@ const RightPanel = ({ currentIndex }) => {
     console.log("selectedText", selectedText);
     if (selectedText!="") {
       const subscriptText = selectedText.replace(/[0-9]/g, (char) => {
-        const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉' };
+        const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'};
         return subscriptMap[char];
       });
       replaceSelectedText(subscriptText);
@@ -231,7 +232,16 @@ const RightPanel = ({ currentIndex }) => {
     }
   }
 
-
+const textval=()=>{
+  if(subsuper==true){
+ const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+  // if(textVal.value!=""){
+  let cursorStart = textVal.selectionStart;
+  let cursorEnd = textVal.selectionEnd;
+  settext(textVal.value.substring(cursorStart, cursorEnd))
+  }
+}
+//  window.onload=textval()
 
   const onMergeClick = useCallback(
     (index) => {
@@ -532,31 +542,32 @@ const RightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  {subsuper != false ?
-                    <Popover
-                      id={id}
-                      open={open}
-                      anchorEl={anchorEl}
-                      onClose={handleClose}
-                      anchorReference="anchorPosition"
-                      anchorPosition={{ top: 200, left: 950 }}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      sx={{backgroundColor:"none"}}
-                    >
-                      <Button variant="contained" onClick={handleSubscript} size="small">
+                  {/* {subsuper != false &&text!=""? */}
+                  {subsuper != false?
+                    // <Popover
+                    //   id={id}
+                    //   open={open}
+                    //   anchorEl={anchorEl}
+                    //   onClose={handleClose}
+                    //   anchorReference="anchorPosition"
+                    //   anchorPosition={{ top: 210, left: 950 }}
+                    //   anchorOrigin={{
+                    //     vertical: 'top',
+                    //     horizontal: 'left',
+                    //   }}
+                    //   transformOrigin={{
+                    //     vertical: 'top',
+                    //     horizontal: 'left',
+                    //   }}
+                    // >
+                    <div>
+                      <Button variant="contained" onClick={handleSubscript} size="small" sx={{borderRadius:"4px"}}>
                       x₂
                       </Button>
-                      <Button variant="contained" onClick={handleSuperscript} size="small">
+                      <Button variant="contained" onClick={handleSuperscript} size="small" sx={{borderRadius:"4px"}}>
                       x²
                       </Button>
-                    </Popover> : null}
+                     </div>: null}
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       lang={taskData?.src_language}
@@ -574,7 +585,7 @@ const RightPanel = ({ currentIndex }) => {
                         }, 200)
                       }
                       renderComponent={(props) => (
-                        <div className={classes.relative}>
+                        <div className={classes.relative} >
                           <textarea
                             className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
                               }`}
