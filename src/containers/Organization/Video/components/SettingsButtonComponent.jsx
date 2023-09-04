@@ -16,6 +16,8 @@ import {
   Typography,
   MenuItem,
 } from "@mui/material";
+import SubscriptIcon from '@mui/icons-material/Subscript';
+import SuperscriptIcon from '@mui/icons-material/Superscript';
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -54,12 +56,16 @@ const SettingsButtonComponent = ({
   undoStack,
   redoStack,
   onSplitClick,
+  handleSuperscript,
+  handleSubscript,
   showPopOver,
   showSplit,
   handleInfoButtonClick,
 }) => {
   const classes = VideoLandingStyle();
   // const dispatch = useDispatch();
+
+
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
@@ -101,6 +107,8 @@ const SettingsButtonComponent = ({
 
     return false;
   };
+
+
   
   return (
     <>
@@ -241,6 +249,26 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
+      {subsuper==true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
+
+      {subsuper==true?<Tooltip title="SubScript" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          onClick={() => handleSubscript()}
+        >
+          <SubscriptIcon />
+        </IconButton>
+      </Tooltip>:null}
+
+      {subsuper==true?<Tooltip title="SuperScript" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          sx={{ marginLeft: "5px" }}
+          onClick={() => handleSuperscript()}
+        >
+          <SuperscriptIcon />
+        </IconButton>
+      </Tooltip>:null}
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 

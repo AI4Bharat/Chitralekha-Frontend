@@ -80,12 +80,11 @@ const RightPanel = ({ currentIndex }) => {
   const limit = useSelector((state) => state.commonReducer.limit);
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const [subsuper, setsubsuper] = useState(false)
+  const [subsuper, setsubsuper] = useState(true)
   const [showPopOver, setShowPopOver] = useState(false);
   const [selectionStart, setSelectionStart] = useState();
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
-  const [text,settext] = useState("")
   const [enableTransliteration, setTransliteration] = useState(true);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -190,7 +189,7 @@ const RightPanel = ({ currentIndex }) => {
     return selectedText;
   }
 
-  const replaceSelectedText = (text) => {
+  const replaceSelectedText = (text,index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -201,6 +200,11 @@ const RightPanel = ({ currentIndex }) => {
     textarea.selectionStart = start + text.length;
     textarea.selectionEnd = start + text.length;
     textarea.focus();
+    console.log(textarea.value,index);
+    const sub = onSubtitleChange(textarea.value, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    console.log(subtitles);
+    // saveTranscriptHandler(true, true, sub);
   }
 
   const handleSubscript = () => {
@@ -214,7 +218,7 @@ const RightPanel = ({ currentIndex }) => {
         const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'};
         return subscriptMap[char];
       });
-      replaceSelectedText(subscriptText);
+      replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
     }
   }
 
@@ -228,7 +232,7 @@ const RightPanel = ({ currentIndex }) => {
         const superscriptMap = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
         return superscriptMap[char];
       });
-      replaceSelectedText(superscriptText);
+      replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
     }
   }
 
@@ -300,7 +304,6 @@ const RightPanel = ({ currentIndex }) => {
       currentTarget,
     } = event;
     const containsBackslash = value.includes("\\");
-
     setEnableTransliterationSuggestion(true);
 
     if (containsBackslash) {
@@ -486,6 +489,8 @@ const RightPanel = ({ currentIndex }) => {
             undoStack={undoStack}
             redoStack={redoStack}
             onSplitClick={onSplitClick}
+            handleSubscript={handleSubscript}
+            handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
             showSplit={true}
           />
@@ -542,32 +547,15 @@ const RightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  {/* {subsuper != false &&text!=""? */}
-                  {subsuper != false?
-                    // <Popover
-                    //   id={id}
-                    //   open={open}
-                    //   anchorEl={anchorEl}
-                    //   onClose={handleClose}
-                    //   anchorReference="anchorPosition"
-                    //   anchorPosition={{ top: 210, left: 950 }}
-                    //   anchorOrigin={{
-                    //     vertical: 'top',
-                    //     horizontal: 'left',
-                    //   }}
-                    //   transformOrigin={{
-                    //     vertical: 'top',
-                    //     horizontal: 'left',
-                    //   }}
-                    // >
+                  {/* {subsuper != false?
                     <div>
-                      <Button variant="contained" onClick={handleSubscript} size="small" sx={{borderRadius:"4px"}}>
+                      <Button variant="contained" onClick={()=>handleSubscript(index)} size="small" sx={{borderRadius:"4px"}}>
                       x₂
                       </Button>
-                      <Button variant="contained" onClick={handleSuperscript} size="small" sx={{borderRadius:"4px"}}>
+                      <Button variant="contained" onClick={()=>handleSuperscript(index)} size="small" sx={{borderRadius:"4px"}}>
                       x²
                       </Button>
-                     </div>: null}
+                     </div>: null} */}
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       lang={taskData?.src_language}
