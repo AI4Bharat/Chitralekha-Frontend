@@ -2,6 +2,9 @@
 import React, { memo, useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
+import subscript from "config/subscript";
+import superscriptMap from "config/superscript";
+
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -306,10 +309,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     console.log("selectedText", selectedText);
     if (selectedText!="") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (char) => {
-        const subscriptMap = { '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉', '⁰': '₀', '¹': '₁', '²': '₂', '³': '₃', '⁴': '₄', '⁵': '₅', '⁶': '₆', '⁷': '₇', '⁸': '₈', '⁹': '₉' };
-        return subscriptMap[char];
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-Zᵃ⁻zᴬ⁻ᶻ]/g, (char) => {
+        return subscript[char];
       });
+   
       replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
     }
   }
@@ -320,8 +323,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     if (selectedText!="") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉]/g, (char) => {
-        const superscriptMap = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' ,'₀': '⁰', '₁': '¹', '₂': '²', '₃': '³', '₄': '⁴', '₅': '⁵', '₆': '⁶', '₇': '⁷', '₈': '⁸', '₉': '⁹'};
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-Zₐ₋zA₋Z]/g, (char) => {
         return superscriptMap[char];
       });
       replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
