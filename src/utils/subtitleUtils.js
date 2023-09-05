@@ -570,7 +570,6 @@ export const exportFile = (data, taskDetails, exportType, type) => {
 };
 
 export const exportZip = (data, type = "task", videoName) => {
-  console.log(data, "data");
   const newBlob = new Blob([data], { type: "application/zip" });
 
   const blobUrl = window.URL.createObjectURL(newBlob);
