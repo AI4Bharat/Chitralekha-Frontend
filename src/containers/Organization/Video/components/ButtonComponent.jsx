@@ -30,8 +30,6 @@ const ButtonComponent = ({
     (state) => state.getTranscriptPayload.data
   );
 
-  const $audioFile = useRef(null);
-
   return (
     <>
       {!taskData.task_type.includes("VOICEOVER") && lastItem && (
@@ -41,7 +39,7 @@ const ButtonComponent = ({
             className={classes.optionIconBtn}
             onClick={() => onMergeClick(index)}
           >
-            <MergeIcon />
+            <MergeIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -53,7 +51,7 @@ const ButtonComponent = ({
             style={{ color: "#d32f2f" }}
             onClick={() => onDelete(index)}
           >
-            <DeleteIcon />
+            <DeleteIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -64,7 +62,7 @@ const ButtonComponent = ({
             className={classes.optionIconBtn}
             onClick={() => addNewSubtitleBox(index)}
           >
-            <AddIcon />
+            <AddIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -75,7 +73,7 @@ const ButtonComponent = ({
             className={classes.optionIconBtn}
             onClick={() => handleReGenerateTranslation(index)}
           >
-            <LoopIcon />
+            <LoopIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -88,7 +86,7 @@ const ButtonComponent = ({
               className={classes.optionIconBtn}
               onClick={() => saveTranscriptHandler(false, true)}
             >
-              <TaskAltIcon />
+              <TaskAltIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
         )}
@@ -99,7 +97,7 @@ const ButtonComponent = ({
             className={classes.optionIconBtn}
             onClick={() => saveTranscriptHandler(false, true)}
           >
-            <LyricsIcon />
+            <LyricsIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
