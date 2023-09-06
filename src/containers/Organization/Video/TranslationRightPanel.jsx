@@ -2,11 +2,15 @@
 import React, { memo, useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
+import subscript from "config/subscript";
+import superscriptMap from "config/superscript";
+
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
   onMerge,
   onSubtitleDelete,
+  onSubtitleChange,
   timeChange,
   onUndoAction,
   onRedoAction,
@@ -72,12 +76,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
+  useState();
   const [regenerate, setRegenerate] = useState(false);
   const [complete, setComplete] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [subsuper, setsubsuper] = useState(true)
+
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -161,7 +169,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
   }, [limit, currentOffset]);
 
-  const onDelete = useCallback(
+  useEffect(() => {
+    window.addEventListener("keydown",(e)=>{
+      console.log('event', e);
+    })
+  }, []);
+
+
+ const onDelete = useCallback(
     (index) => {
       setUndoStack((prevState) => [
         ...prevState,
@@ -259,6 +274,61 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
   };
+  // useEffect(() => {
+  //   var selectedText = "";
+  //   document.addEventListener("mouseup", function (event) {
+  //     selectedText = getSelectedText();
+      // if (!!selectedText) {
+      //   setAnchorEl(event.target);
+      // }
+  //   });
+  // }, []);
+
+  const replaceSelectedText = (text,index) => {
+    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const beforeSelection = textarea.value.substring(0, start);
+    const afterSelection = textarea.value.substring(end, textarea.value.length);
+
+    textarea.value = beforeSelection + text + afterSelection;
+    textarea.selectionStart = start + text.length;
+    textarea.selectionEnd = start + text.length;
+    textarea.focus();
+    console.log(textarea.value,index);
+    const sub = onSubtitleChange(textarea.value, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    console.log(subtitles);
+    // saveTranscriptHandler(true, true, sub);
+  }
+
+  const handleSubscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    console.log("selectedText", selectedText);
+    if (selectedText!="") {
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-Zᵃ⁻zᴬ⁻ᶻ]/g, (char) => {
+        return subscript[char];
+      });
+   
+      replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
+    }
+  }
+
+  const handleSuperscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    if (selectedText!="") {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-Zₐ₋zA₋Z]/g, (char) => {
+        return superscriptMap[char];
+      });
+      replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
+    }
+  }
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
@@ -356,6 +426,24 @@ const TranslationRightPanel = ({ currentIndex }) => {
     dispatch(APITransport(apiObj));
   };
 
+  const getSelectedText = () => {
+    let txt = "";
+    if (window.getSelection) {
+      txt = window.getSelection();
+    } else if (window.document.getSelection) {
+      txt = window.document.getSelection();
+    } else if (window.document.selection) {
+      txt = window.document.selection.createRange().text;
+    }
+    return txt;
+  };
+  const onMouseUp = (e, blockIdx) => {
+    if (e.target.selectionStart < e.target.value.length) {
+      e.preventDefault();
+      setCurrentIndexToSplitTextBlock(blockIdx);
+    }
+  };
+
   return (
     <>
       <Box
@@ -366,6 +454,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
+            setsubsuper={setsubsuper}
+            subsuper={subsuper}
+            handleSubscript={handleSubscript}
+            handleSuperscript={handleSuperscript}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
             setFontSize={setFontSize}
@@ -449,6 +541,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       className={`${classes.textAreaTransliteration} ${
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
@@ -485,6 +578,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       containerStyles={{
                         width: "100%",
                       }}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -521,6 +615,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        onMouseUp={(e) => onMouseUp(e, index)}
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(
