@@ -355,7 +355,7 @@ export const orgTaskListColumns = [
     name: "created_at",
     label: "Created At",
     options: {
-      display: localStorage.getItem("tableCurrentState").columns?.[3].display ? localStorage.getItem("tableCurrentState").columns?.[3].display : false,
+      display: false,
       customBodyRender: (value, tableMeta) => {
         const { tableData: data, rowIndex } = tableMeta;
         const selectedTask = data[rowIndex];

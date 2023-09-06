@@ -207,7 +207,7 @@ const SettingsButtonComponent = ({
           className={classes.rightPanelBtnGrp}
           onClick={() => handleSubscript()}
         >
-          <SubscriptIcon />
+          <SubscriptIcon className={classes.rightPanelSvg}  />
         </IconButton>
       </Tooltip>:null}
 
@@ -217,7 +217,7 @@ const SettingsButtonComponent = ({
           sx={{ marginLeft: "5px" }}
           onClick={() => handleSuperscript()}
         >
-          <SuperscriptIcon />
+          <SuperscriptIcon className={classes.rightPanelSvg}  />
         </IconButton>
       </Tooltip>:null}
 
