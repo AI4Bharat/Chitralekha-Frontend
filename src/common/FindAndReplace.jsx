@@ -143,9 +143,8 @@ const FindAndReplace = (props) => {
 
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices?.includes(index)) {
-
         let textToReplace;
-        
+
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
@@ -168,7 +167,7 @@ const FindAndReplace = (props) => {
       }
       updatedSubtitleData.push(ele);
     });
-    
+
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
@@ -181,7 +180,7 @@ const FindAndReplace = (props) => {
           className={classes.findReplaceButton}
           onClick={handleOpenModel}
         >
-          <FindReplaceIcon />
+          <FindReplaceIcon className={classes.rightPanelSvg}/>
         </IconButton>
       </Tooltip>
 
