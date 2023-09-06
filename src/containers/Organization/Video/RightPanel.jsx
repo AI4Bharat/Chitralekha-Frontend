@@ -233,7 +233,7 @@ const RightPanel = ({ currentIndex }) => {
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     if (selectedText!="") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
         return superscriptMap[char];
       });
       replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
