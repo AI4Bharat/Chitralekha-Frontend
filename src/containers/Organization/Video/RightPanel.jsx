@@ -216,13 +216,16 @@ const RightPanel = ({ currentIndex }) => {
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     console.log("selectedText", selectedText);
     if (selectedText!="") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-Zᵃ⁻zᴬ⁻ᶻ]/g, (char) => {
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
         return subscript[char];
       });
    
       replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
     }
   }
+  // 'ᵃ':'ₐ','ᵇ':'b','ᶜ':'c','ᵈ':'d','ᵉ':'ₑ','ᶠ':'f','ᵍ':'g','ʰ':'ₕ','ⁱ':'ᵢ','ʲ':'ⱼ','ᵏ':'ₖ','ˡ':'ₗ','ᵐ':'ₘ','ⁿ':'ₙ','ᴼ':'ₒ','ᵖ':'ₚ','q':'q','ʳ':'ᵣ','ˢ':'ₛ','ᵗ':'ₜ','ᶸ':'ᵤ','ᵛ':'ᵥ','ʷ':'w','ˣ':'ₓ','ʸ':'y','z':'z',
+  // 'A':'ᴬ','B':'ᴮ','C':'ᶜ','D':'ᴰ','E':'ᴱ','F':'F','G':'ᴳ','H':'ᴴ','I':'ᴵ','J':'ᴶ','K':'ᴷ','L':'ᴸ','M':'ᴹ','N':'ᴺ','O':'ᵒ','P':'ᴾ','Q':'Q','R':'ᴿ','S':'ˢ','T':'ᵀ','U':'ᵁ','V':'ⱽ','W':'ᵂ','X':'ˣ','Y':'Y','Z':'ᶻ' 
+
 
   const handleSuperscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
@@ -230,7 +233,7 @@ const RightPanel = ({ currentIndex }) => {
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     if (selectedText!="") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-Zₐ₋zA₋Z]/g, (char) => {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
         return superscriptMap[char];
       });
       replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
