@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState , useEffect } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -81,6 +81,10 @@ const SettingsButtonComponent = ({
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   )
+
+   
+      const savedPreference = localStorage.getItem('subscriptSuperscriptPreference');
+    
 
   const getDisbled = (flag) => {
     if (
@@ -243,15 +247,17 @@ const SettingsButtonComponent = ({
                   setAnchorElSettings(null);
                   console.log(subsuper);
                   setsubsuper(!subsuper);
+                  localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                  console.log(subsuper);
                 }}
               />
             }
           />
         </MenuItem>
       </Menu>
-      {subsuper==true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
+      {savedPreference==="true"?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
 
-      {subsuper==true?<Tooltip title="SubScript" placement="bottom">
+      {savedPreference==="true"?<Tooltip title="SubScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={() => handleSubscript()}
@@ -260,7 +266,7 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>:null}
 
-      {subsuper==true?<Tooltip title="SuperScript" placement="bottom">
+      {savedPreference==="true"?<Tooltip title="SuperScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
