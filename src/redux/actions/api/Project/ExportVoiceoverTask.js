@@ -3,14 +3,14 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import constants from "redux/constants";
 
 export default class ExportVoiceoverTaskAPI extends API {
-  constructor(taskId, exportType, timeout = 2000) {
+  constructor(taskId, exportType, bgMusic, timeout = 2000) {
     super("GET", timeout, false);
 
     this.type = constants.EXPORT_VOICEOVER_TASK;
 
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.voiceover
-    }export_voiceover/?task_id=${taskId}&export_type=${exportType}`;
+    }export_voiceover/?task_id=${taskId}&export_type=${exportType}&bg_music=${bgMusic}`;
   }
 
   processResponse(res) {
