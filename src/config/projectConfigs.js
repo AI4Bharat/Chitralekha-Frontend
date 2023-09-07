@@ -184,3 +184,25 @@ export const toolBarActions = [
     style: { marginRight: "auto" },
   },
 ];
+
+export const speakerInfoOptions = [
+  {
+    label: "With Speaker Info",
+    value: "true",
+  },
+  {
+    label: "Without Speaker Info",
+    value: "false",
+  },
+];
+
+export const bgMusicOptions = [
+  {
+    label: "Yes",
+    value: "true",
+  },
+  {
+    label: "No",
+    value: "false",
+  },
+];
