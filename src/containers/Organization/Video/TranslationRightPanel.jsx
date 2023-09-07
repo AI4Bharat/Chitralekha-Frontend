@@ -309,7 +309,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     console.log("selectedText", selectedText);
     if (selectedText!="") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-Zᵃ⁻zᴬ⁻ᶻ]/g, (char) => {
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
         return subscript[char];
       });
    
@@ -317,13 +317,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
     }
   }
 
+
   const handleSuperscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     if (selectedText!="") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-Zₐ₋zA₋Z]/g, (char) => {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
         return superscriptMap[char];
       });
       replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
