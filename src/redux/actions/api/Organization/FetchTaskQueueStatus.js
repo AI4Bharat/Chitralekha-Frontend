@@ -8,7 +8,7 @@ export default class FetchTaskQueueStatusAPI extends API {
     this.type = C.GET_TASK_QUEUE_STATUS;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.task
-    }inspect_queue?queue=${queueType}`;
+    }inspect_queue/?queue=${queueType}`;
   }
 
   processResponse(res) {
