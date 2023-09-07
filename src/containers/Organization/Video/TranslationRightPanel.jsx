@@ -76,6 +76,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
   useState();
   const [regenerate, setRegenerate] = useState(false);
@@ -443,6 +444,17 @@ const TranslationRightPanel = ({ currentIndex }) => {
       e.preventDefault();
       setCurrentIndexToSplitTextBlock(blockIdx);
     }
+    var selectedText = "";
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    if(selectedText!=""){
+      setselection(true)
+      setsubsuper(true)
+      localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+
+    }
   };
 
   return (
@@ -543,6 +555,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         currentIndex === index ? classes.boxHighlight : ""
                       }`}
                       onMouseUp={(e) => onMouseUp(e, index)}
+                      onBlur={() =>{
+                        
+                          setselection(false);
+                          setsubsuper(false);
+                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                        }}
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
@@ -580,6 +598,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         width: "100%",
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
+                      onBlur={() =>{
+                        
+                        setselection(false);
+                        setsubsuper(false);
+                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                      }}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -617,6 +641,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
+                        onBlur={() =>{
+                        
+                          setselection(false);
+                          setsubsuper(false);
+                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                        }}
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(
