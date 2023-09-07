@@ -41,6 +41,7 @@ import IntroHeader from "./IntroHeader";
 import Footer from "./Footer";
 import ChitralekhaPortal from "./ChitralekhaPortal";
 import RecorderComponent from "./RecorderComponent";
+import { TabPanel } from "./TabPanel";
 
 export {
   AddOrganizationMember,
@@ -86,4 +87,5 @@ export {
   Footer,
   ChitralekhaPortal,
   RecorderComponent,
+  TabPanel,
 };
