@@ -61,9 +61,7 @@ const RightPanel = ({ currentIndex }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const xl = useMediaQuery("(min-width:1800px)");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const id = open ? ' -popover' : undefined;
+  const [selection, setselection] = useState(false);
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -171,25 +169,33 @@ const RightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
   }, [limit, currentOffset]);
 
-  useEffect(() => {
-    var selectedText = "";
-    document.addEventListener("mouseup", function (event) {
-      selectedText = getSelectedText();
-      if (!!selectedText) {
-        setAnchorEl(event.target);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   var selectedText = "";
+  //   document.addEventListener("mouseup", function (event) {
+  //     selectedText = getSelectedText();
+  //       setselection(selectedText);
+  //   });
+  // }, []);
+  // const selecttext=()=>{
+  //   var selectedText = "";
+  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+  //   let cursorStart = textVal.selectionStart;
+  //   let cursorEnd = textVal.selectionEnd;
+  //   selectedText = textVal.value.substring(cursorStart, cursorEnd)
+  //   if(selectedText!=""){
+  //     setselection(selectedText)
+  //   }
 
-  const getSelectedText = () => {
-    var selectedText = '';
-    if (window.getSelection) { // For modern browsers
-      selectedText = window.getSelection().toString();
-    } else if (document.selection && document.selection.type !== 'Control') { // For older IE versions
-      selectedText = document.selection.createRange().text;
-    }
-    return selectedText;
-  }
+  // }
+  // const getSelectedText = () => {
+  //   var selectedText = '';
+  //   // if (window.getSelection) { // For modern browsers
+  //   //   selectedText = window.getSelection().toString();
+  //   // } else if (document.selection && document.selection.type !== 'Control') { // For older IE versions
+  //   //   selectedText = document.selection.createRange().text;
+  //   // }
+    
+  // }
 
   const replaceSelectedText = (text,index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
@@ -209,6 +215,9 @@ const RightPanel = ({ currentIndex }) => {
     // saveTranscriptHandler(true, true, sub);
   }
  
+
+
+
   const handleSubscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
     let cursorStart = textVal.selectionStart;
@@ -271,6 +280,17 @@ const RightPanel = ({ currentIndex }) => {
       setShowPopOver(true);
       setCurrentIndexToSplitTextBlock(blockIdx);
       setSelectionStart(e.target.selectionStart);
+    }
+    var selectedText = "";
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    if(selectedText!=""){
+      setselection(true)
+      setsubsuper(true)
+      localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+
     }
   };
 
@@ -456,9 +476,7 @@ const RightPanel = ({ currentIndex }) => {
     // saveTranscriptHandler(false, false, sub);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
 
   return (
     <>
@@ -474,6 +492,8 @@ const RightPanel = ({ currentIndex }) => {
              setsubsuper={setsubsuper}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
+            selection={selection}
+            setselection={setselection}
             setFontSize={setFontSize}
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
@@ -561,11 +581,16 @@ const RightPanel = ({ currentIndex }) => {
                       onChangeText={() => { }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
-                      onBlur={() =>
+                      onBlur={() =>{
+                        setTimeout(() => {
+                          setselection(false);
+                          setsubsuper(false);
+                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                        }, 0)
                         setTimeout(() => {
                           setShowPopOver(false);
                         }, 200)
-                      }
+                      }}
                       renderComponent={(props) => (
                         <div className={classes.relative} >
                           <textarea
@@ -574,11 +599,18 @@ const RightPanel = ({ currentIndex }) => {
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             onMouseUp={(e) => onMouseUp(e, index)}
-                            onBlur={() =>
+                            // onSelect={(e)=> selecttext(e,index)}
+                            onBlur={() =>{
+                              setTimeout(() => {
+                                setselection(false);
+                                setsubsuper(false);
+                                localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                              }, 0)
                               setTimeout(() => {
                                 setShowPopOver(false);
                               }, 200)
-                            }
+                              
+                            }}
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
                           />
@@ -594,6 +626,7 @@ const RightPanel = ({ currentIndex }) => {
                         onChange={(event) => {
                           changeTranscriptHandler(event, index);
                         }}
+                        // onSelect={(e)=> selecttext(e,index)}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         value={item.text}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
@@ -604,11 +637,17 @@ const RightPanel = ({ currentIndex }) => {
                           height: "120px",
                         }}
                         rows={4}
-                        onBlur={() =>
+                        onBlur={() =>{
+                          setTimeout(() => {
+                            setselection(false);
+                            setsubsuper(false);
+                            localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                          }, 0)
+                        
                           setTimeout(() => {
                             setShowPopOver(false);
                           }, 200)
-                        }
+                        }}
                       />
                       <span id="charNum" className={classes.wordCount}>
                         {targetLength(index)}
