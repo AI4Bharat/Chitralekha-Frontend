@@ -83,7 +83,16 @@ const SettingsButtonComponent = ({
   )
 
    
-      const savedPreference = localStorage.getItem('subscriptSuperscriptPreference');
+    const savedPreference = localStorage.getItem('subscriptSuperscriptPreference');
+
+   useEffect(()=>{
+    if(savedPreference=="true" && subsuper==false){
+      setsubsuper(JSON.parse(savedPreference))
+      console.log(subsuper);
+    }
+   },[])
+    
+
     
 
   const getDisbled = (flag) => {
@@ -255,9 +264,9 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-      {savedPreference==="true"?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
+      {subsuper===true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
 
-      {savedPreference==="true"?<Tooltip title="SubScript" placement="bottom">
+      {subsuper===true?<Tooltip title="SubScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={() => handleSubscript()}
@@ -266,7 +275,7 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>:null}
 
-      {savedPreference==="true"?<Tooltip title="SuperScript" placement="bottom">
+      {subsuper===true?<Tooltip title="SuperScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
