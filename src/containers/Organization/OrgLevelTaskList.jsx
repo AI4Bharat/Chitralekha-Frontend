@@ -146,6 +146,7 @@ const OrgLevelTaskList = () => {
     translation: "srt",
     voiceover: "mp4",
     speakerInfo: "false",
+    bgMusic: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
   const [alertColumn, setAlertColumn] = useState("");
@@ -317,9 +318,9 @@ const OrgLevelTaskList = () => {
 
   const exportVoiceoverTask = async () => {
     const { id: taskId } = currentTaskDetails;
-    const { voiceover } = exportTypes;
+    const { voiceover, bgMusic } = exportTypes;
 
-    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover);
+    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover, bgMusic);
     dispatch(APITransport(apiObj));
   };
 
