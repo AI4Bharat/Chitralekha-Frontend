@@ -47,6 +47,8 @@ const SettingsButtonComponent = ({
   setRTL_Typing,
   enableRTL_Typing,
   setFontSize,
+  selection,
+  setselection,
   fontSize,
   saveTranscriptHandler,
   setOpenConfirmDialog,
@@ -69,6 +71,7 @@ const SettingsButtonComponent = ({
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
+
   // const [anchorElLimit, setAnchorElLimit] = useState(null);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -81,6 +84,23 @@ const SettingsButtonComponent = ({
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   )
+
+// useEffect(()=>{
+//   // if(textVal){
+//   const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+//     let cursorStart = textVal.selectionStart;
+//     let cursorEnd = textVal.selectionEnd;
+//     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+//     if(selectedText!=""){
+//       setselection(true)
+//     }
+//     else{
+//       setselection(false)
+//     }
+//   // }
+//  },[])
+
+//  console.log(selection);
 
    
     const savedPreference = localStorage.getItem('subscriptSuperscriptPreference');
@@ -264,9 +284,9 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-      {subsuper===true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
+      {subsuper===true || selection==true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
 
-      {subsuper===true?<Tooltip title="SubScript" placement="bottom">
+      {subsuper===true || selection==true?<Tooltip title="SubScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={() => handleSubscript()}
@@ -275,7 +295,7 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>:null}
 
-      {subsuper===true?<Tooltip title="SuperScript" placement="bottom">
+      {subsuper===true || selection==true?<Tooltip title="SuperScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
