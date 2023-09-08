@@ -206,6 +206,7 @@ const RightPanel = ({ currentIndex }) => {
         event.preventDefault();
         setkeypress(true)
         console.log("sub");
+        console.log(index);
         handleSubscript(index);
       }
     };
