@@ -248,7 +248,7 @@ const SettingsButtonComponent = ({
         </MenuItem>
         <MenuItem>
           <FormControlLabel
-            label="Sub-Script and Super-Script"
+            label="Subscript/Superscript"
             control={
               <Checkbox
                 checked={subsuper}
