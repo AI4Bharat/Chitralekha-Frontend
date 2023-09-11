@@ -140,28 +140,29 @@ const ExportDialog = ({
             </DialogActions>
           </>
         ) : (
-          <>
-            <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
-              Background Music
-            </DialogContentText>
-            <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
-              <FormControl>
-                <RadioGroup row>
-                  {bgMusicOptions?.map((item, index) => (
-                    <FormControlLabel
-                      key={index}
-                      value={item.value}
-                      control={<Radio />}
-                      checked={bgMusic === item.value}
-                      label={item.label}
-                      name="bgMusic"
-                      onClick={(event) => handleExportRadioButtonChange(event)}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </DialogActions>
-          </>
+          // <>
+          //   <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
+          //     Background Music
+          //   </DialogContentText>
+          //   <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
+          //     <FormControl>
+          //       <RadioGroup row>
+          //         {bgMusicOptions?.map((item, index) => (
+          //           <FormControlLabel
+          //             key={index}
+          //             value={item.value}
+          //             control={<Radio />}
+          //             checked={bgMusic === item.value}
+          //             label={item.label}
+          //             name="bgMusic"
+          //             onClick={(event) => handleExportRadioButtonChange(event)}
+          //           />
+          //         ))}
+          //       </RadioGroup>
+          //     </FormControl>
+          //   </DialogActions>
+          // </>
+          null
         )}
 
         <DialogActions>
