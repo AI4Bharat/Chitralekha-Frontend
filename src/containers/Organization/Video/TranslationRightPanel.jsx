@@ -78,7 +78,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [redoStack, setRedoStack] = useState([]);
   const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
-  useState();
+    useState();
   const [regenerate, setRegenerate] = useState(false);
   const [complete, setComplete] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
@@ -171,13 +171,13 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }, [limit, currentOffset]);
 
   useEffect(() => {
-    window.addEventListener("keydown",(e)=>{
+    window.addEventListener("keydown", (e) => {
       console.log('event', e);
     })
   }, []);
 
 
- const onDelete = useCallback(
+  const onDelete = useCallback(
     (index) => {
       setUndoStack((prevState) => [
         ...prevState,
@@ -279,13 +279,13 @@ const TranslationRightPanel = ({ currentIndex }) => {
   //   var selectedText = "";
   //   document.addEventListener("mouseup", function (event) {
   //     selectedText = getSelectedText();
-      // if (!!selectedText) {
-      //   setAnchorEl(event.target);
-      // }
+  // if (!!selectedText) {
+  //   setAnchorEl(event.target);
+  // }
   //   });
   // }, []);
 
-  const replaceSelectedText = (text,index) => {
+  const replaceSelectedText = (text, index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -296,7 +296,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
     textarea.selectionStart = start + text.length;
     textarea.selectionEnd = start + text.length;
     textarea.focus();
-    console.log(textarea.value,index);
+    console.log(textarea.value, index);
     const sub = onSubtitleChange(textarea.value, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     console.log(subtitles);
@@ -304,31 +304,35 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }
 
   const handleSubscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     console.log("selectedText", selectedText);
-    if (selectedText!="") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
+    if (selectedText != "") {
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
+      //const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
+        
         return subscript[char];
       });
-   
-      replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
+
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
     }
   }
 
 
   const handleSuperscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
-    if (selectedText!="") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
+    if (selectedText != "") {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
+     // const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
+        
         return superscriptMap[char];
       });
-      replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
+      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
     }
   }
 
@@ -445,11 +449,11 @@ const TranslationRightPanel = ({ currentIndex }) => {
       setCurrentIndexToSplitTextBlock(blockIdx);
     }
     var selectedText = "";
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
     selectedText = textVal.value.substring(cursorStart, cursorEnd)
-    if(selectedText!=""){
+    if (selectedText != "") {
       setselection(true)
       setsubsuper(true)
       localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
@@ -551,16 +555,15 @@ const TranslationRightPanel = ({ currentIndex }) => {
                   <div className={classes.relative} style={{ width: "100%" }}>
                     <textarea
                       rows={4}
-                      className={`${classes.textAreaTransliteration} ${
-                        currentIndex === index ? classes.boxHighlight : ""
-                      }`}
+                      className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                        }`}
                       onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() =>{
-                        
-                          setselection(false);
-                          setsubsuper(false);
-                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-                        }}
+                      onBlur={() => {
+
+                        setselection(false);
+                        setsubsuper(false);
+                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                      }}
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
@@ -577,7 +580,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       style={{
                         color:
                           Math.abs(sourceLength(index) - targetLength(index)) >=
-                          3
+                            3
                             ? "red"
                             : "green",
                         left: "6px",
@@ -598,8 +601,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         width: "100%",
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() =>{
-                        
+                      onBlur={() => {
+
                         setselection(false);
                         setsubsuper(false);
                         localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
@@ -608,9 +611,8 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
-                            className={`${classes.textAreaTransliteration} ${
-                              currentIndex === index ? classes.boxHighlight : ""
-                            }`}
+                            className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                              }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             {...props}
@@ -636,13 +638,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
                         rows={4}
-                        className={`${classes.textAreaTransliteration} ${
-                          currentIndex === index ? classes.boxHighlight : ""
-                        }`}
+                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                          }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
-                        onBlur={() =>{
-                        
+                        onBlur={() => {
+
                           setselection(false);
                           setsubsuper(false);
                           localStorage.setItem('subscriptSuperscriptPreference', !subsuper);

@@ -81,13 +81,13 @@ const RightPanel = ({ currentIndex }) => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const [subsuper, setsubsuper] = useState(false)
-  const [index,setindex] = useState()
+  const [index, setindex] = useState()
   const [showPopOver, setShowPopOver] = useState(false);
   const [selectionStart, setSelectionStart] = useState();
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
-  const [keypress,setkeypress] = useState(false)
+  const [keypress, setkeypress] = useState(false)
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [fontSize, setFontSize] = useState("large");
@@ -197,22 +197,22 @@ const RightPanel = ({ currentIndex }) => {
   //   // } else if (document.selection && document.selection.type !== 'Control') { // For older IE versions
   //   //   selectedText = document.selection.createRange().text;
   //   // }
-    
-  // }
- 
- 
-    const handleKeyDownSub = (event) => {
-      if (event.ctrlKey && event.key === 'b') {
-        event.preventDefault();
-        handleSubscript();
-      }
-    };
 
-    const handleKeyUpSub = (event) => {
-      if (event.key === 'Control') {
-      }
-    };
-    useEffect(() => {
+  // }
+
+
+  const handleKeyDownSub = (event) => {
+    if (event.ctrlKey && event.key === 'b') {
+      event.preventDefault();
+      handleSubscript();
+    }
+  };
+
+  const handleKeyUpSub = (event) => {
+    if (event.key === 'Control') {
+    }
+  };
+  useEffect(() => {
 
     document.addEventListener('keydown', handleKeyDownSub);
     document.addEventListener('keyup', handleKeyUpSub);
@@ -224,19 +224,19 @@ const RightPanel = ({ currentIndex }) => {
   }, [handleKeyDownSub]);
 
 
-    const handleKeyDownSup = (event) => {
-      if (event.ctrlKey && event.key === 'e') {
-        event.preventDefault();
-        console.log(event , currentIndexToSplitTextBlock);
-        handleSuperscript();
-      }
-    };
+  const handleKeyDownSup = (event) => {
+    if (event.ctrlKey && event.key === 'e') {
+      event.preventDefault();
+      console.log(event, currentIndexToSplitTextBlock);
+      handleSuperscript();
+    }
+  };
 
-    const handleKeyUpSup = (event) => {
-      if (event.key === 'Control') {
-      }
-    };
-    useEffect(() => {
+  const handleKeyUpSup = (event) => {
+    if (event.key === 'Control') {
+    }
+  };
+  useEffect(() => {
     document.addEventListener('keydown', handleKeyDownSup);
     document.addEventListener('keyup', handleKeyUpSup);
 
@@ -251,26 +251,26 @@ const RightPanel = ({ currentIndex }) => {
     if (e.target.selectionStart < e.target.value.length) {
       e.preventDefault();
       setShowPopOver(true);
-  setCurrentIndexToSplitTextBlock(blockIdx);
+      setCurrentIndexToSplitTextBlock(blockIdx);
       setindex(blockIdx)
-      console.log(currentIndexToSplitTextBlock,index);
+      console.log(currentIndexToSplitTextBlock, index);
       setSelectionStart(e.target.selectionStart);
     }
-      var selectedText = "";
-      const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
-      let cursorStart = textVal.selectionStart;
-      let cursorEnd = textVal.selectionEnd;
-      selectedText = textVal.value.substring(cursorStart, cursorEnd)
-      if(selectedText!="" && subsuper==false){
-        setselection(true)
-        setsubsuper(true)
-        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-  
-      }
+    var selectedText = "";
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    if (selectedText != "" && subsuper == false) {
+      setselection(true)
+      setsubsuper(true)
+      localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
 
-   
+    }
+
+
   };
-  const replaceSelectedText = (text,index) => {
+  const replaceSelectedText = (text, index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -281,42 +281,46 @@ const RightPanel = ({ currentIndex }) => {
     textarea.selectionStart = start + text.length;
     textarea.selectionEnd = start + text.length;
     textarea.focus();
-    console.log(textarea.value,index);
+    console.log(textarea.value, index);
     const sub = onSubtitleChange(textarea.value, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     console.log(subtitles);
     setindex()
     // saveTranscriptHandler(true, true, sub);
   }
- 
+
 
 
 
   const handleSubscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     console.log("selectedText", selectedText);
-    if (selectedText!="") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
-        return subscript[char]||char;
+    if (selectedText != "") {
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
+     // const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
+        
+        return subscript[char] || char;
       });
-     
-      replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
+
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
     }
   }
- 
+
 
 
   const handleSuperscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     var id;
-    if (selectedText!="") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
+    if (selectedText != "") {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
+     // const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
+
         return superscriptMap[char] || char;
       });
       // if(keypress){
@@ -326,7 +330,7 @@ const RightPanel = ({ currentIndex }) => {
       //   id=currentIndexToSplitTextBlock
       // }
       // setkeypress(false)
-      replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
+      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
     }
   }
 
@@ -356,7 +360,7 @@ const RightPanel = ({ currentIndex }) => {
     [limit, currentOffset]
   );
 
-  
+
 
   const onSplitClick = useCallback(() => {
     setUndoStack((prevState) => [
@@ -552,10 +556,10 @@ const RightPanel = ({ currentIndex }) => {
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
-             subsuper={subsuper}
-             setsubsuper={setsubsuper}
-             index={index}
-             currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}
+            subsuper={subsuper}
+            setsubsuper={setsubsuper}
+            index={index}
+            currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
             selection={selection}
@@ -648,7 +652,7 @@ const RightPanel = ({ currentIndex }) => {
                       onSelect={(e) => onSelect(e, index)}
                       containerStyles={{}}
 
-                      onBlur={() =>{
+                      onBlur={() => {
                         // setTimeout(() => {
                         //   setselection(false);
                         //   setsubsuper(false);
@@ -667,8 +671,8 @@ const RightPanel = ({ currentIndex }) => {
                             rows={4}
                             onSelect={(e) => onSelect(e, index)}
                             // onSelect={(e)=> selecttext(e,index)}
-                        
-                            onBlur={() =>{
+
+                            onBlur={() => {
                               // setTimeout(() => {
                               //   setselection(false);
                               //   setsubsuper(false);
@@ -677,7 +681,7 @@ const RightPanel = ({ currentIndex }) => {
                               setTimeout(() => {
                                 setShowPopOver(false);
                               }, 200)
-                              
+
                             }}
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
@@ -705,13 +709,13 @@ const RightPanel = ({ currentIndex }) => {
                           height: "120px",
                         }}
                         rows={4}
-                        onBlur={() =>{
+                        onBlur={() => {
                           // setTimeout(() => {
                           //   setselection(false);
                           //   setsubsuper(false);
                           //   localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
                           // }, 0)
-                        
+
                           setTimeout(() => {
                             setShowPopOver(false);
                           }, 200)
