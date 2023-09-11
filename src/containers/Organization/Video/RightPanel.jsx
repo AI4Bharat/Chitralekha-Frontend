@@ -200,64 +200,60 @@ const RightPanel = ({ currentIndex }) => {
     
   // }
  
-  useEffect(() => {
-    const handleKeyDown = (event) => {
+ 
+    const handleKeyDownSub = (event) => {
       if (event.ctrlKey && event.key === 'b') {
         event.preventDefault();
-        setkeypress(true)
-        console.log("sub");
-        console.log(index);
-        handleSubscript(index);
+        handleSubscript();
       }
     };
 
-    const handleKeyUp = (event) => {
+    const handleKeyUpSub = (event) => {
       if (event.key === 'Control') {
-        // setIsCtrlEPressed(false);
       }
     };
+    useEffect(() => {
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener('keydown', handleKeyDownSub);
+    document.addEventListener('keyup', handleKeyUpSub);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener('keydown', handleKeyDownSub);
+      document.removeEventListener('keyup', handleKeyUpSub);
     };
-  }, []);
+  }, [handleKeyDownSub]);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
+
+    const handleKeyDownSup = (event) => {
       if (event.ctrlKey && event.key === 'e') {
         event.preventDefault();
-        setkeypress(true)
-        handleSuperscript(index);
+        console.log(event , currentIndexToSplitTextBlock);
+        handleSuperscript();
       }
     };
 
-    const handleKeyUp = (event) => {
+    const handleKeyUpSup = (event) => {
       if (event.key === 'Control') {
-        // setIsCtrlEPressed(false);
       }
     };
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    useEffect(() => {
+    document.addEventListener('keydown', handleKeyDownSup);
+    document.addEventListener('keyup', handleKeyUpSup);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener('keydown', handleKeyDownSup);
+      document.removeEventListener('keyup', handleKeyUpSup);
     };
-  }, []);
+  }, [handleKeyDownSup]);
 
 
-  const onMouseUp = (e, blockIdx) => {
+  const onSelect = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
       e.preventDefault();
       setShowPopOver(true);
-      setCurrentIndexToSplitTextBlock(blockIdx);
+  setCurrentIndexToSplitTextBlock(blockIdx);
       setindex(blockIdx)
-      console.log(currentIndexToSplitTextBlock);
+      console.log(currentIndexToSplitTextBlock,index);
       setSelectionStart(e.target.selectionStart);
     }
       var selectedText = "";
@@ -265,15 +261,13 @@ const RightPanel = ({ currentIndex }) => {
       let cursorStart = textVal.selectionStart;
       let cursorEnd = textVal.selectionEnd;
       selectedText = textVal.value.substring(cursorStart, cursorEnd)
-      // if(subsuper==false){
-      if(selectedText!=""){
+      if(selectedText!="" && subsuper==false){
         setselection(true)
         setsubsuper(true)
         localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
   
       }
 
-    // }
    
   };
   const replaceSelectedText = (text,index) => {
@@ -291,37 +285,31 @@ const RightPanel = ({ currentIndex }) => {
     const sub = onSubtitleChange(textarea.value, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     console.log(subtitles);
+    setindex()
     // saveTranscriptHandler(true, true, sub);
   }
  
 
 
 
-  const handleSubscript = (index) => {
+  const handleSubscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
-    var id;
     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
     console.log("selectedText", selectedText);
     if (selectedText!="") {
       const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
         return subscript[char]||char;
       });
-      // if(keypress){
-      //   id=index
-      // }
-      // else{
-      //   id=currentIndexToSplitTextBlock
-      // }
-      // setkeypress(false)
-      replaceSelectedText(subscriptText,index);
+     
+      replaceSelectedText(subscriptText,currentIndexToSplitTextBlock);
     }
   }
  
 
 
-  const handleSuperscript = (index) => {
+  const handleSuperscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
@@ -338,7 +326,7 @@ const RightPanel = ({ currentIndex }) => {
       //   id=currentIndexToSplitTextBlock
       // }
       // setkeypress(false)
-      replaceSelectedText(superscriptText,index);
+      replaceSelectedText(superscriptText,currentIndexToSplitTextBlock);
     }
   }
 
@@ -567,6 +555,7 @@ const RightPanel = ({ currentIndex }) => {
              subsuper={subsuper}
              setsubsuper={setsubsuper}
              index={index}
+             currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
             selection={selection}
@@ -656,7 +645,7 @@ const RightPanel = ({ currentIndex }) => {
                       }}
                       enabled={enableTransliterationSuggestion}
                       onChangeText={() => { }}
-                      onMouseUp={(e) => onMouseUp(e, index)}
+                      onSelect={(e) => onSelect(e, index)}
                       containerStyles={{}}
 
                       onBlur={() =>{
@@ -676,7 +665,7 @@ const RightPanel = ({ currentIndex }) => {
                               }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
-                            onMouseUp={(e) => onMouseUp(e, index)}
+                            onSelect={(e) => onSelect(e, index)}
                             // onSelect={(e)=> selecttext(e,index)}
                         
                             onBlur={() =>{
@@ -706,7 +695,7 @@ const RightPanel = ({ currentIndex }) => {
                           changeTranscriptHandler(event, index);
                         }}
                         // onSelect={(e)=> selecttext(e,index)}
-                        onMouseUp={(e) => onMouseUp(e, index)}
+                        onSelect={(e) => onSelect(e, index)}
                         value={item.text}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
