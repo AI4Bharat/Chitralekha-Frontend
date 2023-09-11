@@ -315,10 +315,17 @@ const ProjectStyle = makeStyles({
     backgroundColor: "#2C2799",
     borderRadius: "50%",
     color: "#fff",
-    margin: "0 5px",
+    margin: "0 5px 0 0",
+    height: "fit-content",
+    width: "fit-content",
     "&:hover": {
       backgroundColor: "#271e4f",
     },
+  },
+
+  rightPanelSvg: {
+    width: "0.8em",
+    height: "0.8em",
   },
 
   findReplaceTextbox: {

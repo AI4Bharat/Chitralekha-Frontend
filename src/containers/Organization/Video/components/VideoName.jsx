@@ -46,7 +46,7 @@ const VideoName = ({
           className={classes.settingsIconBtn}
           onClick={(event) => setAnchorElSettings(event.currentTarget)}
         >
-          <WidgetsOutlinedIcon />
+          <WidgetsOutlinedIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 

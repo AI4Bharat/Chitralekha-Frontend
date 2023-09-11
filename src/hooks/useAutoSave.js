@@ -31,14 +31,6 @@ export const useAutoSave = () => {
 
     saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
 
-    const handleBeforeUnload = (event) => {
-      handleAutosave();
-      event.preventDefault();
-      event.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
@@ -52,7 +44,6 @@ export const useAutoSave = () => {
 
     return () => {
       clearInterval(saveIntervalRef.current);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
 

@@ -27,6 +27,13 @@ const Partners = () => {
             direction="row"
             alignItems="center"
             justifyContent="center"
+            sx={{
+              mt: 10,
+              mb: 10,
+              display: "flex",
+              justifyContent: "space-around",
+            }}
+
             // sx={{
             //   mt: 10,
             //   mb: 10,

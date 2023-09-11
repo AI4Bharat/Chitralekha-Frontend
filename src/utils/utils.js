@@ -85,6 +85,7 @@ export const roles = [
     ProjectReport: false,
     organizationReport: false,
     canAddMembers: false,
+    canDeleteProject: false,
   },
   {
     label: "Transcript Reviewer",
@@ -103,6 +104,7 @@ export const roles = [
     ProjectReport: false,
     organizationReport: false,
     canAddMembers: false,
+    canDeleteProject: false,
   },
   {
     label: "Translation editor",
@@ -120,6 +122,7 @@ export const roles = [
     ProjectReport: false,
     organizationReport: false,
     canAddMembers: false,
+    canDeleteProject: false,
   },
   {
     label: "Translation Reviewer",
@@ -138,6 +141,7 @@ export const roles = [
     ProjectReport: false,
     organizationReport: false,
     canAddMembers: false,
+    canDeleteProject: false,
   },
   {
     label: "Universal Editor",
@@ -155,6 +159,7 @@ export const roles = [
     ProjectReport: false,
     organizationReport: false,
     canAddMembers: false,
+    canDeleteProject: false,
   },
   {
     label: "Project Manager",
@@ -173,6 +178,7 @@ export const roles = [
     ProjectReport: true,
     organizationReport: false,
     canAddMembers: true,
+    canDeleteProject: false,
   },
   {
     label: "Organization Owner",
@@ -191,6 +197,7 @@ export const roles = [
     ProjectReport: true,
     organizationReport: true,
     canAddMembers: true,
+    canDeleteProject: true,
   },
 ];
 
@@ -561,14 +568,3 @@ export const filterTaskList = (taskList, selectedFilters) => {
 
   return filterResult;
 };
-
-export const speakerInfoOptions = [
-  {
-    label: "With Speaker Info",
-    value: "true",
-  },
-  {
-    label: "Without Speaker Info",
-    value: "false",
-  },
-];
