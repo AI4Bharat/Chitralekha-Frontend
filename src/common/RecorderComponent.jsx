@@ -64,7 +64,7 @@ const RecorderComponent = ({
             className={classes.optionIconBtn}
             style={{ backgroundColor: "red", color: "#fff" }}
           >
-            <ReportProblemIcon />
+            <ReportProblemIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -76,7 +76,7 @@ const RecorderComponent = ({
             className={classes.optionIconBtn}
             onClick={() => handleStartRecording()}
           >
-            <MicIcon />
+            <MicIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -88,7 +88,7 @@ const RecorderComponent = ({
             className={classes.optionIconBtn}
             onClick={() => stopRecording()}
           >
-            <StopIcon />
+            <StopIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -100,7 +100,7 @@ const RecorderComponent = ({
             className={classes.optionIconBtn}
             onClick={() => handlePlayPauseRecording()}
           >
-            <PauseIcon />
+            <PauseIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -112,7 +112,7 @@ const RecorderComponent = ({
             className={classes.optionIconBtn}
             onClick={() => handlePlayPauseRecording()}
           >
-            <PlayArrowIcon />
+            <PlayArrowIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -123,7 +123,7 @@ const RecorderComponent = ({
           className={classes.optionIconBtn}
           onClick={() => $audioFile.current.click()}
         >
-          <UploadIcon />
+          <UploadIcon className={classes.rightPanelSvg} />
           <input
             type="file"
             style={{ display: "none" }}

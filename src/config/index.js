@@ -36,8 +36,10 @@ import {
 } from "./noiseTags";
 import { profileOptions } from "./profileConfigs";
 import {
+  bgMusicOptions,
   buttonConfig,
   speakerFields,
+  speakerInfoOptions,
   toolBarActions,
   voiceOptions,
 } from "./projectConfigs";
@@ -113,4 +115,6 @@ export {
   uploadAlertColumns,
   updateRoleAlertColumns,
   voiceoverFailInfoColumns,
+  bgMusicOptions,
+  speakerInfoOptions,
 };

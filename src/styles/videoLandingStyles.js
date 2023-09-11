@@ -27,7 +27,7 @@ const VideoLandingStyle = makeStyles({
 
   videoName: {
     textAlign: "center",
-    margin: "32px",
+    margin: "29.5px",
     width: "90%",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -38,7 +38,9 @@ const VideoLandingStyle = makeStyles({
     backgroundColor: "#2C2799",
     borderRadius: "50%",
     color: "#fff",
-    margin: "auto",
+    margin: "auto 10px",
+    height: "fit-content",
+    width: "fit-content",
     "&:hover": {
       backgroundColor: "#271e4f",
     },
@@ -379,6 +381,8 @@ const VideoLandingStyle = makeStyles({
     borderRadius: "50%",
     marginRight: "10px",
     color: "blue",
+    height: "fit-content",
+    width: "fit-content",
     "&:disabled": {
       background: "grey",
     },
@@ -408,16 +412,23 @@ const VideoLandingStyle = makeStyles({
     backgroundColor: "#2C2799",
     borderRadius: "50%",
     color: "#fff",
-    marginX: "5px",
+    marginRight: "5px",
+    height: "fit-content",
+    width: "fit-content",
     "&:hover": {
       backgroundColor: "#271e4f",
     },
   },
 
+  rightPanelSvg: {
+    width: "0.8em", 
+    height: "0.8em",
+  },
+
   rightPanelDivider: {
     border: "1px solid grey",
     height: "auto",
-    margin: "0 5px",
+    margin: "0 5px 0 0",
   },
 
   subTitleContainer: {
@@ -591,8 +602,8 @@ const VideoLandingStyle = makeStyles({
   audioPlayer: {
     "&::-webkit-media-controls-panel": {
       backgroundColor: "#fcf7e9",
-    }
-  }
+    },
+  },
 });
 
 export default VideoLandingStyle;

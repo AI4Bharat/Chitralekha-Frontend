@@ -84,7 +84,7 @@ const SettingsButtonComponent = ({
   );
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
-  )
+  );
 
 // useEffect(()=>{
 //   // if(textVal){
@@ -142,53 +142,8 @@ const SettingsButtonComponent = ({
     return false;
   };
 
-
-  
   return (
     <>
-      {/* {!taskData?.task_type?.includes("VOICEOVER") && (
-        <Tooltip title="Number of Rows" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={(event) => setAnchorElLimit(event.currentTarget)}
-          >
-            <FormatLineSpacingIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      <Menu
-        sx={{ mt: "45px" }}
-        id="limit-menu"
-        anchorEl={anchorElLimit}
-        anchorOrigin={anchorOrigin}
-        keepMounted
-        transformOrigin={transformOrigin}
-        open={Boolean(anchorElLimit)}
-        onClose={() => setAnchorElLimit(null)}
-      >
-        {[10, 25, 50, 100].map((item, index) => {
-          return (
-            <MenuItem key={index}>
-              <FormControlLabel
-                label={item}
-                control={
-                  <Checkbox
-                    checked={limit === item}
-                    onChange={() => {
-                      setAnchorElLimit(null);
-                      dispatch(setLimitInStore(item));
-                    }}
-                  />
-                }
-              />
-            </MenuItem>
-          );
-        })}
-      </Menu>
-
-      <Divider orientation="vertical" className={classes.rightPanelDivider} /> */}
-
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
           <IconButton
@@ -196,11 +151,10 @@ const SettingsButtonComponent = ({
             onClick={onSplitClick}
             disabled={!showPopOver}
             sx={{
-              marginRight: "5px",
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
           >
-            <SplitscreenIcon />
+            <SplitscreenIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -211,11 +165,8 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={handleInfoButtonClick}
-            sx={{
-              marginRight: "5px",
-            }}
           >
-            <InfoOutlinedIcon />
+            <InfoOutlinedIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -225,7 +176,7 @@ const SettingsButtonComponent = ({
           className={classes.rightPanelBtnGrp}
           onClick={(event) => setAnchorElSettings(event.currentTarget)}
         >
-          <SettingsIcon />
+          <SettingsIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
@@ -292,7 +243,7 @@ const SettingsButtonComponent = ({
           className={classes.rightPanelBtnGrp}
           onClick={() => handleSubscript()}
         >
-          <SubscriptIcon />
+          <SubscriptIcon className={classes.rightPanelSvg}  />
         </IconButton>
       </Tooltip>:null}
 
@@ -302,7 +253,7 @@ const SettingsButtonComponent = ({
           sx={{ marginLeft: "5px" }}
           onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
         >
-          <SuperscriptIcon />
+          <SuperscriptIcon className={classes.rightPanelSvg}  />
         </IconButton>
       </Tooltip>:null}
 
@@ -313,7 +264,7 @@ const SettingsButtonComponent = ({
           className={classes.rightPanelBtnGrp}
           onClick={(event) => setAnchorElFont(event.currentTarget)}
         >
-          <FormatSizeIcon />
+          <FormatSizeIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
@@ -351,38 +302,6 @@ const SettingsButtonComponent = ({
         ))}
       </Menu>
 
-      {/* <Menu
-        sx={{ mt: "45px" }}
-        anchorEl={anchorElFont}
-        anchorOrigin={anchorOrigin}
-        keepMounted
-        transformOrigin={transformOrigin}
-        open={Boolean(anchorElFont)}
-        onClose={() => setAnchorElFont(null)}
-      >
-        {fontMenu.map((item, index) => (
-          <MenuItem
-            key={index}
-            onClick={() => {
-              setFontSize(item.size);
-            }}
-          >
-            <CheckIcon
-              style={{
-                visibility: fontSize === item.size ? "" : "hidden",
-              }}
-            />
-            <Typography
-              variant="body2"
-              textAlign="center"
-              sx={{ fontSize: item.size, marginLeft: "10px" }}
-            >
-              {item.label}
-            </Typography>
-          </MenuItem>
-        ))}
-      </Menu> */}
-
       <FindAndReplace
         subtitleDataKey={
           taskData?.task_type?.includes("TRANSLATION") ? "target_text" : "text"
@@ -398,18 +317,17 @@ const SettingsButtonComponent = ({
           disabled={getDisbled()}
           onClick={() => saveTranscriptHandler(false)}
         >
-          <SaveIcon />
+          <SaveIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Complete" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          sx={{ marginLeft: "5px" }}
           disabled={getDisbled("complete")}
           onClick={() => setOpenConfirmDialog(true)}
         >
-          <VerifiedIcon />
+          <VerifiedIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
@@ -422,7 +340,7 @@ const SettingsButtonComponent = ({
             onClick={onUndo}
             disabled={undoStack?.length === 0}
           >
-            <UndoIcon />
+            <UndoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -431,11 +349,10 @@ const SettingsButtonComponent = ({
         <Tooltip title="Redo" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
-            sx={{ marginLeft: "5px" }}
             onClick={onRedo}
             disabled={redoStack?.length === 0}
           >
-            <RedoIcon />
+            <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}

@@ -146,6 +146,7 @@ const OrgLevelTaskList = () => {
     translation: "srt",
     voiceover: "mp4",
     speakerInfo: "false",
+    bgMusic: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
   const [alertColumn, setAlertColumn] = useState("");
@@ -191,10 +192,6 @@ const OrgLevelTaskList = () => {
 
           case "EDIT_BULK_TASK_DETAILS" || "EDIT_TASK_DETAILS":
             fetchTaskList();
-            break;
-
-          case "BULK_TASK_EXPORT":
-            exportZip(data);
             break;
 
           case "COMPARE_TRANSCRIPTION_SOURCE":
@@ -321,9 +318,9 @@ const OrgLevelTaskList = () => {
 
   const exportVoiceoverTask = async () => {
     const { id: taskId } = currentTaskDetails;
-    const { voiceover } = exportTypes;
+    const { voiceover, bgMusic } = exportTypes;
 
-    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover);
+    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover, bgMusic);
     dispatch(APITransport(apiObj));
   };
 
@@ -851,7 +848,35 @@ const OrgLevelTaskList = () => {
     const { translation } = exportTypes;
 
     const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
-    dispatch(APITransport(apiObj));
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+        exportZip(resp);
+      }  else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "error",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
   };
 
   const handleExportRadioButtonChange = (event) => {
@@ -866,11 +891,11 @@ const OrgLevelTaskList = () => {
   };
 
   const handleExportSubmitClick = () => {
-    const { task_type: taskType } = currentTaskDetails;
-
     if (isBulkTaskDownload) {
       handleBulkTaskDownload();
     } else {
+      const { task_type: taskType } = currentTaskDetails;
+
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
       } else if (taskType?.includes("TRANSLATION")) {
