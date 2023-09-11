@@ -46,7 +46,7 @@ const SettingsButtonComponent = ({
   setsubsuper,
   setRTL_Typing,
   enableRTL_Typing,
-  index,
+  currentIndexToSplitTextBlock,
   setFontSize,
   selection,
   setselection,
@@ -285,22 +285,22 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-      {subsuper===true && selection==true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
+      {subsuper===true || selection==true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
 
-      {subsuper===true && selection==true?<Tooltip title="SubScript" placement="bottom">
+      {subsuper===true || selection==true?<Tooltip title="SubScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          onClick={() => handleSubscript(index)}
+          onClick={() => handleSubscript()}
         >
           <SubscriptIcon />
         </IconButton>
       </Tooltip>:null}
 
-      {subsuper===true && selection==true?<Tooltip title="SuperScript" placement="bottom">
+      {subsuper===true || selection==true?<Tooltip title="SuperScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
-          onClick={() => handleSuperscript(index)}
+          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
         >
           <SuperscriptIcon />
         </IconButton>
