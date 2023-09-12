@@ -251,7 +251,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
-          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+          onClick={() => handleSuperscript()}
         >
           <SuperscriptIcon className={classes.rightPanelSvg}  />
         </IconButton>

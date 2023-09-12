@@ -172,35 +172,7 @@ const RightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
   }, [limit, currentOffset]);
 
-  // useEffect(() => {
-  //   var selectedText = "";
-  //   document.addEventListener("mouseup", function (event) {
-  //     selectedText = getSelectedText();
-  //       setselection(selectedText);
-  //   });
-  // }, []);
-  // const selecttext=()=>{
-  //   var selectedText = "";
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
-  //   let cursorStart = textVal.selectionStart;
-  //   let cursorEnd = textVal.selectionEnd;
-  //   selectedText = textVal.value.substring(cursorStart, cursorEnd)
-  //   if(selectedText!=""){
-  //     setselection(selectedText)
-  //   }
-
-  // }
-  // const getSelectedText = () => {
-  //   var selectedText = '';
-  //   // if (window.getSelection) { // For modern browsers
-  //   //   selectedText = window.getSelection().toString();
-  //   // } else if (document.selection && document.selection.type !== 'Control') { // For older IE versions
-  //   //   selectedText = document.selection.createRange().text;
-  //   // }
-
-  // }
-
-
+ 
   const handleKeyDownSub = (event) => {
     if (event.ctrlKey && event.key === 'b') {
       event.preventDefault();
@@ -300,7 +272,6 @@ const RightPanel = ({ currentIndex }) => {
     console.log("selectedText", selectedText);
     if (selectedText != "") {
       const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
-     // const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
         
         return subscript[char] || char;
       });
@@ -319,17 +290,10 @@ const RightPanel = ({ currentIndex }) => {
     var id;
     if (selectedText != "") {
       const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
-     // const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
 
         return superscriptMap[char] || char;
       });
-      // if(keypress){
-      //   id=index
-      // }
-      // else{
-      //   id=currentIndexToSplitTextBlock
-      // }
-      // setkeypress(false)
+
       replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
     }
   }
