@@ -218,19 +218,26 @@ export const onSplit = (
   return copySub;
 };
 
-export const onSubtitleChange = (text, index) => {
+export const onSubtitleChange = (text, index,id) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 
   copySub.forEach((element, i) => {
     if (index === i) {
-      element.text = text;
+      if(id==1){
+        element.target_text = text;
+      }
+      else{
+        element.text = text;
+      }
     }
   });
 
   return copySub;
 };
+
+
 
 export const fullscreenUtil = (element) => {
   let doc = window.document;

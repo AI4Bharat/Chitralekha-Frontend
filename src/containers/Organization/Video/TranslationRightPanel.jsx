@@ -18,6 +18,7 @@ import {
   getSelectionStart,
   getTargetSelectionStart,
   reGenerateTranslation,
+  
 } from "utils";
 
 //Styles
@@ -76,6 +77,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [selectionStart, setSelectionStart] = useState();
   const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
@@ -85,7 +87,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
-  const [subsuper, setsubsuper] = useState(true)
+  const [subsuper, setsubsuper] = useState(false)
 
 
   useEffect(() => {
@@ -277,6 +279,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
   };
   
  
+ 
   const handleKeyDownSub = (event) => {
     if (event.ctrlKey && event.key === 'b') {
       event.preventDefault();
@@ -326,40 +329,29 @@ const TranslationRightPanel = ({ currentIndex }) => {
     if (e.target.selectionStart < e.target.value.length) {
       e.preventDefault();
       setCurrentIndexToSplitTextBlock(blockIdx);
+      setSelectionStart(e.target.selectionStart);
     }
-    var selectedText = "";
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-    let cursorStart = textVal.selectionStart;
-    let cursorEnd = textVal.selectionEnd;
-    selectedText = textVal.value.substring(cursorStart, cursorEnd)
-    if (selectedText != "") {
-      setselection(true)
-      setsubsuper(true)
-      localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-
+  
+    const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
+  
+    for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+      const textVal = elementsWithBoxHighlightClass[i];
+      let cursorStart = textVal.selectionStart;
+      let cursorEnd = textVal.selectionEnd;
+      const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+      console.log(`Selected text in element ${i}:`, selectedText);
+  
+      if (selectedText !== "" && subsuper === false) {
+        setselection(true);
+        setsubsuper(true);
+        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+      }
     }
   };
+  
 
-
-
-  const handleSubscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-    let cursorStart = textVal.selectionStart;
-    let cursorEnd = textVal.selectionEnd;
-    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
-    console.log("selectedText", selectedText);
-    if (selectedText != "") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
-      //const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
-        
-        return subscript[char];
-      });
-
-      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
-    }
-  }
-  const replaceSelectedText = (text, index) => {
-    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
+  const replaceSelectedText = (text, index,id) => {
+    const textarea = document.getElementsByClassName(classes.boxHighlight)[id];
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const beforeSelection = textarea.value.substring(0, start);
@@ -370,27 +362,57 @@ const TranslationRightPanel = ({ currentIndex }) => {
     textarea.selectionEnd = start + text.length;
     textarea.focus();
     console.log(textarea.value, index);
-    const sub = onSubtitleChange(textarea.value, index);
-    dispatch(setSubtitles(sub, C.SUBTITLES));
-    console.log(subtitles);
-    // saveTranscriptHandler(true, true, sub);
+      const sub = onSubtitleChange(textarea.value, index,id);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      console.log(subtitles);
+   
   }
+
+  const handleSubscript = () => {
+    const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
+    var index='';
+    for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+      const textVal = elementsWithBoxHighlightClass[i];
+      let cursorStart = textVal.selectionStart;
+      let cursorEnd = textVal.selectionEnd;
+      const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+      console.log(`Selected text in element ${i}:`, selectedText);
+      if (selectedText != "") {
+         index=i;
+        const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
+        
+        return subscript[char] || char;
+      });
+
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
+    }
+  }
+  }
+
+
 
 
   const handleSuperscript = () => {
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-    let cursorStart = textVal.selectionStart;
-    let cursorEnd = textVal.selectionEnd;
-    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
+    var index='';
+    for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+      const textVal = elementsWithBoxHighlightClass[i];
+      let cursorStart = textVal.selectionStart;
+      let cursorEnd = textVal.selectionEnd;
+      const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+      console.log(`Selected text in element ${i}:`, selectedText);
     if (selectedText != "") {
+      index=i;
       const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
-     // const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
-        
-        return superscriptMap[char];
+     
+        return superscriptMap[char] || char;
       });
-      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
+
+      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock,index);
     }
   }
+  }
+
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
@@ -624,16 +646,17 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         width: "100%",
                       }}
                       onSelect={(e) => onSelect(e, index)}
-                      
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
+                            onSelect={(e) => onSelect(e, index)}
                             className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                               }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             {...props}
+                            
                           />
                           <span
                             className={classes.wordCount}
