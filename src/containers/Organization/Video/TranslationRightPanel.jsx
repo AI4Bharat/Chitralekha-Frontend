@@ -552,43 +552,49 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  <div className={classes.relative} style={{ width: "100%" }}>
-                    <textarea
-                      rows={4}
-                      className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                  {taskData?.source_type !== "Original Source" && (
+                    <div className={classes.relative} style={{ width: "100%" }}>
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
                         }`}
-                      onMouseUp={(e) => onMouseUp(e, index)}
-                      onBlur={() => {
-
-                        setselection(false);
-                        setsubsuper(false);
-                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-                      }}
-                      dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      style={{ fontSize: fontSize, height: "100px" }}
-                      value={item.text}
-                      onChange={(event) => {
-                        changeTranscriptHandler(
-                          event.target.value,
-                          index,
-                          "transcript"
-                        );
-                      }}
-                    />
-                    <span
-                      className={classes.wordCount}
-                      style={{
-                        color:
-                          Math.abs(sourceLength(index) - targetLength(index)) >=
-                            3
-                            ? "red"
-                            : "green",
-                        left: "6px",
-                      }}
-                    >
-                      {sourceLength(index)}
-                    </span>
-                  </div>
+                        onMouseUp={(e) => onMouseUp(e, index)}
+                        onBlur={() => {
+                          setselection(false);
+                          setsubsuper(false);
+                          localStorage.setItem(
+                            "subscriptSuperscriptPreference",
+                            !subsuper
+                          );
+                        }}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{ fontSize: fontSize, height: "100px" }}
+                        value={item.text}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transcript"
+                          );
+                        }}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          left: "6px",
+                        }}
+                      >
+                        {sourceLength(index)}
+                      </span>
+                    </div>
+                  )}
 
                   {enableTransliteration ? (
                     <IndicTransliterate
@@ -602,17 +608,23 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       onBlur={() => {
-
                         setselection(false);
                         setsubsuper(false);
-                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                        localStorage.setItem(
+                          "subscriptSuperscriptPreference",
+                          !subsuper
+                        );
                       }}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
-                            className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                              }`}
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            } ${
+                              taskData?.source_type === "Original Source" &&
+                              classes.w95
+                            }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             {...props}
@@ -638,15 +650,21 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
                         rows={4}
-                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        } ${
+                          taskData?.source_type === "Original Source" &&
+                          classes.w95
+                        }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         onBlur={() => {
-
                           setselection(false);
                           setsubsuper(false);
-                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                          localStorage.setItem(
+                            "subscriptSuperscriptPreference",
+                            !subsuper
+                          );
                         }}
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
