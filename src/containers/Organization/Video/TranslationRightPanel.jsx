@@ -384,7 +384,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
         return subscript[char] || char;
       });
 
-      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
     }
   }
   }
@@ -603,12 +603,20 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     }
                   }}
                 >
-                  <div className={classes.relative} style={{ width: "100%" }}>
-                    <textarea
-                      rows={4}
-                      className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                  {taskData?.source_type !== "Original Source" && (
+                    <div className={classes.relative} style={{ width: "100%" }}>
+                      <textarea
+                        rows={4}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
                         }`}
                       onSelect={(e) => onSelect(e, index)}
+                      onBlur={() => {
+
+                        setselection(false);
+                        setsubsuper(false);
+                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                      }}
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
@@ -646,11 +654,16 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         width: "100%",
                       }}
                       onSelect={(e) => onSelect(e, index)}
+                      onBlur={() => {
+
+                        setselection(false);
+                        setsubsuper(false);
+                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                      }}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
-                            onSelect={(e) => onSelect(e, index)}
                             className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                               }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
@@ -679,11 +692,20 @@ const TranslationRightPanel = ({ currentIndex }) => {
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
                         rows={4}
-                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        } ${
+                          taskData?.source_type === "Original Source" &&
+                          classes.w95
+                        }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onSelect={(e) => onSelect(e, index)}
-                        
+                        onBlur={() => {
+
+                          setselection(false);
+                          setsubsuper(false);
+                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                        }}
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(

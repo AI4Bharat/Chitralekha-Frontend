@@ -114,9 +114,11 @@ const SettingsButtonComponent = ({
    },[])
     
 
-    
-
   const getDisbled = (flag) => {
+    if(!transcriptPayload?.payload?.payload?.length) {
+      return true;
+    }
+
     if (
       taskData?.task_type?.includes("VOICEOVER") &&
       transcriptPayload?.source_type !== "MACHINE_GENERATED"

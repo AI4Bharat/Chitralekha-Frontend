@@ -604,6 +604,10 @@ const VideoLandingStyle = makeStyles({
       backgroundColor: "#fcf7e9",
     },
   },
+
+  w95: {
+    width: "95%"
+  }
 });
 
 export default VideoLandingStyle;
