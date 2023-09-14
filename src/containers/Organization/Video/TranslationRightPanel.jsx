@@ -611,12 +611,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
                       onSelect={(e) => onSelect(e, index)}
-                      onBlur={() => {
-
-                        setselection(false);
-                        setsubsuper(false);
-                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-                      }}
+                     
                       dir={enableRTL_Typing ? "rtl" : "ltr"}
                       style={{ fontSize: fontSize, height: "100px" }}
                       value={item.text}
@@ -654,12 +649,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         width: "100%",
                       }}
                       onSelect={(e) => onSelect(e, index)}
-                      onBlur={() => {
-
-                        setselection(false);
-                        setsubsuper(false);
-                        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-                      }}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -700,12 +689,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onSelect={(e) => onSelect(e, index)}
-                        onBlur={() => {
-
-                          setselection(false);
-                          setsubsuper(false);
-                          localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-                        }}
+                       
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(
