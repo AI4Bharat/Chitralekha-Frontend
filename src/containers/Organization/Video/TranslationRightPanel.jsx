@@ -384,7 +384,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
         return subscript[char] || char;
       });
 
-      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
     }
   }
   }
@@ -610,33 +610,34 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
-                      onSelect={(e) => onSelect(e, index)}
-                     
-                      dir={enableRTL_Typing ? "rtl" : "ltr"}
-                      style={{ fontSize: fontSize, height: "100px" }}
-                      value={item.text}
-                      onChange={(event) => {
-                        changeTranscriptHandler(
-                          event.target.value,
-                          index,
-                          "transcript"
-                        );
-                      }}
-                    />
-                    <span
-                      className={classes.wordCount}
-                      style={{
-                        color:
-                          Math.abs(sourceLength(index) - targetLength(index)) >=
-                            3
-                            ? "red"
-                            : "green",
-                        left: "6px",
-                      }}
-                    >
-                      {sourceLength(index)}
-                    </span>
-                  </div>
+                        onSelect={(e) => onSelect(e, index)}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{ fontSize: fontSize, height: "100px" }}
+                        value={item.text}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transcript"
+                          );
+                        }}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          left: "6px",
+                        }}
+                      >
+                        {sourceLength(index)}
+                      </span>
+                    </div>
+                  )}
 
                   {enableTransliteration ? (
                     <IndicTransliterate
@@ -653,12 +654,15 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
-                            className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                              }`}
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            } ${
+                              taskData?.source_type === "Original Source" &&
+                              classes.w95
+                            }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             {...props}
-                            
                           />
                           <span
                             className={classes.wordCount}
@@ -689,7 +693,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onSelect={(e) => onSelect(e, index)}
-                       
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(
