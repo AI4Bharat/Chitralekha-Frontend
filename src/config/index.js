@@ -60,6 +60,7 @@ import {
   orgTaskListColumns,
   failInfoColumns,
   voiceoverFailInfoColumns,
+  failTranscriptionInfoColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 
@@ -117,4 +118,5 @@ export {
   voiceoverFailInfoColumns,
   bgMusicOptions,
   speakerInfoOptions,
+  failTranscriptionInfoColumns,
 };
