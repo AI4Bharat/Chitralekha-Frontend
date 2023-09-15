@@ -16,8 +16,9 @@ import {
   taskListColumns,
   toolBarActions,
   failInfoColumns,
+  renderTaskListColumnCell,
+  reopenTableColumns,
 } from "config";
-import { renderTaskListColumnCell } from "config/tableColumns";
 
 //Themes
 import { tableTheme } from "theme";
@@ -234,6 +235,14 @@ const TaskList = () => {
           handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
+        }
+
+        if (apiType === "REOPEN_TASK" && data.response) {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn(reopenTableColumns);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(data.response);
         }
       }
     }
@@ -810,7 +819,7 @@ const TaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
         exportZip(resp);
-      }  else {
+      } else {
         const resp = await res.json();
 
         dispatch(
