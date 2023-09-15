@@ -38,9 +38,9 @@ import {
   useMediaQuery,
   Popover,
   Typography,
-  Button
+  Button,
 } from "@mui/material";
-import { ConfirmDialog, TagsSuggestionList, TimeBoxes } from "common";
+import { ConfirmDialog, TableDialog, TagsSuggestionList, TimeBoxes } from "common";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -49,11 +49,12 @@ import Pagination from "./components/Pagination";
 import C from "redux/constants";
 import {
   APITransport,
+  FetchTaskFailInfoAPI,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
-  setSnackBar,
   setSubtitles,
 } from "redux/actions";
+import { failTranscriptionInfoColumns } from "config";
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
@@ -80,14 +81,14 @@ const RightPanel = ({ currentIndex }) => {
   const limit = useSelector((state) => state.commonReducer.limit);
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const [subsuper, setsubsuper] = useState(false)
-  const [index, setindex] = useState()
+  const [subsuper, setsubsuper] = useState(false);
+  const [index, setindex] = useState();
   const [showPopOver, setShowPopOver] = useState(false);
   const [selectionStart, setSelectionStart] = useState();
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [enableTransliteration, setTransliteration] = useState(true);
-  const [keypress, setkeypress] = useState(false)
+  const [keypress, setkeypress] = useState(false);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [fontSize, setFontSize] = useState("large");
@@ -106,22 +107,38 @@ const RightPanel = ({ currentIndex }) => {
     useState(true);
   const [complete, setComplete] = useState(false);
   const [autoSave, setAutoSave] = useState(false);
+  const [openInfoDialog, setOpenInfoDialog] = useState(false);
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
   useEffect(() => {
-    const { progress, success, apiType } = apiStatus;
+    const { progress, success, apiType, data } = apiStatus;
 
-    if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
-      if (!autoSave) {
-        dispatch(setSnackBar({ open: false }));
-      }
+    if (!progress) {
+      if (success) {
+        switch (apiType) {
+          case "SAVE_TRANSCRIPT":
+            if (complete) {
+              setTimeout(() => {
+                navigate(
+                  `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+                );
+                setComplete(false);
+              }, 2000);
+            }
+            break;
 
-      if (complete) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-          setComplete(false);
-        }, 2000);
+          case "GET_TASK_FAIL_INFO":
+            setOpenInfoDialog(true);
+            setTableDialogColumn(failTranscriptionInfoColumns);
+            setTableDialogMessage(data.message);
+            setTableDialogResponse(data.data);
+            break;
+
+          default:
+            break;
+        }
       }
     }
 
@@ -181,7 +198,7 @@ const RightPanel = ({ currentIndex }) => {
   // }, []);
   // const selecttext=()=>{
   //   var selectedText = "";
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
+  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
   //   let cursorStart = textVal.selectionStart;
   //   let cursorEnd = textVal.selectionEnd;
   //   selectedText = textVal.value.substring(cursorStart, cursorEnd)
@@ -200,32 +217,29 @@ const RightPanel = ({ currentIndex }) => {
 
   // }
 
-
   const handleKeyDownSub = (event) => {
-    if (event.ctrlKey && event.key === 'b') {
+    if (event.ctrlKey && event.key === "b") {
       event.preventDefault();
       handleSubscript();
     }
   };
 
   const handleKeyUpSub = (event) => {
-    if (event.key === 'Control') {
+    if (event.key === "Control") {
     }
   };
   useEffect(() => {
-
-    document.addEventListener('keydown', handleKeyDownSub);
-    document.addEventListener('keyup', handleKeyUpSub);
+    document.addEventListener("keydown", handleKeyDownSub);
+    document.addEventListener("keyup", handleKeyUpSub);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDownSub);
-      document.removeEventListener('keyup', handleKeyUpSub);
+      document.removeEventListener("keydown", handleKeyDownSub);
+      document.removeEventListener("keyup", handleKeyUpSub);
     };
   }, [handleKeyDownSub]);
 
-
   const handleKeyDownSup = (event) => {
-    if (event.ctrlKey && event.key === 'e') {
+    if (event.ctrlKey && event.key === "e") {
       event.preventDefault();
       console.log(event, currentIndexToSplitTextBlock);
       handleSuperscript();
@@ -233,26 +247,25 @@ const RightPanel = ({ currentIndex }) => {
   };
 
   const handleKeyUpSup = (event) => {
-    if (event.key === 'Control') {
+    if (event.key === "Control") {
     }
   };
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDownSup);
-    document.addEventListener('keyup', handleKeyUpSup);
+    document.addEventListener("keydown", handleKeyDownSup);
+    document.addEventListener("keyup", handleKeyUpSup);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDownSup);
-      document.removeEventListener('keyup', handleKeyUpSup);
+      document.removeEventListener("keydown", handleKeyDownSup);
+      document.removeEventListener("keyup", handleKeyUpSup);
     };
   }, [handleKeyDownSup]);
-
 
   const onSelect = (e, blockIdx) => {
     if (e.target.selectionStart < e.target.value.length) {
       e.preventDefault();
       setShowPopOver(true);
       setCurrentIndexToSplitTextBlock(blockIdx);
-      setindex(blockIdx)
+      setindex(blockIdx);
       console.log(currentIndexToSplitTextBlock, index);
       setSelectionStart(e.target.selectionStart);
     }
@@ -260,15 +273,12 @@ const RightPanel = ({ currentIndex }) => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
-    selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    selectedText = textVal.value.substring(cursorStart, cursorEnd);
     if (selectedText != "" && subsuper == false) {
-      setselection(true)
-      setsubsuper(true)
-      localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-
+      setselection(true);
+      setsubsuper(true);
+      localStorage.setItem("subscriptSuperscriptPreference", !subsuper);
     }
-
-
   };
   const replaceSelectedText = (text, index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
@@ -285,44 +295,45 @@ const RightPanel = ({ currentIndex }) => {
     const sub = onSubtitleChange(textarea.value, index);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     console.log(subtitles);
-    setindex()
+    setindex();
     // saveTranscriptHandler(true, true, sub);
-  }
-
-
-
+  };
 
   const handleSubscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
-    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd);
     console.log("selectedText", selectedText);
     if (selectedText != "") {
-      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
-     // const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
-        
-        return subscript[char] || char;
-      });
+      const subscriptText = selectedText.replace(
+        /[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g,
+        (char) => {
+          // const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ+-=()⁺⁻⁼⁽⁾]/g, (char) => {
+
+          return subscript[char] || char;
+        }
+      );
 
       replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
     }
-  }
-
-
+  };
 
   const handleSuperscript = () => {
     const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
     let cursorStart = textVal.selectionStart;
     let cursorEnd = textVal.selectionEnd;
-    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd);
     var id;
     if (selectedText != "") {
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
-     // const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
+      const superscriptText = selectedText.replace(
+        /[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g,
+        (char) => {
+          // const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z+-=()₊₋₌₍₎]/g, (char) => {
 
-        return superscriptMap[char] || char;
-      });
+          return superscriptMap[char] || char;
+        }
+      );
       // if(keypress){
       //   id=index
       // }
@@ -332,9 +343,7 @@ const RightPanel = ({ currentIndex }) => {
       // setkeypress(false)
       replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
     }
-  }
-
-
+  };
 
   const onMergeClick = useCallback(
     (index) => {
@@ -359,8 +368,6 @@ const RightPanel = ({ currentIndex }) => {
     // eslint-disable-next-line
     [limit, currentOffset]
   );
-
-
 
   const onSplitClick = useCallback(() => {
     setUndoStack((prevState) => [
@@ -544,7 +551,10 @@ const RightPanel = ({ currentIndex }) => {
     // saveTranscriptHandler(false, false, sub);
   };
 
-
+  const handleInfoButtonClick = () => {
+    const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
+    dispatch(APITransport(apiObj));
+  };
 
   return (
     <>
@@ -577,6 +587,7 @@ const RightPanel = ({ currentIndex }) => {
             handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
             showSplit={true}
+            handleInfoButtonClick={handleInfoButtonClick}
           />
         </Grid>
 
@@ -648,10 +659,9 @@ const RightPanel = ({ currentIndex }) => {
                         changeTranscriptHandler(event, index);
                       }}
                       enabled={enableTransliterationSuggestion}
-                      onChangeText={() => { }}
+                      onChangeText={() => {}}
                       onSelect={(e) => onSelect(e, index)}
                       containerStyles={{}}
-
                       onBlur={() => {
                         // setTimeout(() => {
                         //   setselection(false);
@@ -660,13 +670,14 @@ const RightPanel = ({ currentIndex }) => {
                         // }, 0)
                         setTimeout(() => {
                           setShowPopOver(false);
-                        }, 200)
+                        }, 200);
                       }}
                       renderComponent={(props) => (
-                        <div className={classes.relative} >
+                        <div className={classes.relative}>
                           <textarea
-                            className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                              }`}
+                            className={`${classes.customTextarea} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
                             onSelect={(e) => onSelect(e, index)}
@@ -680,8 +691,7 @@ const RightPanel = ({ currentIndex }) => {
                               // }, 0)
                               setTimeout(() => {
                                 setShowPopOver(false);
-                              }, 200)
-
+                              }, 200);
                             }}
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
@@ -702,8 +712,9 @@ const RightPanel = ({ currentIndex }) => {
                         onSelect={(e) => onSelect(e, index)}
                         value={item.text}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
-                        className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                        className={`${classes.customTextarea} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
                         style={{
                           fontSize: fontSize,
                           height: "120px",
@@ -718,7 +729,7 @@ const RightPanel = ({ currentIndex }) => {
 
                           setTimeout(() => {
                             setShowPopOver(false);
-                          }, 200)
+                          }, 200);
                         }}
                       />
                       <span id="charNum" className={classes.wordCount}>
@@ -812,27 +823,16 @@ const RightPanel = ({ currentIndex }) => {
             }
           />
         )}
-        {/* <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <Button variant="contained" onClick={handleSubscript}>
-            Subscript
-          </Button>
-          <Button variant="contained" onClick={handleSuperscript}>
-            Superscript
-          </Button>
-        </Popover> */}
+
+        {openInfoDialog && (
+          <TableDialog
+            openDialog={openInfoDialog}
+            handleClose={() => setOpenInfoDialog(false)}
+            message={tableDialogMessage}
+            response={tableDialogResponse}
+            columns={tableDialogColumn}
+          />
+        )}
       </Box>
     </>
   );

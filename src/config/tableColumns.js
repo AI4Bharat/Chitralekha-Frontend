@@ -481,6 +481,29 @@ export const failInfoColumns = [
   },
 ];
 
+export const failTranscriptionInfoColumns = [
+  {
+    name: "index",
+    label: "Id",
+  },
+  {
+    name: "page_number",
+    label: "Page Number",
+  },
+  {
+    name: "start_time",
+    label: "Start Time",
+  },
+  {
+    name: "end_time",
+    label: "End Time",
+  },
+  {
+    name: "text",
+    label: "Text",
+  },
+];
+
 export const voiceoverFailInfoColumns = [
   {
     name: "index",
