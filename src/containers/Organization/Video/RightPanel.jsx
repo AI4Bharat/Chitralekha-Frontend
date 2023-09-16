@@ -240,7 +240,10 @@ const RightPanel = ({ currentIndex }) => {
       if (textVal) {
         const cursorStart = textVal.selectionStart;
         const cursorEnd = textVal.selectionEnd;
-        return textVal.value.substring(cursorStart, cursorEnd);
+        const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+        if(selectedText!=""){
+          return selectedText
+        }
       }
       return "";
     };
