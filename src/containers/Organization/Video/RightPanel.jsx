@@ -57,6 +57,7 @@ import {
 
 const RightPanel = ({ currentIndex }) => {
   const { taskId } = useParams();
+  const name = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -160,7 +161,14 @@ const RightPanel = ({ currentIndex }) => {
     );
     dispatch(APITransport(payloadObj));
   };
+  const savedPreference = localStorage.getItem('subscriptSuperscriptPreferenceTranscript');
 
+  useEffect(()=>{
+   if(savedPreference=="true" && subsuper==false){
+     setsubsuper(JSON.parse(savedPreference))
+     console.log(subsuper);
+   }
+  },[])
   const prevOffsetRef = useRef(currentOffset);
   useEffect(() => {
     if (prevOffsetRef.current !== currentOffset) {
@@ -217,31 +225,61 @@ const RightPanel = ({ currentIndex }) => {
       document.removeEventListener('keyup', handleKeyUpSup);
     };
   }, [handleKeyDownSup]);
-
-
-  const onSelect = (e, blockIdx) => {
-    if (e.target.selectionStart < e.target.value.length) {
-      e.preventDefault();
-      setShowPopOver(true);
-      setCurrentIndexToSplitTextBlock(blockIdx);
-      setindex(blockIdx)
-      console.log(currentIndexToSplitTextBlock, index);
-      setSelectionStart(e.target.selectionStart);
+  const onMouseUp = (e, blockIdx) => {
+    if (e && e.target) {
+      const { selectionStart, value } = e.target;
+      if (selectionStart !== undefined && value !== undefined) {
+        setShowPopOver(true);
+        setCurrentIndexToSplitTextBlock(blockIdx);
+        setSelectionStart(selectionStart);
+      }
     }
-    var selectedText = "";
-    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-    let cursorStart = textVal.selectionStart;
-    let cursorEnd = textVal.selectionEnd;
-    selectedText = textVal.value.substring(cursorStart, cursorEnd)
-    if (selectedText != "" && subsuper == false) {
-      setselection(true)
-      setsubsuper(true)
-      localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-
-    }
-
-
+  
+    const getSelectedText = () => {
+      const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+      if (textVal) {
+        const cursorStart = textVal.selectionStart;
+        const cursorEnd = textVal.selectionEnd;
+        return textVal.value.substring(cursorStart, cursorEnd);
+      }
+      return "";
+    };
+  
+    setTimeout(() => {
+      const selectedText = getSelectedText();
+      if (selectedText !== "" && !subsuper) {
+        setselection(true);
+        setsubsuper(true);
+        localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
+      }
+    }, 0);
   };
+  
+
+  // const onMouseUp = (e, blockIdx) => {
+  //   setTimeout(() => {
+  //   if (e && e.target) {
+  //     const { selectionStart, value } = e.target;
+  //     if (selectionStart !== undefined && value !== undefined) {
+  //       setShowPopOver(true);
+  //       setCurrentIndexToSplitTextBlock(blockIdx);
+  //       setSelectionStart(selectionStart);
+  //     } 
+  //   } 
+  
+  //   var selectedText = "";
+  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+  //   if (textVal) {
+  //     var cursorStart = textVal.selectionStart;
+  //     var cursorEnd = textVal.selectionEnd;  
+  //   selectedText = textVal.value.substring(cursorStart, cursorEnd)
+  //   if (selectedText != "" && subsuper == false) {
+  //     setselection(true)
+  //     setsubsuper(true)
+  //     localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+  //   }
+  // }
+  // };
   const replaceSelectedText = (text, index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
@@ -254,10 +292,9 @@ const RightPanel = ({ currentIndex }) => {
     textarea.selectionEnd = start + text.length;
     textarea.focus();
     console.log(textarea.value, index);
-    const sub = onSubtitleChange(textarea.value, index);
+    const sub = onSubtitleChange(textarea.value, index,0);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     console.log(subtitles);
-    setindex()
     // saveTranscriptHandler(true, true, sub);
   }
 
@@ -613,7 +650,7 @@ const RightPanel = ({ currentIndex }) => {
                       }}
                       enabled={enableTransliterationSuggestion}
                       onChangeText={() => { }}
-                      onSelect={(e) => onSelect(e, index)}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
 
                       onBlur={() => {
@@ -633,8 +670,8 @@ const RightPanel = ({ currentIndex }) => {
                               }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             rows={4}
-                            onSelect={(e) => onSelect(e, index)}
-                            // onSelect={(e)=> selecttext(e,index)}
+                            onMouseUp={(e) => onMouseUp(e, index)}
+                            // onMouseUp={(e)=> selecttext(e,index)}
 
                             onBlur={() => {
                               // setTimeout(() => {
@@ -662,8 +699,8 @@ const RightPanel = ({ currentIndex }) => {
                         onChange={(event) => {
                           changeTranscriptHandler(event, index);
                         }}
-                        // onSelect={(e)=> selecttext(e,index)}
-                        onSelect={(e) => onSelect(e, index)}
+                        // onMouseUp={(e)=> selecttext(e,index)}
+                        onMouseUp={(e) => onMouseUp(e, index)}
                         value={item.text}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         className={`${classes.customTextarea} ${currentIndex === index ? classes.boxHighlight : ""

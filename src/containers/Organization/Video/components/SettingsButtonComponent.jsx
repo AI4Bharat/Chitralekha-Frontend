@@ -104,15 +104,7 @@ const SettingsButtonComponent = ({
 //  console.log(selection);
 
    
-    const savedPreference = localStorage.getItem('subscriptSuperscriptPreference');
 
-   useEffect(()=>{
-    if(savedPreference=="true" && subsuper==false){
-      setsubsuper(JSON.parse(savedPreference))
-      console.log(subsuper);
-    }
-   },[])
-    
 
   const getDisbled = (flag) => {
     if(!transcriptPayload?.payload?.payload?.length) {
@@ -230,7 +222,12 @@ const SettingsButtonComponent = ({
                   setAnchorElSettings(null);
                   console.log(subsuper);
                   setsubsuper(!subsuper);
-                  localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+                  if(taskData.task_type=="TRANSCRIPTION_EDIT"){
+                  localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
+                  }
+                  if(taskData.task_type=="TRANSLATION_EDIT"){
+                  localStorage.setItem('subscriptSuperscriptPreferenceTranslate', !subsuper);
+                  }
                   console.log(subsuper);
                 }}
               />

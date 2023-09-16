@@ -226,9 +226,11 @@ export const onSubtitleChange = (text, index,id) => {
   copySub.forEach((element, i) => {
     if (index === i) {
       if(id==1){
+        console.log(text);
         element.target_text = text;
       }
       else{
+        console.log(text);
         element.text = text;
       }
     }

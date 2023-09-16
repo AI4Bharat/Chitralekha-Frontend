@@ -277,7 +277,14 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
   };
-  
+  const savedPreference = localStorage.getItem('subscriptSuperscriptPreferenceTranslate');
+
+  useEffect(()=>{
+   if(savedPreference=="true" && subsuper==false){
+     setsubsuper(JSON.parse(savedPreference))
+     console.log(subsuper);
+   }
+  },[])
  
  
   const handleKeyDownSub = (event) => {
@@ -325,31 +332,63 @@ const TranslationRightPanel = ({ currentIndex }) => {
     };
   }, [handleKeyDownSup]);
 
-  const onSelect = (e, blockIdx) => {
-    if (e.target.selectionStart < e.target.value.length) {
-      e.preventDefault();
-      setCurrentIndexToSplitTextBlock(blockIdx);
-      setSelectionStart(e.target.selectionStart);
-    }
+  // const onMouseUp = (e, blockIdx) => {
+  //   if (e.target.selectionStart < e.target.value.length) {
+  //     e.preventDefault();
+  //     setCurrentIndexToSplitTextBlock(blockIdx);
+  //     setSelectionStart(e.target.selectionStart);
+  //   }
   
-    const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
+  //   const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
   
-    for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
-      const textVal = elementsWithBoxHighlightClass[i];
-      let cursorStart = textVal.selectionStart;
-      let cursorEnd = textVal.selectionEnd;
-      const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-      console.log(`Selected text in element ${i}:`, selectedText);
+    // for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+    //   const textVal = elementsWithBoxHighlightClass[i];
+    //   let cursorStart = textVal.selectionStart;
+    //   let cursorEnd = textVal.selectionEnd;
+    //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+  //     console.log(`Selected text in element ${i}:`, selectedText);
   
-      if (selectedText !== "" && subsuper === false) {
-        setselection(true);
-        setsubsuper(true);
-        localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+  //     if (selectedText !== "" && subsuper === false) {
+  //       setselection(true);
+  //       setsubsuper(true);
+  //       localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
+  //     }
+  //   }
+  // };
+  
+  const onMouseUp = (e, blockIdx) => {
+    if (e && e.target) {
+      const { selectionStart, value } = e.target;
+      if (selectionStart !== undefined && value !== undefined) {
+        setCurrentIndexToSplitTextBlock(blockIdx);
+        setSelectionStart(selectionStart);
       }
     }
+  
+    const getSelectedText = () => {
+      const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
+        for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+          if (elementsWithBoxHighlightClass) {
+          const textVal = elementsWithBoxHighlightClass[i];
+          let cursorStart = textVal.selectionStart;
+          let cursorEnd = textVal.selectionEnd;
+          const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+          if (selectedText !== ""){return selectedText};
+          }
+      }
+      return "";
+    };
+  
+    setTimeout(() => {
+      const selectedText = getSelectedText();
+      if (selectedText !== "" && !subsuper) {
+        setselection(true);
+        setsubsuper(true);
+        localStorage.setItem('subscriptSuperscriptPreferenceTranslate', !subsuper);
+      }
+    }, 0);
   };
   
-
   const replaceSelectedText = (text, index,id) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[id];
     const start = textarea.selectionStart;
@@ -610,7 +649,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
-                        onSelect={(e) => onSelect(e, index)}
+                        onMouseUp={(e) => onMouseUp(e, index)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         style={{ fontSize: fontSize, height: "100px" }}
                         value={item.text}
@@ -649,7 +688,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                       containerStyles={{
                         width: "100%",
                       }}
-                      onSelect={(e) => onSelect(e, index)}
+                      onMouseUp={(e) => onMouseUp(e, index)}
                       style={{ fontSize: fontSize, height: "100px" }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -692,7 +731,7 @@ const TranslationRightPanel = ({ currentIndex }) => {
                           classes.w95
                         }`}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
-                        onSelect={(e) => onSelect(e, index)}
+                        onMouseUp={(e) => onMouseUp(e, index)}
                         style={{ fontSize: fontSize, height: "100px" }}
                         onChange={(event) => {
                           changeTranscriptHandler(
