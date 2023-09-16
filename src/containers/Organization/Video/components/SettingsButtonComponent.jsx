@@ -1,4 +1,4 @@
-import React, { memo, useState , useEffect } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -16,8 +16,8 @@ import {
   Typography,
   MenuItem,
 } from "@mui/material";
-import SubscriptIcon from '@mui/icons-material/Subscript';
-import SuperscriptIcon from '@mui/icons-material/Superscript';
+import SubscriptIcon from "@mui/icons-material/Subscript";
+import SuperscriptIcon from "@mui/icons-material/Superscript";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -68,8 +68,6 @@ const SettingsButtonComponent = ({
   const classes = VideoLandingStyle();
   // const dispatch = useDispatch();
 
-
-
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
 
@@ -86,28 +84,29 @@ const SettingsButtonComponent = ({
     (state) => state.commonReducer.totalSentences
   );
 
-// useEffect(()=>{
-//   // if(textVal){
-//   const textVal = document.getElementsByClassName(classes.boxHighlight)[0]; 
-//     let cursorStart = textVal.selectionStart;
-//     let cursorEnd = textVal.selectionEnd;
-//     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
-//     if(selectedText!=""){
-//       setselection(true)
-//     }
-//     else{
-//       setselection(false)
-//     }
-//   // }
-//  },[])
+  // useEffect(()=>{
+  //   // if(textVal){
+  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+  //     let cursorStart = textVal.selectionStart;
+  //     let cursorEnd = textVal.selectionEnd;
+  //     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+  //     if(selectedText!=""){
+  //       setselection(true)
+  //     }
+  //     else{
+  //       setselection(false)
+  //     }
+  //   // }
+  //  },[])
 
-//  console.log(selection);
+  //  console.log(selection);
 
    
-
+   
+    
 
   const getDisbled = (flag) => {
-    if(!transcriptPayload?.payload?.payload?.length) {
+    if (!transcriptPayload?.payload?.payload?.length) {
       return true;
     }
 
@@ -153,17 +152,18 @@ const SettingsButtonComponent = ({
         </Tooltip>
       )}
 
-      {(taskData?.task_type?.includes("TRANSLATION_EDIT") ||
-        taskData?.task_type?.includes("VOICEOVER")) && (
-        <Tooltip title="Incorrect Subtitles Info" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={handleInfoButtonClick}
-          >
-            <InfoOutlinedIcon className={classes.rightPanelSvg} />
-          </IconButton>
-        </Tooltip>
+      {taskData?.task_type?.includes("TRANSCRIPTION") && (
+        <Divider orientation="vertical" className={classes.rightPanelDivider} />
       )}
+
+      <Tooltip title="Incorrect Subtitles Info" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          onClick={handleInfoButtonClick}
+        >
+          <InfoOutlinedIcon className={classes.rightPanelSvg} />
+        </IconButton>
+      </Tooltip>
 
       <Tooltip title="Settings" placement="bottom">
         <IconButton
@@ -223,11 +223,11 @@ const SettingsButtonComponent = ({
                   console.log(subsuper);
                   setsubsuper(!subsuper);
                   if(taskData.task_type=="TRANSCRIPTION_EDIT"){
-                  localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
+                  localStorage.setItem('subscriptSuperscriptPreferenceTanscript', !subsuper);
                   }
                   if(taskData.task_type=="TRANSLATION_EDIT"){
-                  localStorage.setItem('subscriptSuperscriptPreferenceTranslate', !subsuper);
-                  }
+                    localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
+                    }
                   console.log(subsuper);
                 }}
               />
@@ -235,22 +235,26 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-      {subsuper===true || selection==true?<Divider orientation="vertical" className={classes.rightPanelDivider} />:null}
+      {subsuper === true || selection == true ? (
+        <Divider orientation="vertical" className={classes.rightPanelDivider} />
+      ) : null}
 
-      {subsuper===true || selection==true?<Tooltip title="SubScript" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          onClick={() => handleSubscript()}
-        >
-          <SubscriptIcon className={classes.rightPanelSvg}  />
-        </IconButton>
-      </Tooltip>:null}
+      {subsuper === true || selection == true ? (
+        <Tooltip title="SubScript" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => handleSubscript()}
+          >
+            <SubscriptIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      ) : null}
 
       {subsuper===true || selection==true?<Tooltip title="SuperScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
-          onClick={() => handleSuperscript()}
+          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
         >
           <SuperscriptIcon className={classes.rightPanelSvg}  />
         </IconButton>

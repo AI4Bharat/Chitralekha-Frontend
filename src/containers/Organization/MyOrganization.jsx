@@ -35,11 +35,7 @@ import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import {
-  AddOrganizationMember,
-  AlertComponent,
-  Loader,
-} from "common";
+import { AddOrganizationMember, AlertComponent, Loader } from "common";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -132,9 +128,11 @@ const MyOrganization = () => {
   }, [userData]);
 
   const addNewMemberHandler = async () => {
+    const memberNames = newMemberName.split(",").map((item) => item.trim());
+
     const data = {
       role: newMemberRole,
-      emails: [newMemberName],
+      emails: memberNames,
       organization_id: id,
     };
     const apiObj = new AddOrganizationMemberAPI(data);
