@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { speakerInfoOptions, bgMusicOptions } from "config";
+import { speakerInfoOptions } from "config";
 
 const ExportDialog = ({
   open,
@@ -27,7 +27,7 @@ const ExportDialog = ({
   handleExportSubmitClick,
   handleExportRadioButtonChange,
 }) => {
-  const { transcription, translation, voiceover, speakerInfo, bgMusic } = exportTypes;
+  const { transcription, translation, voiceover, speakerInfo } = exportTypes;
 
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -140,29 +140,28 @@ const ExportDialog = ({
             </DialogActions>
           </>
         ) : (
-          // <>
-          //   <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
-          //     Background Music
-          //   </DialogContentText>
-          //   <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
-          //     <FormControl>
-          //       <RadioGroup row>
-          //         {bgMusicOptions?.map((item, index) => (
-          //           <FormControlLabel
-          //             key={index}
-          //             value={item.value}
-          //             control={<Radio />}
-          //             checked={bgMusic === item.value}
-          //             label={item.label}
-          //             name="bgMusic"
-          //             onClick={(event) => handleExportRadioButtonChange(event)}
-          //           />
-          //         ))}
-          //       </RadioGroup>
-          //     </FormControl>
-          //   </DialogActions>
-          // </>
-          null
+          <>
+            {/* <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
+              Background Music
+            </DialogContentText>
+            <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
+              <FormControl>
+                <RadioGroup row>
+                  {bgMusicOptions?.map((item, index) => (
+                    <FormControlLabel
+                      key={index}
+                      value={item.value}
+                      control={<Radio />}
+                      checked={bgMusic === item.value}
+                      label={item.label}
+                      name="bgMusic"
+                      onClick={(event) => handleExportRadioButtonChange(event)}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions> */}
+          </>
         )}
 
         <DialogActions>

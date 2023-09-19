@@ -35,11 +35,7 @@ import OrganizationSettings from "./OrganizationSettings";
 import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import {
-  AddOrganizationMember,
-  AlertComponent,
-  Loader,
-} from "common";
+import { AddOrganizationMember, AlertComponent, Loader } from "common";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -66,7 +62,7 @@ const MyOrganization = () => {
 
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
-  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberName, setNewMemberName] = useState([]);
   const [newMemberRole, setNewMemberRole] = useState("");
   const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState([]);
@@ -87,7 +83,7 @@ const MyOrganization = () => {
     if (!progress) {
       if (success) {
         if (apiType === "GET_USERS_ROLES") {
-          setNewMemberName("");
+          setNewMemberName([]);
           setNewMemberRole("");
           getOrganizatioUsersList();
         }
@@ -134,7 +130,7 @@ const MyOrganization = () => {
   const addNewMemberHandler = async () => {
     const data = {
       role: newMemberRole,
-      emails: [newMemberName],
+      emails: newMemberName,
       organization_id: id,
     };
     const apiObj = new AddOrganizationMemberAPI(data);
