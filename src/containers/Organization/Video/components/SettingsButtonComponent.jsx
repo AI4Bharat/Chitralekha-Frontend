@@ -223,7 +223,7 @@ const SettingsButtonComponent = ({
                   console.log(subsuper);
                   setsubsuper(!subsuper);
                   if(taskData.task_type=="TRANSCRIPTION_EDIT"){
-                  localStorage.setItem('subscriptSuperscriptPreferenceTanscript', !subsuper);
+                  localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
                   }
                   if(taskData.task_type=="TRANSLATION_EDIT"){
                     localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
