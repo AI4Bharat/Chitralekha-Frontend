@@ -277,13 +277,15 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Button
-              className={classes.projectButton}
-              onClick={() => setAddUserDialog(true)}
-              variant="contained"
-            >
-              Add New Member
-            </Button>
+            {userData.role === "ORG_OWNER" && (
+              <Button
+                className={classes.projectButton}
+                onClick={() => setAddUserDialog(true)}
+                variant="contained"
+              >
+                Add New Member
+              </Button>
+            )}
 
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <UserList data={usersList} />
