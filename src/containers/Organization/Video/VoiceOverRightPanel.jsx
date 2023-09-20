@@ -21,6 +21,7 @@ import {
   ConfirmDialog,
   ConfirmErrorDialog,
   RecorderComponent,
+  ShortcutKeys,
   TableDialog,
 } from "common";
 
@@ -84,7 +85,7 @@ const VoiceOverRightPanel = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
-  const [canSave, setCanSave] = useState(false);
+  const [, setCanSave] = useState(false);
   const [complete, setComplete] = useState(false);
   const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
@@ -347,8 +348,22 @@ const VoiceOverRightPanel = () => {
     dispatch(APITransport(apiObj));
   };
 
+  const shortcuts = [
+    {
+      keys: ["Control", "ArrowRight"],
+      callback: () => next && onNavigationClick(currentPage + 1),
+    },
+    {
+      keys: ["Control", "ArrowLeft"],
+      callback: () => {
+        previous && onNavigationClick(currentPage - 1);
+      },
+    },
+  ];
+
   return (
     <>
+      <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
         style={{ position: "relative" }}
