@@ -103,7 +103,9 @@ const SettingsButtonComponent = ({
 
    
    
-    
+  const savedPreferenceTranscript = localStorage.getItem('subscriptSuperscriptPreferenceTranscript');
+  const savedPreferenceTranslate = localStorage.getItem('subscriptSuperscriptPreferenceTranslate');
+
 
   const getDisbled = (flag) => {
     if (!transcriptPayload?.payload?.payload?.length) {
