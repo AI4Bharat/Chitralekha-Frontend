@@ -99,7 +99,7 @@ const SettingsButtonComponent = ({
   //   // }
   //  },[])
 
-  //  console.log(selection);
+  ///  console.log(selection);
 
   const savedPreference = localStorage.getItem(
     "subscriptSuperscriptPreference"
