@@ -58,7 +58,7 @@ const CreateVideoDialog = ({
   setSpeakerType,
 }) => {
   // org_ids contains the list of all the organisations who want the description to be shown as default in the tasks table 
-  const org_ids = [1, 16];
+  const org_ids = [16];
   const user_org_id = JSON.parse(localStorage.getItem("userData")).organization.id;
 
   const dispatch = useDispatch();
