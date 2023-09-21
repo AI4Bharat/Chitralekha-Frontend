@@ -18,7 +18,7 @@ const WaveForm = memo(({ setWaveform, setRender }) => {
   const $waveform = useRef();
 
   const player = useSelector((state) => state.commonReducer.player);
-
+  
   useEffect(() => {
     [...WFPlayer.instances].forEach((item) => item.destroy());
 
@@ -28,6 +28,7 @@ const WaveForm = memo(({ setWaveform, setRender }) => {
       duration: 10,
       padding: 1,
       wave: true,
+      cursor: true,
       pixelRatio: 2,
       container: $waveform.current,
       mediaElement: player,
@@ -48,7 +49,8 @@ const WaveForm = memo(({ setWaveform, setRender }) => {
   }, [player, $waveform, setWaveform, setRender, player.src]);
 
   return <div className={classes.waveform} ref={$waveform} />;
-});
+},
+);
 
 const Progress = memo(({ waveform, currentTime, subtitle = [] }) => {
   const classes = VideoLandingStyle();
@@ -181,7 +183,6 @@ const Grab = memo(({ waveform }) => {
     document.addEventListener("mouseup", onGrabUp);
     return () => document.removeEventListener("mouseup", onGrabUp);
   }, []);
-
   return (
     <div
       className={`${classes.grab} ${grabbing ? classes.grabbing : ""}`}

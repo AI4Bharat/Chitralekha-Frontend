@@ -80,6 +80,12 @@ import {
 } from "redux/actions";
 
 const OrgLevelTaskList = () => {
+  // org_ids contains the list of all the organisations who want the description to be shown as default in the tasks table 
+  const org_ids = [16];
+  const user_org_id = JSON.parse(localStorage.getItem("userData")).organization.id;
+  const [desc, setShowDesc] = useState(false);
+  const [id, setId] = useState();
+  
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const tableClasses = TableStyles();
@@ -617,10 +623,33 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: columnDisplay,
+        display: org_ids.includes(user_org_id) ? true : columnDisplay,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: renderTaskListColumnCell,
+        customBodyRender: !org_ids.includes(user_org_id) ? renderTaskListColumnCell : (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+          const slicedDesc = String(value).slice(0, 10);
+
+          const handleMouseOver = () => {
+            const rowData = tableMeta.rowData;
+            setShowDesc(true);
+            setId(rowData[0]);
+          }
+
+          return (
+            <Box
+              id={selectedTask.id}
+              onMouseOver = {handleMouseOver}
+              onMouseOut={() => setShowDesc(false)}
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+              {!desc ? slicedDesc : (id === tableMeta.rowData[0] ? value : slicedDesc)}
+            </Box>
+          );
+        },
       },
     };
 

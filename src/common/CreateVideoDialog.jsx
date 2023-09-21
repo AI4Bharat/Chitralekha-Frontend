@@ -57,6 +57,10 @@ const CreateVideoDialog = ({
   speakerType,
   setSpeakerType,
 }) => {
+  // org_ids contains the list of all the organisations who want the description to be shown as default in the tasks table 
+  const org_ids = [1, 16];
+  const user_org_id = JSON.parse(localStorage.getItem("userData")).organization.id;
+
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
 
@@ -385,6 +389,7 @@ const CreateVideoDialog = ({
           label="Description"
           fullWidth
           multiline
+          required={org_ids.includes(user_org_id) ? true : false}
           rows={3}
           value={videoDescription}
           onChange={(event) => setVideoDescription(event.target.value)}
