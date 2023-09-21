@@ -31,7 +31,7 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { ConfirmDialog, TableDialog, TimeBoxes } from "common";
+import { ConfirmDialog, ShortcutKeys, TableDialog, TimeBoxes } from "common";
 
 //APIs
 import C from "redux/constants";
@@ -44,7 +44,7 @@ import {
 } from "redux/actions";
 import { failInfoColumns } from "config";
 
-const TranslationRightPanel = ({ currentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -77,8 +77,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+<<<<<<< HEAD
   const [selectionStart, setSelectionStart] = useState();
   const [selection, setselection] = useState(false);
+=======
+  const [, setselection] = useState(false);
+>>>>>>> develop2
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
   const [regenerate, setRegenerate] = useState(false);
@@ -87,8 +91,12 @@ const TranslationRightPanel = ({ currentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+<<<<<<< HEAD
   const [subsuper, setsubsuper] = useState(false)
 
+=======
+  const [subsuper, setsubsuper] = useState(true);
+>>>>>>> develop2
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -167,17 +175,9 @@ const TranslationRightPanel = ({ currentIndex }) => {
       setRedoStack([]);
       prevOffsetRef.current = currentOffset;
     }
-    getPayload(currentOffset, limit);
 
     // eslint-disable-next-line
   }, [limit, currentOffset]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      console.log('event', e);
-    })
-  }, []);
-
 
   const onDelete = useCallback(
     (index) => {
@@ -193,7 +193,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
       const sub = onSubtitleDelete(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -217,7 +216,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
 
       const sub = onMerge(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -250,7 +248,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    // saveTranscriptHandler(false, false, arr);
   };
 
   const saveTranscriptHandler = async (
@@ -277,7 +274,10 @@ const TranslationRightPanel = ({ currentIndex }) => {
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
   };
+<<<<<<< HEAD
   const savedPreference = localStorage.getItem('subscriptSuperscriptPreferenceTranslate');
+=======
+>>>>>>> develop2
 
   useEffect(()=>{
    if(savedPreference=="true" && subsuper==false){
@@ -399,7 +399,9 @@ const TranslationRightPanel = ({ currentIndex }) => {
     textarea.value = beforeSelection + text + afterSelection;
     textarea.selectionStart = start + text.length;
     textarea.selectionEnd = start + text.length;
+
     textarea.focus();
+<<<<<<< HEAD
     console.log(textarea.value, index);
       const sub = onSubtitleChange(textarea.value, index,id);
       dispatch(setSubtitles(sub, C.SUBTITLES));
@@ -422,9 +424,30 @@ const TranslationRightPanel = ({ currentIndex }) => {
         
         return subscript[char] || char;
       });
+=======
+
+    const sub = onSubtitleChange(textarea.value, index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  };
+
+  const handleSubscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    const cursorStart = textVal.selectionStart;
+    const cursorEnd = textVal.selectionEnd;
+    const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+
+    if (selectedText !== "") {
+      const subscriptText = selectedText.replace(
+        /[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g,
+        (char) => {
+          return subscript[char];
+        }
+      );
+>>>>>>> develop2
 
       replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
     }
+<<<<<<< HEAD
   }
   }
 
@@ -452,12 +475,31 @@ const TranslationRightPanel = ({ currentIndex }) => {
   }
   }
 
+=======
+  };
+
+  const handleSuperscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    const cursorStart = textVal.selectionStart;
+    const cursorEnd = textVal.selectionEnd;
+    const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+
+    if (selectedText !== "") {
+      const superscriptText = selectedText.replace(
+        /[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g,
+        (char) => {
+          return superscriptMap[char];
+        }
+      );
+      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
+    }
+  };
+>>>>>>> develop2
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
       const sub = timeChange(value, index, type, time);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
     [limit, currentOffset]
@@ -468,7 +510,6 @@ const TranslationRightPanel = ({ currentIndex }) => {
       const sub = addSubtitleBox(index);
 
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      // saveTranscriptHandler(false, true, sub);
 
       setUndoStack((prevState) => [
         ...prevState,
@@ -549,10 +590,81 @@ const TranslationRightPanel = ({ currentIndex }) => {
     dispatch(APITransport(apiObj));
   };
 
+<<<<<<< HEAD
 
+=======
+  const onMouseUp = (e, blockIdx) => {
+    if (e.target.selectionStart < e.target.value.length) {
+      e.preventDefault();
+      setCurrentIndexToSplitTextBlock(blockIdx);
+    }
+
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    const cursorStart = textVal.selectionStart;
+    const cursorEnd = textVal.selectionEnd;
+    const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+    
+    if (selectedText !== "") {
+      setselection(true);
+      setsubsuper(true);
+      localStorage.setItem("subscriptSuperscriptPreference", !subsuper);
+    }
+  };
+>>>>>>> develop2
+
+  const shortcuts = [
+    {
+      keys: ["Control", "ArrowRight"],
+      callback: () => next && onNavigationClick(currentOffset + 1),
+    },
+    {
+      keys: ["Control", "ArrowLeft"],
+      callback: () => {
+        previous && onNavigationClick(currentOffset - 1);
+      },
+    },
+    {
+      keys: ["Control", "ArrowUp"],
+      callback: () => {
+        currentIndex > 0 && setCurrentIndex((prev) => prev - 1);
+      },
+    },
+    {
+      keys: ["Control", "ArrowDown"],
+      callback: () => {
+        currentIndex < subtitles.length - 1 &&
+          setCurrentIndex((prev) => prev + 1);
+      },
+    },
+    {
+      keys: ["Control", "b"],
+      callback: () => {
+        handleSubscript();
+      },
+    },
+    {
+      keys: ["Control", "e"],
+      callback: () => {
+        handleSuperscript();
+      },
+    },
+    {
+      keys: ["Control", "a"],
+      callback: () => {
+        addNewSubtitleBox(currentIndex);
+      },
+    },
+    {
+      keys: ["Control", "d"],
+      callback: () => {
+        onDelete(currentIndex);
+      },
+    },
+  ];
 
   return (
     <>
+      <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
         style={{ position: "relative" }}
