@@ -101,16 +101,11 @@ const SettingsButtonComponent = ({
 
   //  console.log(selection);
 
-  const savedPreference = localStorage.getItem(
-    "subscriptSuperscriptPreference"
-  );
+   
+   
+  const savedPreferenceTranscript = localStorage.getItem('subscriptSuperscriptPreferenceTranscript');
+  const savedPreferenceTranslate = localStorage.getItem('subscriptSuperscriptPreferenceTranslate');
 
-  useEffect(() => {
-    if (savedPreference == "true" && subsuper == false) {
-      setsubsuper(JSON.parse(savedPreference));
-      console.log(subsuper);
-    }
-  }, []);
 
   const getDisbled = (flag) => {
     if (!transcriptPayload?.payload?.payload?.length) {
@@ -229,10 +224,12 @@ const SettingsButtonComponent = ({
                   setAnchorElSettings(null);
                   console.log(subsuper);
                   setsubsuper(!subsuper);
-                  localStorage.setItem(
-                    "subscriptSuperscriptPreference",
-                    !subsuper
-                  );
+                  if(taskData.task_type=="TRANSCRIPTION_EDIT"){
+                  localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
+                  }
+                  if(taskData.task_type=="TRANSLATION_EDIT"){
+                    localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
+                    }
                   console.log(subsuper);
                 }}
               />
@@ -255,17 +252,15 @@ const SettingsButtonComponent = ({
         </Tooltip>
       ) : null}
 
-      {subsuper === true || selection == true ? (
-        <Tooltip title="SuperScript" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            sx={{ marginLeft: "5px" }}
-            onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
-          >
-            <SuperscriptIcon className={classes.rightPanelSvg} />
-          </IconButton>
-        </Tooltip>
-      ) : null}
+      {subsuper===true || selection==true?<Tooltip title="SuperScript" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          sx={{ marginLeft: "5px" }}
+          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+        >
+          <SuperscriptIcon className={classes.rightPanelSvg}  />
+        </IconButton>
+      </Tooltip>:null}
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 

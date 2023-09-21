@@ -256,12 +256,12 @@ export const renderTaskListColumnCell = (value, tableMeta) => {
 };
 
 export const taskListColumns = [
-  {	
-    name: "id",	
-    label: "Id",	
-    options: {	
-      customBodyRender: renderTaskListColumnCell,	
-    },	
+  {
+    name: "id",
+    label: "Id",
+    options: {
+      customBodyRender: renderTaskListColumnCell,
+    },
   },
   {
     name: "task_type_label",
@@ -337,12 +337,12 @@ export const taskListColumns = [
 ];
 
 export const orgTaskListColumns = [
-  {	
-    name: "id",	
-    label: "Id",	
-    options: {	
-      customBodyRender: renderTaskListColumnCell,	
-    },	
+  {
+    name: "id",
+    label: "Id",
+    options: {
+      customBodyRender: renderTaskListColumnCell,
+    },
   },
   {
     name: "task_type_label",
@@ -520,5 +520,28 @@ export const voiceoverFailInfoColumns = [
   {
     name: "sentence",
     label: "Sentence",
+  },
+];
+
+export const reopenTableColumns = [
+  {
+    name: "id",
+    label: "Task Id",
+  },
+  {
+    name: "video_id",
+    label: "Video Id",
+  },
+  {
+    name: "video_name",
+    label: "Video Name",
+  },
+  {
+    name: "target_language",
+    label: "Target Language",
+  },
+  {
+    name: "task_type",
+    label: "Task Type",
   },
 ];

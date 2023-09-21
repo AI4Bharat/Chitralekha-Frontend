@@ -8,38 +8,18 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Checkbox,
-  ListItemText,
-  Box,
-  Chip,
   IconButton,
   Typography,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-  getContentAnchorEl: null,
-  anchorOrigin: {
-    vertical: "bottom",
-    horizontal: "center",
-  },
-  transformOrigin: {
-    vertical: "top",
-    horizontal: "center",
-  },
-  variant: "menu",
-};
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const AddProjectMembers = ({
   open,
@@ -50,6 +30,24 @@ const AddProjectMembers = ({
   handleSelectField,
   managerNames,
 }) => {
+  const filterOptions = (options, state) => {
+    const newOptions = options.filter((user) => {
+      const { first_name, last_name, email } = user;
+
+      const searchValue = state.inputValue.toLowerCase();
+      const fullName = `${first_name} ${last_name}`;
+
+      return (
+        first_name.toLowerCase().includes(searchValue) ||
+        last_name.toLowerCase().includes(searchValue) ||
+        email.toLowerCase().includes(searchValue) ||
+        fullName.toLowerCase().includes(searchValue)
+      );
+    });
+
+    return newOptions;
+  };
+
   return (
     <Dialog
       open={open}
@@ -71,29 +69,30 @@ const AddProjectMembers = ({
       </DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
         <FormControl fullWidth>
-          <InputLabel id="mutiple-select-label">Select</InputLabel>
-          <Select
-            labelId="mutiple-select-label"
-            label="Select"
+          <Autocomplete
             multiple
+            id="add-project-member"
+            options={managerNames}
             value={selectFieldValue}
-            onChange={(event) => handleSelectField(event.target.value)}
-            renderValue={(selected) => (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {selected.map((value, index) => {
-                  return <Chip key={index} label={value.email} />;
-                })}
-              </Box>
+            onChange={(_event, newValue) => {
+              handleSelectField(newValue);
+            }}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option.email}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.email}
+              </li>
             )}
-            MenuProps={MenuProps}
-          >
-            {managerNames?.map((item, index) => (
-              <MenuItem key={index} value={item}>
-                <Checkbox checked={selectFieldValue.indexOf(item) > -1} />
-                <ListItemText primary={item.email} />
-              </MenuItem>
-            ))}
-          </Select>
+            renderInput={(params) => <TextField {...params} label="Select" />}
+            filterOptions={filterOptions}
+          />
         </FormControl>
       </DialogContent>
 

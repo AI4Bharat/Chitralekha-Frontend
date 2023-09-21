@@ -1,10 +1,13 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuProps } from "utils";
 
 //Components
 import {
+  Autocomplete,
+  Avatar,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -49,6 +52,10 @@ const AddOrganizationMember = ({
     // eslint-disable-next-line
   }, []);
 
+  const handleDelete = (chipToDelete) => {
+    handleTextField((chips) => chips.filter((chip) => chip !== chipToDelete));
+  };
+
   return (
     <Dialog
       open={open}
@@ -70,13 +77,35 @@ const AddOrganizationMember = ({
       </DialogTitle>
 
       <DialogContent style={{ paddingTop: 4 }}>
-        <TextField
-          label={textFieldLabel}
-          fullWidth
+        <Autocomplete
+          multiple
+          freeSolo
+          id="add-members"
           value={textFieldValue}
-          onChange={(event) => handleTextField(event.target.value)}
+          onChange={(event) => {
+            event.target.value.trim().length &&
+              handleTextField((prev) => [...prev, event.target.value]);
+          }}
+          options={[]}
+          renderTags={(tagValue) => {
+            return tagValue.map((option) => (
+              <Fragment key={option}>
+                {option.length ? (
+                  <Chip
+                    variant="outlined"
+                    color="primary"
+                    label={option}
+                    avatar={<Avatar>{option.charAt(0).toUpperCase()}</Avatar>}
+                    onDelete={() => handleDelete(option)}
+                  />
+                ) : null}
+              </Fragment>
+            ));
+          }}
           sx={{ mb: 3 }}
-          type="email"
+          renderInput={(params) => (
+            <TextField {...params} label={textFieldLabel} />
+          )}
         />
 
         {!isAdmin ? (

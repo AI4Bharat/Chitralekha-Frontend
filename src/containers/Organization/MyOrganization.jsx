@@ -62,7 +62,7 @@ const MyOrganization = () => {
 
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
-  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberName, setNewMemberName] = useState([]);
   const [newMemberRole, setNewMemberRole] = useState("");
   const [showCSVAlert, setShowCSVAlert] = useState(false);
   const [alertData, setAlertData] = useState([]);
@@ -83,7 +83,7 @@ const MyOrganization = () => {
     if (!progress) {
       if (success) {
         if (apiType === "GET_USERS_ROLES") {
-          setNewMemberName("");
+          setNewMemberName([]);
           setNewMemberRole("");
           getOrganizatioUsersList();
         }
@@ -128,11 +128,9 @@ const MyOrganization = () => {
   }, [userData]);
 
   const addNewMemberHandler = async () => {
-    const memberNames = newMemberName.split(",").map((item) => item.trim());
-
     const data = {
       role: newMemberRole,
-      emails: memberNames,
+      emails: newMemberName,
       organization_id: id,
     };
     const apiObj = new AddOrganizationMemberAPI(data);
@@ -279,13 +277,15 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Button
-              className={classes.projectButton}
-              onClick={() => setAddUserDialog(true)}
-              variant="contained"
-            >
-              Add New Member
-            </Button>
+            {userData.role === "ORG_OWNER" && (
+              <Button
+                className={classes.projectButton}
+                onClick={() => setAddUserDialog(true)}
+                variant="contained"
+              >
+                Add New Member
+              </Button>
+            )}
 
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <UserList data={usersList} />
