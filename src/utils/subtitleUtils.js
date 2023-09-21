@@ -531,8 +531,10 @@ export const exportFile = (data, taskDetails, exportType, type) => {
     video: videoId,
     src_language: sourceLanguage,
     target_language: targetLanguage,
+    description
   } = taskDetails;
 
+ const userData = JSON.parse(localStorage.getItem('userData'));
   let newBlob;
   if (exportType === "docx") {
     newBlob = new Blob([data], {
@@ -556,10 +558,20 @@ export const exportFile = (data, taskDetails, exportType, type) => {
 
   const format = exportType === "docx-bilingual" ? "docx" : exportType;
   const language = type === "transcription" ? sourceLanguage : targetLanguage;
-
+  let fileName = ""
+  if (userData?.organization?.id === 16) {
+    if (description.trim().length) {
+      fileName = `${description.trim()}.${format}`;
+    } else {
+      fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;
+    }
+  }
+  else {
+    fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;
+  }
   link.setAttribute(
     "download",
-    `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`
+    fileName
   );
   document.body.appendChild(link);
   link.click();
