@@ -103,8 +103,6 @@ const SettingsButtonComponent = ({
 
    
    
-  const savedPreferenceTranscript = localStorage.getItem('subscriptSuperscriptPreferenceTranscript');
-  const savedPreferenceTranslate = localStorage.getItem('subscriptSuperscriptPreferenceTranslate');
 
 
   const getDisbled = (flag) => {
@@ -237,11 +235,11 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-      {subsuper === true || selection == true ? (
+      {subsuper === true  ? (
         <Divider orientation="vertical" className={classes.rightPanelDivider} />
       ) : null}
 
-      {subsuper === true || selection == true ? (
+      {subsuper === true  ? (
         <Tooltip title="SubScript" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
@@ -252,7 +250,7 @@ const SettingsButtonComponent = ({
         </Tooltip>
       ) : null}
 
-      {subsuper===true || selection==true?<Tooltip title="SuperScript" placement="bottom">
+      {subsuper===true?<Tooltip title="SuperScript" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
