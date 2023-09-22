@@ -515,6 +515,10 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+
+    "&::selection": {
+      backgroundColor: "#8ebf42",
+    }
   },
 
   videoPlayerParent: {
