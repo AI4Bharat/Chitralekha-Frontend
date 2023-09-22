@@ -252,7 +252,7 @@ const RightPanel = ({ currentIndex }) => {
       const selectedText = getSelectedText();
       if (selectedText !== "" && subsuper==true) {
         setselection(true);
-        localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
+        localStorage.setItem('subscriptSuperscriptPreferenceTranscript', selection);
       }
     }, 0);
   };

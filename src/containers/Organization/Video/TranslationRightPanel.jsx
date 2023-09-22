@@ -371,7 +371,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
       const selectedText = getSelectedText();
       if (selectedText !== "" && subsuper==true) {
         setselection(true);
-        localStorage.setItem('subscriptSuperscriptPreferenceTranslate', !subsuper);
+        localStorage.setItem('subscriptSuperscriptPreferenceTranslate', selection);
       }
     }, 0);
   };
