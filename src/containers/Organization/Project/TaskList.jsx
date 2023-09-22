@@ -52,6 +52,12 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 
+// Utils
+import getLocalStorageData from "utils/getLocalStorageData";
+
+// Config
+import { org_ids } from "config";
+
 //APIs
 import {
   APITransport,
@@ -82,9 +88,7 @@ import {
 import constants from "redux/constants";
 
 const TaskList = () => {
-  // org_ids contains the list of all the organisations who want the description to be shown as default in the tasks table 
-  const org_ids = [16];
-  const user_org_id = JSON.parse(localStorage.getItem("userData")).organization.id;
+  const user_org_id = getLocalStorageData("userData").organization.id;
   const [desc, setShowDesc] = useState(false);
   const [id, setId] = useState();
   

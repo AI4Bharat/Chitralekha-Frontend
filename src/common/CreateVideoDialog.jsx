@@ -34,6 +34,12 @@ import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+// Utils
+import getLocalStorageData from "utils/getLocalStorageData";
+
+// Config
+import { org_ids } from "config";
+
 //Redux
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
 import { speakerFields, voiceOptions } from "config";
@@ -57,9 +63,7 @@ const CreateVideoDialog = ({
   speakerType,
   setSpeakerType,
 }) => {
-  // org_ids contains the list of all the organisations who want the description to be shown as default in the tasks table 
-  const org_ids = [1, 16];
-  const user_org_id = JSON.parse(localStorage.getItem("userData")).organization.id;
+  const user_org_id = getLocalStorageData("userData").organization.id;
 
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
