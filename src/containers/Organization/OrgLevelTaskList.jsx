@@ -88,7 +88,7 @@ import {
 const OrgLevelTaskList = () => {
   const user_org_id = getLocalStorageData("userData").organization.id;
   const [desc, setShowDesc] = useState(false);
-  const [id, setId] = useState();
+  const [org_id, setId] = useState();
   
   const dispatch = useDispatch();
   const classes = DatasetStyle();
@@ -249,6 +249,7 @@ const OrgLevelTaskList = () => {
     setLoading(true);
 
     const search = {
+      task_id: searchedColumn?.id,
       video_name: searchedColumn?.video_name,
       description: searchedColumn?.description,
       assignee: searchedColumn?.user,
@@ -581,6 +582,21 @@ const OrgLevelTaskList = () => {
   };
 
   const initColumns = () => {
+    const id = {
+      name: "id",
+      label: "Id",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: renderTaskListColumnCell,
+      },
+    };
+
     const videoName = {
       name: "video_name",
       label: "Video Name",
@@ -650,7 +666,7 @@ const OrgLevelTaskList = () => {
                 color: selectedTask.is_active ? "" : "grey",
               }}
             >
-              {!desc ? slicedDesc : (id === tableMeta.rowData[0] ? value : slicedDesc)}
+              {!desc ? slicedDesc : (org_id === tableMeta.rowData[0] ? value : slicedDesc)}
             </Box>
           );
         },
@@ -706,6 +722,7 @@ const OrgLevelTaskList = () => {
     };
 
     const columns = [...getColumns(orgTaskListColumns), actionColumn];
+    columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);
