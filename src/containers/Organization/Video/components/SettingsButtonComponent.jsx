@@ -220,7 +220,7 @@ const SettingsButtonComponent = ({
                 checked={subsuper}
                 onChange={() => {
                   setAnchorElSettings(null);
-                  console.log(subsuper);
+                 // console.log(subsuper);
                   setsubsuper(!subsuper);
                   if(taskData.task_type=="TRANSCRIPTION_EDIT"){
                   localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
@@ -228,7 +228,7 @@ const SettingsButtonComponent = ({
                   if(taskData.task_type=="TRANSLATION_EDIT"){
                     localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
                     }
-                  console.log(subsuper);
+                //  console.log(subsuper);
                 }}
               />
             }
