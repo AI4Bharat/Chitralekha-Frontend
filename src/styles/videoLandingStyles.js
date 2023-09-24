@@ -471,6 +471,11 @@ const VideoLandingStyle = makeStyles({
     resize: "none",
     fontFamily: "Roboto, sans-serif",
     width: "95.5%",
+
+    "&::selection": {
+     // backgroundColor: "#8ebf42",
+      backgroundColor: "#808080"
+    }
   },
 
   boxHighlight: {
@@ -511,6 +516,11 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+
+    "&::selection": {
+    //  backgroundColor: "#8ebf42",
+      backgroundColor: "#808080"
+    }
   },
 
   videoPlayerParent: {
