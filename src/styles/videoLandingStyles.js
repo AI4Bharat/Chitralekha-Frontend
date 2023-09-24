@@ -473,7 +473,8 @@ const VideoLandingStyle = makeStyles({
     width: "95.5%",
 
     "&::selection": {
-      backgroundColor: "#8ebf42",
+     // backgroundColor: "#8ebf42",
+      backgroundColor: "#808080"
     }
   },
 
@@ -517,7 +518,8 @@ const VideoLandingStyle = makeStyles({
     fontFamily: "Roboto, sans-serif",
 
     "&::selection": {
-      backgroundColor: "#8ebf42",
+    //  backgroundColor: "#8ebf42",
+      backgroundColor: "#808080"
     }
   },
 
