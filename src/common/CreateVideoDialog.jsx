@@ -34,6 +34,12 @@ import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+// Utils
+import getLocalStorageData from "utils/getLocalStorageData";
+
+// Config
+import { org_ids } from "config";
+
 //Redux
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
 import { speakerFields, voiceOptions } from "config";
@@ -57,6 +63,8 @@ const CreateVideoDialog = ({
   speakerType,
   setSpeakerType,
 }) => {
+  const user_org_id = getLocalStorageData("userData").organization.id;
+
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
 
@@ -383,6 +391,7 @@ const CreateVideoDialog = ({
 
         <TextField
           label="Description"
+          required={org_ids.includes(user_org_id) ? true : false}
           fullWidth
           multiline
           rows={3}
