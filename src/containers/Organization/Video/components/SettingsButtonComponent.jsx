@@ -84,23 +84,6 @@ const SettingsButtonComponent = ({
     (state) => state.commonReducer.totalSentences
   );
 
-  // useEffect(()=>{
-  //   // if(textVal){
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //     let cursorStart = textVal.selectionStart;
-  //     let cursorEnd = textVal.selectionEnd;
-  //     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
-  //     if(selectedText!=""){
-  //       setselection(true)
-  //     }
-  //     else{
-  //       setselection(false)
-  //     }
-  //   // }
-  //  },[])
-
-  //  console.log(selection);
-
    
    
 
@@ -225,9 +208,13 @@ const SettingsButtonComponent = ({
                   if(taskData.task_type=="TRANSCRIPTION_EDIT"){
                   localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
                   }
-                  if(taskData.task_type=="TRANSLATION_EDIT"){
+                  else if(taskData.task_type=="TRANSLATION_EDIT"){
                     localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
-                    }
+                  }
+                  else if(taskData.task_type=="VOICEOVER_EDIT"){
+                    localStorage.setItem('subscriptSuperscriptPreferenceVoice', !subsuper);
+                  }
+
                 //  console.log(subsuper);
                 }}
               />

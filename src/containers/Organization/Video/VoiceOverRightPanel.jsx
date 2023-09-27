@@ -3,8 +3,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
-import { Sub, base64toBlob, getSubtitleRange, setAudioContent } from "utils";
+import { Sub, base64toBlob, getSubtitleRange, setAudioContent ,onSubtitleChange} from "utils";
 import { voiceoverFailInfoColumns } from "config";
+import subscript from "config/subscript";
+import superscriptMap from "config/superscript";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -79,6 +81,7 @@ const VoiceOverRightPanel = () => {
   const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
   const [textChangeBtn, setTextChangeBtn] = useState([]);
+  const [selectionStart, setSelectionStart] = useState();
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
   const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
@@ -86,12 +89,17 @@ const VoiceOverRightPanel = () => {
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
   const [, setCanSave] = useState(false);
+  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
+  useState();
   const [complete, setComplete] = useState(false);
   const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [subsuper, setsubsuper] = useState(false);
+  const [selection, setselection] = useState(false);
+
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -219,6 +227,148 @@ const VoiceOverRightPanel = () => {
     dispatch(setSubtitles(arr, C.SUBTITLES));
     // saveTranscriptHandler(false, false);
   };
+
+  const savedPreference = localStorage.getItem('subscriptSuperscriptPreferenceVoice');
+
+  useEffect(()=>{
+   if(savedPreference=="true" && subsuper==false){
+     setsubsuper(JSON.parse(savedPreference))
+     console.log(subsuper);
+   }
+  },[])
+ 
+
+  const handleKeyDownSub = (event) => {
+    if (event.ctrlKey && event.key === 'b') {
+      event.preventDefault();
+      handleSubscript();
+    }
+  };
+
+  const handleKeyUpSub = (event) => {
+    if (event.key === 'Control') {
+    }
+  };
+  useEffect(() => {
+
+    document.addEventListener('keydown', handleKeyDownSub);
+    document.addEventListener('keyup', handleKeyUpSub);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDownSub);
+      document.removeEventListener('keyup', handleKeyUpSub);
+    };
+  }, [handleKeyDownSub]);
+
+
+  const handleKeyDownSup = (event) => {
+    if (event.ctrlKey && event.key === 'e') {
+      event.preventDefault();
+      console.log(event, currentIndexToSplitTextBlock);
+      handleSuperscript();
+    }
+  };
+
+  const handleKeyUpSup = (event) => {
+    if (event.key === 'Control') {
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDownSup);
+    document.addEventListener('keyup', handleKeyUpSup);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDownSup);
+      document.removeEventListener('keyup', handleKeyUpSup);
+    };
+  }, [handleKeyDownSup]);
+  const onMouseUp = (e, blockIdx) => {
+    if (e && e.target) {
+      const { selectionStart, value } = e.target;
+      if (selectionStart !== undefined && value !== undefined) {
+        setCurrentIndexToSplitTextBlock(blockIdx);
+        setSelectionStart(selectionStart);
+      }
+    }
+  
+    const getSelectedText = () => {
+      const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+      if (textVal) {
+        const cursorStart = textVal.selectionStart;
+        const cursorEnd = textVal.selectionEnd;
+        const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+        if(selectedText!=""){
+          return selectedText
+        }
+      }
+      return "";
+    };
+  
+    setTimeout(() => {
+      const selectedText = getSelectedText();
+      if (selectedText !== "" && subsuper==true) {
+        setselection(true);
+        localStorage.setItem('subscriptSuperscriptPreferenceVoice', selection);
+      }
+    }, 0);
+  };
+  
+
+  const replaceSelectedText = (text, index) => {
+    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const beforeSelection = textarea.value.substring(0, start);
+    const afterSelection = textarea.value.substring(end, textarea.value.length);
+
+    textarea.value = beforeSelection + text + afterSelection;
+    textarea.selectionStart = start + text.length;
+    textarea.selectionEnd = start + text.length;
+    textarea.focus();
+    console.log(textarea.value, index);
+    const sub = onSubtitleChange(textarea.value, index,0);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    console.log(subtitles);
+    // saveTranscriptHandler(true, true, sub);
+  }
+
+
+
+
+  const handleSubscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    console.log("selectedText", selectedText);
+    if (selectedText != "") {
+      const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
+        
+        return subscript[char] || char;
+      });
+
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
+    }
+  }
+
+
+
+  const handleSuperscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    let cursorStart = textVal.selectionStart;
+    let cursorEnd = textVal.selectionEnd;
+    let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+    var id;
+    if (selectedText != "") {
+      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
+
+        return superscriptMap[char] || char;
+      });
+
+      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
+    }
+  }
+
 
   const saveTranscriptHandler = async (
     isFinal,
@@ -373,6 +523,10 @@ const VoiceOverRightPanel = () => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             setRTL_Typing={setRTL_Typing}
+            setsubsuper={setsubsuper}
+            subsuper={subsuper}
+            handleSubscript={handleSubscript}
+            handleSuperscript={handleSuperscript}
             enableRTL_Typing={enableRTL_Typing}
             setFontSize={setFontSize}
             fontSize={fontSize}
@@ -470,6 +624,7 @@ const VoiceOverRightPanel = () => {
                           onChangeText={(text) => {
                             changeTranscriptHandler(text, index);
                           }}
+                          onMouseUp={(e) => onMouseUp(e, index)}
                           style={{
                             fontSize: fontSize,
                             height: "100px",
@@ -504,6 +659,7 @@ const VoiceOverRightPanel = () => {
                                 index
                               );
                             }}
+                            onMouseUp={(e) => onMouseUp(e, index)}
                             style={{
                               fontSize: fontSize,
                               height: "100px",

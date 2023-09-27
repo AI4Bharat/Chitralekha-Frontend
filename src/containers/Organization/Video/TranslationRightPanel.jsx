@@ -320,29 +320,6 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     };
   }, [handleKeyDownSup]);
 
-  // const onMouseUp = (e, blockIdx) => {
-  //   if (e.target.selectionStart < e.target.value.length) {
-  //     e.preventDefault();
-  //     setCurrentIndexToSplitTextBlock(blockIdx);
-  //     setSelectionStart(e.target.selectionStart);
-  //   }
-  
-  //   const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
-  
-    // for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
-    //   const textVal = elementsWithBoxHighlightClass[i];
-    //   let cursorStart = textVal.selectionStart;
-    //   let cursorEnd = textVal.selectionEnd;
-    //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-  //     console.log(`Selected text in element ${i}:`, selectedText);
-  
-  //     if (selectedText !== "" && subsuper === false) {
-  //       setselection(true);
-  //       setsubsuper(true);
-  //       localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-  //     }
-  //   }
-  // };
   
   const onMouseUp = (e, blockIdx) => {
     if (e && e.target) {
@@ -416,25 +393,6 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   }
   };
 
-  // const handleSubscript = () => {
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   const cursorStart = textVal.selectionStart;
-  //   const cursorEnd = textVal.selectionEnd;
-  //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-
-  //   if (selectedText !== "") {
-  //     const subscriptText = selectedText.replace(
-  //       /[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g,
-  //       (char) => {
-  //         return subscript[char];
-  //       }
-  //     );
-
-  //     replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
-  //   }
-  // }
-  // }
-
 
 
 
@@ -458,25 +416,6 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     }
   }
   }
-
-
-
-  // const handleSuperscript = () => {
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   const cursorStart = textVal.selectionStart;
-  //   const cursorEnd = textVal.selectionEnd;
-  //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-
-  //   if (selectedText !== "") {
-  //     const superscriptText = selectedText.replace(
-  //       /[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g,
-  //       (char) => {
-  //         return superscriptMap[char];
-  //       }
-  //     );
-  //     replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
-  //   }
-  // };
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
@@ -572,23 +511,6 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     dispatch(APITransport(apiObj));
   };
 
-  // const onMouseUp = (e, blockIdx) => {
-  //   if (e.target.selectionStart < e.target.value.length) {
-  //     e.preventDefault();
-  //     setCurrentIndexToSplitTextBlock(blockIdx);
-  //   }
-
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   const cursorStart = textVal.selectionStart;
-  //   const cursorEnd = textVal.selectionEnd;
-  //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-    
-  //   if (selectedText !== "") {
-  //     setselection(true);
-  //     setsubsuper(true);
-  //     localStorage.setItem("subscriptSuperscriptPreference", !subsuper);
-  //   }
-  // };
 
   const shortcuts = [
     {

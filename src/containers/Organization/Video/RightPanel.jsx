@@ -258,30 +258,7 @@ const RightPanel = ({ currentIndex }) => {
   };
   
 
-  // const onMouseUp = (e, blockIdx) => {
-  //   setTimeout(() => {
-  //   if (e && e.target) {
-  //     const { selectionStart, value } = e.target;
-  //     if (selectionStart !== undefined && value !== undefined) {
-  //       setShowPopOver(true);
-  //       setCurrentIndexToSplitTextBlock(blockIdx);
-  //       setSelectionStart(selectionStart);
-  //     } 
-  //   } 
-  
-  //   var selectedText = "";
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   if (textVal) {
-  //     var cursorStart = textVal.selectionStart;
-  //     var cursorEnd = textVal.selectionEnd;  
-  //   selectedText = textVal.value.substring(cursorStart, cursorEnd)
-  //   if (selectedText != "" && subsuper == false) {
-  //     setselection(true)
-  //     setsubsuper(true)
-  //     localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-  //   }
-  // }
-  // };
+ 
   const replaceSelectedText = (text, index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
