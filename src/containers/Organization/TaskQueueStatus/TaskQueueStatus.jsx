@@ -36,10 +36,10 @@ const TaskQueueStatus = () => {
               label={"VoiceOver Queue"}
               className={classes.taskQueueStatusTabs}
             />
-            <Tab
+            {/* <Tab
               label={"VoiceOver Integration Queue"}
               className={classes.taskQueueStatusTabs}
-            />
+            /> */}
           </Tabs>
         </Box>
 
@@ -67,13 +67,13 @@ const TaskQueueStatus = () => {
           <QueueStatusTable queueType={"tts"} />
         </TabPanel>
 
-        <TabPanel
+        {/* <TabPanel
           value={value}
           index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <QueueStatusTable queueType={"integration"} />
-        </TabPanel>
+        </TabPanel> */}
       </Card>
     </Grid>
   );
