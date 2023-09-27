@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { getColumns, getOptions } from "utils";
-import { taskQueueStatusColumns } from "config";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { taskQueueStatusColumns } from "config";
+import { getColumns, getOptions } from "utils";
 
-//Components
 import MUIDataTable from "mui-datatables";
 
-//APIs
 import { APITransport, FetchTaskQueueStatusAPI } from "redux/actions";
 
-const TaskQueueStatus = () => {
+const QueueStatusTable = ({ queueType }) => {
   const dispatch = useDispatch();
-
   const [tableData, setTableData] = useState([]);
 
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -42,22 +39,19 @@ const TaskQueueStatus = () => {
   }, [apiStatus]);
 
   const fetchTaskQueueStatusList = async () => {
-    const apiObj = new FetchTaskQueueStatusAPI();
+    const apiObj = new FetchTaskQueueStatusAPI(queueType);
     dispatch(APITransport(apiObj));
   };
 
   useEffect(() => {
     fetchTaskQueueStatusList();
-
     return () => setTableData([]);
-
     // eslint-disable-next-line
   }, []);
 
   return (
     <div>
       <MUIDataTable
-        title="Tasks Queue Status"
         data={tableData}
         columns={getColumns(taskQueueStatusColumns)}
         options={getOptions(apiStatus.loading)}
@@ -66,4 +60,4 @@ const TaskQueueStatus = () => {
   );
 };
 
-export default TaskQueueStatus;
+export default QueueStatusTable;

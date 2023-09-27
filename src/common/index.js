@@ -41,6 +41,7 @@ import IntroHeader from "./IntroHeader";
 import Footer from "./Footer";
 import ChitralekhaPortal from "./ChitralekhaPortal";
 import RecorderComponent from "./RecorderComponent";
+import { TabPanel } from "./TabPanel";
 import ShortcutKeys from "./ShortcutKeys";
 
 export {
@@ -87,5 +88,6 @@ export {
   Footer,
   ChitralekhaPortal,
   RecorderComponent,
+  TabPanel,
   ShortcutKeys,
 };
