@@ -64,7 +64,7 @@ const RecorderComponent = ({
             className={classes.optionIconBtn}
             style={{ backgroundColor: "red", color: "#fff" }}
           >
-            <ReportProblemIcon />
+            <ReportProblemIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -72,11 +72,11 @@ const RecorderComponent = ({
       {!isRecording && (
         <Tooltip title="Record Audio" placement="bottom">
           <IconButton
-            style={{ display: isDisabled ? "none" : "" }}
+            style={{ display: isDisabled ? "none" : "", background: "#fcf7e9" }}
             className={classes.optionIconBtn}
             onClick={() => handleStartRecording()}
           >
-            <MicIcon />
+            <MicIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -84,10 +84,11 @@ const RecorderComponent = ({
       {isRecording && (
         <Tooltip title="Stop Recording" placement="bottom">
           <IconButton
+            style={{ background: "#fcf7e9" }}
             className={classes.optionIconBtn}
             onClick={() => stopRecording()}
           >
-            <StopIcon />
+            <StopIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -95,10 +96,11 @@ const RecorderComponent = ({
       {!isPaused && isRecording && (
         <Tooltip title="Pause Recording" placement="bottom">
           <IconButton
+            style={{ background: "#fcf7e9" }}
             className={classes.optionIconBtn}
             onClick={() => handlePlayPauseRecording()}
           >
-            <PauseIcon />
+            <PauseIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -106,21 +108,22 @@ const RecorderComponent = ({
       {isPaused && (
         <Tooltip title="Play Recording" placement="bottom">
           <IconButton
+            style={{ background: "#fcf7e9" }}
             className={classes.optionIconBtn}
             onClick={() => handlePlayPauseRecording()}
           >
-            <PlayArrowIcon />
+            <PlayArrowIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
 
       <Tooltip title="Upload Audio" placement="bottom">
         <IconButton
-          style={{ display: isDisabled ? "none" : "" }}
+          style={{ display: isDisabled ? "none" : "", background: "#fcf7e9" }}
           className={classes.optionIconBtn}
           onClick={() => $audioFile.current.click()}
         >
-          <UploadIcon />
+          <UploadIcon className={classes.rightPanelSvg} />
           <input
             type="file"
             style={{ display: "none" }}

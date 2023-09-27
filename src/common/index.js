@@ -42,6 +42,7 @@ import Footer from "./Footer";
 import ChitralekhaPortal from "./ChitralekhaPortal";
 import RecorderComponent from "./RecorderComponent";
 import { TabPanel } from "./TabPanel";
+import ShortcutKeys from "./ShortcutKeys";
 
 export {
   AddOrganizationMember,
@@ -88,4 +89,5 @@ export {
   ChitralekhaPortal,
   RecorderComponent,
   TabPanel,
+  ShortcutKeys,
 };

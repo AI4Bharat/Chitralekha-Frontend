@@ -51,6 +51,12 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 
+// Utils
+import getLocalStorageData from "utils/getLocalStorageData";
+
+// Config
+import { org_ids } from "config";
+
 //Apis
 import {
   APITransport,
@@ -80,6 +86,10 @@ import {
 } from "redux/actions";
 
 const OrgLevelTaskList = () => {
+  const user_org_id = getLocalStorageData("userData").organization.id;
+  const [desc, setShowDesc] = useState(false);
+  const [org_id, setId] = useState();
+
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const tableClasses = TableStyles();
@@ -146,6 +156,7 @@ const OrgLevelTaskList = () => {
     translation: "srt",
     voiceover: "mp4",
     speakerInfo: "false",
+    bgMusic: "false",
   });
   const [uploadExportType, setUploadExportType] = useState("srt");
   const [alertColumn, setAlertColumn] = useState("");
@@ -238,6 +249,7 @@ const OrgLevelTaskList = () => {
     setLoading(true);
 
     const search = {
+      task_id: searchedColumn?.id,
       video_name: searchedColumn?.video_name,
       description: searchedColumn?.description,
       assignee: searchedColumn?.user,
@@ -317,9 +329,9 @@ const OrgLevelTaskList = () => {
 
   const exportVoiceoverTask = async () => {
     const { id: taskId } = currentTaskDetails;
-    const { voiceover } = exportTypes;
+    const { voiceover, bgMusic } = exportTypes;
 
-    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover);
+    const apiObj = new ExportVoiceoverTaskAPI(taskId, voiceover, bgMusic);
     dispatch(APITransport(apiObj));
   };
 
@@ -570,6 +582,21 @@ const OrgLevelTaskList = () => {
   };
 
   const initColumns = () => {
+    const id = {
+      name: "id",
+      label: "Id",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: renderTaskListColumnCell,
+      },
+    };
+
     const videoName = {
       name: "video_name",
       label: "Video Name",
@@ -616,10 +643,33 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: columnDisplay,
+        display: org_ids.includes(user_org_id) ? true : columnDisplay,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: renderTaskListColumnCell,
+        customBodyRender: !org_ids.includes(user_org_id) ? renderTaskListColumnCell : (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+          const slicedDesc = String(value).slice(0, 10);
+
+          const handleMouseOver = () => {
+            const rowData = tableMeta.rowData;
+            setShowDesc(true);
+            setId(rowData[0]);
+          }
+
+          return (
+            <Box
+              id={selectedTask.id}
+              onMouseOver = {handleMouseOver}
+              onMouseOut={() => setShowDesc(false)}
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+              {!desc ? slicedDesc : (org_id === tableMeta.rowData[0] ? value : slicedDesc)}
+            </Box>
+          );
+        },
       },
     };
 
@@ -672,6 +722,7 @@ const OrgLevelTaskList = () => {
     };
 
     const columns = [...getColumns(orgTaskListColumns), actionColumn];
+    columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);
@@ -856,7 +907,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
         exportZip(resp);
-      } else {
+      }  else {
         const resp = await res.json();
 
         dispatch(

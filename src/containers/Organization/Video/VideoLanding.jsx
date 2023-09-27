@@ -338,9 +338,15 @@ const VideoLanding = () => {
 
         <Grid md={6} xs={12} sx={{ width: "100%" }}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
-            <RightPanel currentIndex={currentIndex} />
+            <RightPanel
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+            />
           ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
-            <TranslationRightPanel currentIndex={currentIndex} />
+            <TranslationRightPanel
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+            />
           ) : (
             <VoiceOverRightPanel currentIndex={currentIndex} />
           )}

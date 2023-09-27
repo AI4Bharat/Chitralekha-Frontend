@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -16,6 +16,8 @@ import {
   Typography,
   MenuItem,
 } from "@mui/material";
+import SubscriptIcon from "@mui/icons-material/Subscript";
+import SuperscriptIcon from "@mui/icons-material/Superscript";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import SaveIcon from "@mui/icons-material/Save";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -40,9 +42,14 @@ const transformOrigin = {
 const SettingsButtonComponent = ({
   setTransliteration,
   enableTransliteration,
+  subsuper,
+  setsubsuper,
   setRTL_Typing,
   enableRTL_Typing,
+  currentIndexToSplitTextBlock,
   setFontSize,
+  selection,
+  setselection,
   fontSize,
   saveTranscriptHandler,
   setOpenConfirmDialog,
@@ -52,6 +59,8 @@ const SettingsButtonComponent = ({
   undoStack,
   redoStack,
   onSplitClick,
+  handleSuperscript,
+  handleSubscript,
   showPopOver,
   showSplit,
   handleInfoButtonClick,
@@ -61,6 +70,7 @@ const SettingsButtonComponent = ({
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
+
   // const [anchorElLimit, setAnchorElLimit] = useState(null);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -72,9 +82,34 @@ const SettingsButtonComponent = ({
   );
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
-  )
+  );
+
+  // useEffect(()=>{
+  //   // if(textVal){
+  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+  //     let cursorStart = textVal.selectionStart;
+  //     let cursorEnd = textVal.selectionEnd;
+  //     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
+  //     if(selectedText!=""){
+  //       setselection(true)
+  //     }
+  //     else{
+  //       setselection(false)
+  //     }
+  //   // }
+  //  },[])
+
+  //  console.log(selection);
+
+   
+   
+
 
   const getDisbled = (flag) => {
+    if (!transcriptPayload?.payload?.payload?.length) {
+      return true;
+    }
+
     if (
       taskData?.task_type?.includes("VOICEOVER") &&
       transcriptPayload?.source_type !== "MACHINE_GENERATED"
@@ -99,52 +134,9 @@ const SettingsButtonComponent = ({
 
     return false;
   };
-  
+
   return (
     <>
-      {/* {!taskData?.task_type?.includes("VOICEOVER") && (
-        <Tooltip title="Number of Rows" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={(event) => setAnchorElLimit(event.currentTarget)}
-          >
-            <FormatLineSpacingIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      <Menu
-        sx={{ mt: "45px" }}
-        id="limit-menu"
-        anchorEl={anchorElLimit}
-        anchorOrigin={anchorOrigin}
-        keepMounted
-        transformOrigin={transformOrigin}
-        open={Boolean(anchorElLimit)}
-        onClose={() => setAnchorElLimit(null)}
-      >
-        {[10, 25, 50, 100].map((item, index) => {
-          return (
-            <MenuItem key={index}>
-              <FormControlLabel
-                label={item}
-                control={
-                  <Checkbox
-                    checked={limit === item}
-                    onChange={() => {
-                      setAnchorElLimit(null);
-                      dispatch(setLimitInStore(item));
-                    }}
-                  />
-                }
-              />
-            </MenuItem>
-          );
-        })}
-      </Menu>
-
-      <Divider orientation="vertical" className={classes.rightPanelDivider} /> */}
-
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
           <IconButton
@@ -152,36 +144,33 @@ const SettingsButtonComponent = ({
             onClick={onSplitClick}
             disabled={!showPopOver}
             sx={{
-              marginRight: "5px",
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
           >
-            <SplitscreenIcon />
+            <SplitscreenIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
 
-      {(taskData?.task_type?.includes("TRANSLATION_EDIT") ||
-        taskData?.task_type?.includes("VOICEOVER")) && (
-        <Tooltip title="Incorrect Subtitles Info" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={handleInfoButtonClick}
-            sx={{
-              marginRight: "5px",
-            }}
-          >
-            <InfoOutlinedIcon />
-          </IconButton>
-        </Tooltip>
+      {taskData?.task_type?.includes("TRANSCRIPTION") && (
+        <Divider orientation="vertical" className={classes.rightPanelDivider} />
       )}
+
+      <Tooltip title="Incorrect Subtitles Info" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          onClick={handleInfoButtonClick}
+        >
+          <InfoOutlinedIcon className={classes.rightPanelSvg} />
+        </IconButton>
+      </Tooltip>
 
       <Tooltip title="Settings" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={(event) => setAnchorElSettings(event.currentTarget)}
         >
-          <SettingsIcon />
+          <SettingsIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
@@ -223,7 +212,53 @@ const SettingsButtonComponent = ({
             }
           />
         </MenuItem>
+        <MenuItem>
+          <FormControlLabel
+            label="Subscript/Superscript"
+            control={
+              <Checkbox
+                checked={subsuper}
+                onChange={() => {
+                  setAnchorElSettings(null);
+                 // console.log(subsuper);
+                  setsubsuper(!subsuper);
+                  if(taskData.task_type=="TRANSCRIPTION_EDIT"){
+                  localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
+                  }
+                  if(taskData.task_type=="TRANSLATION_EDIT"){
+                    localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
+                    }
+                //  console.log(subsuper);
+                }}
+              />
+            }
+          />
+        </MenuItem>
       </Menu>
+      {subsuper === true  ? (
+        <Divider orientation="vertical" className={classes.rightPanelDivider} />
+      ) : null}
+
+      {subsuper === true  ? (
+        <Tooltip title="SubScript" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => handleSubscript()}
+          >
+            <SubscriptIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      ) : null}
+
+      {subsuper===true?<Tooltip title="SuperScript" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          sx={{ marginLeft: "5px" }}
+          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+        >
+          <SuperscriptIcon className={classes.rightPanelSvg}  />
+        </IconButton>
+      </Tooltip>:null}
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
@@ -232,7 +267,7 @@ const SettingsButtonComponent = ({
           className={classes.rightPanelBtnGrp}
           onClick={(event) => setAnchorElFont(event.currentTarget)}
         >
-          <FormatSizeIcon />
+          <FormatSizeIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
@@ -270,38 +305,6 @@ const SettingsButtonComponent = ({
         ))}
       </Menu>
 
-      {/* <Menu
-        sx={{ mt: "45px" }}
-        anchorEl={anchorElFont}
-        anchorOrigin={anchorOrigin}
-        keepMounted
-        transformOrigin={transformOrigin}
-        open={Boolean(anchorElFont)}
-        onClose={() => setAnchorElFont(null)}
-      >
-        {fontMenu.map((item, index) => (
-          <MenuItem
-            key={index}
-            onClick={() => {
-              setFontSize(item.size);
-            }}
-          >
-            <CheckIcon
-              style={{
-                visibility: fontSize === item.size ? "" : "hidden",
-              }}
-            />
-            <Typography
-              variant="body2"
-              textAlign="center"
-              sx={{ fontSize: item.size, marginLeft: "10px" }}
-            >
-              {item.label}
-            </Typography>
-          </MenuItem>
-        ))}
-      </Menu> */}
-
       <FindAndReplace
         subtitleDataKey={
           taskData?.task_type?.includes("TRANSLATION") ? "target_text" : "text"
@@ -317,18 +320,17 @@ const SettingsButtonComponent = ({
           disabled={getDisbled()}
           onClick={() => saveTranscriptHandler(false)}
         >
-          <SaveIcon />
+          <SaveIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Complete" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          sx={{ marginLeft: "5px" }}
           disabled={getDisbled("complete")}
           onClick={() => setOpenConfirmDialog(true)}
         >
-          <VerifiedIcon />
+          <VerifiedIcon className={classes.rightPanelSvg} />
         </IconButton>
       </Tooltip>
 
@@ -341,7 +343,7 @@ const SettingsButtonComponent = ({
             onClick={onUndo}
             disabled={undoStack?.length === 0}
           >
-            <UndoIcon />
+            <UndoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}
@@ -350,11 +352,10 @@ const SettingsButtonComponent = ({
         <Tooltip title="Redo" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
-            sx={{ marginLeft: "5px" }}
             onClick={onRedo}
             disabled={redoStack?.length === 0}
           >
-            <RedoIcon />
+            <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
       )}

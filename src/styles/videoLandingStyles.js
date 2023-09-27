@@ -27,7 +27,7 @@ const VideoLandingStyle = makeStyles({
 
   videoName: {
     textAlign: "center",
-    margin: "32px",
+    margin: "29.5px",
     width: "90%",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -38,7 +38,9 @@ const VideoLandingStyle = makeStyles({
     backgroundColor: "#2C2799",
     borderRadius: "50%",
     color: "#fff",
-    margin: "auto",
+    margin: "auto 10px",
+    height: "fit-content",
+    width: "fit-content",
     "&:hover": {
       backgroundColor: "#271e4f",
     },
@@ -379,6 +381,8 @@ const VideoLandingStyle = makeStyles({
     borderRadius: "50%",
     marginRight: "10px",
     color: "blue",
+    height: "fit-content",
+    width: "fit-content",
     "&:disabled": {
       background: "grey",
     },
@@ -408,16 +412,23 @@ const VideoLandingStyle = makeStyles({
     backgroundColor: "#2C2799",
     borderRadius: "50%",
     color: "#fff",
-    marginX: "5px",
+    marginRight: "5px",
+    height: "fit-content",
+    width: "fit-content",
     "&:hover": {
       backgroundColor: "#271e4f",
     },
   },
 
+  rightPanelSvg: {
+    width: "0.8em", 
+    height: "0.8em",
+  },
+
   rightPanelDivider: {
     border: "1px solid grey",
     height: "auto",
-    margin: "0 5px",
+    margin: "0 5px 0 0",
   },
 
   subTitleContainer: {
@@ -460,6 +471,11 @@ const VideoLandingStyle = makeStyles({
     resize: "none",
     fontFamily: "Roboto, sans-serif",
     width: "95.5%",
+
+    "&::selection": {
+     // backgroundColor: "#8ebf42",
+      backgroundColor: "#808080"
+    }
   },
 
   boxHighlight: {
@@ -500,6 +516,11 @@ const VideoLandingStyle = makeStyles({
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
+
+    "&::selection": {
+    //  backgroundColor: "#8ebf42",
+      backgroundColor: "#808080"
+    }
   },
 
   videoPlayerParent: {
@@ -587,6 +608,16 @@ const VideoLandingStyle = makeStyles({
     alignItems: "center",
     borderBottom: "1px solid lightgrey",
   },
+
+  audioPlayer: {
+    "&::-webkit-media-controls-panel": {
+      backgroundColor: "#fcf7e9",
+    },
+  },
+
+  w95: {
+    width: "95%"
+  }
 });
 
 export default VideoLandingStyle;

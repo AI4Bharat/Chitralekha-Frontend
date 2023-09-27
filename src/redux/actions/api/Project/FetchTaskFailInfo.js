@@ -9,7 +9,7 @@ export default class FetchTaskFailInfoAPI extends API {
 
     this.id = id;
 
-    this.query = taskType.includes("TRANSLATION_EDIT")
+    this.query = !taskType.includes("VOICEOVER")
       ? `/task/${id}/get_fail_info/`
       : `/voiceover/get_empty_audios/?task_id=${id}`;
 

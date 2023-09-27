@@ -36,8 +36,10 @@ import {
 } from "./noiseTags";
 import { profileOptions } from "./profileConfigs";
 import {
+  bgMusicOptions,
   buttonConfig,
   speakerFields,
+  speakerInfoOptions,
   toolBarActions,
   voiceOptions,
 } from "./projectConfigs";
@@ -58,8 +60,12 @@ import {
   orgTaskListColumns,
   failInfoColumns,
   voiceoverFailInfoColumns,
+  failTranscriptionInfoColumns,
+  reopenTableColumns,
+  renderTaskListColumnCell,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
+import { org_ids } from "./taskTableConfig";
 
 export {
   endpoints,
@@ -113,4 +119,10 @@ export {
   uploadAlertColumns,
   updateRoleAlertColumns,
   voiceoverFailInfoColumns,
+  bgMusicOptions,
+  speakerInfoOptions,
+  failTranscriptionInfoColumns,
+  reopenTableColumns,
+  renderTaskListColumnCell,
+  org_ids,
 };

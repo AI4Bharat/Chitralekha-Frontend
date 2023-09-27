@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { speakerInfoOptions } from "utils";
 
 //Components
 import {
@@ -18,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { speakerInfoOptions } from "config";
 
 const ExportDialog = ({
   open,
@@ -139,7 +139,30 @@ const ExportDialog = ({
               </FormControl>
             </DialogActions>
           </>
-        ) : null}
+        ) : (
+          <>
+            {/* <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
+              Background Music
+            </DialogContentText>
+            <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
+              <FormControl>
+                <RadioGroup row>
+                  {bgMusicOptions?.map((item, index) => (
+                    <FormControlLabel
+                      key={index}
+                      value={item.value}
+                      control={<Radio />}
+                      checked={bgMusic === item.value}
+                      label={item.label}
+                      name="bgMusic"
+                      onClick={(event) => handleExportRadioButtonChange(event)}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions> */}
+          </>
+        )}
 
         <DialogActions>
           <Button

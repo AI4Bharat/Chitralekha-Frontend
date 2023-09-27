@@ -21,6 +21,7 @@ import {
   ConfirmDialog,
   ConfirmErrorDialog,
   RecorderComponent,
+  ShortcutKeys,
   TableDialog,
 } from "common";
 
@@ -84,7 +85,7 @@ const VoiceOverRightPanel = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorResponse, setErrorResponse] = useState([]);
   const [durationError, setDurationError] = useState([]);
-  const [canSave, setCanSave] = useState(false);
+  const [, setCanSave] = useState(false);
   const [complete, setComplete] = useState(false);
   const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
@@ -347,8 +348,22 @@ const VoiceOverRightPanel = () => {
     dispatch(APITransport(apiObj));
   };
 
+  const shortcuts = [
+    {
+      keys: ["Control", "ArrowRight"],
+      callback: () => next && onNavigationClick(currentPage + 1),
+    },
+    {
+      keys: ["Control", "ArrowLeft"],
+      callback: () => {
+        previous && onNavigationClick(currentPage - 1);
+      },
+    },
+  ];
+
   return (
     <>
+      <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
         style={{ position: "relative" }}
@@ -374,7 +389,13 @@ const VoiceOverRightPanel = () => {
               <div
                 key={index}
                 className={isDisabled(index) ? classes.disabledCard : ""}
-                style={{ borderBottom: "1px solid grey" }}
+                style={{
+                  borderBottom: "1px solid grey",
+                  backgroundColor:
+                    index % 2 === 0
+                      ? "rgb(214, 238, 255)"
+                      : "rgb(233, 247, 239)",
+                }}
                 id={`container-${index}`}
               >
                 <Box
@@ -437,7 +458,7 @@ const VoiceOverRightPanel = () => {
                   <Box
                     sx={{
                       width: index === 2 ? "100%" : "50%",
-                      ...(!xl && { width: "100%" }),
+                      ...(!xl && { width: "100%", margin: "25px 0" }),
                     }}
                   >
                     <div className={classes.relative} style={{ width: "100%" }}>
@@ -507,7 +528,7 @@ const VoiceOverRightPanel = () => {
                   <Box
                     sx={{
                       width: index === 2 ? "100%" : "50%",
-                      ...(!xl && { width: "100%" }),
+                      ...(!xl && { width: "100%", margin: "0 0 25px 0" }),
                     }}
                   >
                     <div className={classes.recorder}>
@@ -529,6 +550,7 @@ const VoiceOverRightPanel = () => {
                           ref={(element) =>
                             ($audioRef.current[index] = element)
                           }
+                          className={classes.audioPlayer}
                           style={{
                             display: isDisabled(index)
                               ? "none"
