@@ -173,7 +173,7 @@ const TaskList = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const previewData = useSelector(
-    (state) => state.getPreviewData?.data?.data?.payload
+    (state) => state.getPreviewData?.data
   );
 
   useEffect(() => {
@@ -1075,7 +1075,7 @@ const TaskList = () => {
           openPreviewDialog={openDialogs.previewDialog}
           handleClose={() => handleDialogClose("previewDialog")}
           data={previewData}
-          taskType={currentTaskDetails?.task_type}
+          task_type={currentTaskDetails?.task_type}
         />
       )}
 
