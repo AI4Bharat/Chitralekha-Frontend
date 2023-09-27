@@ -55,7 +55,7 @@ import {
   setSubtitles,
 } from "redux/actions";
 
-const RightPanel = ({ currentIndex }) => {
+const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const { taskId } = useParams();
   const name = useParams();
   const classes = VideoLandingStyle();
@@ -225,7 +225,12 @@ const RightPanel = ({ currentIndex }) => {
       document.removeEventListener('keyup', handleKeyUpSup);
     };
   }, [handleKeyDownSup]);
+
   const onMouseUp = (e, blockIdx) => {
+    setTimeout(() => {
+      setCurrentIndex(blockIdx)
+    }, 100);
+
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
