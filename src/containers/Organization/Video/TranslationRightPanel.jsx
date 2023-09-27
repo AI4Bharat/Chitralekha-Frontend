@@ -345,6 +345,10 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   // };
   
   const onMouseUp = (e, blockIdx) => {
+    setTimeout(() => {
+      setCurrentIndex(blockIdx)
+    }, 100);
+
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
