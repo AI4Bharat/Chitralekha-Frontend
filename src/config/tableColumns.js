@@ -399,24 +399,24 @@ export const orgTaskListColumns = [
   {
     name: "updated_at",
     label: "Updated At",
-    options: {
-      display: false,
-      customBodyRender: (value, tableMeta) => {
-        const { tableData: data, rowIndex } = tableMeta;
-        const selectedTask = data[rowIndex];
+     options: {
+       display: false,
+       customBodyRender: (value, tableMeta) => {
+         const { tableData: data, rowIndex } = tableMeta;
+         const selectedTask = data[rowIndex];
 
-        return (
-          <Box
-            style={{
-              color: selectedTask.is_active ? "" : "grey",
-            }}
-          >
-            {moment(value).format("DD/MM/YYYY HH:mm:ss")}
-          </Box>
-        );
-      },
-    },
-  },
+         return (
+           <Box
+             style={{
+               color: selectedTask.is_active ? "" : "grey",
+             }}
+           >
+             {moment(value).format("DD/MM/YYYY HH:mm:ss")}
+           </Box>
+         );
+       },
+     },
+   },
   {
     name: "src_language_label",
     label: "Source Language",
