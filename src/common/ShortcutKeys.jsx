@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 
 const ShortcutKeys = ({ shortcuts }) => {
   const handleKeyPress = useCallback(
