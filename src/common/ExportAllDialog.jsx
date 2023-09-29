@@ -47,7 +47,7 @@ const ExportAllDialog = ({
 
       <DialogContent>
         <DialogContentText id="alert-dialog-description" sx={{ mt: 2 }}>
-          Select Export Format
+          Select Format
         </DialogContentText>
 
         <DialogActions sx={{ mr: 10, mb: 1, mt: 1 }}>

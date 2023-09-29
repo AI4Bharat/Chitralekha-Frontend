@@ -25,15 +25,15 @@ const TaskQueueStatus = () => {
             onChange={(_event, newValue) => setValue(newValue)}
           >
             <Tab
-              label={"Transcription Queue"}
+              label={"Transcription"}
               className={classes.taskQueueStatusTabs}
             />
             <Tab
-              label={"Translation Queue"}
+              label={"Translation"}
               className={classes.taskQueueStatusTabs}
             />
             <Tab
-              label={"VoiceOver Queue"}
+              label={"Voice-Over"}
               className={classes.taskQueueStatusTabs}
             />
             {/* <Tab
