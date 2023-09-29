@@ -18,7 +18,6 @@ import {
   getSelectionStart,
   getTargetSelectionStart,
   reGenerateTranslation,
-  
 } from "utils";
 
 //Styles
@@ -50,6 +49,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const xl = useMediaQuery("(min-width:1800px)");
+  const textboxes = useRef([]);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -77,7 +77,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [selectionStart, setSelectionStart] = useState();
+  const [, setSelectionStart] = useState();
   const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
@@ -87,7 +87,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
-  const [subsuper, setsubsuper] = useState(false)
+  const [subsuper, setsubsuper] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -265,86 +265,22 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
   };
-  const savedPreference = localStorage.getItem('subscriptSuperscriptPreferenceTranslate');
+  const savedPreference = localStorage.getItem(
+    "subscriptSuperscriptPreferenceTranslate"
+  );
 
-  useEffect(()=>{
-   if(savedPreference=="true" && subsuper==false){
-     setsubsuper(JSON.parse(savedPreference))
-     console.log(subsuper);
-   }
-  },[])
- 
- 
-  const handleKeyDownSub = (event) => {
-    if (event.ctrlKey && event.key === 'b') {
-      event.preventDefault();
-      handleSubscript();
-    }
-  };
-
-  const handleKeyUpSub = (event) => {
-    if (event.key === 'Control') {
-    }
-  };
   useEffect(() => {
-
-    document.addEventListener('keydown', handleKeyDownSub);
-    document.addEventListener('keyup', handleKeyUpSub);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDownSub);
-      document.removeEventListener('keyup', handleKeyUpSub);
-    };
-  }, [handleKeyDownSub]);
-
-
-  const handleKeyDownSup = (event) => {
-    if (event.ctrlKey && event.key === 'e') {
-      event.preventDefault();
-      console.log(event, currentIndexToSplitTextBlock);
-      handleSuperscript();
+    if (savedPreference === "true" && subsuper === false) {
+      setsubsuper(JSON.parse(savedPreference));
     }
-  };
+    // eslint-disable-next-line
+  }, []);
 
-  const handleKeyUpSup = (event) => {
-    if (event.key === 'Control') {
-    }
-  };
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDownSup);
-    document.addEventListener('keyup', handleKeyUpSup);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDownSup);
-      document.removeEventListener('keyup', handleKeyUpSup);
-    };
-  }, [handleKeyDownSup]);
-
-  // const onMouseUp = (e, blockIdx) => {
-  //   if (e.target.selectionStart < e.target.value.length) {
-  //     e.preventDefault();
-  //     setCurrentIndexToSplitTextBlock(blockIdx);
-  //     setSelectionStart(e.target.selectionStart);
-  //   }
-  
-  //   const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
-  
-    // for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
-    //   const textVal = elementsWithBoxHighlightClass[i];
-    //   let cursorStart = textVal.selectionStart;
-    //   let cursorEnd = textVal.selectionEnd;
-    //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-  //     console.log(`Selected text in element ${i}:`, selectedText);
-  
-  //     if (selectedText !== "" && subsuper === false) {
-  //       setselection(true);
-  //       setsubsuper(true);
-  //       localStorage.setItem('subscriptSuperscriptPreference', !subsuper);
-  //     }
-  //   }
-  // };
-  
   const onMouseUp = (e, blockIdx) => {
+    setTimeout(() => {
+      setCurrentIndex(blockIdx);
+    }, 100);
+
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
@@ -352,31 +288,38 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
         setSelectionStart(selectionStart);
       }
     }
-  
+
     const getSelectedText = () => {
-      const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
-        for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
-          if (elementsWithBoxHighlightClass) {
+      const elementsWithBoxHighlightClass = document.getElementsByClassName(
+        classes.boxHighlight
+      );
+      for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+        if (elementsWithBoxHighlightClass) {
           const textVal = elementsWithBoxHighlightClass[i];
           let cursorStart = textVal.selectionStart;
           let cursorEnd = textVal.selectionEnd;
           const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-          if (selectedText !== ""){return selectedText};
+          if (selectedText !== "") {
+            return selectedText;
           }
+        }
       }
       return "";
     };
-  
+
     setTimeout(() => {
       const selectedText = getSelectedText();
-      if (selectedText !== "" && subsuper==true) {
+      if (selectedText !== "" && subsuper === true) {
         setselection(true);
-        localStorage.setItem('subscriptSuperscriptPreferenceTranslate', selection);
+        localStorage.setItem(
+          "subscriptSuperscriptPreferenceTranslate",
+          selection
+        );
       }
     }, 0);
   };
-  
-  const replaceSelectedText = (text, index,id) => {
+
+  const replaceSelectedText = (text, index, id) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[id];
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -388,95 +331,66 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     textarea.selectionEnd = start + text.length;
 
     textarea.focus();
-    console.log(textarea.value, index);
-      const sub = onSubtitleChange(textarea.value, index,id);
-      dispatch(setSubtitles(sub, C.SUBTITLES));
-      console.log(subtitles);
-   
-  }
 
-  const handleSubscript = () => {
-    const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
-    var index='';
-    for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
-      const textVal = elementsWithBoxHighlightClass[i];
-      let cursorStart = textVal.selectionStart;
-      let cursorEnd = textVal.selectionEnd;
-      const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-      console.log(`Selected text in element ${i}:`, selectedText);
-      if (selectedText != "") {
-         index=i;
-        const subscriptText = selectedText.replace(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g, (char) => {
-        
-        return subscript[char] || char;
-      });
-
-      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
-    }
-  }
+    const sub = onSubtitleChange(textarea.value, index, id);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
   };
 
-  // const handleSubscript = () => {
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   const cursorStart = textVal.selectionStart;
-  //   const cursorEnd = textVal.selectionEnd;
-  //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+  const handleSubscript = () => {
+    const elementsWithBoxHighlightClass = document.getElementsByClassName(
+      classes.boxHighlight
+    );
 
-  //   if (selectedText !== "") {
-  //     const subscriptText = selectedText.replace(
-  //       /[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g,
-  //       (char) => {
-  //         return subscript[char];
-  //       }
-  //     );
-
-  //     replaceSelectedText(subscriptText, currentIndexToSplitTextBlock,index);
-  //   }
-  // }
-  // }
-
-
-
-
-  const handleSuperscript = () => {
-    const elementsWithBoxHighlightClass = document.getElementsByClassName(classes.boxHighlight);
-    var index='';
+    let index = "";
     for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
       const textVal = elementsWithBoxHighlightClass[i];
-      let cursorStart = textVal.selectionStart;
-      let cursorEnd = textVal.selectionEnd;
+      const cursorStart = textVal.selectionStart;
+      const cursorEnd = textVal.selectionEnd;
       const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-      console.log(`Selected text in element ${i}:`, selectedText);
-    if (selectedText != "") {
-      index=i;
-      const superscriptText = selectedText.replace(/[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g, (char) => {
-     
-        return superscriptMap[char] || char;
-      });
 
-      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock,index);
+      if (selectedText !== "") {
+        index = i;
+        const subscriptText = selectedText.replace(
+          /[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g,
+          (char) => {
+            return subscript[char] || char;
+          }
+        );
+
+        replaceSelectedText(subscriptText, currentIndexToSplitTextBlock, index);
+      }
     }
-  }
-  }
+  };
 
+  const handleSuperscript = () => {
+    const elementsWithBoxHighlightClass = document.getElementsByClassName(
+      classes.boxHighlight
+    );
 
+    let index = "";
+    for (let i = 0; i < elementsWithBoxHighlightClass.length; i++) {
+      const textVal = elementsWithBoxHighlightClass[i];
+      const cursorStart = textVal.selectionStart;
+      const cursorEnd = textVal.selectionEnd;
+      const selectedText = textVal.value.substring(cursorStart, cursorEnd);
 
-  // const handleSuperscript = () => {
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   const cursorStart = textVal.selectionStart;
-  //   const cursorEnd = textVal.selectionEnd;
-  //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+      if (selectedText !== "") {
+        index = i;
+        const superscriptText = selectedText.replace(
+          /[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g,
+          (char) => {
+            return superscriptMap[char] || char;
+          }
+        );
 
-  //   if (selectedText !== "") {
-  //     const superscriptText = selectedText.replace(
-  //       /[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g,
-  //       (char) => {
-  //         return superscriptMap[char];
-  //       }
-  //     );
-  //     replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
-  //   }
-  // };
+        replaceSelectedText(
+          superscriptText,
+          currentIndexToSplitTextBlock,
+          index
+        );
+      }
+    }
+  };
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
@@ -572,24 +486,6 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     dispatch(APITransport(apiObj));
   };
 
-  // const onMouseUp = (e, blockIdx) => {
-  //   if (e.target.selectionStart < e.target.value.length) {
-  //     e.preventDefault();
-  //     setCurrentIndexToSplitTextBlock(blockIdx);
-  //   }
-
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //   const cursorStart = textVal.selectionStart;
-  //   const cursorEnd = textVal.selectionEnd;
-  //   const selectedText = textVal.value.substring(cursorStart, cursorEnd);
-    
-  //   if (selectedText !== "") {
-  //     setselection(true);
-  //     setsubsuper(true);
-  //     localStorage.setItem("subscriptSuperscriptPreference", !subsuper);
-  //   }
-  // };
-
   const shortcuts = [
     {
       keys: ["Control", "ArrowRight"],
@@ -604,14 +500,19 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     {
       keys: ["Control", "ArrowUp"],
       callback: () => {
-        currentIndex > 0 && setCurrentIndex((prev) => prev - 1);
+        if (currentIndex > 0) {
+          setCurrentIndex((prev) => prev - 1);
+          textboxes.current[currentIndex - 1].focus();
+        }
       },
     },
     {
       keys: ["Control", "ArrowDown"],
       callback: () => {
-        currentIndex < subtitles.length - 1 &&
+        if (currentIndex < subtitles.length - 1) {
           setCurrentIndex((prev) => prev + 1);
+          textboxes.current[currentIndex + 1].focus();
+        }
       },
     },
     {
@@ -742,6 +643,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                         onMouseUp={(e) => onMouseUp(e, index)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         style={{ fontSize: fontSize, height: "100px" }}
+                        ref={(el) => (textboxes.current[index] = el)}
                         value={item.text}
                         onChange={(event) => {
                           changeTranscriptHandler(
@@ -790,6 +692,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                               classes.w95
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            ref={(el) => (textboxes.current[index] = el)}
                             rows={4}
                             {...props}
                           />
@@ -820,6 +723,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                           taskData?.source_type === "Original Source" &&
                           classes.w95
                         }`}
+                        ref={(el) => (textboxes.current[index] = el)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         style={{ fontSize: fontSize, height: "100px" }}

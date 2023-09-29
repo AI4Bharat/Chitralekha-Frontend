@@ -19,7 +19,7 @@ import EditProject from "./containers/Organization/Project/EditProject";
 import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";
-import TaskQueueStatus from "./containers/Organization/TaskQueueStatus";
+import TaskQueueStatus from "./containers/Organization/TaskQueueStatus/TaskQueueStatus";
 import Thanks from "./containers/intro/Thanks";
 import UseCases from "./containers/intro/UseCases";
 import ChitralekhaPortal from "./common/ChitralekhaPortal";

@@ -65,6 +65,7 @@ import {
   renderTaskListColumnCell,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
+import { org_ids } from "./taskTableConfig";
 
 export {
   endpoints,
@@ -123,4 +124,5 @@ export {
   failTranscriptionInfoColumns,
   reopenTableColumns,
   renderTaskListColumnCell,
+  org_ids,
 };

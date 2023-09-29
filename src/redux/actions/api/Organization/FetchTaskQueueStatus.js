@@ -3,12 +3,12 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchTaskQueueStatusAPI extends API {
-  constructor(timeout = 2000) {
+  constructor(queueType, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_TASK_QUEUE_STATUS;
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.task
-    }inspect_asr_queue/`;
+    }inspect_queue/?queue=${queueType}`;
   }
 
   processResponse(res) {

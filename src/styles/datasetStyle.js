@@ -286,6 +286,11 @@ const DatasetStyle = makeStyles({
     padding: "14px",
     // height: "15px",
   },
+
+  taskQueueStatusTabs: {
+    fontSize: 16, 
+    fontWeight: "700"
+  },
 });
 
 export default DatasetStyle;
