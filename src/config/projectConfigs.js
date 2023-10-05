@@ -187,11 +187,11 @@ export const toolBarActions = [
 
 export const speakerInfoOptions = [
   {
-    label: "With Speaker Info",
+    label: "Yes",
     value: "true",
   },
   {
-    label: "Without Speaker Info",
+    label: "No",
     value: "false",
   },
 ];
