@@ -187,7 +187,7 @@ export default memo(
         const width = (endTime - startTime) * 10 * gridGap;
         const nextCardWidth = (next.endTime - nextCardStartTime) * 10 * gridGap;
         const previousCardWidth =
-          (previousCardEndTime - previou.startTime) * 10 * gridGap;
+          (previousCardEndTime - previou?.startTime?previou.startTime:0) * 10 * gridGap;
 
         if (lastType === "left") {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
