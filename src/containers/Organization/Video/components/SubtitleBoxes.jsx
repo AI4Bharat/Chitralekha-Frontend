@@ -127,7 +127,7 @@ export default memo(
         const index = hasSub(sub);
         const copySub = [...subtitles];
 
-        if (index < 0) return;
+        if (index <= 0) return;
 
         Object.assign(sub, obj);
 
