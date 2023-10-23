@@ -67,7 +67,10 @@ const DashBoard = () => {
             />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab
+              label={"Newsletter"}
+              sx={{ fontSize: 16, fontWeight: "700" }}
+            />
           </Tabs>
         </Box>
 

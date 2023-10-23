@@ -99,7 +99,7 @@ import UpdateMyPasswordAPI from "./api/User/UpdateMyPassword";
 import UpdateProfileAPI from "./api/User/UpdateProfile";
 import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
 import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
-
+import NewsletterSubscribe from "./api/User/NewsletterSubscribe";
 //Commom Actions
 import {
   FullScreen,
@@ -232,4 +232,5 @@ export {
   ReopenTaskAPI,
   UpdateUserRoleAPI,
   setTotalSentences,
+  NewsletterSubscribe
 };
