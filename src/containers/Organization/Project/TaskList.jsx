@@ -214,7 +214,7 @@ const TaskList = () => {
             }
             }
             }>
-            Delete & Reopen
+            Reopen
             </Button>
           </Tooltip>
         );
