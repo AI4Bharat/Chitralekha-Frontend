@@ -165,6 +165,7 @@ const TaskList = () => {
   const [searchedCol, setSearchedCol] = useState({});
   const [searchedColumn, setSearchedColumn] = useState({});
   const [columnDisplay, setColumnDisplay] = useState(false);
+  const [reOpenTaskId, setReOpenTaskId]= useState(null);
 
   //Data from Redux
   const { total_count: totalCount, tasks_list: taskList } = useSelector(
@@ -175,6 +176,51 @@ const TaskList = () => {
   const previewData = useSelector(
     (state) => state.getPreviewData?.data
   );
+
+  const reopenActionColumn = {
+    name: "Action",
+    label: "Actions",
+    options: {
+      filter: false,
+      sort: false,
+      align: "center",
+      setCellHeaderProps: () => ({
+        className: tableClasses.cellHeaderProps,
+      }),
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedTask = data[rowIndex];
+
+        return (
+          <Tooltip
+            placement="top"
+            title='Warning! VoiceOver cannot be recovered once deleted'
+            sx={{
+                color:'red',
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+            }}
+          >
+            <Button
+            color={'error'}
+            sx={{whiteSpace:'nowrap',display:'inline'}}
+            onClick={()=>{
+            {
+              console.log(tableMeta.rowData[0]);
+              console.log(setTableDialogColumn)
+              const reopenObj = new ReopenTaskAPI(reOpenTaskId,true);
+              dispatch(APITransport(reopenObj));
+            }
+            }
+            }>
+            Delete & Reopen
+            </Button>
+          </Tooltip>
+        );
+      },
+    },
+  };
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -250,7 +296,7 @@ const TaskList = () => {
         if (apiType === "REOPEN_TASK" && data.response) {
           dispatch(setSnackBar({ open: false }));
           handleDialogOpen("tableDialog");
-          setTableDialogColumn(reopenTableColumns);
+          setTableDialogColumn([...reopenTableColumns,reopenActionColumn]);
           setTableDialogMessage(data.message);
           setTableDialogResponse(data.response);
         }
@@ -669,6 +715,7 @@ const TaskList = () => {
       case "Reopen":
         const reopenObj = new ReopenTaskAPI(id);
         dispatch(APITransport(reopenObj));
+        setReOpenTaskId(id)
         break;
 
       default:
