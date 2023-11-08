@@ -30,7 +30,7 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { ConfirmDialog, ShortcutKeys, TableDialog, TimeBoxes } from "common";
+import { ConfirmDialog, CustomizedSnackbars, ShortcutKeys, TableDialog, TimeBoxes } from "common";
 
 //APIs
 import C from "redux/constants";
@@ -88,6 +88,11 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [subsuper, setsubsuper] = useState(false);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -241,6 +246,20 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     dispatch(setSubtitles(arr, C.SUBTITLES));
   };
 
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  }, [snackbar]);
+
   const saveTranscriptHandler = async (
     isFinal,
     isRegenerate = false,
@@ -256,6 +275,17 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     };
 
     if (isFinal) {
+      for (let subtitle of subs){
+        if ((subtitle['target_text'].length)==0 || (subtitle['text'].length)==0){
+          setSnackbarInfo({
+            open: true,
+            message: 'One or more subtitle boxes are empty.',
+            variant: "error",
+          });
+          console.log('One or more subtitle boxes are empty.')
+          return
+        }
+      }
       reqBody.final = true;
     }
 
@@ -543,6 +573,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
   return (
     <>
+      {renderSnackBar()}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}

@@ -1,5 +1,5 @@
 // Voice Over Right Panel
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
@@ -20,6 +20,7 @@ import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import {
   ConfirmDialog,
   ConfirmErrorDialog,
+  CustomizedSnackbars,
   RecorderComponent,
   ShortcutKeys,
   TableDialog,
@@ -92,6 +93,11 @@ const VoiceOverRightPanel = () => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [snackbar, setSnackbarInfo] = useState({
+    open: false,
+    message: "",
+    variant: "success",
+  });
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -220,18 +226,25 @@ const VoiceOverRightPanel = () => {
     // saveTranscriptHandler(false, false);
   };
 
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          setSnackbarInfo({ open: false, message: "", variant: "" })
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={snackbar.message}
+      />
+    );
+  }, [snackbar]);
+
   const saveTranscriptHandler = async (
     isFinal,
     isGetUpdatedAudio,
     value = currentPage
   ) => {
-    dispatch(
-      setSnackBar({
-        open: true,
-        message: "Saving...",
-        variant: "info",
-      })
-    );
 
     const reqBody = {
       task_id: taskId,
@@ -242,8 +255,27 @@ const VoiceOverRightPanel = () => {
     };
 
     if (isFinal) {
+      for (let subtitle of sourceText){
+        if (subtitle['text']==undefined || (subtitle['text'].length)==0 ){
+          setSnackbarInfo({
+            open: true,
+            message: 'One or more subtitle boxes are empty.',
+            variant: "error",
+          });
+          console.log('One or more subtitle boxes are empty.')
+          return
+        }
+      }
       reqBody.final = true;
     }
+
+    dispatch(
+      setSnackBar({
+        open: true,
+        message: "Saving...",
+        variant: "info",
+      })
+    );
 
     setComplete(isFinal);
     setGetUpdatedAudio(isGetUpdatedAudio);
@@ -363,6 +395,7 @@ const VoiceOverRightPanel = () => {
 
   return (
     <>
+      {renderSnackBar()}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
