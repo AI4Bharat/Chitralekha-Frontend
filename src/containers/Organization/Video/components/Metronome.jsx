@@ -28,6 +28,7 @@ const findIndex = (subs, startTime) => {
 
 export default React.memo(
   function Component({ render, playing }) {
+    const taskDetails = useSelector((state) => state.getTaskDetails.data);
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
@@ -52,6 +53,7 @@ export default React.memo(
     const onMouseDown = useCallback(
       (event) => {
         if (event.button !== 0) return;
+        if (taskDetails.task_type.includes("VOICEOVER")){return}
         const clickTime = getEventTime(event);
         setIsDroging(true);
         setDrogStartTime(clickTime);
@@ -61,6 +63,7 @@ export default React.memo(
 
     const onMouseMove = useCallback(
       (event) => {
+        if (taskDetails.task_type.includes("VOICEOVER")){return}
         if (isDroging) {
           if (playing) player.pause();
           setDrogEndTime(getEventTime(event));
@@ -70,6 +73,7 @@ export default React.memo(
     );
 
     const onDocumentMouseUp = useCallback(() => {
+      if (taskDetails.task_type.includes("VOICEOVER")){return}
       if (isDroging) {
         if (
           drogStartTime > 0 &&
