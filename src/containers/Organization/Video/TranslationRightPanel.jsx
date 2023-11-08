@@ -282,7 +282,6 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             message: 'One or more subtitle boxes are empty.',
             variant: "error",
           });
-          console.log('One or more subtitle boxes are empty.')
           return
         }
       }
