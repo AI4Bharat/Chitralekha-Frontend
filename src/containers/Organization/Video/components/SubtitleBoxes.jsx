@@ -142,6 +142,7 @@ export default memo(
       const copySub = [...subtitles];
 
         if (index <= 0) return;
+        if (taskDetails.task_type.includes("VOICEOVER")){return}
 
       Object.assign(sub, obj);
 
