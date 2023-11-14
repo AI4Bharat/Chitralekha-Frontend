@@ -115,7 +115,9 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
     if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
       if (!autoSave) {
-        dispatch(setSnackBar({ open: false }));
+        setTimeout(() => {
+          dispatch(setSnackBar({ open: false }));
+        }, 1000);
       }
 
       if (complete) {
