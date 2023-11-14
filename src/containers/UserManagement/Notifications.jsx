@@ -18,8 +18,8 @@ import {
 } from "@mui/material";
 
 //APIs
-import { APITransport, ToggleMailsAPI } from "redux/actions";
-import NewsLetter from "./NewsLetter";
+import { APITransport, ToggleMailsAPI, NewsletterSubscribe } from "redux/actions";
+import NewsLetter from "./NewsLetterSubscribe";
 
 const Notifications = () => {
   const classes = LoginStyle();
@@ -51,6 +51,11 @@ const Notifications = () => {
       dispatch(APITransport(mailObj));
     }
   }, [formFields.dailyEmail]);
+
+  const handleSubscribeApiCall = (email) => {
+    const newsLetterObj = new NewsletterSubscribe(email);
+    dispatch(APITransport(newsLetterObj));
+  };
 
   const notificationOptions = [
     {
@@ -92,7 +97,7 @@ const Notifications = () => {
           lg={12}
           xl={12}
         >
-          <NewsLetter />
+          <NewsLetter susbscribeToNewsLetter={handleSubscribeApiCall} />
         </Grid>
       ) : (
         <></>

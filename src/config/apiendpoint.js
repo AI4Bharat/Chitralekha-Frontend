@@ -15,6 +15,7 @@ const endpoints = {
   languages: "/users/languages/fetch/",
   userRoles: "/users/roles/",
   newsletterSubscribe: "/newsletter/subscribe/",
+  newsletter: "/newsletter/",
 
   //Video
   video: "/video/",
