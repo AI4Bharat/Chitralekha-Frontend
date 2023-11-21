@@ -39,7 +39,8 @@ const TaskReopenDialog = ({
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {message}
-          
+          <br/>
+          If you continue, corresponding Voice-Over task would be deleted.
           {taskReopenResponse && (
             <TableRow
               style={{
@@ -101,17 +102,8 @@ const TaskReopenDialog = ({
         >
           Cancel
         </Button>
-        <Tooltip
-            placement="top"
-            title='Warning! VoiceOver cannot be recovered once deleted'
-            sx={{
-                color:'red',
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-            }}
-          >
             <Button
+            color="error"
             variant="contained"
             onClick={() => submit()}
             autoFocus
@@ -120,7 +112,6 @@ const TaskReopenDialog = ({
             Reopen
             {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
             </Button>
-        </Tooltip>
       </DialogActions>
     </Dialog>
   );

@@ -101,6 +101,7 @@ const DeleteDialog = ({
           Cancel
         </Button>
         <Button
+          color="error"
           variant="contained"
           onClick={() => submit()}
           autoFocus
