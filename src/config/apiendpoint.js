@@ -16,6 +16,7 @@ const endpoints = {
   userRoles: "/users/roles/",
   newsletterSubscribe: "/newsletter/subscribe/",
   newsletter: "/newsletter/",
+  preview: "/newsletter/preview/",
 
   //Video
   video: "/video/",
