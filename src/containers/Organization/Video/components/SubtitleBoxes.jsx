@@ -190,6 +190,8 @@ export default memo(
           lastSub.endTime + timeDiff,
           next ? next.startTime : null
         );
+        const nextCardStartTime = endTime;
+        const previousCardEndTime = startTime;
         const width = (endTime - startTime) * 10 * gridGap;
         const nextCardWidth = (next.endTime - nextCardStartTime) * 10 * gridGap;
         const previousCardWidth =
