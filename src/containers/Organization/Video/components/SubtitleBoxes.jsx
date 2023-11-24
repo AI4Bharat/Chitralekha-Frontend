@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import isEqual from "lodash/isEqual";
 import DT from "duration-time-conversion";
-import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   copySubs,
@@ -34,7 +33,6 @@ import C from "redux/constants";
 import {
   APITransport,
   FetchTranscriptPayloadAPI,
-  SaveTranscriptAPI,
   setSubtitles,
 } from "redux/actions";
 
@@ -48,6 +46,8 @@ function magnetically(time, closeTime) {
 
 let lastTarget = null;
 let lastSub = null;
+let previousTarget = null;
+let nextTarget = null;
 let lastType = "";
 let lastX = 0;
 let lastIndex = -1;
@@ -57,7 +57,6 @@ let isDroging = false;
 
 export default memo(
   function ({ render, currentTime }) {
-    const { taskId } = useParams();
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
@@ -103,20 +102,6 @@ export default memo(
       // eslint-disable-next-line
     }, [subtitles, currentIndex, isPlaying(player)]);
 
-    const saveTranscript = async (taskType, subs = subtitles) => {
-      const reqBody = {
-        task_id: taskId,
-        offset: currentPage,
-        limit: limit,
-        payload: {
-          payload: subs,
-        },
-      };
-
-      const obj = new SaveTranscriptAPI(reqBody, taskType);
-      dispatch(APITransport(obj));
-    };
-
     const removeSub = useCallback(
       (sub) => {
         const index = hasSub(sub);
@@ -137,25 +122,32 @@ export default memo(
       [limit, currentPage]
     );
 
-    const updateSub = (sub, obj) => {
-      const index = hasSub(sub);
-      const copySub = [...subtitles];
+    const updateSub = useCallback(
+      (sub, obj) => {
+        const index = hasSub(sub);
+        const copySub = [...subtitles];
 
-      if (index < 0) return;
+        if (index <= 0) return;
+        if (taskDetails.task_type.includes("VOICEOVER")){return}
 
-      Object.assign(sub, obj);
+        Object.assign(sub, obj);
 
-      copySub[index] = sub;
-      dispatch(setSubtitles(copySub, C.SUBTITLES));
-    };
+        copySub[index] = sub;
+        dispatch(setSubtitles(copySub, C.SUBTITLES));
+      },
+      // eslint-disable-next-line
+      [subtitles]
+    );
 
-    const onMouseDown = (sub, event, type) => {
-      lastSub = sub;
+    const onMouseDown = (index, event, type) => {
+      previousTarget = $subsRef.current.children[index - 1];
+      lastSub = subtitles[index];
+      nextTarget = $subsRef.current.children[index + 1];
       if (event.button !== 0) return;
       isDroging = true;
       lastType = type;
       lastX = event.pageX;
-      lastIndex = subtitles.indexOf(sub);
+      lastIndex = index;
       lastTarget = $subsRef.current.children[lastIndex];
       lastWidth = parseFloat(lastTarget.style.width);
     };
@@ -189,7 +181,14 @@ export default memo(
           lastSub.endTime + timeDiff,
           next ? next.startTime : null
         );
+
+        const nextCardStartTime = endTime;
+        const previousCardEndTime = startTime;
+
         const width = (endTime - startTime) * 10 * gridGap;
+        const nextCardWidth = (next.endTime - nextCardStartTime) * 10 * gridGap;
+        const previousCardWidth =
+          (previousCardEndTime - previou?.startTime?previou.startTime:0) * 10 * gridGap;
 
         if (lastType === "left") {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
@@ -197,6 +196,12 @@ export default memo(
 
             if (index > 0 && startTime >= DT.t2d(previou.end_time)) {
               updateSub(lastSub, { start_time });
+            }
+
+            if(index > 0 && startTime < DT.t2d(previou.end_time) && startTime !== DT.t2d(previou.end_time)) {
+              updateSub(lastSub, { start_time });
+              updateSub(previou, { end_time: start_time });
+              previousTarget.style.width = `${previousCardWidth}px`;
             }
 
             if (index === 0) {
@@ -209,11 +214,26 @@ export default memo(
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end_time = DT.d2t(endTime);
 
-            if (index >= 0 && index !== subtitles.length - 1 && endTime <= DT.t2d(next.start_time)) {
+            if (
+              index >= 0 &&
+              index !== subtitles.length - 1 &&
+              endTime <= DT.t2d(next.start_time)
+            ) {
               updateSub(lastSub, { end_time });
             }
 
-            if(index === subtitles.length - 1 && endTime < lastSub.endTime) {
+            if (
+              index >= 0 &&
+              index !== subtitles.length - 1 &&
+              endTime > DT.t2d(next.start_time) && 
+              endTime !== DT.t2d(next.start_time)
+            ) {
+              updateSub(lastSub, { end_time });
+              updateSub(next, { start_time: end_time });
+              nextTarget.style.width = `${nextCardWidth}px`;
+            }
+
+            if (index === subtitles.length - 1 && endTime < lastSub.endTime) {
               updateSub(lastSub, { end_time });
             }
           } else {
@@ -372,13 +392,13 @@ export default memo(
                       left: 0,
                       width: 10,
                     }}
-                    onMouseDown={(event) => onMouseDown(sub, event, "left")}
+                    onMouseDown={(event) => onMouseDown(key, event, "left")}
                   ></div>
 
                   <div
                     className={classes.subText}
                     title={sub.text}
-                    onMouseDown={(event) => onMouseDown(sub, event)}
+                    onMouseDown={(event) => onMouseDown(key, event)}
                   >
                     <p className={classes.subTextP}>
                       {taskDetails.task_type.includes("TRANSCRIPTION") ||
@@ -394,7 +414,7 @@ export default memo(
                       right: 0,
                       width: 10,
                     }}
-                    onMouseDown={(event) => onMouseDown(sub, event, "right")}
+                    onMouseDown={(event) => onMouseDown(key, event, "right")}
                   ></div>
                   <div className={classes.subDuration}>{sub.duration}</div>
                 </ContextMenuTrigger>

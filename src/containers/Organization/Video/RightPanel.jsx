@@ -115,7 +115,9 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
     if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
       if (!autoSave) {
-        dispatch(setSnackBar({ open: false }));
+        setTimeout(() => {
+          dispatch(setSnackBar({ open: false }));
+        }, 1000);
       }
 
       if (complete) {
@@ -484,17 +486,17 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
   const shortcuts = [
     {
-      keys: ["Control", "ArrowRight"],
+      keys: ["Control", "l"],
       callback: () => next && onNavigationClick(currentOffset + 1),
     },
     {
-      keys: ["Control", "ArrowLeft"],
+      keys: ["Control", "k"],
       callback: () => {
         previous && onNavigationClick(currentOffset - 1);
       },
     },
     {
-      keys: ["Control", "ArrowUp"],
+      keys: ["Control", "i"],
       callback: () => {
         if (currentIndex > 0) {
           setCurrentIndex((prev) => prev - 1);
@@ -503,7 +505,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
       },
     },
     {
-      keys: ["Control", "ArrowDown"],
+      keys: ["Control", "m"],
       callback: () => {
         if (currentIndex < subtitles.length - 1) {
           setCurrentIndex((prev) => prev + 1);

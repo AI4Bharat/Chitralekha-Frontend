@@ -14,6 +14,7 @@ import AdminLevelReport from "./AdminLevelReport";
 
 //Apis
 import { APITransport, AddOrganizationMemberAPI } from "redux/actions";
+import NewsLetter from "./NewsLetterTemplate";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -67,7 +68,10 @@ const DashBoard = () => {
             />
             <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Settings"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab
+              label={"Newsletter"}
+              sx={{ fontSize: 16, fontWeight: "700" }}
+            />
           </Tabs>
         </Box>
 
@@ -142,7 +146,18 @@ const DashBoard = () => {
           value={value}
           index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
-        ></TabPanel>
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <div className={classes.workspaceTables} style={{ width: "100%" }}>
+              <NewsLetter />
+            </div>
+          </Box>
+        </TabPanel>
       </Card>
 
       {addUserDialog && (

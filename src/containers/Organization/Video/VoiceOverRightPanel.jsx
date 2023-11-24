@@ -458,11 +458,11 @@ const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
 
   const shortcuts = [
     {
-      keys: ["Control", "ArrowRight"],
+      keys: ["Control", "l"],
       callback: () => next && onNavigationClick(currentPage + 1),
     },
     {
-      keys: ["Control", "ArrowLeft"],
+      keys: ["Control", "k"],
       callback: () => {
         previous && onNavigationClick(currentPage - 1);
       },
