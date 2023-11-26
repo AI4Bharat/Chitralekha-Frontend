@@ -501,12 +501,12 @@ export const taskQueueStatusColumns = [
 
 export const failInfoColumns = [
   {
-    name: "index",
-    label: "Id",
-  },
-  {
     name: "page_number",
     label: "Page Number",
+  },
+  {
+    name: "index",
+    label: "Id",
   },
   {
     name: "start_time",
@@ -528,12 +528,12 @@ export const failInfoColumns = [
 
 export const failTranscriptionInfoColumns = [
   {
-    name: "index",
-    label: "Id",
-  },
-  {
     name: "page_number",
     label: "Page Number",
+  },
+  {
+    name: "index",
+    label: "Id",
   },
   {
     name: "start_time",
@@ -551,12 +551,12 @@ export const failTranscriptionInfoColumns = [
 
 export const voiceoverFailInfoColumns = [
   {
-    name: "index",
-    label: "Id",
-  },
-  {
     name: "page_number",
     label: "Page Number",
+  },
+  {
+    name: "index",
+    label: "Id",
   },
   {
     name: "reason",
