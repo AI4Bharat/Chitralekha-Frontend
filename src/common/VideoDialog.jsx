@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMilliseconds, getTimeStamp, MenuProps } from "utils";
 import { useVideoSubtitle } from "hooks";
-import { voiceOptions } from "config";
+import { speakerFields, voiceOptions } from "config";
 
 //Styles
 import { ProjectStyle } from "styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+
 
 //Components
 import {
@@ -26,12 +27,21 @@ import {
   Select,
   MenuItem,
   Tooltip,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
 } from "@mui/material";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import CloseIcon from "@mui/icons-material/Close";
 import VideoTaskList from "containers/Organization/Project/VideoTaskList";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
 //APIs
 import C from "redux/constants";
@@ -46,7 +56,8 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
-
+  // const [speakerType, setSpeakerType] = useState("individual");
+  const [speakerType, setSpeakerType] = useState(videoDetails[0].multiple_speaker?"multiple":"individual");
   const [time, setTime] = useState("");
   const [subtitles, setSubtitles] = useState([]);
   const [highlightedSubtitle, setHighlightedSubtitle] = useState([]);
@@ -59,6 +70,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     message: "",
     variant: "success",
   });
+  const [speakerInfo, setSpeakerInfo] = useState(videoDetails[0].speaker_info);
 
   const ref = useRef(null);
   const { subtitle } = useVideoSubtitle(videoDetails[0].id);
@@ -94,6 +106,48 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     processSubtitleData();
     // eslint-disable-next-line
   }, [subtitles]);
+
+  const handleRemoveSpeaker = (event, index) => {
+    event.stopPropagation();
+
+    const temp = [...speakerInfo];
+    temp.splice(index, 1);
+
+    setSpeakerInfo(temp);
+  };
+
+  const handleSpeakerFieldChange = (event, index) => {
+    const {
+      target: { name, value },
+    } = event;
+
+    const temp = [...speakerInfo];
+
+    if (name === "name") {
+      const spaceIndex = value.indexOf(" ");
+
+      if (spaceIndex !== -1) {
+        temp[index]["id"] = value.substring(0, spaceIndex);
+      } else {
+        temp[index]["id"] = value;
+      }
+    }
+    temp[index][name] = value;
+
+    setSpeakerInfo(temp);
+  };
+
+  const handleAddMoreSpeakers = () => {
+    setSpeakerInfo((prevState) => [
+      ...prevState,
+      {
+        name: "",
+        gender: "",
+        age: "",
+        id: "",
+      },
+    ]);
+  };
 
   const getHighlightedWords = (index, currentTime, word, start, end) => {
     return (
@@ -242,6 +296,8 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
       gender: voice,
       description: videoDescription,
       video_id: videoDetails[0].id,
+      multiple_speaker: speakerType !== 'individual',
+      speaker_info: speakerInfo
     };
 
     const apiObj = new UpdateVideoAPI(updateData);
@@ -331,18 +387,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
             marginBottom="20px"
           >
             <Grid margin="auto">
-              <TextField
-                id="description"
-                label="Description"
-                fullWidth
-                multiline
-                rows={3}
-                value={videoDescription}
-                onChange={(event) => setVideoDescription(event.target.value)}
-                sx={{ mb: 3, mt: 3 }}
-              />
-
-              <FormControl fullWidth>
+            <FormControl fullWidth sx={{ mt: 3 }}>
                 <InputLabel id="select-voice">Voice Selection</InputLabel>
                 <Select
                   fullWidth
@@ -361,6 +406,141 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
                   ))}
                 </Select>
               </FormControl>
+              <FormControl fullWidth sx={{ mt: 3 }}>
+              <RadioGroup
+                  row
+                  name="controlled-radio-buttons-group"
+                  value={speakerType}
+                  onChange={(event) => setSpeakerType(event.target.value)}
+                >
+                  <FormControlLabel
+                    value="individual"
+                    control={<Radio />}
+                    label="Individual Speaker"
+                    sx={{
+                      "& .MuiFormControlLabel-label": { fontSize: "18px" },
+                    }}
+                  />
+
+                  <FormControlLabel
+                    value="multiple"
+                    control={<Radio />}
+                    label="Multi Speaker"
+                    sx={{
+                      "& .MuiFormControlLabel-label": { fontSize: "18px" },
+                    }}
+                  />
+                </RadioGroup>
+                {speakerType === "multiple" && (
+          <>
+            {speakerInfo.map((item, index) => {
+              return (
+                <Accordion
+                  sx={{
+                    borderRadius: "4px",
+                    mt: 2,
+                    "&:before": {
+                      display: "none",
+                    },
+                    backgroundColor: index % 2 === 0 ? "#D6EAF8" : "#E9F7EF",
+                  }}
+                  key={`speakerInfo-accordion-${index}`}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    id={`speakerInfo-accordion-child-${index}`}
+                  >
+                    <Typography sx={{ margin: "4px 0", color: "#2A2A2A" }}>
+                      Speaker {index + 1}
+                    </Typography>
+
+                    <Tooltip title="Delete Speaker">
+                      <IconButton
+                        aria-label="close"
+                        onClick={(event) => handleRemoveSpeaker(event, index)}
+                        sx={{ marginLeft: "auto" }}
+                        disabled={speakerInfo.length === 1}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {speakerFields.map((element, idx) => {
+                      return (
+                        <Fragment key={`speaker-fields-${idx}`}>
+                          {element.type === "text" ? (
+                            <TextField
+                              label={element.label}
+                              value={item[element.name]}
+                              name={element.name}
+                              onChange={(event) =>
+                                handleSpeakerFieldChange(event, index)
+                              }
+                              sx={element.sx}
+                            />
+                          ) : (
+                            <FormControl fullWidth sx={element.sx}>
+                              <InputLabel id={element.label}>
+                                {element.label}
+                              </InputLabel>
+                              <Select
+                                fullWidth
+                                labelId={element.label}
+                                label={element.label}
+                                name={element.name}
+                                value={item[element.name]}
+                                onChange={(event) =>
+                                  handleSpeakerFieldChange(event, index)
+                                }
+                                style={{ zIndex: "0" }}
+                                inputProps={{ "aria-label": "Without label" }}
+                                MenuProps={MenuProps}
+                              >
+                                {element.options.map((item, index) => (
+                                  <MenuItem key={index} value={item.value}>
+                                    {item.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
+
+            <Button
+              variant="text"
+              sx={{
+                display: "flex",
+                mt: 2,
+                borderRadius: 2,
+                lineHeight: 1,
+                ml: "auto",
+              }}
+              onClick={handleAddMoreSpeakers}
+            >
+              <AddIcon />
+              Add More Speakers
+            </Button>
+          </>
+        )}
+              </FormControl>
+              <TextField
+                id="description"
+                label="Description"
+                fullWidth
+                multiline
+                rows={3}
+                value={videoDescription}
+                onChange={(event) => setVideoDescription(event.target.value)}
+                sx={{ mb: 3, mt: 3 }}
+              />
 
               <Button
                 variant="contained"
@@ -375,7 +555,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
               </Button>
             </Grid>
 
-            <Grid className={classes.videoBox} id="myvideo">
+            {/* <Grid className={classes.videoBox} id="myvideo">
               <video
                 id="myBtn"
                 ref={ref}
@@ -452,7 +632,7 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
                   }
                 />
               )}
-            </Grid>
+            </Grid> */}
           </Grid>
 
           <div>
