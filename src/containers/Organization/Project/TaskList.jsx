@@ -46,6 +46,7 @@ import {
   UpdateBulkTaskDialog,
   UploadFormatDialog,
   ViewTaskDialog,
+  TaskReopenDialog,
 } from "common";
 
 //Icons
@@ -117,6 +118,10 @@ const TaskList = () => {
   const [uploadLoading, setUploadLoading] = useState([]);
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
+
+  const [taskReopenMsg, setTaskReopenMsg] = useState("");
+  const [taskReopenResponse, setTaskReopenResponse] = useState([]);
+
   const [isSubmit, setIsSubmit] = useState(false);
 
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -133,6 +138,7 @@ const TaskList = () => {
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
+    TaskReopenDialog: false,
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -177,51 +183,6 @@ const TaskList = () => {
     (state) => state.getPreviewData?.data
   );
 
-  const reopenActionColumn = {
-    name: "Action",
-    label: "Actions",
-    options: {
-      filter: false,
-      sort: false,
-      align: "center",
-      setCellHeaderProps: () => ({
-        className: tableClasses.cellHeaderProps,
-      }),
-      customBodyRender: (_value, tableMeta) => {
-        const { tableData: data, rowIndex } = tableMeta;
-        const selectedTask = data[rowIndex];
-
-        return (
-          <Tooltip
-            placement="top"
-            title='Warning! VoiceOver cannot be recovered once deleted'
-            sx={{
-                color:'red',
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-            }}
-          >
-            <Button
-            color={'error'}
-            sx={{whiteSpace:'nowrap',display:'inline'}}
-            onClick={()=>{
-            {
-              console.log(tableMeta.rowData[0]);
-              console.log(setTableDialogColumn)
-              const reopenObj = new ReopenTaskAPI(reOpenTaskId,true);
-              dispatch(APITransport(reopenObj));
-            }
-            }
-            }>
-            Reopen
-            </Button>
-          </Tooltip>
-        );
-      },
-    },
-  };
-
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
     if (!progress) {
@@ -234,6 +195,11 @@ const TaskList = () => {
 
           case "DELETE_TASK":
             handleDialogClose("deleteDialog");
+            fetchTaskList();
+            break;
+
+          case "REOPEN_TASK":
+            handleDialogClose("TaskReopenDialog");
             fetchTaskList();
             break;
 
@@ -295,10 +261,9 @@ const TaskList = () => {
 
         if (apiType === "REOPEN_TASK" && data.response) {
           dispatch(setSnackBar({ open: false }));
-          handleDialogOpen("tableDialog");
-          setTableDialogColumn([...reopenTableColumns,reopenActionColumn]);
-          setTableDialogMessage(data.message);
-          setTableDialogResponse(data.response);
+          handleDialogOpen("TaskReopenDialog");
+          setTaskReopenMsg(data.message);
+          setTaskReopenResponse(data.response);
         }
       }
     }
@@ -590,6 +555,14 @@ const TaskList = () => {
     const apiObj = new DeleteTaskAPI(id, flag);
     dispatch(APITransport(apiObj));
     handleDialogClose("deleteDialog");
+  };
+
+  const handleTaskReopen = async () => {
+    setLoading(true);
+
+    const reopenObj = new ReopenTaskAPI(reOpenTaskId,true);
+    dispatch(APITransport(reopenObj));
+    handleDialogClose("TaskReopenDialog");
   };
 
   const handlePreviewTask = async (videoId, taskType, targetlanguage) => {
@@ -1102,6 +1075,17 @@ const TaskList = () => {
           loading={apiStatus.loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
+        />
+      )}
+
+      {openDialogs.TaskReopenDialog && (
+        <TaskReopenDialog
+          openDialog={openDialogs.TaskReopenDialog}
+          handleClose={() => handleDialogClose("TaskReopenDialog")}
+          submit={() => handleTaskReopen()}
+          loading={apiStatus.loading}
+          message={taskReopenMsg}
+          taskReopenResponse={taskReopenResponse}
         />
       )}
 

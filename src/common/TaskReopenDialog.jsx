@@ -13,18 +13,19 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import Loader from "./Spinner";
 
 const headers = ["Video Id", "Task Type", "Target Language", "Video Name"];
 
-const DeleteDialog = ({
+const TaskReopenDialog = ({
   openDialog,
   handleClose,
   submit,
   message,
   loading,
-  deleteResponse,
+  taskReopenResponse,
 }) => {
   return (
     <Dialog
@@ -38,8 +39,9 @@ const DeleteDialog = ({
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {message}
-          
-          {deleteResponse && (
+          <br/>
+          If you continue, corresponding Voice-Over task would be deleted.
+          {taskReopenResponse && (
             <TableRow
               style={{
                 borderLeft: `2px solid #E9F7EF`,
@@ -66,7 +68,7 @@ const DeleteDialog = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {deleteResponse.map((item, index) => {
+                      {taskReopenResponse.map((item, index) => {
                         return (
                           <TableRow
                             key={index}
@@ -100,19 +102,19 @@ const DeleteDialog = ({
         >
           Cancel
         </Button>
-        <Button
-          color="error"
-          variant="contained"
-          onClick={() => submit()}
-          autoFocus
-          sx={{ lineHeight: "1", borderRadius: "8px" }}
-        >
-          Delete
-          {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
-        </Button>
+            <Button
+            color="error"
+            variant="contained"
+            onClick={() => submit()}
+            autoFocus
+            sx={{ lineHeight: "1", borderRadius: "8px" }}
+            >
+            Reopen
+            {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
+            </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default DeleteDialog;
+export default TaskReopenDialog;
