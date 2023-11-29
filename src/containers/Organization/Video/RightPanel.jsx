@@ -40,6 +40,7 @@ import {
 import {
   ConfirmDialog,
   ShortcutKeys,
+  TableDialog,
   TagsSuggestionList,
   TimeBoxes,
 } from "common";
@@ -52,10 +53,13 @@ import C from "redux/constants";
 import {
   APITransport,
   FetchTranscriptPayloadAPI,
+  FetchTaskFailInfoAPI,
   SaveTranscriptAPI,
   setSnackBar,
   setSubtitles,
 } from "redux/actions";
+
+import { failInfoColumns } from "config";
 
 const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const { taskId } = useParams();
@@ -110,23 +114,59 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [complete, setComplete] = useState(false);
   const [autoSave, setAutoSave] = useState(false);
 
+  const [openInfoDialog, setOpenInfoDialog] = useState(false);
+  const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [tableDialogResponse, setTableDialogResponse] = useState([]);
+  const [tableDialogColumn, setTableDialogColumn] = useState([]);
+
   useEffect(() => {
-    const { progress, success, apiType } = apiStatus;
+    const { progress, success, apiType, data } = apiStatus;
 
-    if (!progress && success && apiType === "SAVE_TRANSCRIPT") {
-      if (!autoSave) {
-        setTimeout(() => {
-          dispatch(setSnackBar({ open: false }));
-        }, 1000);
-      }
+    if (!progress) {
+      if (success) {
+        switch (apiType) {
+          case "SAVE_TRANSCRIPT":
+            if (!autoSave) {
+              setTimeout(() => {
+                dispatch(setSnackBar({ open: false }));
+              }, 1000);
+            }
+            if (complete) {
+              setTimeout(() => {
+                navigate(
+                  `/my-organization/${assignedOrgId}/project/${taskData?.project}`
+                );
+                setComplete(false);
+              }, 2000);
+            }
+            break;
 
-      if (complete) {
-        setTimeout(() => {
-          navigate(
-            `/my-organization/${assignedOrgId}/project/${taskData?.project}`
-          );
-          setComplete(false);
-        }, 2000);
+          case "GET_TASK_FAIL_INFO":
+            setOpenInfoDialog(true);
+            setTableDialogColumn(failInfoColumns.filter((col)=>col.name!='target_text'));
+            setTableDialogMessage(data.message);
+            setTableDialogResponse(data.data);
+            break;
+
+          default:
+            break;
+        }
+      } else {
+        switch (apiType) {
+          case "SAVE_TRANSCRIPT":
+            setOpenConfirmDialog(false);
+
+            if (complete) {
+              setOpenInfoDialog(true);
+              setTableDialogColumn(failInfoColumns.filter((col)=>col.name!='target_text'));
+              setTableDialogMessage(data.message);
+              setTableDialogResponse(data.data);
+            }
+            break;
+
+          default:
+            break;
+        }
       }
     }
 
@@ -276,6 +316,11 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
       replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
     }
+  };
+
+  const handleInfoButtonClick = async () => {
+    const apiObj = new FetchTaskFailInfoAPI(taskId);
+    dispatch(APITransport(apiObj));
   };
 
   const onMergeClick = useCallback(
@@ -571,6 +616,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
             showSplit={true}
+            handleInfoButtonClick={handleInfoButtonClick}
           />
         </Grid>
 
@@ -762,6 +808,16 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the transcript?"}
             loading={apiStatus.loading}
+          />
+        )}
+
+        {openInfoDialog && (
+          <TableDialog
+            openDialog={openInfoDialog}
+            handleClose={() => setOpenInfoDialog(false)}
+            message={tableDialogMessage}
+            response={tableDialogResponse}
+            columns={tableDialogColumn}
           />
         )}
 
