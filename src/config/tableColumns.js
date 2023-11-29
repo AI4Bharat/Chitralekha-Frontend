@@ -524,6 +524,10 @@ export const failInfoColumns = [
     name: "target_text",
     label: "Target Text",
   },
+  {
+    name: "issue_type",
+    label: "Issue Type",
+  },
 ];
 
 export const failTranscriptionInfoColumns = [
