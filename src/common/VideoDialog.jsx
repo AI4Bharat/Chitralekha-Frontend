@@ -269,34 +269,35 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
     }
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (
-        e.which === 32 &&
-        e.target.id !== "description" &&
-        document.activeElement !== ref.current
-      ) {
-        e.preventDefault();
-        var video = document.getElementById("myBtn");
-        if (video.paused) {
-          video.play();
-        } else {
-          video.pause();
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleKeyDown = (e) => {
+  //     if (
+  //       e.which === 32 &&
+  //       e.target.id !== "description" &&
+  //       document.activeElement !== ref.current
+  //     ) {
+  //       e.preventDefault();
+  //       var video = document.getElementById("myBtn");
+  //       if (video.paused) {
+  //         video.play();
+  //       } else {
+  //         video.pause();
+  //       }
+  //     }
+  //   };
+  //   window.addEventListener("keydown", handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, []);
 
   const updateVideoHandler = async () => {
     const updateData = {
       gender: voice,
       description: videoDescription,
       video_id: videoDetails[0].id,
-      multiple_speaker: speakerType !== 'individual',
+      // multiple_speaker: speakerType !== 'individual',
+      multiple_speaker: String(speakerType !== 'individual'),
       speaker_info: speakerInfo
     };
 
