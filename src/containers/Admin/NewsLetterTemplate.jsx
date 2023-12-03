@@ -269,9 +269,9 @@ const NewsLetter = () => {
   const templateTwo = () => {
     const additionalFieldsTwo = additionalFields[selectedTemplate] || [];
 
-    return <Grid container spacing={2}>
+    return <Grid container spacing={2} style={{ overflowY: 'auto' ,marginBottom: '10px' ,backgroundColor:"#fbe9e7"}}>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <TextField placeholder="Header text" value={templateInfo?.[selectedTemplate]?.header || ""} onChange={(e) => handleChange("header", e.target.value,0)} />
+        <TextField placeholder="Header text" value={templateInfo?.[selectedTemplate]?.header || ""} onChange={(e) => handleChange("header", e.target.value,0)} style={{backgroundColor:"white"}}/>
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
         <TextField placeholder="Image link" value={templateInfo?.[selectedTemplate]?.image || ""} onChange={(e) => handleChange("image", e.target.value,0)} />
@@ -287,7 +287,7 @@ const NewsLetter = () => {
       {additionalFieldsTwo.map((value, index) => (
           <React.Fragment key={index}>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <TextField placeholder="Header text" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.header || ''} onChange={(e) => handleChange("header", e.target.value,index+1)}style={{backgroundColor:"white"}} />
+        <TextField placeholder="Header text" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.header || ''} onChange={(e) => handleChange("header", e.target.value,index+1)} style={{backgroundColor:"white"}}/>
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
         <TextField placeholder="Image link" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.image || ''} onChange={(e) => handleChange("image", e.target.value,index+1)} />
@@ -296,9 +296,9 @@ const NewsLetter = () => {
         <TextField placeholder="Video link" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.youtube_url || ''} onChange={(e) => handleChange("youtube_url", e.target.value,index+1)} />
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6} >
-        <textarea   style={{width:"240px",height:"55px"}} className={classes.customStyles} 
+        <textarea   className={classes.customStyles} 
     
-         placeholder="Enter the paragraph" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.paragraph || ''} onChange={(e) => handleChange("paragraph", e.target.value,index+1)} style={{backgroundColor:"white"}}
+         placeholder="Enter the paragraph" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.paragraph || ''} onChange={(e) => handleChange("paragraph", e.target.value,index+1)} style={{backgroundColor:"white",width:"240px",height:"55px"}}
         />
       </Grid>
       </React.Fragment>
@@ -318,7 +318,7 @@ const NewsLetter = () => {
   };
   const templateThree = () => {
     return (
-      <Grid container spacing={2}>
+      <Grid container spacing={2} style={{  marginBottom: '10px' ,paddingBottom:"15px",backgroundColor:"#fbe9e7"}}>
         <Grid display="flex" justifyContent="center" alignContent="center" item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
             Upload file
