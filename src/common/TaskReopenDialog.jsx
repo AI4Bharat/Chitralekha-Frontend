@@ -39,8 +39,6 @@ const TaskReopenDialog = ({
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {message}
-          <br/>
-          If you continue, corresponding Voice-Over task would be deleted.
           {taskReopenResponse && (
             <TableRow
               style={{
