@@ -11,6 +11,7 @@ import CreateVideoDialog from "./CreateVideoDialog";
 import CustomMenuComponent from "./CustomMenuComponent";
 import CustomSwitchDarkBackground from "./CustomSwitchDarkBackground";
 import DeleteDialog from "./DeleteDialog";
+import TaskReopenDialog from "./TaskReopenDialog";
 import DeleteMemberErrorDialog from "./DeleteMemberErrorDialog";
 import ExportAllDialog from "./ExportAllDialog";
 import ExportDialog from "./ExportDialog";
@@ -58,6 +59,7 @@ export {
   CustomMenuComponent,
   CustomSwitchDarkBackground,
   DeleteDialog,
+  TaskReopenDialog,
   DeleteMemberErrorDialog,
   ExportAllDialog,
   ExportDialog,
