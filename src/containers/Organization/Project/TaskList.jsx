@@ -46,6 +46,7 @@ import {
   UpdateBulkTaskDialog,
   UploadFormatDialog,
   ViewTaskDialog,
+  TaskReopenDialog,
 } from "common";
 
 //Icons
@@ -117,6 +118,10 @@ const TaskList = () => {
   const [uploadLoading, setUploadLoading] = useState([]);
   const [deleteMsg, setDeleteMsg] = useState("");
   const [deleteResponse, setDeleteResponse] = useState([]);
+
+  const [taskReopenMsg, setTaskReopenMsg] = useState("");
+  const [taskReopenResponse, setTaskReopenResponse] = useState([]);
+
   const [isSubmit, setIsSubmit] = useState(false);
 
   const [currentTaskDetails, setCurrentTaskDetails] = useState();
@@ -133,6 +138,7 @@ const TaskList = () => {
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
+    TaskReopenDialog: false,
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -165,6 +171,7 @@ const TaskList = () => {
   const [searchedCol, setSearchedCol] = useState({});
   const [searchedColumn, setSearchedColumn] = useState({});
   const [columnDisplay, setColumnDisplay] = useState(false);
+  const [reOpenTaskId, setReOpenTaskId]= useState(null);
 
   //Data from Redux
   const { total_count: totalCount, tasks_list: taskList } = useSelector(
@@ -188,6 +195,11 @@ const TaskList = () => {
 
           case "DELETE_TASK":
             handleDialogClose("deleteDialog");
+            fetchTaskList();
+            break;
+
+          case "REOPEN_TASK":
+            handleDialogClose("TaskReopenDialog");
             fetchTaskList();
             break;
 
@@ -249,10 +261,9 @@ const TaskList = () => {
 
         if (apiType === "REOPEN_TASK" && data.response) {
           dispatch(setSnackBar({ open: false }));
-          handleDialogOpen("tableDialog");
-          setTableDialogColumn(reopenTableColumns);
-          setTableDialogMessage(data.message);
-          setTableDialogResponse(data.response);
+          handleDialogOpen("TaskReopenDialog");
+          setTaskReopenMsg(data.message);
+          setTaskReopenResponse(data.response);
         }
       }
     }
@@ -546,6 +557,14 @@ const TaskList = () => {
     handleDialogClose("deleteDialog");
   };
 
+  const handleTaskReopen = async () => {
+    setLoading(true);
+
+    const reopenObj = new ReopenTaskAPI(reOpenTaskId,true);
+    dispatch(APITransport(reopenObj));
+    handleDialogClose("TaskReopenDialog");
+  };
+
   const handlePreviewTask = async (videoId, taskType, targetlanguage) => {
     handleDialogOpen("previewDialog");
 
@@ -669,6 +688,7 @@ const TaskList = () => {
       case "Reopen":
         const reopenObj = new ReopenTaskAPI(id);
         dispatch(APITransport(reopenObj));
+        setReOpenTaskId(id)
         break;
 
       default:
@@ -894,6 +914,7 @@ const TaskList = () => {
   const handleToolbarButtonClick = (key) => {
     switch (key) {
       case "bulkTaskUpdate":
+        setCurrentTaskDetails(currentSelectedTasks);
         handleDialogOpen("editTaskDialog");
         setIsBulk(true);
         break;
@@ -1055,6 +1076,17 @@ const TaskList = () => {
           loading={apiStatus.loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
+        />
+      )}
+
+      {openDialogs.TaskReopenDialog && (
+        <TaskReopenDialog
+          openDialog={openDialogs.TaskReopenDialog}
+          handleClose={() => handleDialogClose("TaskReopenDialog")}
+          submit={() => handleTaskReopen()}
+          loading={apiStatus.loading}
+          message={taskReopenMsg}
+          taskReopenResponse={taskReopenResponse}
         />
       )}
 

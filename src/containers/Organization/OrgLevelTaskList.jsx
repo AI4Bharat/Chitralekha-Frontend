@@ -1027,7 +1027,7 @@ const OrgLevelTaskList = () => {
         />
       )}
 
-      {openDialogs.editTaskDialog && (
+      {/* {openDialogs.editTaskDialog && (
         <UpdateBulkTaskDialog
           open={openDialogs.editTaskDialog}
           handleUserDialogClose={() => handleDialogClose("editTaskDialog")}
@@ -1037,7 +1037,7 @@ const OrgLevelTaskList = () => {
           isBulk={isBulk}
           projectId={currentTaskDetails?.project}
         />
-      )}
+      )} */}
 
       {openDialogs.previewDialog && (
         <PreviewDialog

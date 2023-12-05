@@ -47,6 +47,7 @@ import getTaskQueueStatus from "./Organization/FetchTaskQueueStatus";
 import getSpeakerInfo from "./Project/FetchSpeakerInfo";
 import getSupportedBulkTaskTypes from "./Project/FetchSupportedBulkTaskTypes";
 import getPreviewData from "./Project/FetchPreviewData";
+import newsletterPreviewReducer from "./Admin/NewsLetterPreview";
 
 const rootReducer = {
     apiStatus,
@@ -98,6 +99,7 @@ const rootReducer = {
     getVoiceoverExportTypes,
     getSupportedBulkTaskTypes,
     getPreviewData,
+    newsletterPreviewReducer,
 };
 
 export default rootReducer;

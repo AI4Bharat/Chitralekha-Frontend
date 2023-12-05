@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -7,16 +7,19 @@ import { LoginStyle } from "styles";
 
 //Components
 import {
+  Button,
   Card,
   FormControlLabel,
   Grid,
   Switch,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 
 //APIs
-import { APITransport, ToggleMailsAPI } from "redux/actions";
+import { APITransport, ToggleMailsAPI, NewsletterSubscribe } from "redux/actions";
+import NewsLetter from "./NewsLetterSubscribe";
 
 const Notifications = () => {
   const classes = LoginStyle();
@@ -29,16 +32,29 @@ const Notifications = () => {
 
   const [formFields, setFormFields] = useState({
     dailyEmail: false,
+    newsLetterSubscribe: false
   });
 
-  const handleEmailToggle = async () => {
+  const handleSwitchToggle = (prop) => {
     setFormFields((prev) => ({
       ...prev,
-      dailyEmail: !formFields.dailyEmail,
+      [prop]: !formFields[prop],
     }));
+  };
 
-    const mailObj = new ToggleMailsAPI(loggedInUser.id, !formFields.dailyEmail);
-    dispatch(APITransport(mailObj));
+  useEffect(() => {
+    if (formFields.dailyEmail) {
+      const mailObj = new ToggleMailsAPI(
+        loggedInUser.id,
+        formFields.dailyEmail
+      );
+      dispatch(APITransport(mailObj));
+    }
+  }, [formFields.dailyEmail]);
+
+  const handleSubscribeApiCall = (email) => {
+    const newsLetterObj = new NewsletterSubscribe(email);
+    dispatch(APITransport(newsLetterObj));
   };
 
   const notificationOptions = [
@@ -47,13 +63,44 @@ const Notifications = () => {
       name: "dailyEmail",
       label: "Enable daily emails for all the activities",
       tooltipTitle: `${
-        formFields.dailyEmails ? "Disable" : "Enable"
+        formFields.dailyEmail ? "Disable" : "Enable"
       } daily mails`,
-      onClick: () => handleEmailToggle(),
+      onClick: () => handleSwitchToggle("dailyEmail"),
       disabled: !(
         loggedInUser.id === +id ||
         loggedInUser.role === "ADMIN" ||
         loggedInUser.role === "ORG_OWNER"
+      ),
+      component: <></>,
+    },
+    {
+      title: "Newsletter",
+      name: "newsLetterSubscribe",
+      label: "Subscribe to Newsletter",
+      tooltipTitle: `${
+        formFields.newsLetterSubscribe ? "Disable" : "Enable"
+      } newsletter`,
+      onClick: () => handleSwitchToggle("newsLetterSubscribe"),
+      disabled: !(
+        loggedInUser.id === +id ||
+        loggedInUser.role === "ADMIN" ||
+        loggedInUser.role === "ORG_OWNER"
+      ),
+      component: formFields.newsLetterSubscribe ? (
+        <Grid
+        display="flex"
+        justifyContent="center"
+        item
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+        >
+          <NewsLetter susbscribeToNewsLetter={handleSubscribeApiCall} />
+        </Grid>
+      ) : (
+        <></>
       ),
     },
   ];
@@ -63,7 +110,7 @@ const Notifications = () => {
       <Card className={classes.editProfileParentCard}>
         {notificationOptions.map((element) => {
           return (
-            <Grid container sx={{ p: "40px", justifyContent: "center" }}>
+            <><Grid container sx={{ p: "40px", justifyContent: "center" }}>
               <Grid item xs={12} sm={12} md={3} lg={4} xl={4}>
                 <Typography variant="body1">{element.title}</Typography>
                 <Typography
@@ -97,6 +144,9 @@ const Notifications = () => {
                 </Tooltip>
               </Grid>
             </Grid>
+            <Grid container sx={{justifyContent: "center" }}>
+              {element.component}
+              </Grid></>
           );
         })}
       </Card>
