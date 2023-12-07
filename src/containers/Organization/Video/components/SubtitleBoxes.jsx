@@ -184,7 +184,7 @@ export default memo(
         const nextCardStartTime = endTime;
         const previousCardEndTime = startTime;
         const width = (endTime - startTime) * 10 * gridGap;
-        const nextCardWidth = (next.endTime - nextCardStartTime) * 10 * gridGap;
+        const nextCardWidth = (next?next.endTime:(nextCardStartTime+10) - nextCardStartTime) * 10 * gridGap;
         const previousCardWidth =
           (previousCardEndTime - previou?.startTime?previou.startTime:0) * 10 * gridGap;
 
@@ -197,9 +197,11 @@ export default memo(
             }
 
             if(index > 0 && startTime < DT.t2d(previou.end_time) && startTime !== DT.t2d(previou.end_time)) {
-              updateSub(lastSub, { start_time });
-              updateSub(previou, { end_time: start_time });
-              previousTarget.style.width = `${previousCardWidth}px`;
+              if (index!==1){
+                updateSub(lastSub, { start_time });
+                updateSub(previou, { end_time: start_time });
+                previousTarget.style.width = `${previousCardWidth}px`;
+              }
             }
 
             if (index === 0) {
@@ -231,9 +233,10 @@ export default memo(
               nextTarget.style.width = `${nextCardWidth}px`;
             }
 
-            if (index === subtitles.length - 1 && endTime < lastSub.endTime) {
-              updateSub(lastSub, { end_time });
-            }
+            // //allow last subtitle endtime edit
+            // if (index === subtitles.length - 1) {
+            //   updateSub(lastSub, { end_time });
+            // }
           } else {
             lastTarget.style.width = `${width}px`;
           }
