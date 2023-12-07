@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import {UpdateProfileAPI}from "redux/actions";
 
 //Styles
 import { LoginStyle } from "styles";
@@ -40,6 +41,17 @@ const Notifications = () => {
       ...prev,
       [prop]: !formFields[prop],
     }));
+    let updateProfileReqBody = {
+      enable_mail: !formFields.dailyEmail,
+    };
+
+
+    let apiObj;
+    apiObj = new UpdateProfileAPI(updateProfileReqBody, id);
+
+
+    dispatch(APITransport(apiObj));
+console.log(loggedInUser,formFields.dailyEmail);
   };
 
   useEffect(() => {

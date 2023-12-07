@@ -114,6 +114,8 @@ const NewsLetter = () => {
       submitter_id: getLocalStorageData("userData").id,
       content: [
         {
+          image: templateContent.image || '',
+          youtube_url: templateContent.youtube_url || '',
           header: templateContent.header || '',
           paragraph: templateContent.paragraph || '',
         },
@@ -284,13 +286,13 @@ const NewsLetter = () => {
         <TextField placeholder="Header text" value={templateInfo?.[selectedTemplate]?.header || ""} onChange={(e) => handleChange("header", e.target.value,0)} style={{backgroundColor:"white"}}/>
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <TextField placeholder="Image link" value={templateInfo?.[selectedTemplate]?.image || ""} onChange={(e) => handleChange("image", e.target.value,0)} />
+        <TextField placeholder="Image link" value={templateInfo?.[selectedTemplate]?.image || ""} onChange={(e) => handleChange("image", e.target.value,0)}  style={{backgroundColor:"white"}}/>
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <TextField placeholder="Video link" value={templateInfo?.[selectedTemplate]?.youtube_url || ""} onChange={(e) => handleChange("youtube_url", e.target.value,0)} />
+        <TextField placeholder="Video link" value={templateInfo?.[selectedTemplate]?.youtube_url || ""} onChange={(e) => handleChange("youtube_url", e.target.value,0)}  style={{backgroundColor:"white"}}/>
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <textarea style={{width:"240px",height:"55px"}}className={classes.customStyles} placeholder="Enter the paragraph" value={templateInfo?.[selectedTemplate]?.paragraph || ""} onChange={(e) => handleChange("paragraph", e.target.value,0)} />
+        <textarea style={{width:"240px",height:"55px",backgroundColor:"white"}}className={classes.customStyles} placeholder="Enter the paragraph" value={templateInfo?.[selectedTemplate]?.paragraph || ""} onChange={(e) => handleChange("paragraph", e.target.value,0)} />
       </Grid>
 
 
@@ -300,10 +302,10 @@ const NewsLetter = () => {
         <TextField placeholder="Header text" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.header || ''} onChange={(e) => handleChange("header", e.target.value,index+1)} style={{backgroundColor:"white"}}/>
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <TextField placeholder="Image link" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.image || ''} onChange={(e) => handleChange("image", e.target.value,index+1)} />
+        <TextField placeholder="Image link" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.image || ''} onChange={(e) => handleChange("image", e.target.value,index+1)}style={{backgroundColor:"white"}} />
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6}>
-        <TextField placeholder="Video link" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.youtube_url || ''} onChange={(e) => handleChange("youtube_url", e.target.value,index+1)} />
+        <TextField placeholder="Video link" value={templateInfo?.[selectedTemplate]?.additionalFields?.[index]?.youtube_url || ''} onChange={(e) => handleChange("youtube_url", e.target.value,index+1)}style={{backgroundColor:"white"}} />
       </Grid>
       <Grid display="flex" justifyContent="center" alignContent="center" item xs={6} sm={6} md={6} lg={6} xl={6} >
         <textarea   className={classes.customStyles} 
