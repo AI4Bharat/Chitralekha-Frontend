@@ -762,8 +762,8 @@ const OrgLevelTaskList = () => {
   const handleToolbarButtonClick = (key) => {
     switch (key) {
       case "bulkTaskUpdate":
-        handleDialogOpen("editTaskDialog");
-        setIsBulk(true);
+        // handleDialogOpen("editTaskDialog");
+        // setIsBulk(true);
         break;
 
       case "bulkTaskDelete":

@@ -17,6 +17,7 @@ import {
   Toolbar,
   IconButton,
   Button,
+  Typography,
 } from "@mui/material";
 
 const drawerWidth = 240;
@@ -100,6 +101,10 @@ function IntroHeader(props) {
             Use Cases
           </Button>
         </Grid>
+        <Grid><Typography sx={{position: "absolute", bottom: 50, right: 1, left: 1, fontSize: "0.7rem", fontWeight: "500", color: "#000000", marginTop: "auto" }}>
+              Powered by EkStep Foundation
+            </Typography></Grid>
+        
       </Grid>
     </Box>
   );

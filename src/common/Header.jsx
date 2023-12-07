@@ -156,9 +156,12 @@ const Header = () => {
             <Toolbar disableGutters className={classes.toolbar}>
               <Box
                 display="flex"
+                flexDirection="row"
+                flexWrap={"wrap"}
                 alignItems="center"
+                justifyContent="space-evenly"  // Add justifyContent to distribute space between items
                 onClick={() => navigate("/login")}
-                style={{cursor: "pointer"}}
+                style={{ cursor: "pointer" }}
               >
                 <img
                   src={"Chitralekha_Logo_Transparent.png"}
@@ -168,7 +171,12 @@ const Header = () => {
                 <Typography variant="h4" sx={{ color: "black" }}>
                   Chitralekha
                 </Typography>
+                <Typography sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000", margin: "auto" }}>
+                  Powered by EkStep Foundation
+                </Typography>
               </Box>
+
+
 
               <Grid
                 container

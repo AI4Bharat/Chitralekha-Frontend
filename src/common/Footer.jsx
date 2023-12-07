@@ -107,7 +107,12 @@ const Footer = () => {
           lg={7}
           xl={7}
           className={classes.footerGrid}
-        ></Grid>
+        >
+          <Typography variant="caption" sx={{ color: "white" }}>
+              {" "}
+              Powered by EkStep Foundation{" "}
+            </Typography>{" "}
+      </Grid>
 
         <Grid
           item

@@ -6,6 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import NewsletterPreview from "redux/actions/api/Admin/NewsLetterPreview";
 import clearTemplatePreview from "redux/actions/api/Admin/ClearTemplatePreview";
+import getLocalStorageData from "utils/getLocalStorageData";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -44,7 +45,7 @@ const NewsLetter = () => {
 
   const handleTemplateSubmit = () => {
     const payload = {
-      submitter_id: 1,
+      submitter_id: getLocalStorageData("userData").id,
       content: selectedTemplate !== 3 ? [templateInfo?.[selectedTemplate]] : templateInfo?.[selectedTemplate],
       category: "NEW_FEATURE",
       template_id: selectedTemplate
@@ -55,7 +56,7 @@ const NewsLetter = () => {
 
   const handleTemplatePreview = () => {
     const payload = {
-      submitter_id: 1,
+      submitter_id: getLocalStorageData("userData").id,
       content: selectedTemplate !== 3 ? [templateInfo?.[selectedTemplate]] : templateInfo?.[selectedTemplate],
       category: "NEW_FEATURE",
       template_id: selectedTemplate
