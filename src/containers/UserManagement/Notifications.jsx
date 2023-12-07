@@ -46,7 +46,7 @@ const Notifications = () => {
     if (formFields.dailyEmail) {
       const mailObj = new ToggleMailsAPI(
         loggedInUser.id,
-        !formFields.dailyEmail
+        formFields.dailyEmail
       );
       dispatch(APITransport(mailObj));
     }

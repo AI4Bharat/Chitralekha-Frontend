@@ -6,6 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import NewsletterPreview from "redux/actions/api/Admin/NewsLetterPreview";
 import clearTemplatePreview from "redux/actions/api/Admin/ClearTemplatePreview";
+<<<<<<< HEAD
 import { makeStyles } from '@mui/styles';
 import CustomizedSnackbars from "../../common/Snackbar";
 import CloseIcon from '@mui/icons-material/Close';
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   },
 
 }));
+=======
+import getLocalStorageData from "utils/getLocalStorageData";
+>>>>>>> develop2
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -87,7 +91,7 @@ const NewsLetter = () => {
 
   const handleTemplateSubmit = () => {
     const payload = {
-      submitter_id: 1,
+      submitter_id: getLocalStorageData("userData").id,
       content: selectedTemplate !== 3 ? [templateInfo?.[selectedTemplate]] : templateInfo?.[selectedTemplate],
       category: "NEW_FEATURE",
       template_id: selectedTemplate
@@ -101,6 +105,7 @@ const NewsLetter = () => {
     const additionalFieldsContent = templateContent.additionalFields || [];
   
     const payload = {
+<<<<<<< HEAD
       submitter_id: 1,
       content: [
         {
@@ -109,6 +114,10 @@ const NewsLetter = () => {
         },
         ...additionalFieldsContent,
       ],
+=======
+      submitter_id: getLocalStorageData("userData").id,
+      content: selectedTemplate !== 3 ? [templateInfo?.[selectedTemplate]] : templateInfo?.[selectedTemplate],
+>>>>>>> develop2
       category: "NEW_FEATURE",
       template_id: selectedTemplate
     }

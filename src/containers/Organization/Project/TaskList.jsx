@@ -914,6 +914,7 @@ const TaskList = () => {
   const handleToolbarButtonClick = (key) => {
     switch (key) {
       case "bulkTaskUpdate":
+        setCurrentTaskDetails(currentSelectedTasks);
         handleDialogOpen("editTaskDialog");
         setIsBulk(true);
         break;

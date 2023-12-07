@@ -45,6 +45,10 @@ export default function AppInfo() {
               {translate("label.chitralekhaInfo")}
             </Typography>
           </Hidden>
+          <Typography
+              style={{ position: 'absolute', fontSize: "1rem", bottom: "0.5rem", margin: "20px 0px 50px 39px" }}>
+                Powered by EkStep Foundation
+                </Typography>
         </Grid>
       </ThemeProvider>
     </div>

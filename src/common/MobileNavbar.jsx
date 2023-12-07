@@ -105,17 +105,17 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
           <Box >
             <List>
               {tabs.map((tab, index) => (
-                  <ListItem key={index} onClick={() => setOpenDrawer(false)}>
-                    <Typography variant="body1">
-                      <NavLink
-                        to=""
-                        className={classes.headerMenu}
-                        activeClassName={classes.highlightedMenu}
-                      >
-                        {tab.name}
-                      </NavLink>
-                    </Typography>
-                  </ListItem>
+                <ListItem key={index} onClick={() => setOpenDrawer(false)}>
+                  <Typography variant="body1">
+                    <NavLink
+                      to=""
+                      className={classes.headerMenu}
+                      activeClassName={classes.highlightedMenu}
+                    >
+                      {tab.name}
+                    </NavLink>
+                  </Typography>
+                </ListItem>
               ))}
             </List>
           </Box>
@@ -197,19 +197,22 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
             padding: "0 5%",
           }}
         >
-          <Box display="flex" alignItems="center">
-            <img
-              src={"Chitralekha_Logo_Transparent.png"}
-              alt="logo"
-              className={classes.headerLogo}
-            />
-            <Typography
-              variant="h3"
-              sx={{ color: "black", marginLeft: "10px" }}
-            >
-              Chitralekha
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Box display="flex" alignItems="center">
+              <img
+                src={"Chitralekha_Logo_Transparent.png"}
+                alt="logo"
+                className={classes.headerLogo}
+              />
+              <Typography variant="h3" sx={{ color: "black", marginLeft: "10px" }}>
+                Chitralekha
+              </Typography>
+            </Box>
+            <Typography sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000", marginTop: "auto" }}>
+              Powered by EkStep Foundation
             </Typography>
           </Box>
+
           <Grid item>
             <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
               <MenuIcon />
