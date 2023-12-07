@@ -327,7 +327,7 @@ const NewsLetter = () => {
               getBase64(file)
                 .then(base64Data => {
                   const base64Substr = base64Data.substr(base64Data.indexOf(",") + 1);
-                  handleChange("html", base64Substr.toString());
+                  handleChange("html", base64Substr.toString(),0);
                   console.log('success');
                   const fileName = file.name;
                   setUploadedFileName(fileName);
