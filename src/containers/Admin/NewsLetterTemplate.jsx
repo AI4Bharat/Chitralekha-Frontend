@@ -6,16 +6,16 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import NewsletterPreview from "redux/actions/api/Admin/NewsLetterPreview";
 import clearTemplatePreview from "redux/actions/api/Admin/ClearTemplatePreview";
-<<<<<<< HEAD
 import { makeStyles } from '@mui/styles';
 import CustomizedSnackbars from "../../common/Snackbar";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import getLocalStorageData from "utils/getLocalStorageData";
 import{
   setSnackBar
 } from "../../redux/actions/Common"
-// Define the styles using makeStyles
+
 const useStyles = makeStyles((theme) => ({
   customStyles: {
     width: '230px',
@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
 }));
-=======
-import getLocalStorageData from "utils/getLocalStorageData";
->>>>>>> develop2
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -90,9 +87,18 @@ const NewsLetter = () => {
   };
 
   const handleTemplateSubmit = () => {
+    const templateContent = templateInfo?.[selectedTemplate] || {};
+    const additionalFieldsContent = templateContent.additionalFields || [];
+
     const payload = {
       submitter_id: getLocalStorageData("userData").id,
-      content: selectedTemplate !== 3 ? [templateInfo?.[selectedTemplate]] : templateInfo?.[selectedTemplate],
+      content: [
+        {
+          header: templateContent.header || '',
+          paragraph: templateContent.paragraph || '',
+        },
+        ...additionalFieldsContent,
+      ],
       category: "NEW_FEATURE",
       template_id: selectedTemplate
     }
@@ -105,8 +111,7 @@ const NewsLetter = () => {
     const additionalFieldsContent = templateContent.additionalFields || [];
   
     const payload = {
-<<<<<<< HEAD
-      submitter_id: 1,
+      submitter_id: getLocalStorageData("userData").id,
       content: [
         {
           header: templateContent.header || '',
@@ -114,10 +119,6 @@ const NewsLetter = () => {
         },
         ...additionalFieldsContent,
       ],
-=======
-      submitter_id: getLocalStorageData("userData").id,
-      content: selectedTemplate !== 3 ? [templateInfo?.[selectedTemplate]] : templateInfo?.[selectedTemplate],
->>>>>>> develop2
       category: "NEW_FEATURE",
       template_id: selectedTemplate
     }
