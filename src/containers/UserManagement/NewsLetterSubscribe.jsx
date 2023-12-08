@@ -12,12 +12,12 @@ const NewsLetter = ({ susbscribeToNewsLetter ,subscribe}) => {
 
     return <Grid container spacing={2}>
          <Grid display="flex"
-            justifyContent="center" item xs={12} sm={12} md={12} lg={12} xl={12}>
+            justifyContent="Flex-end"   mr="1rem" >
             <TextField placeholder="EmailId@example.com" onChange={(e) => setEmail(e.target.value)} value={email} />
         </Grid>
         <Grid display="flex"
-            justifyContent="center" item xs={12} sm={12} md={12} lg={12} xl={12}>
-            <Button variant="contained" onClick={handleClick} disabled={!validateEmail(email)}>{subscribe==true?`Update`:`Subscribe`}</Button>
+            justifyContent="Flex-end"  mr="5rem" mt="1rem">
+            <Button variant="contained" onClick={handleClick}  disabled={!validateEmail(email)} >{subscribe==true?`Subscribe`:`Update`}</Button>
         </Grid>
     </Grid>
 };

@@ -69,7 +69,7 @@ console.log(loggedInUser,formFields.dailyEmail);
         subscribe: !formFields.newsLetterSubscribe
       }
       console.log(subscribedetails);
-    const newsLetterObj = new NewsletterSubscribe(subscribedetails,loggedInUser.subscribed_info.email,Number(id), !formFields.newsLetterSubscribe);
+    const newsLetterObj = new NewsletterSubscribe(loggedInUser.subscribed_info.email,Number(id), !formFields.newsLetterSubscribe);
     dispatch(APITransport(newsLetterObj));
     }
   };
@@ -85,14 +85,28 @@ console.log(loggedInUser,formFields.dailyEmail);
   }, [formFields.dailyEmail]);
 
   const handleSubscribeApiCall = (email) => {
-      var subscribedetails = {
-        email: email,
-        user_id: Number(id),
-      }
-      console.log(subscribedetails);
-    const newsLetterObj = new UpdateEmailAPI(email);
+   if( !formFields.newsLetterSubscribe){
+    var subscribedetails = {
+      email: email,
+      user_id: Number(id),
+      subscribe: !formFields.newsLetterSubscribe
+    }
+    console.log(subscribedetails);
+  const newsLetterObj = new NewsletterSubscribe(email,Number(id), !formFields.newsLetterSubscribe);
+  dispatch(APITransport(newsLetterObj));
+   }else{
+    
+    var subscribedetails = {
+      email: email,
+      user_id: Number(id),
+    }
+    console.log(subscribedetails);
+  const newsLetterObj = new UpdateEmailAPI(email,Number(id));
 
-    dispatch(APITransport(newsLetterObj));
+  dispatch(APITransport(newsLetterObj));
+  
+   }
+
   };
 
   const notificationOptions = [
@@ -114,7 +128,7 @@ console.log(loggedInUser,formFields.dailyEmail);
     {
       title: "Newsletter",
       name: "newsLetterSubscribe",
-      label: formFields.newsLetterSubscribe==true?`Subscribed to ${loggedInUser.subscribed_info.email}`: "Subscribe to Newsletter",
+      label: formFields.newsLetterSubscribe==true?`Update Email`: "Enter your email to subscribe",
       tooltipTitle: `${
         formFields.newsLetterSubscribe ? "Disable" : "Enable"
       } newsletter`,
@@ -126,14 +140,13 @@ console.log(loggedInUser,formFields.dailyEmail);
       ),
       component: (
         <Grid
-        display="flex"
-        justifyContent="center"
-        item
-          xs={12}
-          sm={12}
-          md={12}
-          lg={12}
-          xl={12}
+        justifyContent="flex-end"
+        alignItems="center"
+        // sx={{ my: 5, px: "9.75%" }}
+        position= "relative"
+  left= "36%"
+  bottom="80px"
+        // sx={{ marginLeft: "0", marginTop: "8px" }}
         >
           <NewsLetter susbscribeToNewsLetter={handleSubscribeApiCall} subscribe={!formFields.newsLetterSubscribe}/>
         </Grid>

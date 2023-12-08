@@ -3,9 +3,10 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class UpdateEmailAPI extends API {
-  constructor(email, timeout = 2000) {
+  constructor(email,id, timeout = 2000) {
     super("POST", timeout, false);
     this.email = email;
+    this.id = id;
     this.type = C.UPDATE_EMAIL;
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateEmail}`;
   }
@@ -24,6 +25,7 @@ export default class UpdateEmailAPI extends API {
   getBody() {
     return {
       email: this.email,
+      id:this.id
     };
   }
 
