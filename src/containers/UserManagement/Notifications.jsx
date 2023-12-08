@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import {UpdateProfileAPI}from "redux/actions";
+import {UpdateProfileAPI,UpdateEmailAPI}from "redux/actions";
 
 //Styles
 import { LoginStyle } from "styles";
@@ -26,21 +26,22 @@ const Notifications = () => {
   const classes = LoginStyle();
   const { id } = useParams();
   const dispatch = useDispatch();
-
+  const [mail,setmail]= useState(null);
   const loggedInUser = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
-
   const [formFields, setFormFields] = useState({
     dailyEmail: false,
-    newsLetterSubscribe: false
+    newsLetterSubscribe: loggedInUser.subscribed_info.subscribed==true?true:false
   });
 
-  const handleSwitchToggle = (prop) => {
+  const handleSwitchToggleEmail = (prop) => {
     setFormFields((prev) => ({
       ...prev,
       [prop]: !formFields[prop],
     }));
+    console.log(formFields.newsLetterSubscribe,formFields.dailyEmail);
+
     let updateProfileReqBody = {
       enable_mail: !formFields.dailyEmail,
     };
@@ -52,6 +53,25 @@ const Notifications = () => {
 
     dispatch(APITransport(apiObj));
 console.log(loggedInUser,formFields.dailyEmail);
+  };
+  const handleSwitchToggleNewsLetter = (prop) => {
+    setFormFields((prev) => ({
+      ...prev,
+      [prop]: !formFields[prop],
+    }));      
+    console.log(formFields.newsLetterSubscribe,formFields.dailyEmail);
+
+    if(!formFields.newsLetterSubscribe===false){
+      console.log(formFields.newsLetterSubscribe);
+       var subscribedetails = {
+        email: loggedInUser.subscribed_info.email,
+        user_id: Number(id),
+        subscribe: !formFields.newsLetterSubscribe
+      }
+      console.log(subscribedetails);
+    const newsLetterObj = new NewsletterSubscribe(subscribedetails,loggedInUser.subscribed_info.email,Number(id), !formFields.newsLetterSubscribe);
+    dispatch(APITransport(newsLetterObj));
+    }
   };
 
   useEffect(() => {
@@ -65,7 +85,13 @@ console.log(loggedInUser,formFields.dailyEmail);
   }, [formFields.dailyEmail]);
 
   const handleSubscribeApiCall = (email) => {
-    const newsLetterObj = new NewsletterSubscribe(email);
+      var subscribedetails = {
+        email: email,
+        user_id: Number(id),
+      }
+      console.log(subscribedetails);
+    const newsLetterObj = new UpdateEmailAPI(email);
+
     dispatch(APITransport(newsLetterObj));
   };
 
@@ -77,7 +103,7 @@ console.log(loggedInUser,formFields.dailyEmail);
       tooltipTitle: `${
         formFields.dailyEmail ? "Disable" : "Enable"
       } daily mails`,
-      onClick: () => handleSwitchToggle("dailyEmail"),
+      onClick: () => handleSwitchToggleEmail("dailyEmail"),
       disabled: !(
         loggedInUser.id === +id ||
         loggedInUser.role === "ADMIN" ||
@@ -88,17 +114,17 @@ console.log(loggedInUser,formFields.dailyEmail);
     {
       title: "Newsletter",
       name: "newsLetterSubscribe",
-      label: "Subscribe to Newsletter",
+      label: formFields.newsLetterSubscribe==true?`Subscribed to ${loggedInUser.subscribed_info.email}`: "Subscribe to Newsletter",
       tooltipTitle: `${
         formFields.newsLetterSubscribe ? "Disable" : "Enable"
       } newsletter`,
-      onClick: () => handleSwitchToggle("newsLetterSubscribe"),
+      onClick: () => handleSwitchToggleNewsLetter("newsLetterSubscribe"),
       disabled: !(
         loggedInUser.id === +id ||
         loggedInUser.role === "ADMIN" ||
         loggedInUser.role === "ORG_OWNER"
       ),
-      component: formFields.newsLetterSubscribe ? (
+      component: (
         <Grid
         display="flex"
         justifyContent="center"
@@ -109,11 +135,9 @@ console.log(loggedInUser,formFields.dailyEmail);
           lg={12}
           xl={12}
         >
-          <NewsLetter susbscribeToNewsLetter={handleSubscribeApiCall} />
+          <NewsLetter susbscribeToNewsLetter={handleSubscribeApiCall} subscribe={!formFields.newsLetterSubscribe}/>
         </Grid>
-      ) : (
-        <></>
-      ),
+      ) 
     },
   ];
 
