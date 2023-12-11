@@ -31,7 +31,7 @@ const Notifications = () => {
     (state) => state.getLoggedInUserDetails.data
   );
   const [formFields, setFormFields] = useState({
-    dailyEmail: false,
+    dailyEmail: loggedInUser.enable_mail?true:false,
     newsLetterSubscribe: loggedInUser.subscribed_info.subscribed==true?true:false
   });
 
@@ -64,12 +64,12 @@ console.log(loggedInUser,formFields.dailyEmail);
     if(!formFields.newsLetterSubscribe===false){
       console.log(formFields.newsLetterSubscribe);
        var subscribedetails = {
-        email: loggedInUser.subscribed_info.email,
+        email: loggedInUser.mail,
         user_id: Number(id),
         subscribe: !formFields.newsLetterSubscribe
       }
       console.log(subscribedetails);
-    const newsLetterObj = new NewsletterSubscribe(loggedInUser.subscribed_info.email,Number(id), !formFields.newsLetterSubscribe);
+    const newsLetterObj = new NewsletterSubscribe(loggedInUser.email,Number(id), !formFields.newsLetterSubscribe);
     dispatch(APITransport(newsLetterObj));
     }
   };
