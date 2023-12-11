@@ -94,6 +94,10 @@ console.log(loggedInUser,formFields.dailyEmail);
     console.log(subscribedetails);
   const newsLetterObj = new NewsletterSubscribe(email,Number(id), !formFields.newsLetterSubscribe);
   dispatch(APITransport(newsLetterObj));
+  setFormFields((prev) => ({
+    ...prev,
+    ["newsLetterSubscribe"]: !formFields["newsLetterSubscribe"],
+  }));  
    }else{
     
     var subscribedetails = {
