@@ -16,7 +16,7 @@ export default class NewsletterSubscribe extends API {
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-      localStorage.setItem('token', res.access);
+      // localStorage.setItem('token', res.access);
         this.report = res;
     }
 }
