@@ -14,15 +14,25 @@ export default class FetchPaginatedOrgTaskListAPI extends API {
     this.filter = filter;
     this.sortOptions = sortOptions;
 
-    this.getTargetEndpoint = `${
-      ENDPOINTS.organization
-    }${id}/list_org_tasks/?limit=${this.limit}&offset=${this.offset}&sort_by=${
-      this.sortOptions.sortBy
-    }&reverse=${this.sortOptions.order}&filter=${JSON.stringify(
-      this.filter
-    )}&search=${JSON.stringify(this.search)}`;
+    const params = new URLSearchParams();
+    params.append("limit", this.limit);
+    params.append("offset", this.offset);
 
-    this.endpoint = `${super.apiEndPointAuto()}${this.getTargetEndpoint}`;
+    if (this.sortOptions.sortBy !== "") {
+      params.append("sort_by", this.sortOptions.sortBy);
+    }
+
+    if (this.sortOptions.order !== "") {
+      params.append("reverse", this.sortOptions.order);
+    }
+
+    params.append("filter", JSON.stringify(this.filter));
+    params.append("search", JSON.stringify(this.search));
+
+    const baseUrl = `${ENDPOINTS.organization}${id}/list_org_tasks/`;
+    const finalUrl = `${baseUrl}?${params.toString()}`;
+
+    this.endpoint = `${super.apiEndPointAuto()}${finalUrl}`;
   }
 
   processResponse(res) {
