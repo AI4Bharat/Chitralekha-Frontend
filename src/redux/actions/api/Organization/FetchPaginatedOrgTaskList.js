@@ -3,7 +3,7 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchPaginatedOrgTaskListAPI extends API {
-  constructor(id, offset, limit, search, filter, timeout = 2000) {
+  constructor(id, offset, limit, search, filter, sortOptions, timeout = 2000) {
     super("GET", timeout, false);
 
     this.type = C.GET_ORG_TASK_LIST;
@@ -12,14 +12,15 @@ export default class FetchPaginatedOrgTaskListAPI extends API {
     this.limit = limit;
     this.search = search;
     this.filter = filter;
+    this.sortOptions = sortOptions;
 
     this.getTargetEndpoint = `${
       ENDPOINTS.organization
-    }${id}/list_org_tasks/?limit=${this.limit}&offset=${
-      this.offset
-    }&filter=${JSON.stringify(this.filter)}&search=${JSON.stringify(
-      this.search
-    )}`;
+    }${id}/list_org_tasks/?limit=${this.limit}&offset=${this.offset}&sort_by=${
+      this.sortOptions.sortBy
+    }&reverse=${this.sortOptions.order}&filter=${JSON.stringify(
+      this.filter
+    )}&search=${JSON.stringify(this.search)}`;
 
     this.endpoint = `${super.apiEndPointAuto()}${this.getTargetEndpoint}`;
   }
