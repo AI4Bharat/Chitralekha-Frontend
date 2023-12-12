@@ -119,7 +119,7 @@ const ExportDialog = ({
         {!taskType?.includes("VOICEOVER") ? (
           <>
             <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
-              Select Speaker Info
+              Speaker Info
             </DialogContentText>
             <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
               <FormControl>
