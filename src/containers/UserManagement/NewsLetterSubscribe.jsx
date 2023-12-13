@@ -20,7 +20,7 @@ const NewsLetter = ({ susbscribeToNewsLetter, subscribe, email, setEmail }) => {
             disabled={!validateEmail(email)}
             sx={{ mr: "10px" }}
           >
-            Un-Subscribe
+            Unsubscribe
           </Button>
         ) : (
           <Button
@@ -39,7 +39,7 @@ const NewsLetter = ({ susbscribeToNewsLetter, subscribe, email, setEmail }) => {
             onClick={() => susbscribeToNewsLetter("update")}
             disabled={!validateEmail(email)}
           >
-            Update
+            Update Email
           </Button>
         )}
       </Grid>
