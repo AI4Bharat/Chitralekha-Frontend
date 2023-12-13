@@ -40,7 +40,6 @@ const Notifications = () => {
       ...prev,
       [prop]: !formFields[prop],
     }));
-    console.log(formFields.newsLetterSubscribe,formFields.dailyEmail);
 
     let updateProfileReqBody = {
       enable_mail: !formFields.dailyEmail,
