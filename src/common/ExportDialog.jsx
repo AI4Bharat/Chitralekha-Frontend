@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { speakerInfoOptions } from "config";
+import { speakerInfoOptions, bgMusicOptions } from "config";
 
 const ExportDialog = ({
   open,
@@ -27,7 +27,8 @@ const ExportDialog = ({
   handleExportSubmitClick,
   handleExportRadioButtonChange,
 }) => {
-  const { transcription, translation, voiceover, speakerInfo } = exportTypes;
+  const { transcription, translation, voiceover, speakerInfo, bgMusic } =
+    exportTypes;
 
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -140,8 +141,12 @@ const ExportDialog = ({
             </DialogActions>
           </>
         ) : (
+          <></>
+        )}
+
+        {taskType?.includes("VOICEOVER") && (
           <>
-            {/* <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
+            <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
               Background Music
             </DialogContentText>
             <DialogActions sx={{ my: 1, justifyContent: "flex-start" }}>
@@ -160,7 +165,7 @@ const ExportDialog = ({
                   ))}
                 </RadioGroup>
               </FormControl>
-            </DialogActions> */}
+            </DialogActions>
           </>
         )}
 

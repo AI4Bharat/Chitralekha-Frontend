@@ -8,13 +8,9 @@ export default class ExportVoiceoverTaskAPI extends API {
 
     this.type = constants.EXPORT_VOICEOVER_TASK;
 
-    // this.endpoint = `${super.apiEndPointAuto()}${
-    //   ENDPOINTS.voiceover
-    // }export_voiceover/?task_id=${taskId}&export_type=${exportType}&bg_music=${bgMusic}`;
-
     this.endpoint = `${super.apiEndPointAuto()}${
       ENDPOINTS.voiceover
-    }export_voiceover/?task_id=${taskId}&export_type=${exportType}`;
+    }export_voiceover/?task_id=${taskId}&export_type=${exportType}&bg_music=${bgMusic}`;
   }
 
   processResponse(res) {
