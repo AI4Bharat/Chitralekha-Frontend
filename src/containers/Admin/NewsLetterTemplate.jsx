@@ -156,6 +156,7 @@ const NewsLetter = () => {
   };
 
   const handleChange = (field, value, index) => {
+    
     setTemplateInfo((prevTemplateInfo) => {
       const updatedTemplateInfo = { ...prevTemplateInfo };
   
@@ -212,14 +213,39 @@ const NewsLetter = () => {
     }));
   };
 
+  // const removeLastTextField = () => {
+  //   const currentFields = additionalFields[selectedTemplate] || [];
+  //   if (currentFields.length > 0) {
+  //     setTemplateInfo((prevTemplateInfo) => {
+  //       const updatedTemplateInfo = { ...prevTemplateInfo };
+  //       const additionalFields = updatedTemplateInfo[selectedTemplate]?.additionalFields || [];
+  //       additionalFields.pop(); 
+  //       updatedTemplateInfo[selectedTemplate].additionalFields = additionalFields;
+  //       return updatedTemplateInfo;
+  //     });
+  
+  //     setAdditionalFields((prevFields) => {
+  //       const updatedFields = { ...prevFields };
+  //       updatedFields[selectedTemplate] = currentFields.slice(0, -1);
+  //       return updatedFields;
+  //     });
+  //   }
+  // };
   const removeLastTextField = () => {
     const currentFields = additionalFields[selectedTemplate] || [];
+    
     if (currentFields.length > 0) {
       setTemplateInfo((prevTemplateInfo) => {
         const updatedTemplateInfo = { ...prevTemplateInfo };
-        const additionalFields = updatedTemplateInfo[selectedTemplate]?.additionalFields || [];
-        additionalFields.pop(); 
+        
+        if (!updatedTemplateInfo[selectedTemplate]) {
+          updatedTemplateInfo[selectedTemplate] = {};
+        }
+  
+        const additionalFields = updatedTemplateInfo[selectedTemplate].additionalFields || [];
+        additionalFields.pop();
         updatedTemplateInfo[selectedTemplate].additionalFields = additionalFields;
+        
         return updatedTemplateInfo;
       });
   
@@ -230,6 +256,7 @@ const NewsLetter = () => {
       });
     }
   };
+  
     const renderSnackBar = useCallback(() => {
       return (
         <CustomizedSnackbars
