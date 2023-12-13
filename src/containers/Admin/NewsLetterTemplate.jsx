@@ -163,7 +163,7 @@ const NewsLetter = () => {
       if (index === 0) {
         updatedTemplateInfo[selectedTemplate] = {
           ...updatedTemplateInfo[selectedTemplate],
-          [field]: value,
+          [field]: value.trim() !== '' ? value : undefined,
         };
       } else if(index>0 && selectedTemplate!==3 ) {
         if (!updatedTemplateInfo[selectedTemplate]) {
@@ -180,7 +180,7 @@ const NewsLetter = () => {
           additionalFields.push({});
         }
   
-        additionalFields[index - 1][field] = value;
+        additionalFields[index - 1][field] = value.trim() !== '' ? value : undefined;
         updatedTemplateInfo[selectedTemplate].additionalFields = additionalFields;
       }
   
@@ -196,7 +196,7 @@ const NewsLetter = () => {
           currentAdditionalFields.push({});
         }
 
-        currentAdditionalFields[index - 1][field] = value;
+        currentAdditionalFields[index - 1][field] = value.trim() !== '' ? value : undefined;
       }
 
       updatedAdditionalFields[selectedTemplate] = currentAdditionalFields;
