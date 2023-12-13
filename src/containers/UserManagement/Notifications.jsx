@@ -59,7 +59,6 @@ console.log(loggedInUser,formFields.dailyEmail);
       ...prev,
       [prop]: !formFields[prop],
     }));      
-    console.log(formFields.newsLetterSubscribe,formFields.dailyEmail);
 
     if(!formFields.newsLetterSubscribe===false){
       console.log(formFields.newsLetterSubscribe);
@@ -68,7 +67,6 @@ console.log(loggedInUser,formFields.dailyEmail);
         user_id: Number(id),
         subscribe: !formFields.newsLetterSubscribe
       }
-      console.log(subscribedetails);
     const newsLetterObj = new NewsletterSubscribe(loggedInUser.email,Number(id), !formFields.newsLetterSubscribe);
     dispatch(APITransport(newsLetterObj));
     }
@@ -104,7 +102,6 @@ console.log(loggedInUser,formFields.dailyEmail);
       email: email,
       user_id: Number(id),
     }
-    console.log(subscribedetails);
   const newsLetterObj = new UpdateEmailAPI(email,Number(id));
 
   dispatch(APITransport(newsLetterObj));
