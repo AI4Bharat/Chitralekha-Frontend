@@ -89,16 +89,24 @@ const NewsLetter = () => {
   const handleTemplateSubmit = () => {
     const templateContent = templateInfo?.[selectedTemplate] || {};
     const additionalFieldsContent = templateContent.additionalFields || [];
-
+    if(selectedTemplate==3){
+      var content = {html:templateContent.html || ''}
+  }
+  else{
+    var content =  [
+      {
+        image: templateContent.image || '',
+        youtube_url: templateContent.youtube_url || '',
+        header: templateContent.header || '',
+        paragraph: templateContent.paragraph || '',
+        html: templateContent.html || '',
+      },
+      ...additionalFieldsContent,
+    ]
+  }
     const payload = {
       submitter_id: getLocalStorageData("userData").id,
-      content: [
-        {
-          header: templateContent.header || '',
-          paragraph: templateContent.paragraph || '',
-        },
-        ...additionalFieldsContent,
-      ],
+      content: content,
       category: "NEW_FEATURE",
       template_id: selectedTemplate
     }
@@ -109,10 +117,11 @@ const NewsLetter = () => {
   const handleTemplatePreview = () => {
     const templateContent = templateInfo?.[selectedTemplate] || {};
     const additionalFieldsContent = templateContent.additionalFields || [];
-  
-    const payload = {
-      submitter_id: getLocalStorageData("userData").id,
-      content: [
+    if(selectedTemplate==3){
+        var content = {html:templateContent.html || ''}
+    }
+    else{
+      var content =  [
         {
           image: templateContent.image || '',
           youtube_url: templateContent.youtube_url || '',
@@ -120,7 +129,12 @@ const NewsLetter = () => {
           paragraph: templateContent.paragraph || '',
         },
         ...additionalFieldsContent,
-      ],
+      ]
+    }
+  
+    const payload = {
+      submitter_id: getLocalStorageData("userData").id,
+      content: content,
       category: "NEW_FEATURE",
       template_id: selectedTemplate
     }
@@ -220,7 +234,7 @@ const NewsLetter = () => {
 
   
   const handleRemoveFile = () => {
-    handleChange("html", "");
+    handleChange("html", "",0);
     setUploadedFileName(null);
   };
 
@@ -340,14 +354,15 @@ const NewsLetter = () => {
                 .then(base64Data => {
                   const base64Substr = base64Data.substr(base64Data.indexOf(",") + 1);
                   handleChange("html", base64Substr.toString(),0);
-                  console.log('success');
                   const fileName = file.name;
                   setUploadedFileName(fileName);
+                  console.log(uploadedFileName);
                   setSnackbarInfo({
                     open: true,
                     message: "File Uploaded Succesfully",
                     variant: "success",
                   });
+                  e.target.value = null;
                 })
                 .catch(error => {
                   console.log('Error: ', error);
