@@ -124,22 +124,22 @@ const NewsLetter = () => {
     const templateContent = templateInfo?.[selectedTemplate] || {};
     const additionalFieldsContent = templateContent.additionalFields || [];
     const adcontent = additionalFieldsContent.map((field) => ({
-      image: field.image || '',
-      youtube_url: field.youtube_url || '',
-      header: field.header || '',
-      paragraph: field.paragraph || '',
+      image: field.image ,
+      youtube_url: field.youtube_url ,
+      header: field.header,
+      paragraph: field.paragraph ,
     }));
   
     if(selectedTemplate==3){
-        var content = {html:templateContent.html || ''}
+        var content = {html:templateContent.html }
     }
     else{
       var content =  [
         {
-          image: templateContent.image || '',
-          youtube_url: templateContent.youtube_url || '',
-          header: templateContent.header || '',
-          paragraph: templateContent.paragraph || '',
+          image: templateContent.image ,
+          youtube_url: templateContent.youtube_url,
+          header: templateContent.header ,
+          paragraph: templateContent.paragraph ,
         },
         ...adcontent,
       ]
