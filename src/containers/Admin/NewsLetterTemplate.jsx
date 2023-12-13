@@ -156,7 +156,6 @@ const NewsLetter = () => {
   };
 
   const handleChange = (field, value, index) => {
-    console.log(index);
     setTemplateInfo((prevTemplateInfo) => {
       const updatedTemplateInfo = { ...prevTemplateInfo };
   
@@ -203,8 +202,6 @@ const NewsLetter = () => {
 
       return updatedAdditionalFields;
     });
-  
-    console.log(templateInfo);
   };
   
   
@@ -377,7 +374,6 @@ const NewsLetter = () => {
                   handleChange("html", base64Substr.toString(),0);
                   const fileName = file.name;
                   setUploadedFileName(fileName);
-                  console.log(uploadedFileName);
                   setSnackbarInfo({
                     open: true,
                     message: "File Uploaded Succesfully",
