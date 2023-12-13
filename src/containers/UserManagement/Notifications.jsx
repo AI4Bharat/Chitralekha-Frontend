@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { UpdateProfileAPI, UpdateEmailAPI } from "redux/actions";
+import { UpdateProfileAPI } from "redux/actions";
+import UpdateNewsLetterEmailAPI from "../../redux/actions/api/Admin/UpdateNewsLetterEmail";
 
 //Styles
 import { LoginStyle } from "styles";
@@ -62,7 +63,7 @@ const Notifications = () => {
 
   const handleSubscribeApiCall = (type) => {
     if (type === "update") {
-      const newsLetterObj = new UpdateEmailAPI(email, +id);
+      const newsLetterObj = new UpdateNewsLetterEmailAPI(email, +id);
       dispatch(APITransport(newsLetterObj));
     } else if (type === "subscribe") {
       setFormFields((prev) => ({

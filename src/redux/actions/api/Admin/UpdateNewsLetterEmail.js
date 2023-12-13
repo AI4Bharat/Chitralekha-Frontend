@@ -2,12 +2,13 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class UpdateEmailAPI extends API {
-  constructor(email, timeout = 2000) {
-    super("POST", timeout, false);
+export default class UpdateNewsLetterEmailAPI extends API {
+  constructor(email, id,timeout = 2000) {
+    super("PATCH", timeout, false);
     this.email = email;
+    this.id= id;
     this.type = C.UPDATE_EMAIL;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateEmail}`;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateNewsLetterEmail}`;
   }
 
   processResponse(res) {
@@ -24,6 +25,7 @@ export default class UpdateEmailAPI extends API {
   getBody() {
     return {
       email: this.email,
+      user_id: this.id,
     };
   }
 
