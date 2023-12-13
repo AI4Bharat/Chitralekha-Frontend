@@ -346,13 +346,13 @@ export const getUpdatedTime = (value, type, time, index, startEnd) => {
     const durationOfStartTime = DT.t2d(subtitles[index].start_time);
 
     if (durationOfCurrent > durationOfVideo) {
-      newTime = videoDuration;
+      newTime = DT.d2t(durationOfVideo);
     }
 
     if (durationOfCurrent <= durationOfStartTime) {
       let modifiedDuration = DT.t2d(subtitles[index].start_time);
       modifiedDuration = modifiedDuration + 1;
-      newTime = DT.t2d(modifiedDuration);
+      newTime = DT.d2t(modifiedDuration);
     }
   }
 

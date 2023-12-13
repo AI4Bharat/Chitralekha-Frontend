@@ -3,7 +3,7 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchTaskListAPI extends API {
-  constructor(id, offset, limit, search, filter, timeout = 2000) {
+  constructor(id, offset, limit, search, filter, sortOptions, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_TASK_LIST;
 
@@ -12,16 +12,27 @@ export default class FetchTaskListAPI extends API {
     this.limit = limit;
     this.search = search;
     this.filter = filter;
+    this.sortOptions = sortOptions;
 
-    this.getTargetEndpoint = `${
-      ENDPOINTS.project
-    }${id}/list_project_tasks/?limit=${this.limit}&offset=${
-      this.offset
-    }&filter=${JSON.stringify(this.filter)}&search=${JSON.stringify(
-      this.search
-    )}`;
+    const params = new URLSearchParams();
+    params.append("limit", this.limit);
+    params.append("offset", this.offset);
 
-    this.endpoint = `${super.apiEndPointAuto()}${this.getTargetEndpoint}`;
+    if (this.sortOptions.sortBy !== "") {
+      params.append("sort_by", this.sortOptions.sortBy);
+    }
+
+    if (this.sortOptions.order !== "") {
+      params.append("reverse", this.sortOptions.order);
+    }
+
+    params.append("filter", JSON.stringify(this.filter));
+    params.append("search", JSON.stringify(this.search));
+
+    const baseUrl = `${ENDPOINTS.project}${id}/list_project_tasks/`;
+    const finalUrl = `${baseUrl}?${params.toString()}`;
+
+    this.endpoint = `${super.apiEndPointAuto()}${finalUrl}`;
   }
 
   processResponse(res) {
