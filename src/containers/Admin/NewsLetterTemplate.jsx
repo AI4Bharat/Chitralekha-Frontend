@@ -89,19 +89,25 @@ const NewsLetter = () => {
   const handleTemplateSubmit = () => {
     const templateContent = templateInfo?.[selectedTemplate] || {};
     const additionalFieldsContent = templateContent.additionalFields || [];
+    const adcontent = additionalFieldsContent.map((field) => ({
+      image: field.image,
+      youtube_url: field.youtube_url ,
+      header: field.header ,
+      paragraph: field.paragraph ,
+    }));
+  
     if(selectedTemplate==3){
-      var content = {html:templateContent.html || ''}
+      var content = {html:templateContent.html }
   }
   else{
     var content =  [
       {
-        image: templateContent.image || '',
-        youtube_url: templateContent.youtube_url || '',
-        header: templateContent.header || '',
-        paragraph: templateContent.paragraph || '',
-        html: templateContent.html || '',
+        image: templateContent.image ,
+        youtube_url: templateContent.youtube_url ,
+        header: templateContent.header ,
+        paragraph: templateContent.paragraph ,
       },
-      ...additionalFieldsContent,
+      ...adcontent,
     ]
   }
     const payload = {
@@ -117,6 +123,13 @@ const NewsLetter = () => {
   const handleTemplatePreview = () => {
     const templateContent = templateInfo?.[selectedTemplate] || {};
     const additionalFieldsContent = templateContent.additionalFields || [];
+    const adcontent = additionalFieldsContent.map((field) => ({
+      image: field.image || '',
+      youtube_url: field.youtube_url || '',
+      header: field.header || '',
+      paragraph: field.paragraph || '',
+    }));
+  
     if(selectedTemplate==3){
         var content = {html:templateContent.html || ''}
     }
@@ -128,7 +141,7 @@ const NewsLetter = () => {
           header: templateContent.header || '',
           paragraph: templateContent.paragraph || '',
         },
-        ...additionalFieldsContent,
+        ...adcontent,
       ]
     }
   
@@ -205,13 +218,21 @@ const NewsLetter = () => {
   const removeLastTextField = () => {
     const currentFields = additionalFields[selectedTemplate] || [];
     if (currentFields.length > 0) {
-      setAdditionalFields((prevFields) => ({
-        ...prevFields,
-        [selectedTemplate]: currentFields.slice(0, -1),
-      }));
+      setTemplateInfo((prevTemplateInfo) => {
+        const updatedTemplateInfo = { ...prevTemplateInfo };
+        const additionalFields = updatedTemplateInfo[selectedTemplate]?.additionalFields || [];
+        additionalFields.pop(); 
+        updatedTemplateInfo[selectedTemplate].additionalFields = additionalFields;
+        return updatedTemplateInfo;
+      });
+  
+      setAdditionalFields((prevFields) => {
+        const updatedFields = { ...prevFields };
+        updatedFields[selectedTemplate] = currentFields.slice(0, -1);
+        return updatedFields;
+      });
     }
   };
-
     const renderSnackBar = useCallback(() => {
       return (
         <CustomizedSnackbars
