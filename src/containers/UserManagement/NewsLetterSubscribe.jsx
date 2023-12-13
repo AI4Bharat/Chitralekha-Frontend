@@ -1,25 +1,50 @@
 import { Button, Grid, TextField } from "@mui/material";
-import { useState } from "react";
 import { validateEmail } from "utils/utils";
 
-const NewsLetter = ({ susbscribeToNewsLetter ,subscribe}) => {
-    const [email, setEmail] = useState("");
+const NewsLetter = ({ susbscribeToNewsLetter, subscribe, email, setEmail }) => {
+  return (
+    <Grid container display={"flex"} alignItems={"center"} flexWrap={"nowrap"}>
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+        <TextField
+          placeholder="emailId@example.com"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+        />
+      </Grid>
 
-    const handleClick = () => {
-        susbscribeToNewsLetter(email);
-    };
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+        {subscribe ? (
+          <Button
+            variant="contained"
+            onClick={() => susbscribeToNewsLetter("unsubscribe")}
+            disabled={!validateEmail(email)}
+            sx={{ mr: "10px" }}
+          >
+            Un-Subscribe
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => susbscribeToNewsLetter("subscribe")}
+            disabled={!validateEmail(email)}
+            sx={{ mr: "10px" }}
+          >
+            Subscribe
+          </Button>
+        )}
 
-
-    return <Grid container spacing={2}>
-         <Grid display="flex"
-            justifyContent="Flex-end"   mr="1rem" >
-            <TextField placeholder="EmailId@example.com" onChange={(e) => setEmail(e.target.value)} value={email} />
-        </Grid>
-        <Grid display="flex"
-            justifyContent="Flex-end"  mr="5rem" mt="1rem">
-            <Button variant="contained" onClick={handleClick}  disabled={!validateEmail(email)} >{subscribe==true?`Subscribe`:`Update`}</Button>
-        </Grid>
+        {subscribe === true && (
+          <Button
+            variant="contained"
+            onClick={() => susbscribeToNewsLetter("update")}
+            disabled={!validateEmail(email)}
+          >
+            Update
+          </Button>
+        )}
+      </Grid>
     </Grid>
+  );
 };
 
 export default NewsLetter;
