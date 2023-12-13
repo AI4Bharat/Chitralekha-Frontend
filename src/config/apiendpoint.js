@@ -7,6 +7,7 @@ const endpoints = {
   getUserDetails: "/users/account/",
   addOrganizationMember: "/users/invite/generate/",
   updateEmail: "/users/account/update_email/",
+  updateNewsLetterEmail: "/newsletter/update_email/",
   verifyUpdateEmail: "/users/account/verify_email_updation/",
   updateProfile: "/users/account/update/",
   changePassword: "/users/auth/users/set_password/",
