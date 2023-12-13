@@ -213,24 +213,6 @@ const NewsLetter = () => {
     }));
   };
 
-  // const removeLastTextField = () => {
-  //   const currentFields = additionalFields[selectedTemplate] || [];
-  //   if (currentFields.length > 0) {
-  //     setTemplateInfo((prevTemplateInfo) => {
-  //       const updatedTemplateInfo = { ...prevTemplateInfo };
-  //       const additionalFields = updatedTemplateInfo[selectedTemplate]?.additionalFields || [];
-  //       additionalFields.pop(); 
-  //       updatedTemplateInfo[selectedTemplate].additionalFields = additionalFields;
-  //       return updatedTemplateInfo;
-  //     });
-  
-  //     setAdditionalFields((prevFields) => {
-  //       const updatedFields = { ...prevFields };
-  //       updatedFields[selectedTemplate] = currentFields.slice(0, -1);
-  //       return updatedFields;
-  //     });
-  //   }
-  // };
   const removeLastTextField = () => {
     const currentFields = additionalFields[selectedTemplate] || [];
     
