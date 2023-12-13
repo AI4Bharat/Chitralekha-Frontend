@@ -725,9 +725,10 @@ const OrgLevelTaskList = () => {
       name: "created_at",
       label: "Created At",
       options: {
+        filter: false,
         sort: false,
         canBeSorted: true,
-        display: columnDisplay.createdAt,
+        display: columnDisplay.created_at,
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -750,7 +751,8 @@ const OrgLevelTaskList = () => {
       name: "updated_at",
       label: "Updated At",
       options: {
-        display: columnDisplay.createdAt,
+        filter: false,
+        display: columnDisplay.updated_at,
         sort: false,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
