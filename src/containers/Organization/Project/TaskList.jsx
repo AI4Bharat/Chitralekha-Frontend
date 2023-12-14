@@ -17,8 +17,8 @@ import {
   toolBarActions,
   failInfoColumns,
   renderTaskListColumnCell,
-  reopenTableColumns,
 } from "config";
+import moment from "moment";
 
 //Themes
 import { tableTheme } from "theme";
@@ -52,6 +52,9 @@ import {
 //Icons
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ImportExportIcon from "@mui/icons-material/ImportExport";
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
@@ -113,6 +116,10 @@ const TaskList = () => {
     srcLanguage: [],
     tgtLanguage: [],
   });
+  const [sortOptions, setSortOptions] = useState({
+    sortBy: "",
+    order: "",
+  });
 
   const [loading, setLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState([]);
@@ -170,8 +177,12 @@ const TaskList = () => {
   const [searchAnchor, setSearchAnchor] = useState(null);
   const [searchedCol, setSearchedCol] = useState({});
   const [searchedColumn, setSearchedColumn] = useState({});
-  const [columnDisplay, setColumnDisplay] = useState(false);
-  const [reOpenTaskId, setReOpenTaskId]= useState(null);
+  const [reOpenTaskId, setReOpenTaskId] = useState(null);
+  const [columnDisplay, setColumnDisplay] = useState({
+    description: false,
+    created_at: false,
+    updated_at: false,
+  });
 
   //Data from Redux
   const { total_count: totalCount, tasks_list: taskList } = useSelector(
@@ -179,9 +190,7 @@ const TaskList = () => {
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector(
-    (state) => state.getPreviewData?.data
-  );
+  const previewData = useSelector((state) => state.getPreviewData?.data);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -307,7 +316,8 @@ const TaskList = () => {
       offset + 1,
       limit,
       searchRequest,
-      filterRequest
+      filterRequest,
+      sortOptions
     );
     dispatch(APITransport(apiObj));
   };
@@ -341,7 +351,7 @@ const TaskList = () => {
     fetchTaskList();
 
     // eslint-disable-next-line
-  }, [offset, limit, searchedColumn, selectedFilters]);
+  }, [offset, limit, searchedColumn, selectedFilters, sortOptions]);
 
   useEffect(() => {
     if (taskList) {
@@ -560,7 +570,7 @@ const TaskList = () => {
   const handleTaskReopen = async () => {
     setLoading(true);
 
-    const reopenObj = new ReopenTaskAPI(reOpenTaskId,true);
+    const reopenObj = new ReopenTaskAPI(reOpenTaskId, true);
     dispatch(APITransport(reopenObj));
     handleDialogClose("TaskReopenDialog");
   };
@@ -608,8 +618,15 @@ const TaskList = () => {
     });
 
     if (col.name === "description") {
-      setColumnDisplay(true);
+      setColumnDisplay((prev) => ({ ...prev, description: true }));
     }
+  };
+
+  const renderSortIndicator = (column) => {
+    if (sortOptions.sortBy === column) {
+      return sortOptions.order ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />;
+    }
+    return <ImportExportIcon />;
   };
 
   const CustomTableHeader = (col) => {
@@ -617,12 +634,30 @@ const TaskList = () => {
       <>
         <Box className={tableClasses.customTableHeader}>
           {col.label}
-          <IconButton
-            sx={{ borderRadius: "100%" }}
-            onClick={(e) => handleShowSearch(col, e)}
-          >
-            <SearchIcon id={col.name + "_btn"} />
-          </IconButton>
+
+          {col.canBeSearch && (
+            <IconButton
+              sx={{ borderRadius: "100%" }}
+              onClick={(e) => handleShowSearch(col, e)}
+            >
+              <SearchIcon id={col.name + "_btn"} />
+            </IconButton>
+          )}
+
+          {col.canBeSorted && (
+            <IconButton
+              sx={{ borderRadius: "100%" }}
+              onClick={() => {
+                setColumnDisplay((prev) => ({ ...prev, [col.name]: true }));
+                setSortOptions((prev) => ({
+                  sortBy: col.name,
+                  order: prev.sortBy === col.name ? !prev.order : false,
+                }));
+              }}
+            >
+              {renderSortIndicator(col.name)}
+            </IconButton>
+          )}
         </Box>
       </>
     );
@@ -688,7 +723,7 @@ const TaskList = () => {
       case "Reopen":
         const reopenObj = new ReopenTaskAPI(id);
         dispatch(APITransport(reopenObj));
-        setReOpenTaskId(id)
+        setReOpenTaskId(id);
         break;
 
       default:
@@ -703,6 +738,7 @@ const TaskList = () => {
       options: {
         filter: false,
         sort: false,
+        canBeSearch: true,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -718,6 +754,7 @@ const TaskList = () => {
       options: {
         filter: false,
         sort: false,
+        canBeSearch: true,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -733,6 +770,7 @@ const TaskList = () => {
       options: {
         filter: false,
         sort: false,
+        canBeSearch: true,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
@@ -758,30 +796,92 @@ const TaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: org_ids.includes(user_org_id) ? true : columnDisplay,
+        canBeSearch: true,
+        canBeSorted: true,
+        display: org_ids.includes(user_org_id)
+          ? true
+          : columnDisplay.description,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: !org_ids.includes(user_org_id) ? renderTaskListColumnCell : (value, tableMeta) => {
+        customBodyRender: !org_ids.includes(user_org_id)
+          ? renderTaskListColumnCell
+          : (value, tableMeta) => {
+              const { tableData: data, rowIndex } = tableMeta;
+              const selectedTask = data[rowIndex];
+              const slicedDesc = String(value).slice(0, 10);
+
+              const handleMouseOver = () => {
+                const rowData = tableMeta.rowData;
+                setShowDesc(true);
+                setId(rowData[0]);
+              };
+
+              return (
+                <Box
+                  id={selectedTask.id}
+                  onMouseOver={handleMouseOver}
+                  onMouseOut={() => setShowDesc(false)}
+                  style={{
+                    color: selectedTask.is_active ? "" : "grey",
+                  }}
+                >
+                  {!desc
+                    ? slicedDesc
+                    : org_id === tableMeta.rowData[0]
+                    ? value
+                    : slicedDesc}
+                </Box>
+              );
+            },
+      },
+    };
+
+    const createdAtColumn = {
+      name: "created_at",
+      label: "Created At",
+      options: {
+        filter: false,
+        display: columnDisplay.created_at,
+        sort: false,
+        canBeSorted: true,
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
-          const slicedDesc = String(value).slice(0, 10);
-
-          const handleMouseOver = () => {
-            const rowData = tableMeta.rowData;
-            setShowDesc(true);
-            setId(rowData[0]);
-          }
 
           return (
             <Box
-              id={selectedTask.id}
-              onMouseOver = {handleMouseOver}
-              onMouseOut={() => setShowDesc(false)}
               style={{
                 color: selectedTask.is_active ? "" : "grey",
               }}
             >
-              {!desc ? slicedDesc : (org_id === tableMeta.rowData[0] ? value : slicedDesc)}
+              {moment(value).format("DD/MM/YYYY HH:mm:ss")}
+            </Box>
+          );
+        },
+      },
+    };
+
+    const updatedAtColumn = {
+      name: "updated_at",
+      label: "Updated At",
+      options: {
+        filter: false,
+        display: columnDisplay.updated_at,
+        sort: false,
+        canBeSorted: true,
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+
+          return (
+            <Box
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+              {moment(value).format("DD/MM/YYYY HH:mm:ss")}
             </Box>
           );
         },
@@ -839,6 +939,8 @@ const TaskList = () => {
     const columns = [...getColumns(taskListColumns), actionColumn];
     columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
+    columns.splice(3, 0, createdAtColumn);
+    columns.splice(4, 0, updatedAtColumn);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);
 

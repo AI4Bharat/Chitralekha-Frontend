@@ -6,17 +6,19 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class NewsletterSubscribe extends API {
-  constructor(email, timeout = 2000) {
+  constructor(email,id,subscribe, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.SUBSCRIBE_TO_NEWSLETTER;
     this.email = email;
+    this.id = id;
+    this.subscribe = subscribe;
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.newsletterSubscribe}`;
   }
 
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-      localStorage.setItem('token', res.access);
+      // localStorage.setItem('token', res.access);
         this.report = res;
     }
 }
@@ -27,7 +29,9 @@ export default class NewsletterSubscribe extends API {
 
   getBody() {
     return {
-      email: this.email
+      email: this.email,
+      user_id:this.id,
+      subscribe: this.subscribe
     };
   }
 

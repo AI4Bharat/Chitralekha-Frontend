@@ -348,7 +348,8 @@ const VideoLanding = () => {
               setCurrentIndex={setCurrentIndex}
             />
           ) : (
-            <VoiceOverRightPanel currentIndex={currentIndex} />
+            <VoiceOverRightPanel currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex} />
           )}
         </Grid>
       </Grid>
