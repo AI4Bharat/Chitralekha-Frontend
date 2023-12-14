@@ -128,7 +128,7 @@ const Notifications = () => {
       name: "newsLetterSubscribe",
       label:
         formFields.newsLetterSubscribe === true
-          ? `Update Email or Unsubscribe`
+          ? `Unsubscribe or Update Email `
           : "Enter your email to subscribe",
       component: (
         <NewsLetter
