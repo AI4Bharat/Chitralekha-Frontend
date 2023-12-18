@@ -121,6 +121,22 @@ import {
   setTotalSentences,
 } from "./Common";
 
+import {
+  updateColumnDisplay,
+  updateSelectedFilter,
+  updateSortOptions,
+  updateProjectTabIndex,
+  updateProjectSearchValues,
+} from "./taskFilters";
+
+import {
+  updateOrgColumnDisplay,
+  updateOrgSelectedFilter,
+  updateOrgSortOptions,
+  updateOrgSearchValues,
+  updateCurrentOrgSearchedColumn,
+} from "./orgTaskFilters";
+
 import APITransport from "./apitransport/apitransport";
 
 export {
@@ -235,5 +251,15 @@ export {
   UpdateUserRoleAPI,
   setTotalSentences,
   NewsletterSubscribe,
-  NewsletterTemplate
+  NewsletterTemplate,
+  updateColumnDisplay,
+  updateSelectedFilter,
+  updateSortOptions,
+  updateProjectTabIndex,
+  updateProjectSearchValues,
+  updateOrgColumnDisplay,
+  updateOrgSelectedFilter,
+  updateOrgSortOptions,
+  updateOrgSearchValues,
+  updateCurrentOrgSearchedColumn,
 };
