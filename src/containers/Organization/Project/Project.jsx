@@ -17,6 +17,7 @@ import {
   FetchVideoListAPI,
   UploadCSVAPI,
   setSnackBar,
+  updateProjectTabIndex,
 } from "redux/actions";
 import C from "redux/constants";
 
@@ -77,7 +78,6 @@ const Project = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
-  const [value, setValue] = useState(0);
   const [projectDetails, SetProjectDetails] = useState({});
   const [videoList, setVideoList] = useState([]);
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
@@ -110,6 +110,7 @@ const Project = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const tabIndex = useSelector((state) => state.taskFilters.tabIndex);
 
   useEffect(() => {
     if (userData && userData.id) {
@@ -350,8 +351,10 @@ const Project = () => {
       <Card className={classes.workspaceCard}>
         <Box>
           <Tabs
-            value={value}
-            onChange={(_event, newValue) => setValue(newValue)}
+            value={tabIndex}
+            onChange={(_event, newValue) =>
+              dispatch(updateProjectTabIndex(newValue))
+            }
             aria-label="basic tabs example"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -365,7 +368,7 @@ const Project = () => {
         </Box>
 
         <TabPanel
-          value={value}
+          value={tabIndex}
           index={0}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
@@ -431,7 +434,7 @@ const Project = () => {
         </TabPanel>
 
         <TabPanel
-          value={value}
+          value={tabIndex}
           index={1}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
@@ -448,7 +451,7 @@ const Project = () => {
         </TabPanel>
 
         <TabPanel
-          value={value}
+          value={tabIndex}
           index={2}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
@@ -474,7 +477,7 @@ const Project = () => {
           </Box>
         </TabPanel>
         <TabPanel
-          value={value}
+          value={tabIndex}
           index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
