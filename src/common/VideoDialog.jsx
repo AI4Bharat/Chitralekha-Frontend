@@ -124,13 +124,19 @@ const VideoDialog = ({ open, handleClose, videoDetails }) => {
   }, []);
 
   const updateVideoHandler = async () => {
-    const updateData = {
+    let updateData = {
       gender: voice,
       description: videoDescription,
       video_id: videoDetails[0].id,
       multiple_speaker: String(speakerType !== "individual"),
-      speaker_info: speakerInfo,
     };
+
+    if (speakerType !== "individual") {
+      updateData = {
+        ...updateData,
+        speaker_info: speakerInfo,
+      };
+    }
 
     const apiObj = new UpdateVideoAPI(updateData);
     dispatch(APITransport(apiObj));
