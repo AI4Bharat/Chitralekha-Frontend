@@ -38,6 +38,8 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const NewsLetter = () => {
+  const dispatch = useDispatch();
+
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [additionalFields, setAdditionalFields] = useState([]);
   const [uploadedFileName, setUploadedFileName] = useState(null);
@@ -52,7 +54,6 @@ const NewsLetter = () => {
     2: null,
     3: null,
   });
-  const dispatch = useDispatch();
 
   const { html } = useSelector((state) => state.newsletterPreviewReducer);
 
@@ -66,7 +67,7 @@ const NewsLetter = () => {
     setSelectedTemplate(e.target.value);
   };
 
-  const handleTemplateSubmit = () => {
+  const handleTemplatePreview = (type) => {
     const templateContent = templateInfo?.[selectedTemplate] || {};
     const additionalFieldsContent = templateContent.additionalFields || [];
     const adcontent = additionalFieldsContent.map((field) => ({
@@ -76,43 +77,11 @@ const NewsLetter = () => {
       paragraph: field.paragraph,
     }));
 
-    if (selectedTemplate == 3) {
-      var content = { html: templateContent.html };
+    let content;
+    if (selectedTemplate === 3) {
+      content = { html: templateContent.html };
     } else {
-      var content = [
-        {
-          image: templateContent.image,
-          youtube_url: templateContent.youtube_url,
-          header: templateContent.header,
-          paragraph: templateContent.paragraph,
-        },
-        ...adcontent,
-      ];
-    }
-    const payload = {
-      submitter_id: getLocalStorageData("userData").id,
-      content: content,
-      category: "NEW_FEATURE",
-      template_id: selectedTemplate,
-    };
-    const templateOneObj = new NewsletterTemplate(payload, selectedTemplate);
-    dispatch(APITransport(templateOneObj));
-  };
-
-  const handleTemplatePreview = () => {
-    const templateContent = templateInfo?.[selectedTemplate] || {};
-    const additionalFieldsContent = templateContent.additionalFields || [];
-    const adcontent = additionalFieldsContent.map((field) => ({
-      image: field.image,
-      youtube_url: field.youtube_url,
-      header: field.header,
-      paragraph: field.paragraph,
-    }));
-
-    if (selectedTemplate == 3) {
-      var content = { html: templateContent.html };
-    } else {
-      var content = [
+      content = [
         {
           image: templateContent.image,
           youtube_url: templateContent.youtube_url,
@@ -126,12 +95,19 @@ const NewsLetter = () => {
     const payload = {
       submitter_id: getLocalStorageData("userData").id,
       content: content,
-      category: "NEW_FEATURE",
+      subject: templateInfo?.[selectedTemplate]?.subject,
+      category: templateInfo?.[selectedTemplate]?.category,
       template_id: selectedTemplate,
     };
-    if (Object.keys(templateContent).length) {
-      const templateOneObj = new NewsletterPreview(payload, selectedTemplate);
+
+    if (type === "submit") {
+      const templateOneObj = new NewsletterTemplate(payload, selectedTemplate);
       dispatch(APITransport(templateOneObj));
+    } else {
+      if (Object.keys(templateContent).length) {
+        const templateOneObj = new NewsletterPreview(payload, selectedTemplate);
+        dispatch(APITransport(templateOneObj));
+      }
     }
   };
 
@@ -168,6 +144,7 @@ const NewsLetter = () => {
 
       return updatedTemplateInfo;
     });
+
     setAdditionalFields((prevAdditionalFields) => {
       const updatedAdditionalFields = { ...prevAdditionalFields };
       const currentAdditionalFields =
@@ -190,6 +167,7 @@ const NewsLetter = () => {
       [selectedTemplate]: [...(prevFields[selectedTemplate] || []), {}],
     }));
   };
+
   const removeLastTextField = () => {
     const currentFields = additionalFields[selectedTemplate] || [];
 
@@ -241,7 +219,7 @@ const NewsLetter = () => {
     setUploadedFileName(null);
   };
 
-  function getBase64(file) {
+  const getBase64 = (file) => {
     return new Promise((resolve, reject) => {
       var reader = new FileReader();
       reader.readAsDataURL(file);
@@ -252,7 +230,7 @@ const NewsLetter = () => {
         reject(error);
       };
     });
-  }
+  };
 
   const templateOne = () => {
     const additionalFieldsOne = additionalFields[selectedTemplate] || [];
@@ -260,14 +238,7 @@ const NewsLetter = () => {
     return (
       <>
         <Grid container spacing={2}>
-          <Grid
-            display="flex"
-            justifyContent="center"
-            alignContent="center"
-            item
-            xs={12}
-            md={12}
-          >
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               label="Subject"
@@ -275,6 +246,23 @@ const NewsLetter = () => {
               onChange={(e) => handleChange("subject", e.target.value, 0)}
               style={{ backgroundColor: "white" }}
             />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel id="category-label">Category</InputLabel>
+              <Select
+                labelId="category-label"
+                id="category-label"
+                label="Category"
+                value={templateInfo?.[selectedTemplate]?.category || ""}
+                onChange={(e) => handleChange("category", e.target.value, 0)}
+              >
+                <MenuItem value={"Downtime"}>Downtime</MenuItem>
+                <MenuItem value={"Release"}>Release</MenuItem>
+                <MenuItem value={"General"}>General</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
 
@@ -394,7 +382,10 @@ const NewsLetter = () => {
               <RemoveIcon />
             </Button>
 
-            <Button variant="contained" onClick={handleTemplateSubmit}>
+            <Button
+              variant="contained"
+              onClick={() => handleTemplatePreview("submit")}
+            >
               Submit
             </Button>
           </Grid>
@@ -414,7 +405,7 @@ const NewsLetter = () => {
             alignContent="center"
             item
             xs={12}
-            md={12}
+            md={6}
           >
             <TextField
               fullWidth
@@ -423,6 +414,23 @@ const NewsLetter = () => {
               onChange={(e) => handleChange("subject", e.target.value, 0)}
               style={{ backgroundColor: "white" }}
             />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel id="category-label">Category</InputLabel>
+              <Select
+                labelId="category-label"
+                id="category-label"
+                label="Category"
+                value={templateInfo?.[selectedTemplate]?.category || ""}
+                onChange={(e) => handleChange("category", e.target.value, 0)}
+              >
+                <MenuItem value={"Downtime"}>Downtime</MenuItem>
+                <MenuItem value={"Release"}>Release</MenuItem>
+                <MenuItem value={"General"}>General</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
 
@@ -614,7 +622,10 @@ const NewsLetter = () => {
               <RemoveIcon />
             </Button>
 
-            <Button variant="contained" onClick={handleTemplateSubmit}>
+            <Button
+              variant="contained"
+              onClick={() => handleTemplatePreview("submit")}
+            >
               Submit
             </Button>
           </Grid>
@@ -688,7 +699,10 @@ const NewsLetter = () => {
           item
           xs={12}
         >
-          <Button variant="contained" onClick={handleTemplateSubmit}>
+          <Button
+            variant="contained"
+            onClick={() => handleTemplatePreview("submit")}
+          >
             Submit
           </Button>
         </Grid>
@@ -748,12 +762,7 @@ const NewsLetter = () => {
               aria-label="Newsletter Tab"
             >
               <Tab label={"Write"} sx={{ fontSize: 16, fontWeight: "700" }} />
-              {selectedTemplate !== 3 && (
-                <Tab
-                  label={"Preview"}
-                  sx={{ fontSize: 16, fontWeight: "700" }}
-                />
-              )}
+              <Tab label={"Preview"} sx={{ fontSize: 16, fontWeight: "700" }} />
             </Tabs>
             <TabPanel
               value={tabValue}
