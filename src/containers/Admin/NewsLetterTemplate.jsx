@@ -239,16 +239,6 @@ const NewsLetter = () => {
       <>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Subject"
-              value={templateInfo?.[selectedTemplate]?.subject || ""}
-              onChange={(e) => handleChange("subject", e.target.value, 0)}
-              style={{ backgroundColor: "white" }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <InputLabel id="category-label">Category</InputLabel>
               <Select
@@ -263,6 +253,16 @@ const NewsLetter = () => {
                 <MenuItem value={"General"}>General</MenuItem>
               </Select>
             </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Subject"
+              value={templateInfo?.[selectedTemplate]?.subject || ""}
+              onChange={(e) => handleChange("subject", e.target.value, 0)}
+              style={{ backgroundColor: "white" }}
+            />
           </Grid>
         </Grid>
 
@@ -399,23 +399,6 @@ const NewsLetter = () => {
     return (
       <>
         <Grid container spacing={2}>
-          <Grid
-            display="flex"
-            justifyContent="center"
-            alignContent="center"
-            item
-            xs={12}
-            md={6}
-          >
-            <TextField
-              fullWidth
-              label="Subject"
-              value={templateInfo?.[selectedTemplate]?.subject || ""}
-              onChange={(e) => handleChange("subject", e.target.value, 0)}
-              style={{ backgroundColor: "white" }}
-            />
-          </Grid>
-
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <InputLabel id="category-label">Category</InputLabel>
@@ -431,6 +414,16 @@ const NewsLetter = () => {
                 <MenuItem value={"General"}>General</MenuItem>
               </Select>
             </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Subject"
+              value={templateInfo?.[selectedTemplate]?.subject || ""}
+              onChange={(e) => handleChange("subject", e.target.value, 0)}
+              style={{ backgroundColor: "white" }}
+            />
           </Grid>
         </Grid>
 
