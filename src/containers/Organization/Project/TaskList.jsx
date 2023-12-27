@@ -346,7 +346,7 @@ const TaskList = () => {
   useEffect(() => {
     fetchTaskList();
 
-    // eslint-disable-next-line
+    /// eslint-disable-next-line
   }, [offset, limit, searchValue, selectedFilters, sortOptions]);
 
   useEffect(() => {
