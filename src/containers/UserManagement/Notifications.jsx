@@ -39,9 +39,18 @@ const Notifications = () => {
     newsLetterSubscribe: loggedInUser.subscribed_info.subscribed,
   });
   const [email, setEmail] = useState("");
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   useEffect(() => {
     setEmail(loggedInUser.subscribed_info.email);
+
+    if (loggedInUser && loggedInUser.length) {
+      const {
+        organization: { organization_owner },
+      } = loggedInUser;
+
+      setOrgOwnerId(organization_owner.id);
+    }
   }, [loggedInUser]);
 
   const handleSwitchToggleEmail = (prop) => {
@@ -115,7 +124,7 @@ const Notifications = () => {
                 !(
                   loggedInUser.id === +id ||
                   loggedInUser.role === "ADMIN" ||
-                  loggedInUser.role === "ORG_OWNER"
+                  loggedInUser.id === orgOwnerId
                 )
               }
             />

@@ -68,6 +68,7 @@ const MyOrganization = () => {
   const [alertData, setAlertData] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColumn, setAlertColumn] = useState([]);
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -124,6 +125,16 @@ const MyOrganization = () => {
 
   useEffect(() => {
     userData?.organization?.id && getProjectList(userData?.organization?.id);
+
+    if (userData && userData.id) {
+      const {
+        organization: { organization_owner },
+      } = userData;
+
+      console.log(organization_owner,'organization_owner tetete');
+
+      setOrgOwnerId(organization_owner.id);
+    }
     // eslint-disable-next-line
   }, [userData]);
 
@@ -179,13 +190,11 @@ const MyOrganization = () => {
               <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.orgSettingVisible && (
+            {userData?.id === orgOwnerId && (
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.orgSettingVisible && (
+            {userData?.id === orgOwnerId && (
               <Tab
                 label={"Settings"}
                 sx={{ fontSize: 16, fontWeight: "700" }}
@@ -206,7 +215,7 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <Box display={"flex"} width={"100%"}>
-              {userData?.role === "ORG_OWNER" && (
+              {userData?.id === orgOwnerId && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
@@ -277,7 +286,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {userData.role === "ORG_OWNER" && (
+            {userData?.id === orgOwnerId && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}

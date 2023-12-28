@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getColumns, getOptions, roles } from "utils";
+import { getColumns, getOptions } from "utils";
 import { Link, useParams } from "react-router-dom";
 import { projectColumns } from "config";
 
@@ -26,9 +26,23 @@ const ProjectList = ({ data, removeProjectList }) => {
 
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+
+  useEffect(() => {
+    if (userData && userData.id) {
+      const {
+        organization: { organization_owner },
+      } = userData;
+
+      console.log(organization_owner,'organization_owner tetete');
+
+      setOrgOwnerId(organization_owner.id);
+    }
+    // eslint-disable-next-line
+  }, [userData]);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
@@ -83,8 +97,7 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            {roles.filter((role) => role.value === userData?.role)[0]
-              ?.canDeleteProject && (
+            {userData?.id === orgOwnerId && (
               <Tooltip title="Delete">
                 <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
                   <DeleteIcon color="error" />
