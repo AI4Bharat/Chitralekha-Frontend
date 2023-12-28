@@ -31,6 +31,7 @@ import {
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
+import constants from "redux/constants";
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -68,6 +69,13 @@ const ProjectReport = () => {
     const apiObj = new DownloadProjectReportsAPI(projectId, reportsLevel);
     dispatch(APITransport(apiObj));
   };
+
+  useEffect(() => {
+    return () => {
+      setTableData([]);
+      dispatch({ type: constants.GET_PROJECT_REPORTS, payload: [] });
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     let rawData = [];
