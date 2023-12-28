@@ -12,6 +12,7 @@ import EditOrganizationDetailsAPI from "./api/Organization/EditOrganizationDetai
 import FetchOrganizationDetailsAPI from "./api/Organization/FetchOrganizationDetails";
 import FetchOrganizationListAPI from "./api/Organization/FetchOrganizationList";
 import FetchOrganizationReportsAPI from "./api/Organization/FetchOrganizationReports";
+import DownloadOrganizationReportsAPI from "./api/Organization/DownloadOrganizationReports"
 import FetchOrganizatioProjectManagersUserAPI from "./api/Organization/FetchOrganizatioProjectManagersUser";
 import FetchOrganizatioUsersAPI from "./api/Organization/FetchOrganizatioUsers";
 import FetchPaginatedOrgTaskListAPI from "./api/Organization/FetchPaginatedOrgTaskList";
@@ -51,6 +52,7 @@ import FetchProjectDetailsAPI from "./api/Project/FetchProjectDetails";
 import FetchProjectListAPI from "./api/Project/FetchProjectList";
 import FetchProjectMembersAPI from "./api/Project/FetchProjectMembers";
 import FetchProjectReportsAPI from "./api/Project/FetchProjectReports";
+import DownloadProjectReportsAPI from "./api/Project/DownloadProjectReports"
 import FetchSpeakerInfoAPI from "./api/Project/FetchSpeakerInfo";
 import FetchSupportedLanguagesAPI from "./api/Project/FetchSupportedLanguages";
 import FetchTaskDetailsAPI from "./api/Project/FetchTaskDetails";
@@ -151,6 +153,7 @@ export {
   FetchOrganizationDetailsAPI,
   FetchOrganizationListAPI,
   FetchOrganizationReportsAPI,
+  DownloadOrganizationReportsAPI,
   FetchOrganizatioProjectManagersUserAPI,
   FetchOrganizatioUsersAPI,
   FetchPaginatedOrgTaskListAPI,
@@ -188,6 +191,7 @@ export {
   FetchProjectListAPI,
   FetchProjectMembersAPI,
   FetchProjectReportsAPI,
+  DownloadProjectReportsAPI,
   FetchSpeakerInfoAPI,
   FetchSupportedLanguagesAPI,
   FetchTaskDetailsAPI,
