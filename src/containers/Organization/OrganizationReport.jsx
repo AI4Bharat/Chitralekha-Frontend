@@ -23,10 +23,15 @@ import {
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
 
 //APIs
-import { APITransport, FetchOrganizationReportsAPI } from "redux/actions";
+import {
+  APITransport,
+  FetchOrganizationReportsAPI,
+  DownloadOrganizationReportsAPI,
+} from "redux/actions";
 
 //Themes
 import { ProjectStyle, TableStyles } from "styles";
@@ -66,6 +71,17 @@ const OrganizationReport = () => {
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
+  };
+
+  const handleDownloadReport = async () => {
+    const temp = reportLevels.filter(
+      (item) => item.reportLevel === reportsLevel
+    );
+    const apiObj = new DownloadOrganizationReportsAPI(
+      id,
+      temp[0].downloadEndPoint
+    );
+    dispatch(APITransport(apiObj));
   };
 
   useEffect(() => {
@@ -202,14 +218,26 @@ const OrganizationReport = () => {
 
   const renderToolBar = () => {
     return (
-      <Button
-        style={{ minWidth: "25px" }}
-        onClick={(event) => setAnchorEl(event.currentTarget)}
-      >
-        <Tooltip title={"View Column"}>
-          <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
-        </Tooltip>
-      </Button>
+      <>
+        <Button
+          style={{ minWidth: "25px" }}
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+        >
+          <Tooltip title={"View Column"}>
+            <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+          </Tooltip>
+        </Button>
+        {reportsLevel && (
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReport()}
+          >
+            <Tooltip title={"Email Report"}>
+              <MailIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+        )}
+      </>
     );
   };
 
@@ -218,6 +246,7 @@ const OrganizationReport = () => {
 
     option = {
       ...option,
+      download: false,
       viewColumns: false,
       customToolbar: renderToolBar,
     };
