@@ -34,7 +34,7 @@ import {
   tamilTagsSuggestionData,
   teluguTagsSuggestionData,
 } from "./noiseTags";
-import { profileOptions } from "./profileConfigs";
+import { categoryConfig, profileOptions } from "./profileConfigs";
 import {
   bgMusicOptions,
   buttonConfig,
@@ -125,4 +125,5 @@ export {
   reopenTableColumns,
   renderTaskListColumnCell,
   org_ids,
+  categoryConfig,
 };

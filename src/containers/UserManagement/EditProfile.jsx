@@ -74,6 +74,7 @@ const EditProfile = () => {
   const [alertData, setAlertData] = useState();
   const [alertColumn, setAlertColumn] = useState();
   const [openAlert, setOpenAlert] = useState(false);
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -84,6 +85,16 @@ const EditProfile = () => {
     (state) => state.getSupportedLanguages.translationLanguage
   );
   const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    if (loggedInUserData && loggedInUserData.length) {
+      const {
+        organization: { organization_owner },
+      } = loggedInUserData;
+
+      setOrgOwnerId(organization_owner.id);
+    }
+  }, [loggedInUserData]);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -217,7 +228,7 @@ const EditProfile = () => {
     let apiObj;
     if (
       loggedInUserData.role === "ADMIN" ||
-      loggedInUserData.role === "ORG_OWNER"
+      loggedInUserData.id === orgOwnerId
     ) {
       apiObj = new UpdateProfileAPI(updateProfileReqBody, id);
     } else {
@@ -231,7 +242,7 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || role === "ORG_OWNER") {
+      if (role === "ADMIN" || userId === orgOwnerId) {
         return name === "org" || name === "availability";
       } else {
         return name === "role" || name === "org" || name === "availability";
@@ -342,7 +353,7 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || role === "ORG_OWNER") {
+      if (role === "ADMIN" || userId === orgOwnerId) {
         if (roleIsEdited) {
           updateRole();
         }
@@ -392,7 +403,7 @@ const EditProfile = () => {
 
               {(loggedInUserData.id === +id ||
                 loggedInUserData.role === "ADMIN" ||
-                loggedInUserData.role === "ORG_OWNER") && (
+                loggedInUserData.id === orgOwnerId) && (
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                   <Button
                     variant="outlined"
@@ -411,7 +422,7 @@ const EditProfile = () => {
 
         {(loggedInUserData.id === +id ||
           loggedInUserData.role === "ADMIN" ||
-          loggedInUserData.role === "ORG_OWNER") && (
+          loggedInUserData.id === orgOwnerId) && (
           <Grid
             container
             direction="row"

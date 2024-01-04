@@ -31,6 +31,7 @@ import {
   Tooltip,
   IconButton,
   Button,
+  Badge,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
@@ -86,6 +87,12 @@ import {
   exportTranslationAPI,
   setComparisonTable,
   setSnackBar,
+  updateColumnDisplay,
+  updateCurrentOrgSearchedColumn,
+  updateOrgColumnDisplay,
+  updateOrgSearchValues,
+  updateOrgSelectedFilter,
+  updateSortOptions,
 } from "redux/actions";
 import moment from "moment";
 
@@ -103,18 +110,6 @@ const OrgLevelTaskList = () => {
   const [tableData, setTableData] = useState([]);
   const [options, setOptions] = useState();
   const [rows, setRows] = useState([]);
-
-  //Filter States
-  const [selectedFilters, setSelectedFilters] = useState({
-    status: [],
-    taskType: [],
-    srcLanguage: [],
-    tgtLanguage: [],
-  });
-  const [sortOptions, setSortOptions] = useState({
-    sortBy: "",
-    order: "",
-  });
 
   const [loading, setLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState([]);
@@ -155,13 +150,6 @@ const OrgLevelTaskList = () => {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchAnchor, setSearchAnchor] = useState(null);
-  const [searchedCol, setSearchedCol] = useState({});
-  const [searchedColumn, setSearchedColumn] = useState({});
-  const [columnDisplay, setColumnDisplay] = useState({
-    description: false,
-    created_at: false,
-    updated_at: false,
-  });
 
   const [exportTypes, setExportTypes] = useState({
     transcription: "srt",
@@ -178,6 +166,23 @@ const OrgLevelTaskList = () => {
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const previewData = useSelector((state) => state.getPreviewData?.data);
+
+  //Fiters and Search
+  const orgSelectedFilters = useSelector(
+    (state) => state.orgTaskFilters.orgSelectedFilters
+  );
+  const orgSortOptions = useSelector(
+    (state) => state.orgTaskFilters.orgSortOptions
+  );
+  const orgColumnDisplay = useSelector(
+    (state) => state.orgTaskFilters.orgColumnDisplay
+  );
+  const orgSearchValue = useSelector(
+    (state) => state.orgTaskFilters.orgSearchValue
+  );
+  const currentOrgSearchedColumn = useSelector(
+    (state) => state.orgTaskFilters.currentOrgSearchedColumn
+  );
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -259,17 +264,17 @@ const OrgLevelTaskList = () => {
     setLoading(true);
 
     const search = {
-      task_id: searchedColumn?.id,
-      video_name: searchedColumn?.video_name,
-      description: searchedColumn?.description,
-      assignee: searchedColumn?.user,
+      task_id: orgSearchValue?.id,
+      video_name: orgSearchValue?.video_name,
+      description: orgSearchValue?.description,
+      assignee: orgSearchValue?.user,
     };
 
     const filter = {
-      task_type: selectedFilters?.taskType,
-      status: selectedFilters?.status,
-      src_language: selectedFilters?.srcLanguage,
-      target_language: selectedFilters?.tgtLanguage,
+      task_type: orgSelectedFilters?.taskType,
+      status: orgSelectedFilters?.status,
+      src_language: orgSelectedFilters?.srcLanguage,
+      target_language: orgSelectedFilters?.tgtLanguage,
     };
 
     const searchRequest = Object.entries(search).reduce((acc, [key, value]) => {
@@ -292,7 +297,7 @@ const OrgLevelTaskList = () => {
       limit,
       searchRequest,
       filterRequest,
-      sortOptions
+      orgSortOptions
     );
     dispatch(APITransport(apiObj));
   };
@@ -329,7 +334,14 @@ const OrgLevelTaskList = () => {
     }
 
     // eslint-disable-next-line
-  }, [orgId, offset, limit, searchedColumn, selectedFilters, sortOptions]);
+  }, [
+    orgId,
+    offset,
+    limit,
+    orgSearchValue,
+    orgSelectedFilters,
+    orgSortOptions,
+  ]);
 
   useEffect(() => {
     if (taskList) {
@@ -471,19 +483,23 @@ const OrgLevelTaskList = () => {
 
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
-    setSearchedCol({
-      label: col.label,
-      name: col.name,
-    });
+    dispatch(
+      updateCurrentOrgSearchedColumn({
+        label: col.label,
+        name: col.name,
+      })
+    );
 
     if (col.name === "description") {
-      setColumnDisplay((prev) => ({ ...prev, description: true }));
+      dispatch(
+        updateOrgColumnDisplay({ ...orgColumnDisplay, description: true })
+      );
     }
   };
 
   const renderSortIndicator = (column) => {
-    if (sortOptions.sortBy === column) {
-      return sortOptions.order ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />;
+    if (orgSortOptions.sortBy === column) {
+      return orgSortOptions.order ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />;
     }
     return <ImportExportIcon />;
   };
@@ -498,7 +514,13 @@ const OrgLevelTaskList = () => {
               sx={{ borderRadius: "100%" }}
               onClick={(e) => handleShowSearch(col, e)}
             >
-              <SearchIcon id={col.name + "_btn"} />
+              <Badge
+                color="primary"
+                variant="dot"
+                invisible={!orgSearchValue[col.name].length}
+              >
+                <SearchIcon id={col.name + "_btn"} />
+              </Badge>
             </IconButton>
           )}
 
@@ -506,11 +528,18 @@ const OrgLevelTaskList = () => {
             <IconButton
               sx={{ borderRadius: "100%" }}
               onClick={() => {
-                setColumnDisplay((prev) => ({ ...prev, [col.name]: true }));
-                setSortOptions((prev) => ({
-                  sortBy: col.name,
-                  order: prev.sortBy === col.name ? !prev.order : false,
-                }));
+                dispatch(
+                  updateColumnDisplay({ ...orgColumnDisplay, [col.name]: true })
+                );
+                dispatch(
+                  updateSortOptions({
+                    sortBy: col.name,
+                    order:
+                      orgSortOptions.sortBy === col.name
+                        ? !orgSortOptions.order
+                        : false,
+                  })
+                );
               }}
             >
               {renderSortIndicator(col.name)}
@@ -683,7 +712,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         display: org_ids.includes(user_org_id)
           ? true
-          : columnDisplay.description,
+          : orgColumnDisplay.description,
         align: "center",
         canBeSearch: true,
         canBeSorted: true,
@@ -728,7 +757,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSorted: true,
-        display: columnDisplay.created_at,
+        display: orgColumnDisplay.created_at,
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -752,7 +781,7 @@ const OrgLevelTaskList = () => {
       label: "Updated At",
       options: {
         filter: false,
-        display: columnDisplay.updated_at,
+        display: orgColumnDisplay.updated_at,
         sort: false,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
@@ -888,6 +917,11 @@ const OrgLevelTaskList = () => {
   };
 
   const renderToolBar = () => {
+    const arrayLengths = Object.values(orgSelectedFilters).map(
+      (arr) => arr.length
+    );
+    const sumOfLengths = arrayLengths.reduce((acc, length) => acc + length, 0);
+
     return (
       <>
         <Button
@@ -895,7 +929,9 @@ const OrgLevelTaskList = () => {
           onClick={(event) => setAnchorEl(event.currentTarget)}
         >
           <Tooltip title={"Filter Table"}>
-            <FilterListIcon sx={{ color: "#515A5A" }} />
+            <Badge color="primary" badgeContent={sumOfLengths}>
+              <FilterListIcon sx={{ color: "#515A5A" }} />
+            </Badge>
           </Tooltip>
         </Button>
 
@@ -1156,9 +1192,8 @@ const OrgLevelTaskList = () => {
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           handleClose={() => setAnchorEl(null)}
-          updateFilters={setSelectedFilters}
-          currentFilters={selectedFilters}
-          taskList={taskList}
+          updateFilters={updateOrgSelectedFilter}
+          currentFilters={orgSelectedFilters}
         />
       )}
 
@@ -1207,9 +1242,9 @@ const OrgLevelTaskList = () => {
           open={Boolean(searchAnchor)}
           anchorEl={searchAnchor}
           handleClose={() => setSearchAnchor(null)}
-          updateFilters={setSearchedColumn}
-          currentFilters={searchedColumn}
-          searchedCol={searchedCol}
+          updateFilters={updateOrgSearchValues}
+          currentFilters={orgSearchValue}
+          searchedCol={currentOrgSearchedColumn}
         />
       )}
 

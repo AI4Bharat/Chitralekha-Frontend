@@ -23,6 +23,7 @@ import TaskQueueStatus from "./containers/Organization/TaskQueueStatus/TaskQueue
 import Thanks from "./containers/intro/Thanks";
 import UseCases from "./containers/intro/UseCases";
 import ChitralekhaPortal from "./common/ChitralekhaPortal";
+import Unsubscribe from "containers/UserManagement/Unsubscribe";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -32,14 +33,14 @@ const RootRouter = () => {
     return children;
   };
 
-  const PublicRoute = ({user, children}) =>{
+  const PublicRoute = ({ user, children }) => {
     if (authenticateUser()) {
-     const orgId = JSON.parse(localStorage.getItem("userData"))?.organization.id;
-     return <Navigate to={`/my-organization/${orgId}`} />;
+      const orgId = JSON.parse(localStorage.getItem("userData"))?.organization.id;
+      return <Navigate to={`/my-organization/${orgId}`} />;
     }
     return children;
   };
-  
+
   const ProtectedRouteWrapper = (component) => {
     return <ProtectedRoute>{component}</ProtectedRoute>;
   };
@@ -52,7 +53,7 @@ const RootRouter = () => {
     <HashRouter>
       <Routes>
         <Route
-          
+
           path="/"
           element={PublicRouteWrapper(<Layout component={<ChitralekhaPortal />} />)}
         />
@@ -173,6 +174,8 @@ const RootRouter = () => {
             <Layout component={<TaskQueueStatus />} />
           )}
         />
+
+        <Route path="/newsletter/unsubscribe" element={<Unsubscribe />} />
       </Routes>
     </HashRouter>
   );

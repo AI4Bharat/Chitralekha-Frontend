@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Divider, Popover, Box, TextField } from "@mui/material";
+import { useDispatch } from "react-redux";
 
 const TableSearchPopover = ({
   open,
@@ -9,24 +10,32 @@ const TableSearchPopover = ({
   currentFilters,
   updateFilters,
 }) => {
+  const dispatch = useDispatch();
+
   const [searchValue, setSearchValue] = useState(
     currentFilters[searchedCol.name]
   );
 
   const handleSubmitSearch = async (e) => {
     document.getElementById(searchedCol.name + "_btn").style.color = "#2C2799";
-    updateFilters({
-      ...currentFilters,
-      [searchedCol.name]: searchValue,
-    });
+
+    dispatch(
+      updateFilters({
+        ...currentFilters,
+        [searchedCol.name]: searchValue,
+      })
+    );
+
     handleClose();
   };
 
-  const handleClearSearch = (e) => {
-    updateFilters({
-      ...currentFilters,
-      [searchedCol.name]: "",
-    });
+  const handleClearSearch = () => {
+    dispatch(
+      updateFilters({
+        ...currentFilters,
+        [searchedCol.name]: "",
+      })
+    );
     setSearchValue("");
     document.getElementById(searchedCol.name + "_btn").style.color =
       "rgba(0, 0, 0, 0.54)";

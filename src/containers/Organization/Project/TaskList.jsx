@@ -32,6 +32,7 @@ import {
   IconButton,
   Button,
   Divider,
+  Badge,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
@@ -88,8 +89,13 @@ import {
   exportTranslationAPI,
   setComparisonTable,
   setSnackBar,
+  updateColumnDisplay,
+  updateProjectSearchValues,
+  updateSelectedFilter,
+  updateSortOptions,
 } from "redux/actions";
 import constants from "redux/constants";
+import { updateCurrentSearchedColumn } from "redux/actions/taskFilters";
 
 const TaskList = () => {
   const user_org_id = getLocalStorageData("userData").organization.id;
@@ -108,18 +114,6 @@ const TaskList = () => {
   const [tableData, setTableData] = useState([]);
   const [options, setOptions] = useState();
   const [rows, setRows] = useState([]);
-
-  //Filter States
-  const [selectedFilters, setSelectedFilters] = useState({
-    status: [],
-    taskType: [],
-    srcLanguage: [],
-    tgtLanguage: [],
-  });
-  const [sortOptions, setSortOptions] = useState({
-    sortBy: "",
-    order: "",
-  });
 
   const [loading, setLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState([]);
@@ -175,14 +169,7 @@ const TaskList = () => {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchAnchor, setSearchAnchor] = useState(null);
-  const [searchedCol, setSearchedCol] = useState({});
-  const [searchedColumn, setSearchedColumn] = useState({});
   const [reOpenTaskId, setReOpenTaskId] = useState(null);
-  const [columnDisplay, setColumnDisplay] = useState({
-    description: false,
-    created_at: false,
-    updated_at: false,
-  });
 
   //Data from Redux
   const { total_count: totalCount, tasks_list: taskList } = useSelector(
@@ -191,6 +178,15 @@ const TaskList = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const previewData = useSelector((state) => state.getPreviewData?.data);
+  const selectedFilters = useSelector(
+    (state) => state.taskFilters.selectedFilters
+  );
+  const sortOptions = useSelector((state) => state.taskFilters.sortOptions);
+  const columnDisplay = useSelector((state) => state.taskFilters.columnDisplay);
+  const searchValue = useSelector((state) => state.taskFilters.searchValue);
+  const currentSearchedColumn = useSelector(
+    (state) => state.taskFilters.currentSearchedColumn
+  );
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -284,10 +280,10 @@ const TaskList = () => {
     setLoading(true);
 
     const search = {
-      task_id: searchedColumn?.id,
-      video_name: searchedColumn?.video_name,
-      description: searchedColumn?.description,
-      assignee: searchedColumn?.user,
+      task_id: searchValue?.id,
+      video_name: searchValue?.video_name,
+      description: searchValue?.description,
+      assignee: searchValue?.user,
     };
 
     const filter = {
@@ -351,7 +347,7 @@ const TaskList = () => {
     fetchTaskList();
 
     // eslint-disable-next-line
-  }, [offset, limit, searchedColumn, selectedFilters, sortOptions]);
+  }, [offset, limit, searchValue, selectedFilters, sortOptions]);
 
   useEffect(() => {
     if (taskList) {
@@ -411,9 +407,11 @@ const TaskList = () => {
   };
 
   useMemo(() => {
-    filterData();
+    if (taskList) {
+      filterData();
+    }
     // eslint-disable-next-line
-  }, [selectedFilters]);
+  }, [selectedFilters, taskList]);
 
   const exportVoiceoverTask = async (id) => {
     const { id: taskId } = currentTaskDetails;
@@ -612,13 +610,15 @@ const TaskList = () => {
 
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
-    setSearchedCol({
-      label: col.label,
-      name: col.name,
-    });
+    dispatch(
+      updateCurrentSearchedColumn({
+        label: col.label,
+        name: col.name,
+      })
+    );
 
     if (col.name === "description") {
-      setColumnDisplay((prev) => ({ ...prev, description: true }));
+      dispatch(updateColumnDisplay({ ...columnDisplay, description: true }));
     }
   };
 
@@ -640,7 +640,13 @@ const TaskList = () => {
               sx={{ borderRadius: "100%" }}
               onClick={(e) => handleShowSearch(col, e)}
             >
-              <SearchIcon id={col.name + "_btn"} />
+              <Badge
+                color="primary"
+                variant="dot"
+                invisible={!searchValue[col.name].length}
+              >
+                <SearchIcon id={col.name + "_btn"} />
+              </Badge>
             </IconButton>
           )}
 
@@ -648,11 +654,18 @@ const TaskList = () => {
             <IconButton
               sx={{ borderRadius: "100%" }}
               onClick={() => {
-                setColumnDisplay((prev) => ({ ...prev, [col.name]: true }));
-                setSortOptions((prev) => ({
-                  sortBy: col.name,
-                  order: prev.sortBy === col.name ? !prev.order : false,
-                }));
+                dispatch(
+                  updateColumnDisplay({ ...columnDisplay, [col.name]: true })
+                );
+                dispatch(
+                  updateSortOptions({
+                    sortBy: col.name,
+                    order:
+                      sortOptions.sortBy === col.name
+                        ? !sortOptions.order
+                        : false,
+                  })
+                );
               }}
             >
               {renderSortIndicator(col.name)}
@@ -1041,6 +1054,11 @@ const TaskList = () => {
   };
 
   const renderToolBar = () => {
+    const arrayLengths = Object.values(selectedFilters).map(
+      (arr) => arr.length
+    );
+    const sumOfLengths = arrayLengths.reduce((acc, length) => acc + length, 0);
+
     return (
       <>
         <Button
@@ -1048,7 +1066,9 @@ const TaskList = () => {
           onClick={(event) => setAnchorEl(event.currentTarget)}
         >
           <Tooltip title={"Filter Table"}>
-            <FilterListIcon sx={{ color: "#515A5A" }} />
+            <Badge color="primary" badgeContent={sumOfLengths}>
+              <FilterListIcon sx={{ color: "#515A5A" }} />
+            </Badge>
           </Tooltip>
         </Button>
 
@@ -1219,9 +1239,8 @@ const TaskList = () => {
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           handleClose={() => setAnchorEl(null)}
-          updateFilters={setSelectedFilters}
+          updateFilters={updateSelectedFilter}
           currentFilters={selectedFilters}
-          taskList={taskList}
         />
       )}
 
@@ -1270,9 +1289,9 @@ const TaskList = () => {
           open={Boolean(searchAnchor)}
           anchorEl={searchAnchor}
           handleClose={() => setSearchAnchor(null)}
-          updateFilters={setSearchedColumn}
-          currentFilters={searchedColumn}
-          searchedCol={searchedCol}
+          updateFilters={updateProjectSearchValues}
+          currentFilters={searchValue}
+          searchedCol={currentSearchedColumn}
         />
       )}
 
