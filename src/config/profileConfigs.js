@@ -39,3 +39,18 @@ export const profileOptions = [
     iterator: availability,
   },
 ];
+
+export const categoryConfig = [
+  {
+    name: "downtime",
+    label: "Downtime",
+  },
+  {
+    name: "release",
+    label: "Release",
+  },
+  {
+    name: "general",
+    label: "General",
+  },
+];
