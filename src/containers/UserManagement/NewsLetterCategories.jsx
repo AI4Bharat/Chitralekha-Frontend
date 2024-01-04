@@ -83,6 +83,7 @@ const NewsLetterCategories = ({ email }) => {
                     name={item.name}
                   />
                 }
+                className={classes.newLetterCheckboxLabel}
                 label={item.label}
               />
             );

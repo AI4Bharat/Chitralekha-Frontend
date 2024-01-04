@@ -154,6 +154,13 @@ const LoginStyle = makeStyles({
     alignItems: "center",
     justifyContent: "center",
   },
+
+  newLetterCheckboxLabel: {
+    "& .MuiFormControlLabel-label": {
+      fontSize: "1.05rem",
+      lineHeight: 0,
+    },
+  },
 });
 
 export default LoginStyle;
