@@ -15,7 +15,8 @@ const endpoints = {
   confirmResetPassword: "/users/auth/users/reset_password_confirm/",
   languages: "/users/languages/fetch/",
   userRoles: "/users/roles/",
-  newsletterSubscribe: "/newsletter/subscribe/",
+  updateSubscription: "/newsletter/update_subscription/",
+  unSubscribeFromEmail: "/newsletter/unsubscribe",
   newsletter: "/newsletter/",
   preview: "/newsletter/preview/",
 
