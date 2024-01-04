@@ -93,7 +93,7 @@ const NewsLetterCategories = ({ email }) => {
 
       <Grid item xs={12} md={4} className={classes.newLetterGridItems}>
         <Button variant="contained" onClick={() => handleCategoryUpdate()}>
-          Update
+          Update Categories
         </Button>
       </Grid>
     </Grid>

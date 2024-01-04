@@ -56,7 +56,7 @@ const NewsLetterEmail = ({ email, setEmail }) => {
           onClick={() => handleEmailUpdate()}
           disabled={!validateEmail(email)}
         >
-          Update
+          Update Email
         </Button>
       </Grid>
     </Grid>
