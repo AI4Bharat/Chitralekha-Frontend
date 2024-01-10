@@ -1,4 +1,4 @@
-import { availability, roles } from "../utils/utils";
+import { availability } from "../utils/utils";
 
 export const profileOptions = [
   {
@@ -25,12 +25,6 @@ export const profileOptions = [
     title: "User Name",
     name: "username",
     type: "textField",
-  },
-  {
-    title: "Role",
-    name: "role",
-    type: "select",
-    iterator: roles,
   },
   {
     title: "Availability Status",
