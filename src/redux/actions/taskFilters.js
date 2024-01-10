@@ -21,13 +21,6 @@ export const updateSortOptions = (payload) => {
   };
 };
 
-export const updateProjectTabIndex = (payload) => {
-  return {
-    type: C.PROJECT_TAB_INDEX,
-    payload,
-  };
-};
-
 export const updateProjectSearchValues = (payload) => {
   return {
     type: C.PROJECT_SEARCH_VALUES,
