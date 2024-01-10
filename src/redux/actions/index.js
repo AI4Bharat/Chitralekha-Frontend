@@ -127,7 +127,6 @@ import {
   updateColumnDisplay,
   updateSelectedFilter,
   updateSortOptions,
-  updateProjectTabIndex,
   updateProjectSearchValues,
 } from "./taskFilters";
 
@@ -260,7 +259,6 @@ export {
   updateColumnDisplay,
   updateSelectedFilter,
   updateSortOptions,
-  updateProjectTabIndex,
   updateProjectSearchValues,
   updateOrgColumnDisplay,
   updateOrgSelectedFilter,

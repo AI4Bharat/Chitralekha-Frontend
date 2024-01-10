@@ -16,7 +16,6 @@ const initialState = {
     created_at: false,
     updated_at: false,
   },
-  tabIndex: 0,
   searchValue: {
     id: "",
     video_name: "",
@@ -47,12 +46,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         columnDisplay: action.payload,
-      };
-
-    case constants.PROJECT_TAB_INDEX:
-      return {
-        ...state,
-        tabIndex: action.payload,
       };
 
     case constants.PROJECT_SEARCH_VALUES:
