@@ -1,18 +1,14 @@
-/**
- * Login API
- */
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class UpdateSubscriptionAPI extends API {
-  constructor(payload, timeout = 2000) {
-    super("PATCH", timeout, false);
-    this.type = C.SUBSCRIBE_TO_NEWSLETTER;
-
-    this.payload = payload;
-
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateSubscription}`;
+export default class DownloadOrganizationReportsAPI extends API {
+  constructor(id, endPoint, timeout = 2000) {
+    super("GET", timeout, false);
+    this.type = C.DOWNLOAD_ORGANIZATION_REPORTS;
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.organization
+    }${id}/${endPoint}/`;
   }
 
   processResponse(res) {
@@ -26,9 +22,7 @@ export default class UpdateSubscriptionAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.payload;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {

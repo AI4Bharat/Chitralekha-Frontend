@@ -16,18 +16,19 @@ import {
   Checkbox,
   Grid,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const FilterList = ({
   id,
   open,
   anchorEl,
   currentFilters,
-  updateFilters,
-  taskList,
   handleClose,
+  updateFilters,
 }) => {
   const classes = DatasetStyle();
+  const dispatch = useDispatch();
 
   const transcriptionLanguage = useSelector(
     (state) => state.getSupportedLanguages.transcriptionLanguage
@@ -36,23 +37,28 @@ const FilterList = ({
     (state) => state.getSupportedLanguages.translationLanguage
   );
 
-  const [selectedType, setSelectedType] = useState(currentFilters.taskType);
-  const [selectedStatus, setSelectedStatus] = useState(currentFilters.status);
-  const [selectedSrcLanguage, setSelectedSrcLanguage] = useState(
-    currentFilters.srcLanguage
-  );
-  const [selectedTgtLanguage, setSelectedTgtLanguage] = useState(
-    currentFilters.tgtLanguage
-  );
+  const [selectedType, setSelectedType] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedSrcLanguage, setSelectedSrcLanguage] = useState([]);
+  const [selectedTgtLanguage, setSelectedTgtLanguage] = useState([]);
 
-  const handleChange = (e) => {
-    updateFilters({
-      ...currentFilters,
-      taskType: selectedType,
-      status: selectedStatus,
-      srcLanguage: selectedSrcLanguage,
-      tgtLanguage: selectedTgtLanguage,
-    });
+  useEffect(() => {
+    setSelectedType(currentFilters.taskType);
+    setSelectedStatus(currentFilters.status);
+    setSelectedSrcLanguage(currentFilters.srcLanguage);
+    setSelectedTgtLanguage(currentFilters.tgtLanguage);
+  }, [currentFilters]);
+
+  const handleChange = () => {
+    dispatch(
+      updateFilters({
+        ...currentFilters,
+        taskType: selectedType,
+        status: selectedStatus,
+        srcLanguage: selectedSrcLanguage,
+        tgtLanguage: selectedTgtLanguage,
+      })
+    );
     handleClose();
   };
 
@@ -124,12 +130,14 @@ const FilterList = ({
   };
 
   const handleChangeCancelAll = () => {
-    updateFilters({
-      taskType: [],
-      status: [],
-      srcLanguage: [],
-      tgtLanguage: [],
-    });
+    dispatch(
+      updateFilters({
+        taskType: [],
+        status: [],
+        srcLanguage: [],
+        tgtLanguage: [],
+      })
+    );
     handleClose();
   };
 

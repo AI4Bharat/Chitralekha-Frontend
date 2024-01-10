@@ -1,18 +1,18 @@
-/**
- * Login API
- */
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class UpdateSubscriptionAPI extends API {
-  constructor(payload, timeout = 2000) {
-    super("PATCH", timeout, false);
-    this.type = C.SUBSCRIBE_TO_NEWSLETTER;
-
-    this.payload = payload;
-
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateSubscription}`;
+export default class DownloadProjectReportsAPI extends API {
+  constructor(id, reportsLevel, timeout = 2000) {
+    super("GET", timeout, false);
+    this.type = C.DOWNLOAD_PROJECT_REPORTS;
+    const queryString =
+      reportsLevel === "User"
+        ? "send_users_report_email"
+        : "send_languages_report_email";
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.project
+    }${id}/${queryString}/`;
   }
 
   processResponse(res) {
@@ -26,9 +26,7 @@ export default class UpdateSubscriptionAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {
-    return this.payload;
-  }
+  getBody() {}
 
   getHeaders() {
     this.headers = {

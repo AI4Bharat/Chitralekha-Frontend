@@ -7,6 +7,7 @@ const endpoints = {
   getUserDetails: "/users/account/",
   addOrganizationMember: "/users/invite/generate/",
   updateEmail: "/users/account/update_email/",
+  updateNewsLetterEmail: "/newsletter/update_email/",
   verifyUpdateEmail: "/users/account/verify_email_updation/",
   updateProfile: "/users/account/update/",
   changePassword: "/users/auth/users/set_password/",
@@ -14,7 +15,8 @@ const endpoints = {
   confirmResetPassword: "/users/auth/users/reset_password_confirm/",
   languages: "/users/languages/fetch/",
   userRoles: "/users/roles/",
-  newsletterSubscribe: "/newsletter/subscribe/",
+  updateSubscription: "/newsletter/update_subscription/",
+  unSubscribeFromEmail: "/newsletter/unsubscribe",
   newsletter: "/newsletter/",
   preview: "/newsletter/preview/",
 

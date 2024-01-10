@@ -229,7 +229,6 @@ export const onSubtitleChange = (text, index,id) => {
         element.target_text = text;
       }
       else{
-        console.log(text);
         element.text = text;
       }
     }

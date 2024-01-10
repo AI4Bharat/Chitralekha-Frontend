@@ -12,6 +12,7 @@ import EditOrganizationDetailsAPI from "./api/Organization/EditOrganizationDetai
 import FetchOrganizationDetailsAPI from "./api/Organization/FetchOrganizationDetails";
 import FetchOrganizationListAPI from "./api/Organization/FetchOrganizationList";
 import FetchOrganizationReportsAPI from "./api/Organization/FetchOrganizationReports";
+import DownloadOrganizationReportsAPI from "./api/Organization/DownloadOrganizationReports";
 import FetchOrganizatioProjectManagersUserAPI from "./api/Organization/FetchOrganizatioProjectManagersUser";
 import FetchOrganizatioUsersAPI from "./api/Organization/FetchOrganizatioUsers";
 import FetchPaginatedOrgTaskListAPI from "./api/Organization/FetchPaginatedOrgTaskList";
@@ -51,6 +52,7 @@ import FetchProjectDetailsAPI from "./api/Project/FetchProjectDetails";
 import FetchProjectListAPI from "./api/Project/FetchProjectList";
 import FetchProjectMembersAPI from "./api/Project/FetchProjectMembers";
 import FetchProjectReportsAPI from "./api/Project/FetchProjectReports";
+import DownloadProjectReportsAPI from "./api/Project/DownloadProjectReports";
 import FetchSpeakerInfoAPI from "./api/Project/FetchSpeakerInfo";
 import FetchSupportedLanguagesAPI from "./api/Project/FetchSupportedLanguages";
 import FetchTaskDetailsAPI from "./api/Project/FetchTaskDetails";
@@ -99,7 +101,7 @@ import UpdateMyPasswordAPI from "./api/User/UpdateMyPassword";
 import UpdateProfileAPI from "./api/User/UpdateProfile";
 import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
 import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
-import NewsletterSubscribe from "./api/User/NewsletterSubscribe";
+import UpdateSubscriptionAPI from "./api/User/NewsletterSubscribe";
 import NewsletterTemplate from "./api/Admin/NewsLetterTemplate";
 
 //Commom Actions
@@ -121,7 +123,23 @@ import {
   setTotalSentences,
 } from "./Common";
 
+import {
+  updateColumnDisplay,
+  updateSelectedFilter,
+  updateSortOptions,
+  updateProjectSearchValues,
+} from "./taskFilters";
+
+import {
+  updateOrgColumnDisplay,
+  updateOrgSelectedFilter,
+  updateOrgSortOptions,
+  updateOrgSearchValues,
+  updateCurrentOrgSearchedColumn,
+} from "./orgTaskFilters";
+
 import APITransport from "./apitransport/apitransport";
+import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
 
 export {
   FetchAdminLevelReportsAPI,
@@ -135,6 +153,7 @@ export {
   FetchOrganizationDetailsAPI,
   FetchOrganizationListAPI,
   FetchOrganizationReportsAPI,
+  DownloadOrganizationReportsAPI,
   FetchOrganizatioProjectManagersUserAPI,
   FetchOrganizatioUsersAPI,
   FetchPaginatedOrgTaskListAPI,
@@ -172,6 +191,7 @@ export {
   FetchProjectListAPI,
   FetchProjectMembersAPI,
   FetchProjectReportsAPI,
+  DownloadProjectReportsAPI,
   FetchSpeakerInfoAPI,
   FetchSupportedLanguagesAPI,
   FetchTaskDetailsAPI,
@@ -234,6 +254,16 @@ export {
   ReopenTaskAPI,
   UpdateUserRoleAPI,
   setTotalSentences,
-  NewsletterSubscribe,
-  NewsletterTemplate
+  UpdateSubscriptionAPI,
+  NewsletterTemplate,
+  updateColumnDisplay,
+  updateSelectedFilter,
+  updateSortOptions,
+  updateProjectSearchValues,
+  updateOrgColumnDisplay,
+  updateOrgSelectedFilter,
+  updateOrgSortOptions,
+  updateOrgSearchValues,
+  updateCurrentOrgSearchedColumn,
+  UnSubscribeNewletterFromEmailAPI,
 };

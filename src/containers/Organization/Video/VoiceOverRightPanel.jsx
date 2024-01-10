@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
-import { Sub, base64toBlob, getSubtitleRange, setAudioContent } from "utils";
+import { Sub, base64toBlob, getSubtitleRange, setAudioContent, onSubtitleChange } from "utils";
 import { voiceoverFailInfoColumns } from "config";
 
 //Styles
@@ -17,6 +17,8 @@ import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import subscript from "config/subscript";
+import superscriptMap from "config/superscript";
 import {
   ConfirmDialog,
   ConfirmErrorDialog,
@@ -42,7 +44,7 @@ import {
   setSnackBar,
 } from "redux/actions";
 
-const VoiceOverRightPanel = () => {
+const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -90,6 +92,11 @@ const VoiceOverRightPanel = () => {
   const [getUpdatedAudio, setGetUpdatedAudio] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
+  const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
+  useState();
+  const [subsuper, setsubsuper] = useState(false);
+  const [selection, setselection] = useState(false);
+  const [selectionStart, setSelectionStart] = useState();
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
 
@@ -347,6 +354,107 @@ const VoiceOverRightPanel = () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
     dispatch(APITransport(apiObj));
   };
+  const savedPreference = localStorage.getItem(
+    "subscriptSuperscriptPreferenceVoiceOver"
+  );
+  useEffect(() => {
+    if (savedPreference === "true" && subsuper === false) {
+      setsubsuper(JSON.parse(savedPreference));
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  const onMouseUp = (e, blockIdx) => {
+    setTimeout(() => {
+      setCurrentIndex(blockIdx);
+    }, 100);
+
+    if (e && e.target) {
+      const { selectionStart, value } = e.target;
+      if (selectionStart !== undefined && value !== undefined) {
+        setCurrentIndexToSplitTextBlock(blockIdx);
+        setSelectionStart(selectionStart);
+      }
+    }
+
+    const getSelectedText = () => {
+      const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+      if (textVal) {
+        const cursorStart = textVal.selectionStart;
+        const cursorEnd = textVal.selectionEnd;
+        const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+        if (selectedText !== "") {
+          return selectedText;
+        }
+      }
+      return "";
+    };
+
+    setTimeout(() => {
+      const selectedText = getSelectedText();
+      if (selectedText !== "" && subsuper === true) {
+        setselection(true);
+        localStorage.setItem(
+          "subscriptSuperscriptPreferenceVoiceOver",
+          selection
+        );
+      }
+    }, 0);
+  };
+
+  const replaceSelectedText = (text, index) => {
+    const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const beforeSelection = textarea.value.substring(0, start);
+    const afterSelection = textarea.value.substring(end, textarea.value.length);
+
+    textarea.value = beforeSelection + text + afterSelection;
+    textarea.selectionStart = start + text.length;
+    textarea.selectionEnd = start + text.length;
+    textarea.focus();
+
+    const sub = onSubtitleChange(textarea.value, index, 0);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    // saveTranscriptHandler(true, true, sub);
+  };
+
+  const handleSubscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    const cursorStart = textVal.selectionStart;
+    const cursorEnd = textVal.selectionEnd;
+    const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+
+    if (selectedText !== "") {
+      const subscriptText = selectedText.replace(
+        /[0-9⁰¹²³⁴⁵⁶⁷⁸⁹a-zA-ZᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᴼᵖqʳˢᵗᶸᵛʷˣʸzᴬᴮᶜᴰᴱFᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣYᶻ]/g,
+        (char) => {
+          return subscript[char] || char;
+        }
+      );
+
+      replaceSelectedText(subscriptText, currentIndexToSplitTextBlock);
+    }
+  };
+
+  const handleSuperscript = () => {
+    const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
+    const cursorStart = textVal.selectionStart;
+    const cursorEnd = textVal.selectionEnd;
+    const selectedText = textVal.value.substring(cursorStart, cursorEnd);
+
+    if (selectedText !== "") {
+      const superscriptText = selectedText.replace(
+        /[0-9₀₁₂₃₄₅₆₇₈₉a-zA-ZₐbcdₑfgₕᵢⱼₖₗₘₙₒₚqᵣₛₜᵤᵥwₓyzA-Z]/g,
+        (char) => {
+          return superscriptMap[char] || char;
+        }
+      );
+
+      replaceSelectedText(superscriptText, currentIndexToSplitTextBlock);
+    }
+  };
+
 
   const shortcuts = [
     {
@@ -357,6 +465,18 @@ const VoiceOverRightPanel = () => {
       keys: ["Control", "k"],
       callback: () => {
         previous && onNavigationClick(currentPage - 1);
+      },
+    },
+    {
+      keys: ["Control", "b"],
+      callback: () => {
+        handleSubscript();
+      },
+    },
+    {
+      keys: ["Control", "e"],
+      callback: () => {
+        handleSuperscript();
       },
     },
   ];
@@ -372,6 +492,11 @@ const VoiceOverRightPanel = () => {
           <SettingsButtonComponent
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
+            subsuper={subsuper}
+            setsubsuper={setsubsuper}
+            currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}
+            handleSubscript={handleSubscript}
+            handleSuperscript={handleSuperscript}
             setRTL_Typing={setRTL_Typing}
             enableRTL_Typing={enableRTL_Typing}
             setFontSize={setFontSize}
@@ -470,6 +595,7 @@ const VoiceOverRightPanel = () => {
                           onChangeText={(text) => {
                             changeTranscriptHandler(text, index);
                           }}
+                          onMouseUp={(e) => onMouseUp(e, index)}
                           style={{
                             fontSize: fontSize,
                             height: "100px",
@@ -504,6 +630,7 @@ const VoiceOverRightPanel = () => {
                                 index
                               );
                             }}
+                            onMouseUp={(e) => onMouseUp(e, index)}
                             style={{
                               fontSize: fontSize,
                               height: "100px",

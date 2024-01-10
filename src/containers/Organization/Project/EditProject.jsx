@@ -83,6 +83,17 @@ const EditProject = () => {
   });
   const [taskDescription, setTaskDescription] = useState("");
   const [integrateVideo, setIntegrateVideo] = useState(false);
+  const [orgOwnerId, setOrgOwnerId] = useState("");
+
+  useEffect(() => {
+    if (userData && userData.id) {
+      const {
+        organization: { organization_owner },
+      } = userData;
+
+      setOrgOwnerId(organization_owner.id);
+    }
+  }, [userData]);
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -312,7 +323,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData.role === "ORG_OWNER"
+                    ) || userData?.id === orgOwnerId
                   )
                 }
               />
@@ -333,7 +344,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
+                      ) || userData?.id === orgOwnerId
                     )
                   }
                   renderValue={(selected) => {
@@ -381,7 +392,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
+                      ) || userData?.id === orgOwnerId
                     )
                   }
                 >
@@ -412,7 +423,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
+                      ) || userData?.id === orgOwnerId
                     )
                   }
                 >
@@ -443,7 +454,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
+                      ) || userData?.id === orgOwnerId
                     )
                   }
                 >
@@ -470,7 +481,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
+                      ) || userData?.id === orgOwnerId
                     )
                   }
                   MenuProps={MenuProps}
@@ -557,7 +568,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData.role === "ORG_OWNER"
+                    ) || userData?.id === orgOwnerId
                   )
                 }
                 renderInput={(params) => <TextField {...params} />}
@@ -582,7 +593,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData.role === "ORG_OWNER"
+                      ) || userData?.id === orgOwnerId
                     )
                   }
                   renderValue={(selected) => {
@@ -604,9 +615,10 @@ const EditProject = () => {
               </FormControl>
             </Grid>
 
-            {projectDetails?.managers?.some(
+            {(projectDetails?.managers?.some(
               (item) => item.id === userData.id
-            ) && (
+            ) ||
+              userData?.id === orgOwnerId) && (
               <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Button
                   fullWidth
@@ -643,6 +655,13 @@ const EditProject = () => {
                     onChange={() =>
                       setIntegrateVideo((prevState) => !prevState)
                     }
+                    disabled={
+                      !(
+                        projectDetails?.managers?.some(
+                          (item) => item.id === userData.id
+                        ) || userData?.id === orgOwnerId
+                      )
+                    }
                   />
                 </FormControl>
               </Box>
@@ -663,7 +682,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData.role === "ORG_OWNER"
+                    ) || userData?.id === orgOwnerId
                   )
                 }
               />
@@ -684,7 +703,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData.role === "ORG_OWNER"
+                    ) || userData?.id === orgOwnerId
                   )
                 }
               />

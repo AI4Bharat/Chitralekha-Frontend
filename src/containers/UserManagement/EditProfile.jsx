@@ -37,6 +37,7 @@ import {
   UpdateProfileAPI,
   setSnackBar,
   UpdateUserRoleAPI,
+  FetchUserRolesAPI,
 } from "redux/actions";
 
 const EditProfile = () => {
@@ -74,6 +75,7 @@ const EditProfile = () => {
   const [alertData, setAlertData] = useState();
   const [alertColumn, setAlertColumn] = useState();
   const [openAlert, setOpenAlert] = useState(false);
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const userData = useSelector((state) => state.getUserDetails.data);
   const loggedInUserData = useSelector(
@@ -84,6 +86,22 @@ const EditProfile = () => {
     (state) => state.getSupportedLanguages.translationLanguage
   );
   const apiStatus = useSelector((state) => state.apiStatus);
+  const userRoles = useSelector((state) => state.getUserRoles.data);
+
+  const getUserRolesList = () => {
+    const userObj = new FetchUserRolesAPI();
+    dispatch(APITransport(userObj));
+  };
+
+  useEffect(() => {
+    if (loggedInUserData && loggedInUserData.id) {
+      const {
+        organization: { organization_owner },
+      } = loggedInUserData;
+
+      setOrgOwnerId(organization_owner.id);
+    }
+  }, [loggedInUserData]);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -122,6 +140,7 @@ const EditProfile = () => {
     getUserData();
     getLoggedInUserData();
     getOrgList();
+    getUserRolesList();
 
     const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
@@ -217,7 +236,7 @@ const EditProfile = () => {
     let apiObj;
     if (
       loggedInUserData.role === "ADMIN" ||
-      loggedInUserData.role === "ORG_OWNER"
+      loggedInUserData.id === orgOwnerId
     ) {
       apiObj = new UpdateProfileAPI(updateProfileReqBody, id);
     } else {
@@ -231,7 +250,7 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || role === "ORG_OWNER") {
+      if (role === "ADMIN" || userId === orgOwnerId) {
         return name === "org" || name === "availability";
       } else {
         return name === "role" || name === "org" || name === "availability";
@@ -324,6 +343,12 @@ const EditProfile = () => {
 
   profileLabels.current.push(
     {
+      title: "Role",
+      name: "role",
+      type: "select",
+      iterator: userRoles,
+    },
+    {
       title: "Organization",
       name: "org",
       type: "select",
@@ -342,7 +367,11 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || role === "ORG_OWNER") {
+      if (
+        role === "ADMIN" ||
+        userId === orgOwnerId ||
+        role === "PROJECT_MANAGER"
+      ) {
         if (roleIsEdited) {
           updateRole();
         }
@@ -392,7 +421,8 @@ const EditProfile = () => {
 
               {(loggedInUserData.id === +id ||
                 loggedInUserData.role === "ADMIN" ||
-                loggedInUserData.role === "ORG_OWNER") && (
+                loggedInUserData.id === orgOwnerId ||
+                loggedInUserData.role === "PROJECT_MANAGER") && (
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                   <Button
                     variant="outlined"
@@ -411,7 +441,8 @@ const EditProfile = () => {
 
         {(loggedInUserData.id === +id ||
           loggedInUserData.role === "ADMIN" ||
-          loggedInUserData.role === "ORG_OWNER") && (
+          loggedInUserData.id === orgOwnerId ||
+          loggedInUserData.role === "PROJECT_MANAGER") && (
           <Grid
             container
             direction="row"

@@ -31,6 +31,7 @@ const ProjectMemberDetails = () => {
   const [openMemberErrorDialog, setOpenMemberErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorResponse, setErrorResponse] = useState("");
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const projectMembersList = useSelector(
     (state) => state.getProjectMembers.data
@@ -39,6 +40,16 @@ const ProjectMemberDetails = () => {
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const projectDetails = useSelector((state) => state.getProjectDetails.data);
+
+  useEffect(() => {
+    if (userData && userData.id) {
+      const {
+        organization: { organization_owner },
+      } = userData;
+
+      setOrgOwnerId(organization_owner.id);
+    }
+  }, [userData]);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -104,7 +115,7 @@ const ProjectMemberDetails = () => {
             {(projectDetails?.managers?.some(
               (item) => item.id === userData.id
             ) ||
-              userData.role === "ORG_OWNER") && (
+              userData?.id === orgOwnerId) && (
               <Tooltip title="Delete">
                 <IconButton
                   onClick={() => {

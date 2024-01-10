@@ -1,24 +1,20 @@
-/**
- * Login API
- */
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class UpdateSubscriptionAPI extends API {
-  constructor(payload, timeout = 2000) {
+export default class UpdateNewsLetterEmailAPI extends API {
+  constructor(email, id,timeout = 2000) {
     super("PATCH", timeout, false);
-    this.type = C.SUBSCRIBE_TO_NEWSLETTER;
-
-    this.payload = payload;
-
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateSubscription}`;
+    this.email = email;
+    this.id= id;
+    this.type = C.UPDATE_EMAIL;
+    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.updateNewsLetterEmail}`;
   }
 
   processResponse(res) {
     super.processResponse(res);
     if (res) {
-      this.report = res;
+      this.updateEmail = res;
     }
   }
 
@@ -27,7 +23,10 @@ export default class UpdateSubscriptionAPI extends API {
   }
 
   getBody() {
-    return this.payload;
+    return {
+      email: this.email,
+      user_id: this.id,
+    };
   }
 
   getHeaders() {
@@ -41,6 +40,6 @@ export default class UpdateSubscriptionAPI extends API {
   }
 
   getPayload() {
-    return this.report;
+    return this.updateEmail;
   }
 }

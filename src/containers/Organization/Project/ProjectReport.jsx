@@ -6,7 +6,11 @@ import { getOptions, snakeToTitleCase } from "utils";
 import { isArray } from "lodash";
 
 //APIs
-import { APITransport, FetchProjectReportsAPI } from "redux/actions";
+import {
+  APITransport,
+  DownloadProjectReportsAPI,
+  FetchProjectReportsAPI,
+} from "redux/actions";
 
 //Themes
 import { tableTheme } from "theme";
@@ -25,8 +29,9 @@ import {
   Button,
 } from "@mui/material";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
-
+import constants from "redux/constants";
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -59,6 +64,18 @@ const ProjectReport = () => {
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
   };
+
+  const handleDownloadReport = async () => {
+    const apiObj = new DownloadProjectReportsAPI(projectId, reportsLevel);
+    dispatch(APITransport(apiObj));
+  };
+
+  useEffect(() => {
+    return () => {
+      setTableData([]);
+      dispatch({ type: constants.GET_PROJECT_REPORTS, payload: [] });
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     let rawData = [];
@@ -144,14 +161,26 @@ const ProjectReport = () => {
 
   const renderToolBar = () => {
     return (
-      <Button
-        style={{ minWidth: "25px" }}
-        onClick={(event) => setAnchorEl(event.currentTarget)}
-      >
-        <Tooltip title={"View Column"}>
-          <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
-        </Tooltip>
-      </Button>
+      <>
+        <Button
+          style={{ minWidth: "25px" }}
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+        >
+          <Tooltip title={"View Column"}>
+            <ViewColumnIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+          </Tooltip>
+        </Button>
+        {reportsLevel && (
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReport()}
+          >
+            <Tooltip title={"Email Report"}>
+              <MailIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+        )}
+      </>
     );
   };
 
@@ -160,6 +189,7 @@ const ProjectReport = () => {
 
     option = {
       ...option,
+      download: false,
       viewColumns: false,
       customToolbar: renderToolBar,
     };

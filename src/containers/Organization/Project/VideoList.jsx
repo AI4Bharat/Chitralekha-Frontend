@@ -60,6 +60,7 @@ const VideoList = ({ data, removeVideo }) => {
   const [exportType, setExportType] = useState("srt");
   const [videoIdForDowload, setVideoIdForDowload] = useState("");
   const [videoName, setVideoName] = useState("");
+  const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -67,6 +68,16 @@ const VideoList = ({ data, removeVideo }) => {
   const translationExportTypes = useSelector(
     (state) => state.getTranslationExportTypes.data.export_types
   );
+
+  useEffect(() => {
+    if (userData && userData.id) {
+      const {
+        organization: { organization_owner },
+      } = userData;
+
+      setOrgOwnerId(organization_owner.id);
+    }
+  }, [userData]);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -160,7 +171,7 @@ const VideoList = ({ data, removeVideo }) => {
           </Tooltip>
 
           {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-            userData.role === "ORG_OWNER") && (
+            userData?.id === orgOwnerId) && (
             <Tooltip title="Create Task">
               <IconButton
                 onClick={() => {
@@ -175,7 +186,7 @@ const VideoList = ({ data, removeVideo }) => {
           )}
 
           {(projectInfo.managers?.some((item) => item.id === userData.id) ||
-            userData.role === "ORG_OWNER") && (
+            userData?.id === orgOwnerId) && (
             <Tooltip title="Delete">
               <IconButton onClick={() => handleDeleteVideo(item.id)}>
                 <DeleteIcon color="error" />
