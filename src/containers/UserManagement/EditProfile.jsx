@@ -250,7 +250,11 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || userId === orgOwnerId) {
+      if (
+        role === "ADMIN" ||
+        userId === orgOwnerId ||
+        role === "PROJECT_MANAGER"
+      ) {
         return name === "org" || name === "availability";
       } else {
         return name === "role" || name === "org" || name === "availability";
