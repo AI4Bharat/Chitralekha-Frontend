@@ -145,7 +145,7 @@ const EditProfile = () => {
     const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
     // eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (userData?.email && userData?.role) {
