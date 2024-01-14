@@ -1,0 +1,24 @@
+.ReactTransliterate {
+  background-clip: padding-box;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  display: block;
+  font-size: 14px;
+  list-style: none;
+  padding: 1px;
+  text-align: left;
+  z-index: 20000;
+  width: 100%;
+}
+
+.ReactTransliterate > li {
+  cursor: pointer;
+  padding: 10px;
+  min-width: 100px;
+}
+
+.Active {
+  background-color: #65c3d7;
+  color: #fff;
+}
