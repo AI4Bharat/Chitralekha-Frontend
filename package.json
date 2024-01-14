@@ -38,7 +38,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
     "web-vitals": "^2.1.4",
-    "wfplayer": "^2.2.5"
+    "wfplayer": "^2.2.5",
+    "indic-transliterate": "file:react-transliterate-chitralekha-ver-2.3.5.tgz"
   },
   "scripts": {
     "start": "react-scripts start",

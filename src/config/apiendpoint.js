@@ -36,6 +36,9 @@ const endpoints = {
 
   //Task
   task: "/task/",
+
+  //Transliteration
+  transliteration: "/api/generic/transliteration",
 };
 
 export default endpoints;
