@@ -59,6 +59,7 @@ import {
   setSnackBar,
   setSubtitles,
 } from "redux/actions";
+import { failTranscriptionInfoColumns } from "config";
 
 const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const { taskId } = useParams();
@@ -142,9 +143,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
           case "GET_TASK_FAIL_INFO":
             setOpenInfoDialog(true);
-            setTableDialogColumn(
-              failInfoColumns.filter((col) => col.name !== "target_text")
-            );
+            setTableDialogColumn(failTranscriptionInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
             break;
@@ -159,9 +158,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
             if (complete) {
               setOpenInfoDialog(true);
-              setTableDialogColumn(
-                failInfoColumns.filter((col) => col.name !== "target_text")
-              );
+              setTableDialogColumn(failTranscriptionInfoColumns);
               setTableDialogMessage(data.message);
               setTableDialogResponse(data.data);
             }
