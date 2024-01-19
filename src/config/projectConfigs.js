@@ -157,6 +157,12 @@ export const buttonConfig = [
     icon: <DeleteIcon />,
     key: "Delete",
   },
+  {
+    title: "Regenerate",
+    color: "primary",
+    icon: <PreviewIcon />,
+    key: "Regenerate",
+  },
 ];
 
 export const toolBarActions = [

@@ -738,6 +738,10 @@ const TaskList = () => {
         dispatch(APITransport(reopenObj));
         setReOpenTaskId(id);
         break;
+      
+      case "Regenerate":
+        console.log("API Call Here");
+        break;
 
       default:
         break;

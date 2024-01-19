@@ -640,6 +640,10 @@ const OrgLevelTaskList = () => {
         dispatch(APITransport(apiObj));
         break;
 
+      case "Regenerate":
+        console.log("API Call Here");
+        break;
+
       default:
         break;
     }
