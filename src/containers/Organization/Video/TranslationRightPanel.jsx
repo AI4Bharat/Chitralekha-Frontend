@@ -25,7 +25,14 @@ import "../../../styles/scrollbarStyle.css";
 import { VideoLandingStyle } from "styles";
 
 //Components
-import { Box, CardContent, Grid, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  CardContent,
+  Grid,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+} from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
@@ -42,6 +49,7 @@ import {
   setSubtitles,
 } from "redux/actions";
 import { failInfoColumns } from "config";
+import GlossaryDialog from "common/GlossaryDialog";
 
 const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const { taskId } = useParams();
@@ -77,7 +85,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [selectionStart, setSelectionStart] = useState();
+  const [, setSelectionStart] = useState();
   const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
@@ -88,6 +96,10 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [subsuper, setsubsuper] = useState(false);
+  const [contextMenu, setContextMenu] = React.useState(null);
+  const [selectedWord, setSelectedWord] = useState("");
+  const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -148,6 +160,30 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
       setCurrentOffset(currentPage);
     }
   }, [currentPage]);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    
+    const selectedText = window.getSelection().toString();
+    setSelectedWord(selectedText);
+
+    if (selectedText !== "") {
+      setContextMenu(
+        contextMenu === null
+          ? {
+              mouseX: event.clientX + 2,
+              mouseY: event.clientY - 6,
+            }
+          : null
+      );
+    }
+  };
+
+  const handleContextMenuClick = (dialogTitle) => {
+    setContextMenu(null);
+    setOpenGlossaryDialog(true);
+    setGlossaryDialogTitle(dialogTitle);
+  };
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -309,6 +345,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
     setTimeout(() => {
       const selectedText = getSelectedText();
+
       if (selectedText !== "" && subsuper === true) {
         setselection(true);
         localStorage.setItem(
@@ -634,7 +671,11 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                   }}
                 >
                   {taskData?.source_type !== "Original Source" && (
-                    <div className={classes.relative} style={{ width: "100%" }}>
+                    <div
+                      className={classes.relative}
+                      style={{ width: "100%", cursor: "context-menu" }}
+                      onContextMenu={handleContextMenu}
+                    >
                       <textarea
                         rows={4}
                         className={`${classes.textAreaTransliteration} ${
@@ -753,6 +794,28 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                     </div>
                   )}
                 </CardContent>
+
+                <Menu
+                  open={contextMenu !== null}
+                  onClose={() => setContextMenu(null)}
+                  anchorReference="anchorPosition"
+                  anchorPosition={
+                    contextMenu !== null
+                      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                      : undefined
+                  }
+                >
+                  <MenuItem
+                    onClick={() => handleContextMenuClick("Add Glossary")}
+                  >
+                    Add Glossary
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleContextMenuClick("Suggest Glossary")}
+                  >
+                    Suggest Glossary
+                  </MenuItem>
+                </Menu>
               </Box>
             );
           })}
@@ -797,6 +860,17 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             message={tableDialogMessage}
             response={tableDialogResponse}
             columns={tableDialogColumn}
+          />
+        )}
+
+        {openGlossaryDialog && (
+          <GlossaryDialog
+            openDialog={openGlossaryDialog}
+            handleClose={() => setOpenGlossaryDialog(false)}
+            submit={() => {}}
+            selectedWord={selectedWord}
+            title={glossaryDialogTitle}
+            language={taskData?.target_language}
           />
         )}
       </Box>
