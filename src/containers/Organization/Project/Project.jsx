@@ -17,7 +17,6 @@ import {
   FetchVideoListAPI,
   UploadCSVAPI,
   setSnackBar,
-  updateProjectTabIndex,
 } from "redux/actions";
 import C from "redux/constants";
 
@@ -102,6 +101,7 @@ const Project = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColumn, setAlertColumn] = useState("");
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [tabIndex, setTabIndex] = useState(0);
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -110,7 +110,6 @@ const Project = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const tabIndex = useSelector((state) => state.taskFilters.tabIndex);
 
   useEffect(() => {
     if (userData && userData.id) {
@@ -179,6 +178,9 @@ const Project = () => {
   };
 
   useEffect(() => {
+    const temp = +localStorage.getItem("projectTabIndex");
+    temp && setTabIndex(temp);
+
     getProjectMembers();
     GetManagerName();
     getProjectnDetails();
@@ -352,9 +354,10 @@ const Project = () => {
         <Box>
           <Tabs
             value={tabIndex}
-            onChange={(_event, newValue) =>
-              dispatch(updateProjectTabIndex(newValue))
-            }
+            onChange={(_event, newValue) => {
+              setTabIndex(newValue);
+              localStorage.setItem("projectTabIndex", newValue);
+            }}
             aria-label="basic tabs example"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />

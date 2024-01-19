@@ -37,6 +37,7 @@ import {
   UpdateProfileAPI,
   setSnackBar,
   UpdateUserRoleAPI,
+  FetchUserRolesAPI,
 } from "redux/actions";
 
 const EditProfile = () => {
@@ -85,9 +86,15 @@ const EditProfile = () => {
     (state) => state.getSupportedLanguages.translationLanguage
   );
   const apiStatus = useSelector((state) => state.apiStatus);
+  const userRoles = useSelector((state) => state.getUserRoles.data);
+
+  const getUserRolesList = () => {
+    const userObj = new FetchUserRolesAPI();
+    dispatch(APITransport(userObj));
+  };
 
   useEffect(() => {
-    if (loggedInUserData && loggedInUserData.length) {
+    if (loggedInUserData && loggedInUserData.id) {
       const {
         organization: { organization_owner },
       } = loggedInUserData;
@@ -133,11 +140,12 @@ const EditProfile = () => {
     getUserData();
     getLoggedInUserData();
     getOrgList();
+    getUserRolesList();
 
     const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
     // eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (userData?.email && userData?.role) {
@@ -242,7 +250,11 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || userId === orgOwnerId) {
+      if (
+        role === "ADMIN" ||
+        userId === orgOwnerId ||
+        role === "PROJECT_MANAGER"
+      ) {
         return name === "org" || name === "availability";
       } else {
         return name === "role" || name === "org" || name === "availability";
@@ -335,6 +347,12 @@ const EditProfile = () => {
 
   profileLabels.current.push(
     {
+      title: "Role",
+      name: "role",
+      type: "select",
+      iterator: userRoles,
+    },
+    {
       title: "Organization",
       name: "org",
       type: "select",
@@ -353,7 +371,11 @@ const EditProfile = () => {
     const { id: userId, role } = loggedInUserData;
 
     if (userId === +id) {
-      if (role === "ADMIN" || userId === orgOwnerId) {
+      if (
+        role === "ADMIN" ||
+        userId === orgOwnerId ||
+        role === "PROJECT_MANAGER"
+      ) {
         if (roleIsEdited) {
           updateRole();
         }
@@ -403,7 +425,8 @@ const EditProfile = () => {
 
               {(loggedInUserData.id === +id ||
                 loggedInUserData.role === "ADMIN" ||
-                loggedInUserData.id === orgOwnerId) && (
+                loggedInUserData.id === orgOwnerId ||
+                loggedInUserData.role === "PROJECT_MANAGER") && (
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                   <Button
                     variant="outlined"
@@ -422,7 +445,8 @@ const EditProfile = () => {
 
         {(loggedInUserData.id === +id ||
           loggedInUserData.role === "ADMIN" ||
-          loggedInUserData.id === orgOwnerId) && (
+          loggedInUserData.id === orgOwnerId ||
+          loggedInUserData.role === "PROJECT_MANAGER") && (
           <Grid
             container
             direction="row"

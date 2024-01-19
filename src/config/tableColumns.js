@@ -419,7 +419,7 @@ export const failInfoColumns = [
   },
   {
     name: "index",
-    label: "Id",
+    label: "Card No.",
   },
   {
     name: "start_time",
@@ -450,7 +450,7 @@ export const failTranscriptionInfoColumns = [
   },
   {
     name: "index",
-    label: "Id",
+    label: "Card No.",
   },
   {
     name: "start_time",
@@ -464,6 +464,10 @@ export const failTranscriptionInfoColumns = [
     name: "text",
     label: "Text",
   },
+  {
+    name: "issue_type",
+    label: "Issue Type",
+  },
 ];
 
 export const voiceoverFailInfoColumns = [
@@ -473,7 +477,7 @@ export const voiceoverFailInfoColumns = [
   },
   {
     name: "index",
-    label: "Id",
+    label: "Card No.",
   },
   {
     name: "reason",
