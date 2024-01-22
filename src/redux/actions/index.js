@@ -140,6 +140,7 @@ import {
 
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
+import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
 
 export {
   FetchAdminLevelReportsAPI,
@@ -266,4 +267,5 @@ export {
   updateOrgSearchValues,
   updateCurrentOrgSearchedColumn,
   UnSubscribeNewletterFromEmailAPI,
+  RegenerateResponseAPI,
 };
