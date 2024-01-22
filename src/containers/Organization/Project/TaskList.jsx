@@ -82,6 +82,7 @@ import {
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -738,9 +739,10 @@ const TaskList = () => {
         dispatch(APITransport(reopenObj));
         setReOpenTaskId(id);
         break;
-      
+
       case "Regenerate":
-        console.log("API Call Here");
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
         break;
 
       default:

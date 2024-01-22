@@ -80,6 +80,7 @@ import {
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -641,7 +642,8 @@ const OrgLevelTaskList = () => {
         break;
 
       case "Regenerate":
-        console.log("API Call Here");
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
         break;
 
       default:
