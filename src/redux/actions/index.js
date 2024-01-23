@@ -83,6 +83,7 @@ import UploadToYoutubeAPI from "./api/Project/UploadToYoutube";
 import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskTypes";
 import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
 import ReopenTaskAPI from "./api/Project/ReopenTask";
+import CreateBulkProjectsAPI from "./api/Project/CreateBulkProjects";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -140,6 +141,7 @@ import {
 
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
+import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
 
 export {
   FetchAdminLevelReportsAPI,
@@ -266,4 +268,6 @@ export {
   updateOrgSearchValues,
   updateCurrentOrgSearchedColumn,
   UnSubscribeNewletterFromEmailAPI,
+  CreateBulkProjectsAPI,
+  RegenerateResponseAPI,
 };

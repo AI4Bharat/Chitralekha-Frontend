@@ -80,6 +80,7 @@ import {
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -227,6 +228,7 @@ const OrgLevelTaskList = () => {
             break;
 
           case "GET_TASK_FAIL_INFO":
+            dispatch(setSnackBar({ open: false }));
             handleDialogOpen("tableDialog");
             setTableDialogColumn(failInfoColumns);
             setTableDialogMessage(data.message);
@@ -249,6 +251,14 @@ const OrgLevelTaskList = () => {
           handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
+        }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn([]);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(null);
         }
       }
     }
@@ -638,6 +648,11 @@ const OrgLevelTaskList = () => {
       case "Reopen":
         const apiObj = new ReopenTaskAPI(id);
         dispatch(APITransport(apiObj));
+        break;
+
+      case "Regenerate":
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
         break;
 
       default:
@@ -1255,6 +1270,7 @@ const OrgLevelTaskList = () => {
           message={tableDialogMessage}
           response={tableDialogResponse}
           columns={tableDialogColumn}
+          taskId={currentTaskDetails.id}
         />
       )}
     </>

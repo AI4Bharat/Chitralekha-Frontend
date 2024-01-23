@@ -37,8 +37,6 @@ const ProjectList = ({ data, removeProjectList }) => {
         organization: { organization_owner },
       } = userData;
 
-      console.log(organization_owner,'organization_owner tetete');
-
       setOrgOwnerId(organization_owner.id);
     }
     // eslint-disable-next-line

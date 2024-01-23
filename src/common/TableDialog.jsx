@@ -3,6 +3,7 @@ import { themeDefault } from "theme";
 
 //Components
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -20,6 +21,7 @@ const TableDialog = ({
   message,
   response,
   columns,
+  taskId,
 }) => {
   const options = {
     pagination: false,
@@ -57,18 +59,26 @@ const TableDialog = ({
     >
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            {message}
-          </Typography>
+          {taskId && (
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold", textDecoration: "underline" }}
+            >
+              Task Id: {taskId}
+            </Typography>
+          )}
+          <Typography variant="body1">{message}</Typography>
 
           {response && (
-            <ThemeProvider theme={getMuiTheme()}>
-              <MUIDataTable
-                data={response}
-                columns={columns}
-                options={options}
-              />
-            </ThemeProvider>
+            <Box sx={{ mt: 3 }}>
+              <ThemeProvider theme={getMuiTheme()}>
+                <MUIDataTable
+                  data={response}
+                  columns={columns}
+                  options={options}
+                />
+              </ThemeProvider>
+            </Box>
           )}
         </DialogContentText>
       </DialogContent>
