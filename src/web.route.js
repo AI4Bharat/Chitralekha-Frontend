@@ -24,6 +24,7 @@ import Thanks from "./containers/intro/Thanks";
 import UseCases from "./containers/intro/UseCases";
 import ChitralekhaPortal from "./common/ChitralekhaPortal";
 import Unsubscribe from "containers/UserManagement/Unsubscribe";
+import CreateBulkProjects from "containers/Organization/Project/CreateBulkProjects";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -35,7 +36,8 @@ const RootRouter = () => {
 
   const PublicRoute = ({ user, children }) => {
     if (authenticateUser()) {
-      const orgId = JSON.parse(localStorage.getItem("userData"))?.organization.id;
+      const orgId = JSON.parse(localStorage.getItem("userData"))?.organization
+        .id;
       return <Navigate to={`/my-organization/${orgId}`} />;
     }
     return children;
@@ -53,9 +55,10 @@ const RootRouter = () => {
     <HashRouter>
       <Routes>
         <Route
-
           path="/"
-          element={PublicRouteWrapper(<Layout component={<ChitralekhaPortal />} />)}
+          element={PublicRouteWrapper(
+            <Layout component={<ChitralekhaPortal />} />
+          )}
         />
         <Route path="/Thanks" element={<Layout component={<Thanks />} />} />
         <Route path="/useCases" element={<Layout component={<UseCases />} />} />
@@ -94,6 +97,12 @@ const RootRouter = () => {
           path="/my-organization/:orgId/create-new-project"
           element={ProtectedRouteWrapper(
             <Layout component={<CreateNewProject />} Backbutton={true} />
+          )}
+        />
+        <Route
+          path="/my-organization/:orgId/create-bulk-projects"
+          element={ProtectedRouteWrapper(
+            <Layout component={<CreateBulkProjects />} Backbutton={true} />
           )}
         />
         <Route
