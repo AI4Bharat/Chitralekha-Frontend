@@ -80,6 +80,7 @@ import {
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -638,6 +639,11 @@ const OrgLevelTaskList = () => {
       case "Reopen":
         const apiObj = new ReopenTaskAPI(id);
         dispatch(APITransport(apiObj));
+        break;
+
+      case "Regenerate":
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
         break;
 
       default:
