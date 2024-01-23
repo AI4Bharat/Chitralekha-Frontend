@@ -271,6 +271,14 @@ const TaskList = () => {
           setTaskReopenMsg(data.message);
           setTaskReopenResponse(data.response);
         }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn([]);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(null);
+        }
       }
     }
 
@@ -1308,6 +1316,7 @@ const TaskList = () => {
           message={tableDialogMessage}
           response={tableDialogResponse}
           columns={tableDialogColumn}
+          taskId={currentTaskDetails.id}
         />
       )}
     </>

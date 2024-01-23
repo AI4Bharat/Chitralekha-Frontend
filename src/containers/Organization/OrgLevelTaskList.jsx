@@ -228,6 +228,7 @@ const OrgLevelTaskList = () => {
             break;
 
           case "GET_TASK_FAIL_INFO":
+            dispatch(setSnackBar({ open: false }));
             handleDialogOpen("tableDialog");
             setTableDialogColumn(failInfoColumns);
             setTableDialogMessage(data.message);
@@ -250,6 +251,14 @@ const OrgLevelTaskList = () => {
           handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
+        }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn([]);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(null);
         }
       }
     }
@@ -1261,6 +1270,7 @@ const OrgLevelTaskList = () => {
           message={tableDialogMessage}
           response={tableDialogResponse}
           columns={tableDialogColumn}
+          taskId={currentTaskDetails.id}
         />
       )}
     </>
