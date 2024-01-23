@@ -5,7 +5,7 @@ import C from "../../../constants";
 export default class CreateBulkProjectsAPI extends API {
   constructor(projectId, projectTitles, timeout = 2000) {
     super("POST", timeout, false);
-    this.type = C.CREATE_NEW_PROJECT;
+    this.type = C.CREATE_BULK_PROJECTS;
     this.projectId = projectId;
     this.projectTitles = projectTitles;
     this.endpoint = `${super.apiEndPointAuto()}${

@@ -291,6 +291,24 @@ const DatasetStyle = makeStyles({
     fontSize: 16, 
     fontWeight: "700"
   },
+
+  bulkProjectContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  newProjectWrapper: {
+    my: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  bulkProjectButton: {
+    borderRadius: "8px", 
+    margin: "0px 10px 0px 0px"
+  },
 });
 
 export default DatasetStyle;
