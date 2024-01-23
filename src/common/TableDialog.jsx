@@ -21,6 +21,7 @@ const TableDialog = ({
   message,
   response,
   columns,
+  taskId,
 }) => {
   const options = {
     pagination: false,
@@ -58,6 +59,14 @@ const TableDialog = ({
     >
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
+          {taskId && (
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold", textDecoration: "underline" }}
+            >
+              Task Id: {taskId}
+            </Typography>
+          )}
           <Typography variant="body1">{message}</Typography>
 
           {response && (
