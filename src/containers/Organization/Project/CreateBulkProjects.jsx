@@ -20,7 +20,11 @@ import { Box } from "@mui/system";
 import { OutlinedTextField } from "common";
 
 //APIs
-import { APITransport, ProjectListAPI } from "redux/actions";
+import {
+  APITransport,
+  CreateBulkProjectsAPI,
+  ProjectListAPI,
+} from "redux/actions";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -73,7 +77,10 @@ const CreateBulkProjects = () => {
     setNumberOfProjects((prevNumProjects) => prevNumProjects + 1);
   };
 
-  const handleCreateProject = () => {};
+  const handleCreateProject = () => {
+    const apiObj = new CreateBulkProjectsAPI(template, projectNames);
+    dispatch(APITransport(apiObj));
+  };
 
   const disableBtn = () => {
     if (numberOfProjects !== projectNames.length) {
