@@ -7,10 +7,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   Typography,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { ProjectStyle } from "styles";
 
 const GlossaryDialog = ({
   openDialog,
@@ -20,6 +20,8 @@ const GlossaryDialog = ({
   title,
   language,
 }) => {
+  const classes = ProjectStyle();
+
   const [glossaryText, setGlossaryText] = useState("");
 
   return (
@@ -29,6 +31,7 @@ const GlossaryDialog = ({
       fullWidth
       maxWidth={"sm"}
       PaperProps={{ style: { borderRadius: "10px" } }}
+      scroll="paper"
     >
       <DialogTitle display="flex" alignItems={"center"}>
         <Typography variant="h4">{title}</Typography>
@@ -44,15 +47,15 @@ const GlossaryDialog = ({
           value={glossaryText}
           onChange={(event) => setGlossaryText(event.target.value)}
           onChangeText={() => {}}
-          containerStyles={{
-            width: "100%",
-            zIndex: 999999
-          }}
+          enabled={language !== "en"}
+          className={classes.findReplaceTextbox}
           renderComponent={(props) => (
-            <div>
-              <TextField {...props} fullWidth label="Suggestion" />
-              <input type="text" {...props} style={{display: "none"}} />
-            </div>
+            <>
+              <label className={classes.findReplaceTextboxLabel}>Suggestion</label>
+              <div>
+                <input {...props} />
+              </div>
+            </>
           )}
         />
       </DialogContent>
