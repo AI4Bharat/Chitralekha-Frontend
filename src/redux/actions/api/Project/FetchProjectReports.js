@@ -1,15 +1,21 @@
-
-
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class FetchProjectReportsAPI extends API {
-  constructor(id,reportsLevel, timeout = 2000) {
+  constructor(id, reportsLevel, limit, offset, task_type = "", timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_PROJECT_REPORTS; 
-     const queryString = reportsLevel === "User" ? "get_report_users" : "get_report_languages";
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.project}${id}/${queryString}/`;
+    this.type = C.GET_PROJECT_REPORTS;
+    const queryString =
+      reportsLevel === "User" ? "get_report_users" : "get_report_languages";
+    this.endpoint =
+      reportsLevel == "Language"
+        ? `${super.apiEndPointAuto()}${
+            ENDPOINTS.project
+          }${id}/${queryString}/?limit=${limit}&offset=${offset}&task_type=${task_type}`
+        : `${super.apiEndPointAuto()}${
+            ENDPOINTS.project
+          }${id}/${queryString}/?limit=${limit}&offset=${offset}`;
   }
 
   processResponse(res) {
@@ -29,7 +35,7 @@ export default class FetchProjectReportsAPI extends API {
     this.headers = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization":`JWT ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     };
     return this.headers;
