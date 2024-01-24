@@ -9,7 +9,7 @@ export default class FetchProjectReportsAPI extends API {
     const queryString =
       reportsLevel === "User" ? "get_report_users" : "get_report_languages";
     this.endpoint =
-      reportsLevel == "Language"
+      reportsLevel === "Language"
         ? `${super.apiEndPointAuto()}${
             ENDPOINTS.project
           }${id}/${queryString}/?limit=${limit}&offset=${offset}&task_type=${task_type}`

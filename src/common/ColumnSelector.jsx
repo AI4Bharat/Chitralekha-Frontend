@@ -22,9 +22,10 @@ const ColumnSelector = ({
   const classes = TableStyles();
 
   const getCheckedStatus = (currentColumn) => {
-    if (currentColumn.name == "project") {
+    if (currentColumn.name === "project") {
       return showUserReportProjectColumn;
     }
+    
     if (currentColumn.options.display === "true") {
       return true;
     }

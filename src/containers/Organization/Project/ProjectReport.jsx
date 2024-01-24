@@ -96,7 +96,7 @@ const ProjectReport = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (reportsLevel == "") return;
+    if (reportsLevel === "") return;
 
     const apiObj = new FetchProjectReportsAPI(
       projectId,

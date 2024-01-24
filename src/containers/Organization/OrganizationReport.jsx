@@ -50,8 +50,7 @@ const OrganizationReport = () => {
   const [tableData, setTableData] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [originalTableData, setOriginalTableData] = useState([]);
-  const [showUserReportProjectColumn, setShowUserReportProjectColumn] =
-    useState(true);
+  const [showUserReportProjectColumn, setShowUserReportProjectColumn] = useState(true);
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
@@ -112,7 +111,7 @@ const OrganizationReport = () => {
   };
 
   useEffect(() => {
-    if (reportsLevel == "") return;
+    if (reportsLevel === "") return;
     if (showUserReportProjectColumn) {
       const temp = reportLevels.filter(
         (item) => item.reportLevel === reportsLevel
@@ -187,13 +186,13 @@ const OrganizationReport = () => {
         });
       });
     }
-    if (reportsLevel == "User" && !showUserReportProjectColumn){
-      tempColumns.map((column)=>{
-        if (column["name"]=="project"){
-          column["options"]["display"]="false"
+    if (reportsLevel === "User" && !showUserReportProjectColumn){
+      tempColumns.map((column) => {
+        if (column["name"] === "project"){
+          column["options"]["display"] = "false";
         }
-        return column
-      })
+        return column;
+      });
     }
     setColumns(tempColumns);
   };
@@ -265,7 +264,7 @@ const OrganizationReport = () => {
     });
 
     setColumns(selectedColumns);
-    if (reportsLevel == "User" && e.target.name == "project") {
+    if (reportsLevel === "User" && e.target.name === "project") {
       setShowUserReportProjectColumn(e.target.checked);
     }
   };

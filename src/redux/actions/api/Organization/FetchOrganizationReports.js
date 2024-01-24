@@ -7,7 +7,7 @@ export default class FetchOrganizationReportsAPI extends API {
     super("GET", timeout, false);
     this.type = C.GET_ORGANIZATION_REPORTS;
     this.endpoint =
-      endPoint == "get_report_languages"
+      endPoint === "get_report_languages"
         ? `${super.apiEndPointAuto()}${
             ENDPOINTS.organization
           }${id}/${endPoint}/?limit=${limit}&offset=${offset}&task_type=${task_type}`
