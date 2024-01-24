@@ -187,7 +187,14 @@ const OrganizationReport = () => {
         });
       });
     }
-
+    if (reportsLevel == "User" && !showUserReportProjectColumn){
+      tempColumns.map((column)=>{
+        if (column["name"]=="project"){
+          column["options"]["display"]="false"
+        }
+        return column
+      })
+    }
     setColumns(tempColumns);
   };
 
