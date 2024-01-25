@@ -50,27 +50,53 @@ const OrganizationReport = () => {
   const [tableData, setTableData] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [originalTableData, setOriginalTableData] = useState([]);
+  const [showUserReportProjectColumn, setShowUserReportProjectColumn] = useState(true);
+
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
 
   const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const reportData = useSelector((state) => state.getOrganizationReports?.data);
+  const { reports: reportData, total_count } = useSelector(
+    (state) => state.getOrganizationReports?.data
+  );
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
     setReportsLevel(event.target.value);
     setlanguageLevelStats("");
-
+    setOffset(0);
+    setShowUserReportProjectColumn(true);
+    if (event.target.value === "Project Language") return;
     const temp = reportLevels.filter(
       (item) => item.reportLevel === event.target.value
     );
 
-    const apiObj = new FetchOrganizationReportsAPI(id, temp[0].endPoint);
+    const apiObj = new FetchOrganizationReportsAPI(
+      id,
+      temp[0].endPoint,
+      limit,
+      offset + 1
+    );
     dispatch(APITransport(apiObj));
   };
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
+    setOffset(0);
+    const temp = reportLevels.filter(
+      (item) => item.reportLevel === reportsLevel
+    );
+
+    const apiObj = new FetchOrganizationReportsAPI(
+      id,
+      temp[0].endPoint,
+      limit,
+      offset + 1,
+      event.target.value
+    );
+    dispatch(APITransport(apiObj));
   };
 
   const handleDownloadReport = async () => {
@@ -85,22 +111,39 @@ const OrganizationReport = () => {
   };
 
   useEffect(() => {
-    let rawData = [];
-
-    if (reportsLevel.includes("Language")) {
-      if (languageLevelsStats === "transcript_stats") {
-        rawData = reportData.transcript_stats;
-      } else if (languageLevelsStats === "translation_stats") {
-        rawData = reportData.translation_stats;
-      } else if (languageLevelsStats === "voiceover_stats") {
-        rawData = reportData.voiceover_stats;
-      } else {
-        rawData = [];
-      }
+    if (reportsLevel === "") return;
+    if (showUserReportProjectColumn) {
+      const temp = reportLevels.filter(
+        (item) => item.reportLevel === reportsLevel
+      );
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        temp[0].endPoint,
+        limit,
+        offset + 1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
     } else {
-      rawData = reportData;
+      const endPoint = "get_aggregated_report_users";
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        endPoint,
+        limit,
+        offset + 1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
     }
+  }, [offset, showUserReportProjectColumn]);
 
+  useEffect(() => {
+    setOffset(0);
+  }, [limit]);
+
+  useEffect(() => {
+    let rawData = [];
+    rawData = reportData;
     createTableData(rawData);
     createReportColumns(rawData);
 
@@ -110,7 +153,7 @@ const OrganizationReport = () => {
   const createReportColumns = (rawData) => {
     let tempColumns = [];
 
-    if (rawData.length > 0 && rawData[0]) {
+    if (rawData?.length > 0 && rawData[0]) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
@@ -143,7 +186,14 @@ const OrganizationReport = () => {
         });
       });
     }
-
+    if (reportsLevel === "User" && !showUserReportProjectColumn){
+      tempColumns.map((column) => {
+        if (column["name"] === "project"){
+          column["options"]["display"] = "false";
+        }
+        return column;
+      });
+    }
     setColumns(tempColumns);
   };
 
@@ -214,6 +264,9 @@ const OrganizationReport = () => {
     });
 
     setColumns(selectedColumns);
+    if (reportsLevel === "User" && e.target.name === "project") {
+      setShowUserReportProjectColumn(e.target.checked);
+    }
   };
 
   const renderToolBar = () => {
@@ -249,6 +302,22 @@ const OrganizationReport = () => {
       download: false,
       viewColumns: false,
       customToolbar: renderToolBar,
+      serverSide: true,
+      page: offset,
+      rowsPerPage: limit,
+      count: total_count,
+      customToolbar: renderToolBar,
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case "changePage":
+            setOffset(tableState.page);
+            break;
+          case "changeRowsPerPage":
+            setLimit(tableState.rowsPerPage);
+            break;
+          default:
+        }
+      },
     };
 
     setOptions(option);
@@ -323,6 +392,7 @@ const OrganizationReport = () => {
           open={openSelector}
           handleClose={() => setAnchorEl(null)}
           columns={columns}
+          showUserReportProjectColumn={showUserReportProjectColumn}
           handleColumnSelection={handleColumnSelection}
         />
       )}

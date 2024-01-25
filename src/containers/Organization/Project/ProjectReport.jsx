@@ -45,10 +45,13 @@ const ProjectReport = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [options, setOptions] = useState();
 
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+
   const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const projectReportData = useSelector(
+  const { reports: projectReportData, total_count } = useSelector(
     (state) => state.getProjectReports?.data
   );
   const SearchProject = useSelector((state) => state.searchList.data);
@@ -56,13 +59,28 @@ const ProjectReport = () => {
   const handleChangeReportsLevel = (event) => {
     setreportsLevel(event.target.value);
     setlanguageLevelStats("");
-
-    const apiObj = new FetchProjectReportsAPI(projectId, event.target.value);
+    setOffset(0);
+    if (event.target.value === "Language") return;
+    const apiObj = new FetchProjectReportsAPI(
+      projectId,
+      event.target.value,
+      limit,
+      offset + 1
+    );
     dispatch(APITransport(apiObj));
   };
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
+    setOffset(0);
+    const apiObj = new FetchProjectReportsAPI(
+      projectId,
+      reportsLevel,
+      limit,
+      offset + 1,
+      event.target.value
+    );
+    dispatch(APITransport(apiObj));
   };
 
   const handleDownloadReport = async () => {
@@ -78,22 +96,25 @@ const ProjectReport = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (reportsLevel === "") return;
+
+    const apiObj = new FetchProjectReportsAPI(
+      projectId,
+      reportsLevel,
+      limit,
+      offset + 1,
+      languageLevelsStats
+    );
+    dispatch(APITransport(apiObj));
+  }, [offset]);
+
+  useEffect(() => {
+    setOffset(0);
+  }, [limit]);
+
+  useEffect(() => {
     let rawData = [];
-
-    if (reportsLevel.includes("Language")) {
-      if (languageLevelsStats === "transcript_stats") {
-        rawData = projectReportData.transcript_stats;
-      } else if (languageLevelsStats === "translation_stats") {
-        rawData = projectReportData.translation_stats;
-      } else if (languageLevelsStats === "voiceover_stats") {
-        rawData = projectReportData.voiceover_stats;
-      } else {
-        rawData = [];
-      }
-    } else {
-      rawData = projectReportData;
-    }
-
+    rawData = projectReportData;
     createTableData(rawData);
     createReportColumns(rawData);
 
@@ -103,7 +124,7 @@ const ProjectReport = () => {
   const createReportColumns = (rawData) => {
     let tempColumns = [];
 
-    if (rawData.length > 0 && rawData[0]) {
+    if (rawData?.length > 0 && rawData[0]) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
@@ -191,7 +212,22 @@ const ProjectReport = () => {
       ...option,
       download: false,
       viewColumns: false,
+      serverSide: true,
+      page: offset,
+      rowsPerPage: limit,
+      count: total_count,
       customToolbar: renderToolBar,
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case "changePage":
+            setOffset(tableState.page);
+            break;
+          case "changeRowsPerPage":
+            setLimit(tableState.rowsPerPage);
+            break;
+          default:
+        }
+      },
     };
 
     setOptions(option);
