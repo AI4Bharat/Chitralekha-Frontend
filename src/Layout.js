@@ -26,6 +26,7 @@ const App = (props) => {
 
   const snackbar = useSelector((state) => state.commonReducer.snackbar);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const tipsOff = useSelector((state) => state.commonReducer.tips);
 
   const renderSnackBar = useCallback(() => {
     return (
@@ -45,8 +46,12 @@ const App = (props) => {
 
   const handleTutorialSkip = (status) => {
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
-      const apiObj = new UpdateTipsAPI(false);
-      dispatch(APITransport(apiObj));
+      if (tipsOff) {
+        const apiObj = new UpdateTipsAPI(false);
+        dispatch(APITransport(apiObj));
+      } else {
+        localStorage.setItem("tutorialDone", true);
+      }
     }
   };
 
@@ -65,7 +70,7 @@ const App = (props) => {
 
           <div className={classes.root}>
             <Header />
-            {userData?.tips && (
+            {userData?.tips && !localStorage.getItem("tutorialDone") && (
               <Joyride
                 continuous={true}
                 steps={steps}

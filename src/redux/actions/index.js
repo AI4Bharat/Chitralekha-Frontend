@@ -123,6 +123,7 @@ import {
   setRangeEnd,
   setSnackBar,
   setTotalSentences,
+  setTipsOff,
 } from "./Common";
 
 import {
@@ -272,4 +273,5 @@ export {
   CreateBulkProjectsAPI,
   RegenerateResponseAPI,
   UpdateTipsAPI,
+  setTipsOff,
 };
