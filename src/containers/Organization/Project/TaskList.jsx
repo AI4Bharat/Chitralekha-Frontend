@@ -61,7 +61,7 @@ import ImportExportIcon from "@mui/icons-material/ImportExport";
 import getLocalStorageData from "utils/getLocalStorageData";
 
 // Config
-import { org_ids } from "config";
+import { specialOrgIds } from "config";
 
 //APIs
 import {
@@ -99,7 +99,7 @@ import constants from "redux/constants";
 import { updateCurrentSearchedColumn } from "redux/actions/taskFilters";
 
 const TaskList = () => {
-  const user_org_id = getLocalStorageData("userData").organization.id;
+  const userOrgId = getLocalStorageData("userData").organization.id;
   const [desc, setShowDesc] = useState(false);
   const [org_id, setId] = useState();
 
@@ -195,7 +195,7 @@ const TaskList = () => {
       if (success) {
         switch (apiType) {
           case "EXPORT_VOICEOVER_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
+            exportVoiceover(data, currentTaskDetails, exportTypes);
             handleDialogClose("exportDialog");
             break;
 
@@ -825,12 +825,12 @@ const TaskList = () => {
         sort: false,
         canBeSearch: true,
         canBeSorted: true,
-        display: org_ids.includes(user_org_id)
+        display: specialOrgIds.includes(userOrgId)
           ? true
           : columnDisplay.description,
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: !org_ids.includes(user_org_id)
+        customBodyRender: !specialOrgIds.includes(userOrgId)
           ? renderTaskListColumnCell
           : (value, tableMeta) => {
               const { tableData: data, rowIndex } = tableMeta;

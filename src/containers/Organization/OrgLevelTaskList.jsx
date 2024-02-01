@@ -59,7 +59,7 @@ import ImportExportIcon from "@mui/icons-material/ImportExport";
 import getLocalStorageData from "utils/getLocalStorageData";
 
 // Config
-import { org_ids } from "config";
+import { specialOrgIds } from "config";
 
 //Apis
 import {
@@ -98,7 +98,8 @@ import {
 import moment from "moment";
 
 const OrgLevelTaskList = () => {
-  const user_org_id = getLocalStorageData("userData").organization.id;
+  const userOrgId = getLocalStorageData("userData").organization.id;
+  
   const [desc, setShowDesc] = useState(false);
   const [org_id, setId] = useState();
 
@@ -191,7 +192,7 @@ const OrgLevelTaskList = () => {
       if (success) {
         switch (apiType) {
           case "EXPORT_VOICEOVER_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
+            exportVoiceover(data, currentTaskDetails, exportTypes);
             handleDialogClose("exportDialog");
             break;
 
@@ -725,14 +726,14 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: org_ids.includes(user_org_id)
+        display: specialOrgIds.includes(userOrgId)
           ? true
           : orgColumnDisplay.description,
         align: "center",
         canBeSearch: true,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: !org_ids.includes(user_org_id)
+        customBodyRender: !specialOrgIds.includes(userOrgId)
           ? renderTaskListColumnCell
           : (value, tableMeta) => {
               const { tableData: data, rowIndex } = tableMeta;
