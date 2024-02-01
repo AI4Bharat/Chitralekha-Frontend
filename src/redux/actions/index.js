@@ -104,6 +104,7 @@ import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
 import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
 import UpdateSubscriptionAPI from "./api/User/NewsletterSubscribe";
 import NewsletterTemplate from "./api/Admin/NewsLetterTemplate";
+import UpdateTipsAPI from "./api/User/UpdateTips";
 
 //Commom Actions
 import {
@@ -270,4 +271,5 @@ export {
   UnSubscribeNewletterFromEmailAPI,
   CreateBulkProjectsAPI,
   RegenerateResponseAPI,
+  UpdateTipsAPI,
 };
