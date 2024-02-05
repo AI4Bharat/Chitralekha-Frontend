@@ -1,19 +1,16 @@
+//API to get the list of all the projects in the organization.
+
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchOrganizationReportsAPI extends API {
-  constructor(id, endPoint, limit, offset, task_type = "", timeout = 2000) {
+export default class RegenerateResponseAPI extends API {
+  constructor(id, timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_ORGANIZATION_REPORTS;
-    this.endpoint =
-      endPoint === "get_report_languages"
-        ? `${super.apiEndPointAuto()}${
-            ENDPOINTS.organization
-          }${id}/${endPoint}/?limit=${limit}&offset=${offset}&task_type=${task_type}`
-        : `${super.apiEndPointAuto()}${
-            ENDPOINTS.organization
-          }${id}/${endPoint}/?limit=${limit}&offset=${offset}`;
+    this.type = C.REGENERATE_RESPONSE;
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.task
+    }${id}/regenerate_response/`;
   }
 
   processResponse(res) {

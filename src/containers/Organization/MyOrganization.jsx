@@ -131,8 +131,6 @@ const MyOrganization = () => {
         organization: { organization_owner },
       } = userData;
 
-      console.log(organization_owner,'organization_owner tetete');
-
       setOrgOwnerId(organization_owner.id);
     }
     // eslint-disable-next-line
@@ -226,6 +224,17 @@ const MyOrganization = () => {
                     variant="contained"
                   >
                     Add New Project
+                  </Button>
+
+                  <Button
+                    style={{ marginRight: "10px" }}
+                    className={classes.projectButton}
+                    onClick={() =>
+                      navigate(`/my-organization/${id}/create-bulk-projects`)
+                    }
+                    variant="contained"
+                  >
+                    Create Bulk Projects from Template
                   </Button>
 
                   {organizationDetails.enable_upload && (

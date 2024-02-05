@@ -7,6 +7,7 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import UploadIcon from "@mui/icons-material/Upload";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
+import LockResetIcon from "@mui/icons-material/LockReset";
 
 export const genderOptions = [
   {
@@ -150,6 +151,12 @@ export const buttonConfig = [
     color: "primary",
     icon: <VisibilityIcon />,
     key: "Preview",
+  },
+  {
+    title: "Regenerate",
+    color: "primary",
+    icon: <LockResetIcon />,
+    key: "Regenerate",
   },
   {
     title: "Delete",

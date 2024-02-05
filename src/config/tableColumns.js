@@ -4,6 +4,10 @@ import statusColor from "../utils/getStatusColor";
 
 export const projectColumns = [
   {
+    name: "id",
+    label: "Id"
+  },
+  {
     name: "title",
     label: "Name",
   },

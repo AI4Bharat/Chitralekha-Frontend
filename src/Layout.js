@@ -16,7 +16,7 @@ import {
 } from "common";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import { setSnackBar } from "redux/actions";
+import { APITransport, UpdateTipsAPI, setSnackBar } from "redux/actions";
 
 const App = (props) => {
   const { component, Backbutton, backPressNavigationPath, isDrawer } = props;
@@ -25,6 +25,8 @@ const App = (props) => {
   const dispatch = useDispatch();
 
   const snackbar = useSelector((state) => state.commonReducer.snackbar);
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+  const tipsOff = useSelector((state) => state.commonReducer.tips);
 
   const renderSnackBar = useCallback(() => {
     return (
@@ -42,6 +44,17 @@ const App = (props) => {
     //eslint-disable-next-line
   }, [snackbar]);
 
+  const handleTutorialSkip = (status) => {
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      if (tipsOff) {
+        const apiObj = new UpdateTipsAPI(false);
+        dispatch(APITransport(apiObj));
+      } else {
+        localStorage.setItem("tutorialDone", true);
+      }
+    }
+  };
+
   return (
     <div>
       {localStorage.getItem("token") === null ? (
@@ -57,20 +70,14 @@ const App = (props) => {
 
           <div className={classes.root}>
             <Header />
-            {localStorage.getItem("tutorialDone") ? (
-              <></>
-            ) : (
+            {userData?.tips && !localStorage.getItem("tutorialDone") && (
               <Joyride
                 continuous={true}
                 steps={steps}
                 showProgress={true}
                 showSkipButton={true}
                 tooltipComponent={TutorialTooltip}
-                callback={({ status }) => {
-                  if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
-                    localStorage.setItem("tutorialDone", true);
-                  }
-                }}
+                callback={({ status }) => handleTutorialSkip(status)}
               />
             )}
             <div

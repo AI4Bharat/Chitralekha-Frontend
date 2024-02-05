@@ -59,7 +59,7 @@ import ImportExportIcon from "@mui/icons-material/ImportExport";
 import getLocalStorageData from "utils/getLocalStorageData";
 
 // Config
-import { org_ids } from "config";
+import { specialOrgIds } from "config";
 
 //Apis
 import {
@@ -80,6 +80,7 @@ import {
   FetchVoiceoverExportTypesAPI,
   FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -97,7 +98,8 @@ import {
 import moment from "moment";
 
 const OrgLevelTaskList = () => {
-  const user_org_id = getLocalStorageData("userData").organization.id;
+  const userOrgId = getLocalStorageData("userData").organization.id;
+  
   const [desc, setShowDesc] = useState(false);
   const [org_id, setId] = useState();
 
@@ -190,7 +192,7 @@ const OrgLevelTaskList = () => {
       if (success) {
         switch (apiType) {
           case "EXPORT_VOICEOVER_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
+            exportVoiceover(data, currentTaskDetails, exportTypes);
             handleDialogClose("exportDialog");
             break;
 
@@ -227,6 +229,7 @@ const OrgLevelTaskList = () => {
             break;
 
           case "GET_TASK_FAIL_INFO":
+            dispatch(setSnackBar({ open: false }));
             handleDialogOpen("tableDialog");
             setTableDialogColumn(failInfoColumns);
             setTableDialogMessage(data.message);
@@ -249,6 +252,14 @@ const OrgLevelTaskList = () => {
           handleDialogOpen("deleteDialog");
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
+        }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn([]);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(null);
         }
       }
     }
@@ -640,6 +651,11 @@ const OrgLevelTaskList = () => {
         dispatch(APITransport(apiObj));
         break;
 
+      case "Regenerate":
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
+        break;
+
       default:
         break;
     }
@@ -710,14 +726,14 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: org_ids.includes(user_org_id)
+        display: specialOrgIds.includes(userOrgId)
           ? true
           : orgColumnDisplay.description,
         align: "center",
         canBeSearch: true,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: !org_ids.includes(user_org_id)
+        customBodyRender: !specialOrgIds.includes(userOrgId)
           ? renderTaskListColumnCell
           : (value, tableMeta) => {
               const { tableData: data, rowIndex } = tableMeta;
@@ -1255,6 +1271,7 @@ const OrgLevelTaskList = () => {
           message={tableDialogMessage}
           response={tableDialogResponse}
           columns={tableDialogColumn}
+          taskId={currentTaskDetails.id}
         />
       )}
     </>
