@@ -46,12 +46,14 @@ const GlossaryDialog = ({
           lang={language}
           value={glossaryText}
           onChange={(event) => setGlossaryText(event.target.value)}
-          onChangeText={() => {}}
+          onChangeText={() => { }}
           enabled={language !== "en"}
           className={classes.findReplaceTextbox}
           renderComponent={(props) => (
             <>
-              <label className={classes.findReplaceTextboxLabel}>Suggestion</label>
+              <label className={classes.findReplaceTextboxLabel}>
+                Suggestion
+              </label>
               <div>
                 <input {...props} />
               </div>
@@ -71,7 +73,7 @@ const GlossaryDialog = ({
 
         <Button
           variant="contained"
-          onClick={() => submit()}
+          onClick={() => submit(glossaryText)}
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "8px" }}
         >

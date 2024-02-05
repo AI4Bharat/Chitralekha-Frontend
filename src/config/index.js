@@ -63,6 +63,7 @@ import {
   failTranscriptionInfoColumns,
   reopenTableColumns,
   renderTaskListColumnCell,
+  glossaryColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 import { org_ids } from "./taskTableConfig";
@@ -126,4 +127,5 @@ export {
   renderTaskListColumnCell,
   org_ids,
   categoryConfig,
+  glossaryColumns,
 };

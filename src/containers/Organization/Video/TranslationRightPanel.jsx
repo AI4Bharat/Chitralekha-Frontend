@@ -43,6 +43,7 @@ import { ConfirmDialog, ShortcutKeys, TableDialog, TimeBoxes } from "common";
 import C from "redux/constants";
 import {
   APITransport,
+  CreateGlossaryAPI,
   FetchTaskFailInfoAPI,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
@@ -76,6 +77,9 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   );
   const limit = useSelector((state) => state.commonReducer.limit);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const loggedInUserData = useSelector(
+    (state) => state.getLoggedInUserDetails.data
+  );
 
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
@@ -130,6 +134,10 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTableDialogResponse(data.data);
             break;
 
+          case "CREATE_GLOSSARY":
+            setOpenGlossaryDialog(false);
+            break;
+
           default:
             break;
         }
@@ -163,7 +171,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
   const handleContextMenu = (event) => {
     event.preventDefault();
-    
+
     const selectedText = window.getSelection().toString();
     setSelectedWord(selectedText);
 
@@ -578,6 +586,20 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     },
   ];
 
+  const createGlossary = (glossaryText) => {
+    const userId = loggedInUserData.id;
+    const sentences = [
+      {
+        src: selectedWord,
+        tgt: glossaryText,
+        locale: `${taskData?.src_language}|${taskData?.target_language}`,
+      },
+    ];
+
+    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    dispatch(APITransport(apiObj));
+  };
+
   return (
     <>
       <ShortcutKeys shortcuts={shortcuts} />
@@ -867,7 +889,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
           <GlossaryDialog
             openDialog={openGlossaryDialog}
             handleClose={() => setOpenGlossaryDialog(false)}
-            submit={() => {}}
+            submit={(glossaryText) => createGlossary(glossaryText)}
             selectedWord={selectedWord}
             title={glossaryDialogTitle}
             language={taskData?.target_language}
