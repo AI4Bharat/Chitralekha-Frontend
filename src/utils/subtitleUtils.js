@@ -3,6 +3,8 @@ import { getDateTime, getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
 import { noiseTags } from "config";
+import { org_ids } from "config/taskTableConfig";
+import getLocalStorageData from "./getLocalStorageData";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -218,17 +220,16 @@ export const onSplit = (
   return copySub;
 };
 
-export const onSubtitleChange = (text, index,id) => {
+export const onSubtitleChange = (text, index, id) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 
   copySub.forEach((element, i) => {
     if (index === i) {
-      if(id==1){
+      if (id === 1) {
         element.target_text = text;
-      }
-      else{
+      } else {
         element.text = text;
       }
     }
@@ -236,8 +237,6 @@ export const onSubtitleChange = (text, index,id) => {
 
   return copySub;
 };
-
-
 
 export const fullscreenUtil = (element) => {
   let doc = window.document;
@@ -518,15 +517,15 @@ export const exportVoiceover = (url, taskDetails, exportTypes) => {
 
   const { voiceover } = exportTypes;
 
-  if(url) {
+  if (url) {
     const link = document.createElement("a");
     link.href = url;
-  
+
     link.setAttribute(
       "download",
       `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`
     );
-  
+
     document.body.appendChild(link);
     link.click();
     link.parentNode.removeChild(link);
@@ -538,7 +537,9 @@ export const exportFile = (data, taskDetails, exportType, type) => {
     video: videoId,
     src_language: sourceLanguage,
     target_language: targetLanguage,
+    description,
   } = taskDetails;
+  const userOrgId = getLocalStorageData("userData").organization.id;
 
   let newBlob;
   if (exportType === "docx") {
@@ -564,10 +565,15 @@ export const exportFile = (data, taskDetails, exportType, type) => {
   const format = exportType === "docx-bilingual" ? "docx" : exportType;
   const language = type === "transcription" ? sourceLanguage : targetLanguage;
 
-  link.setAttribute(
-    "download",
-    `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`
-  );
+  let fileName = "";
+  if (org_ids.includes(userOrgId) && description.length) {
+    fileName = `${description}.${format}`;
+  } else {
+    fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;
+  }
+
+  link.setAttribute("download", fileName);
+
   document.body.appendChild(link);
   link.click();
   link.parentNode.removeChild(link);
