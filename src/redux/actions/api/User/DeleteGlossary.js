@@ -3,12 +3,16 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class DeleteGlossaryAPI extends API {
-  constructor(data, timeout = 2000) {
-    super("POST", timeout, false);
+  constructor(sentences, timeout = 2000) {
+    super("DELETE", timeout, false);
 
     this.type = C.DELETE_GLOSSARY;
-    
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.glossary}`;
+
+    this.sentences = sentences;
+
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.glossary
+    }delete_glossary/?sentences=${JSON.stringify(this.sentences)}`;
   }
 
   processResponse(res) {
@@ -23,7 +27,7 @@ export default class DeleteGlossaryAPI extends API {
   }
 
   getBody() {
-    return this.data;
+    return {};
   }
 
   getHeaders() {
