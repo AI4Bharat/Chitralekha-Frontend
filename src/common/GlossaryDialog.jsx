@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 //Components
 import {
@@ -7,10 +7,19 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   Typography,
 } from "@mui/material";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { ProjectStyle } from "styles";
+import { MenuProps } from "utils";
+import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { domains } from "config";
 
 const GlossaryDialog = ({
   openDialog,
@@ -18,51 +27,185 @@ const GlossaryDialog = ({
   submit,
   selectedWord,
   title,
-  language,
+  srcLang,
+  tgtLang,
+  disableFields,
 }) => {
   const classes = ProjectStyle();
+  const dispatch = useDispatch();
 
-  const [glossaryText, setGlossaryText] = useState("");
+  const [sourceText, setSourceText] = useState(selectedWord);
+  const [targetText, setTargetText] = useState("");
+  const [sourceLanguage, setSourceLanguage] = useState(srcLang);
+  const [targetLanguage, setTargetLanguage] = useState(tgtLang);
+  const [domain, setDomain] = useState("");
+
+  const supportedLanguages = useSelector(
+    (state) => state.getSupportedLanguages.translationLanguage
+  );
+
+  useEffect(() => {
+    const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(langObj));
+
+    // eslint-disable-next-line
+  }, []);
+
+  const createGlossary = () => {
+    const sentences = [
+      {
+        src: sourceText,
+        tgt: targetText,
+        locale: `${sourceLanguage}|${targetLanguage}`,
+      },
+    ];
+
+    submit(sentences);
+  };
 
   return (
     <Dialog
       open={openDialog}
       onClose={handleClose}
       fullWidth
-      maxWidth={"sm"}
-      PaperProps={{ style: { borderRadius: "10px" } }}
+      maxWidth={"md"}
+      PaperProps={{ style: { borderRadius: "10px", height: "61%" } }}
       scroll="paper"
     >
       <DialogTitle display="flex" alignItems={"center"}>
         <Typography variant="h4">{title}</Typography>
       </DialogTitle>
 
-      <DialogContent>
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          {selectedWord}
-        </Typography>
+      <DialogContent dividers>
+        <Grid container>
+          <Grid item md={6} xs={12}>
+            <FormControl fullWidth sx={{ mt: 3, width: "98%" }}>
+              <InputLabel id="select-source-Language">
+                Source Language
+              </InputLabel>
+              <Select
+                fullWidth
+                labelId="select-source-Language"
+                label="Source Language"
+                value={sourceLanguage}
+                onChange={(event) => setSourceLanguage(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+                MenuProps={MenuProps}
+                disabled={disableFields}
+              >
+                {supportedLanguages?.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-        <IndicTransliterate
-          lang={language}
-          value={glossaryText}
-          onChange={(event) => setGlossaryText(event.target.value)}
-          onChangeText={() => { }}
-          enabled={language !== "en"}
-          className={classes.findReplaceTextbox}
-          renderComponent={(props) => (
-            <>
-              <label className={classes.findReplaceTextboxLabel}>
-                Suggestion
-              </label>
-              <div>
-                <input {...props} />
-              </div>
-            </>
-          )}
-        />
+          <Grid item md={6} xs={12}>
+            <FormControl
+              fullWidth
+              sx={{ mt: 3, width: "98%", float: "inline-end" }}
+            >
+              <InputLabel id="select-Language">Target Language</InputLabel>
+              <Select
+                fullWidth
+                labelId="select-target-Language"
+                label="Target Language"
+                value={targetLanguage}
+                onChange={(event) => setTargetLanguage(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+                MenuProps={MenuProps}
+                disabled={disableFields}
+              >
+                {supportedLanguages?.map((item, index) => (
+                  <MenuItem key={index} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item md={6} xs={12} sx={{ mt: 3 }}>
+            <IndicTransliterate
+              lang={sourceLanguage}
+              value={sourceText}
+              onChange={(event) => setSourceText(event.target.value)}
+              onChangeText={() => {}}
+              enabled={sourceLanguage !== "en"}
+              className={classes.findReplaceTextbox}
+              disabled={disableFields}
+              renderComponent={(props) => (
+                <>
+                  <div class="mui-input-outlined">
+                    <input
+                      type="text"
+                      id="outlined-input"
+                      placeholder=""
+                      {...props}
+                    />
+                    <label for="outlined-input">Source Text</label>
+                  </div>
+                </>
+              )}
+            />
+          </Grid>
+
+          <Grid item md={6} xs={12} sx={{ mt: 3 }}>
+            <IndicTransliterate
+              lang={targetLanguage}
+              value={targetText}
+              onChange={(event) => setTargetText(event.target.value)}
+              onChangeText={() => {}}
+              enabled={targetLanguage !== "en"}
+              className={classes.findReplaceTextbox}
+              renderComponent={(props) => (
+                <>
+                  <div
+                    class="mui-input-outlined"
+                    style={{ float: "inline-end" }}
+                  >
+                    <input
+                      type="text"
+                      id="outlined-input"
+                      placeholder=""
+                      {...props}
+                    />
+                    <label for="outlined-input">Target Text</label>
+                  </div>
+                </>
+              )}
+            />
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <FormControl fullWidth sx={{ mt: 3, width: "98%" }}>
+              <InputLabel id="select-domain">Domain (Optional)</InputLabel>
+              <Select
+                fullWidth
+                labelId="select-domain"
+                label="Domain (Optional)"
+                value={domain}
+                onChange={(event) => setDomain(event.target.value)}
+                style={{ zIndex: "0" }}
+                inputProps={{ "aria-label": "Without label" }}
+                MenuProps={MenuProps}
+              >
+                {domains?.map((item, index) => (
+                  <MenuItem key={index} value={item.code}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ p: "0 20px 20px 20px" }}>
+      <DialogActions>
         <Button
           variant="text"
           onClick={handleClose}
@@ -73,9 +216,16 @@ const GlossaryDialog = ({
 
         <Button
           variant="contained"
-          onClick={() => submit(glossaryText)}
+          onClick={() => createGlossary()}
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "8px" }}
+          disabled={
+            sourceText === "" ||
+            targetText === "" ||
+            sourceLanguage === "" ||
+            targetLanguage === "" ||
+            sourceLanguage === targetLanguage
+          }
         >
           Add
         </Button>

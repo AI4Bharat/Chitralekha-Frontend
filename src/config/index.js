@@ -38,6 +38,7 @@ import { categoryConfig, profileOptions } from "./profileConfigs";
 import {
   bgMusicOptions,
   buttonConfig,
+  domains,
   speakerFields,
   speakerInfoOptions,
   toolBarActions,
@@ -128,4 +129,5 @@ export {
   specialOrgIds,
   categoryConfig,
   glossaryColumns,
+  domains,
 };

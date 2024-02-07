@@ -586,15 +586,8 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     },
   ];
 
-  const createGlossary = (glossaryText) => {
+  const createGlossary = (sentences) => {
     const userId = loggedInUserData.id;
-    const sentences = [
-      {
-        src: selectedWord,
-        tgt: glossaryText,
-        locale: `${taskData?.src_language}|${taskData?.target_language}`,
-      },
-    ];
 
     const apiObj = new CreateGlossaryAPI(userId, sentences);
     dispatch(APITransport(apiObj));
@@ -889,10 +882,12 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
           <GlossaryDialog
             openDialog={openGlossaryDialog}
             handleClose={() => setOpenGlossaryDialog(false)}
-            submit={(glossaryText) => createGlossary(glossaryText)}
+            submit={(sentences) => createGlossary(sentences)}
             selectedWord={selectedWord}
             title={glossaryDialogTitle}
-            language={taskData?.target_language}
+            srcLang={taskData?.src_language}
+            tgtLang={taskData?.target_language}
+            disableFields={true}
           />
         )}
       </Box>
