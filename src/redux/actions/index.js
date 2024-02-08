@@ -108,6 +108,7 @@ import FetchGlossaryAPI from "./api/User/FetchGlossary";
 import CreateGlossaryAPI from "./api/User/CreateGlossary";
 import UpdateTipsAPI from "./api/User/UpdateTips";
 import DeleteGlossaryAPI from "./api/User/DeleteGlossary";
+import UploadGlossaryAPI from "./api/User/UploadGlossary";
 
 //Commom Actions
 import {
@@ -280,4 +281,5 @@ export {
   UpdateTipsAPI,
   setTipsOff,
   DeleteGlossaryAPI,
+  UploadGlossaryAPI,
 };

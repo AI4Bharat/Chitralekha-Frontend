@@ -57,6 +57,7 @@ const GlossaryDialog = ({
         src: sourceText,
         tgt: targetText,
         locale: `${sourceLanguage}|${targetLanguage}`,
+        domain,
       },
     ];
 
