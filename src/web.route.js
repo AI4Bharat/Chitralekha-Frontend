@@ -24,6 +24,7 @@ import Thanks from "./containers/intro/Thanks";
 import UseCases from "./containers/intro/UseCases";
 import ChitralekhaPortal from "./common/ChitralekhaPortal";
 import Unsubscribe from "containers/UserManagement/Unsubscribe";
+import MyGlossary from "containers/UserManagement/MyGlossary";
 import CreateBulkProjects from "containers/Organization/Project/CreateBulkProjects";
 
 const RootRouter = () => {
@@ -111,6 +112,14 @@ const RootRouter = () => {
             <Layout component={<ChangePassword />} Backbutton={true} />
           )}
         />
+
+        <Route
+          path="/profile/:id/my-glossary"
+          element={ProtectedRouteWrapper(
+            <Layout component={<MyGlossary />} Backbutton={true} />
+          )}
+        />
+
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/forget-password/confirm/:key/:token"

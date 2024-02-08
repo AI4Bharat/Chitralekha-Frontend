@@ -38,6 +38,7 @@ import { categoryConfig, profileOptions } from "./profileConfigs";
 import {
   bgMusicOptions,
   buttonConfig,
+  domains,
   speakerFields,
   speakerInfoOptions,
   toolBarActions,
@@ -63,6 +64,7 @@ import {
   failTranscriptionInfoColumns,
   reopenTableColumns,
   renderTaskListColumnCell,
+  glossaryColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 import { specialOrgIds } from "./taskTableConfig";
@@ -126,4 +128,6 @@ export {
   renderTaskListColumnCell,
   specialOrgIds,
   categoryConfig,
+  glossaryColumns,
+  domains,
 };

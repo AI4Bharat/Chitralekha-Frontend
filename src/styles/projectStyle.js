@@ -330,8 +330,7 @@ const ProjectStyle = makeStyles({
 
   findReplaceTextbox: {
     width: "-webkit-fill-available",
-    height: "50px",
-    paddingInline: "10px",
+    padding: "16.5px 14px",
     font: "inherit",
     fontSize: "1.25rem",
   },

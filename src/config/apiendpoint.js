@@ -36,6 +36,9 @@ const endpoints = {
 
   //Task
   task: "/task/",
+
+  //Glossary
+  glossary: "/glossary/",
 };
 
 export default endpoints;

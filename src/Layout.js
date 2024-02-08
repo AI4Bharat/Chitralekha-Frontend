@@ -6,6 +6,7 @@ import { steps } from "utils";
 import themeDefault from "./theme/theme";
 import { Grid, ThemeProvider } from "@mui/material";
 import GlobalStyles from "./styles/layoutStyles";
+import "./styles/customStyle.css"
 
 import {
   BackButton,
