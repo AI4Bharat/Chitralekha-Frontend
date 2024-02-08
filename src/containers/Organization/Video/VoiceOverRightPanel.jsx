@@ -706,7 +706,13 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                       >
                         <div>Recording Audio....</div>
                         <div style={{ marginTop: "10px" }}>
-                          Duration: {recorderTime} / {item.time_difference} sec
+                          Remaining Time:{" "}
+                          {`${
+                            item.time_difference - recorderTime > 0
+                              ? item.time_difference - recorderTime
+                              : 0
+                          }`}{" "}
+                          sec
                         </div>
                       </div>
                     </div>
