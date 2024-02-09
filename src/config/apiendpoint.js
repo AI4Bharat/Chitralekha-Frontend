@@ -39,6 +39,9 @@ const endpoints = {
 
   //Transliteration
   transliteration: "/api/generic/transliteration",
+
+  //Glossary
+  glossary: "/glossary/",
 };
 
 export default endpoints;

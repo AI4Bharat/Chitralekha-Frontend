@@ -7,6 +7,7 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import UploadIcon from "@mui/icons-material/Upload";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
+import LockResetIcon from "@mui/icons-material/LockReset";
 
 export const genderOptions = [
   {
@@ -152,6 +153,12 @@ export const buttonConfig = [
     key: "Preview",
   },
   {
+    title: "Regenerate",
+    color: "primary",
+    icon: <LockResetIcon />,
+    key: "Regenerate",
+  },
+  {
     title: "Delete",
     color: "error",
     icon: <DeleteIcon />,
@@ -205,4 +212,38 @@ export const bgMusicOptions = [
     label: "No",
     value: "false",
   },
+];
+
+export const domains = [
+  { code: "general", label: "General" },
+  { code: "news", label: "News" },
+  { code: "education", label: "Education" },
+  { code: "legal", label: "Legal" },
+  {
+    code: "government-press-release",
+    label: "Government Press Release",
+  },
+  { code: "healthcare", label: "Healthcare" },
+  { code: "agriculture", label: "Agriculture" },
+  { code: "automobile", label: "Automobile" },
+  { code: "tourism", label: "Tourism" },
+  { code: "financial", label: "Financial" },
+  { code: "movies", label: "Movies" },
+  { code: "subtitles", label: "Subtitles" },
+  { code: "sports", label: "Sports" },
+  { code: "technology", label: "Technology" },
+  { code: "lifestyle", label: "Lifestyle" },
+  { code: "entertainment", label: "Entertainment" },
+  { code: "art-and-culture", label: "Art and Culture" },
+  { code: "parliamentary", label: "Parliamentary" },
+  { code: "economy", label: "Economy" },
+  { code: "history", label: "History" },
+  { code: "philosophy", label: "Philosophy" },
+  { code: "religion", label: "Religion" },
+  {
+    code: "national-security-and-defence",
+    label: "National Security and Defence",
+  },
+  { code: "literature", label: "Literature" },
+  { code: "geography", label: "Geography" },
 ];

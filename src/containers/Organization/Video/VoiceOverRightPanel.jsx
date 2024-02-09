@@ -105,6 +105,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const [, setSelectionStart] = useState();
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [recorderTime, setRecorderTime] = useState(0);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -564,6 +565,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                       handleFileUpload={handleFileUpload}
                       isDisabled={isDisabled(index)}
                       updateRecorderState={updateRecorderState}
+                      setRecorderTime={setRecorderTime}
                     />
                   )}
                 </Box>
@@ -697,12 +699,22 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                       </div>
                       <div
                         style={{
-                          color: "#fff",
+                          color: "#000",
                           margin: "18px auto",
+                          fontSize: "18px",
                           display: recordAudio[index] === "stop" ? "none" : "",
                         }}
                       >
-                        Recording Audio....
+                        <div>Recording Audio....</div>
+                        <div style={{ marginTop: "10px" }}>
+                          Remaining Time:{" "}
+                          {`${
+                            item.time_difference - recorderTime > 0
+                              ? item.time_difference - recorderTime
+                              : 0
+                          }`}{" "}
+                          sec
+                        </div>
                       </div>
                     </div>
                   </Box>

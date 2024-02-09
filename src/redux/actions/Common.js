@@ -104,3 +104,10 @@ export const setTotalSentences = (data) => {
     payload: data,
   };
 };
+
+export const setTipsOff = (data) => {
+  return {
+    type: C.TIPS,
+    payload: data
+  }
+}

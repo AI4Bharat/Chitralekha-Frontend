@@ -83,6 +83,7 @@ import UploadToYoutubeAPI from "./api/Project/UploadToYoutube";
 import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskTypes";
 import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
 import ReopenTaskAPI from "./api/Project/ReopenTask";
+import CreateBulkProjectsAPI from "./api/Project/CreateBulkProjects";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -103,6 +104,11 @@ import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
 import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
 import UpdateSubscriptionAPI from "./api/User/NewsletterSubscribe";
 import NewsletterTemplate from "./api/Admin/NewsLetterTemplate";
+import FetchGlossaryAPI from "./api/User/FetchGlossary";
+import CreateGlossaryAPI from "./api/User/CreateGlossary";
+import UpdateTipsAPI from "./api/User/UpdateTips";
+import DeleteGlossaryAPI from "./api/User/DeleteGlossary";
+import UploadGlossaryAPI from "./api/User/UploadGlossary";
 
 //Commom Actions
 import {
@@ -121,6 +127,7 @@ import {
   setRangeEnd,
   setSnackBar,
   setTotalSentences,
+  setTipsOff,
 } from "./Common";
 
 import {
@@ -140,6 +147,7 @@ import {
 
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
+import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
 
 export {
   FetchAdminLevelReportsAPI,
@@ -266,4 +274,12 @@ export {
   updateOrgSearchValues,
   updateCurrentOrgSearchedColumn,
   UnSubscribeNewletterFromEmailAPI,
+  FetchGlossaryAPI,
+  CreateGlossaryAPI,
+  CreateBulkProjectsAPI,
+  RegenerateResponseAPI,
+  UpdateTipsAPI,
+  setTipsOff,
+  DeleteGlossaryAPI,
+  UploadGlossaryAPI,
 };
