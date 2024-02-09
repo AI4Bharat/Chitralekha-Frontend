@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
-import { configs, endpoints, failInfoColumns } from "config";
+import { configs, endpoints } from "config";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
