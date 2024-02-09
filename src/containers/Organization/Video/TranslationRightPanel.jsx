@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
-
+import { configs, endpoints, failInfoColumns } from "config";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -33,7 +33,7 @@ import {
   MenuItem,
   useMediaQuery,
 } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -49,7 +49,6 @@ import {
   SaveTranscriptAPI,
   setSubtitles,
 } from "redux/actions";
-import { failInfoColumns } from "config";
 import GlossaryDialog from "common/GlossaryDialog";
 
 const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
@@ -728,6 +727,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
                   {enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.target_language}
                       value={item.target_text}
                       onChangeText={(text) => {

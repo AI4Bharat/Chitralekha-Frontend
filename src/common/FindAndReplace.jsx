@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
+import { configs, endpoints } from "config";
 
 //Styles
 import { ProjectStyle } from "styles";
@@ -222,6 +223,7 @@ const FindAndReplace = (props) => {
               </Box>
 
               <IndicTransliterate
+                customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                 lang={transliterationLanguage}
                 value={findValue}
                 onChangeText={(text) => setFindValue(text)}
@@ -286,6 +288,7 @@ const FindAndReplace = (props) => {
               </Grid>
 
               <IndicTransliterate
+                customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                 lang={transliterationLanguage}
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}
