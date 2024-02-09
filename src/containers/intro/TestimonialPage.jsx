@@ -1,10 +1,9 @@
-import * as React from 'react';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import { Divider, Container, Box } from '@mui/material';
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import { Container, Box } from "@mui/material";
+import { IntroDatasetStyle } from "styles";
 
 const testimonials = [
   {
@@ -21,33 +20,55 @@ const testimonials = [
     avatar: "url_to_doug_image",
     testimonial: "Now that we have Service Hub in addition...",
   },
+  {
+    name: "DOUG DOTTS",
+    title: "Director of Client Outcomes",
+    company: "Unific",
+    avatar: "url_to_doug_image",
+    testimonial: "Now that we have Service Hub in addition...",
+  },
+  {
+    name: "DOUG DOTTS",
+    title: "Director of Client Outcomes",
+    company: "Unific",
+    avatar: "url_to_doug_image",
+    testimonial: "Now that we have Service Hub in addition...",
+  },
+  {
+    name: "DOUG DOTTS",
+    title: "Director of Client Outcomes",
+    company: "Unific",
+    avatar: "url_to_doug_image",
+    testimonial: "Now that we have Service Hub in addition...",
+  },
+  
   // ... other testimonials
 ];
 
-const TestimonialCard = ({ testimonial }) => (
-  <Card sx={{ mb: 2 }}>
-    <CardHeader
-      avatar={<Avatar src={testimonial.avatar} alt={testimonial.name} />}
-      title={testimonial.name}
-      subheader={`${testimonial.title}, ${testimonial.company}`}
-      titleTypographyProps={{ fontWeight: 'bold' }}
-      subheaderTypographyProps={{ color: 'text.secondary' }}
-    />
-    <CardContent>
-      <Typography variant="body2" color="text.secondary">
-        {testimonial.testimonial}
-      </Typography>
-    </CardContent>
-  </Card>
-);
+const TestimonialCard = ({ index, testimonial }) => {
+  const classes = IntroDatasetStyle();
+
+  return (
+    <Card
+      sx={{ margin: `${index % 2 === 0 ? "0 auto 0 0" : "0 0 0 auto"}` }}
+      className={classes.testimonialWrapper}
+    >
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {testimonial.testimonial}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function TestimonialPage() {
   return (
-    <Container maxWidth="md" sx={{marginTop: "120px"}}>
+    <Container maxWidth="lg" sx={{ marginTop: "120px" }}>
       {testimonials.map((testimonial, index) => (
-        <Box key={testimonial.name}>
-          <TestimonialCard testimonial={testimonial} />
-          {index < testimonials.length - 1 && <Divider />}
+        <Box key={testimonial.name} sx={{mb: 4}}>
+          <TestimonialCard index={index} testimonial={testimonial} />
+          {/* {index < testimonials.length - 1 && <Divider />} */}
         </Box>
       ))}
     </Container>

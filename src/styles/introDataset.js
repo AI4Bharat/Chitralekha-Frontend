@@ -276,6 +276,11 @@ const IntroDatasetStyle = makeStyles({
     fontSize: "16px",
     fontFamily: "roboto,sans-serif",
   },
+  testimonialWrapper: {
+    width: "75%",
+    borderRadius: "10px",
+    padding: "10px",
+  },
 });
 
 export default IntroDatasetStyle;
