@@ -86,6 +86,8 @@ const IntroDatasetStyle = makeStyles({
     lineHeight: 1.17,
     color: "#51504f",
     marginBottom: "50px",
+    fontFamily: '"rubik" ,"Roboto","Rowdies" ,sans-serif',
+    fontWeight: "500",
   },
   featuresTitle: {
     display: "flex",
@@ -248,7 +250,6 @@ const IntroDatasetStyle = makeStyles({
     margin: "auto",
     borderRadius: "20px",
     backgroundColor: "#26262633",
-    padding: "50px",
     textAlign: "left",
     fontSize: 20,
     color: "#000",

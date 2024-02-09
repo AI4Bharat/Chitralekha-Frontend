@@ -1,76 +1,80 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
+import { testimonials } from "config";
 import React from "react";
 import Carousel from "react-material-ui-carousel";
 import { IntroDatasetStyle } from "styles";
 
-const TestimonialCards = () => {
+const TestimonialCards = ({ testimonial }) => {
   const classes = IntroDatasetStyle();
 
   return (
     <Card variant="outlined" className={classes.testimonialCardsWrapper}>
-      <CardContent sx={{ padding: 0 }}>
-        <Typography gutterBottom>
-          The best things about Exotel are – Click to Call for KYC, IVR
-          campaign, App Bazaar, Lite dashboard, which specifically showcases
-          call flow monitoring, agent performance monitoring, reporting, easy to
+      <CardContent style={{ padding: "32px" }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          textAlign="left"
+          marginBottom="20px"
+        >
+          "{testimonial.content}"
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.primary"
+          textAlign="right"
+          textTransform="uppercase"
+          fontWeight="bold"
+        >
+          {testimonial.name},
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          textAlign="right"
+          fontStyle="italic"
+        >
+          {testimonial.role},
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          textAlign="right"
+          fontStyle="italic"
+        >
+          {testimonial.organization}
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
     </Card>
   );
 };
 
 const Testimonials = () => {
-  const items = [
-    {
-      name: "Random Name #1",
-      description: "Probably the most random thing you have ever seen!",
-      img: "",
-    },
-    {
-      name: "Random Name #2",
-      description: "Hello World!",
-      img: "",
-    },
-    {
-      name: "Random Name #2",
-      description: "Hello World!",
-      img: "",
-    },
-    {
-      name: "Random Name #2",
-      description: "Hello World!",
-      img: "",
-    },
-  ];
+  const classes = IntroDatasetStyle();
 
   return (
-    <Carousel
-      autoPlay={false}
-      stopAutoPlayOnHover
-      animation="slide"
-      navButtonsAlwaysVisible
-      duration="900"
-      navButtonsProps={{ style: { borderRadius: "50%" } }}
-      sx={{
-        width: "75%",
-        margin: "auto",
-        marginTop: "72px",
-        height: "auto",
-      }}
-    >
-      {items.map((item, i) => (
-        <TestimonialCards key={i} item={item} />
-      ))}
-    </Carousel>
+    <>
+      <Typography variant="h4" className={classes.titles} marginTop="72px">
+        Testimonials
+      </Typography>
+
+      <Carousel
+        autoPlay={false}
+        stopAutoPlayOnHover
+        animation="slide"
+        navButtonsAlwaysVisible
+        duration="900"
+        navButtonsProps={{ style: { borderRadius: "50%" } }}
+        sx={{
+          width: "75%",
+          margin: "auto",
+          height: "auto",
+        }}
+      >
+        {testimonials.map((item, i) => (
+          <TestimonialCards key={i} testimonial={item} />
+        ))}
+      </Carousel>
+    </>
   );
 };
 

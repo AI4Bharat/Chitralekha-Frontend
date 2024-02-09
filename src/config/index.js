@@ -66,6 +66,7 @@ import {
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 import { specialOrgIds } from "./taskTableConfig";
+import { testimonials } from "./testimonials";
 
 export {
   endpoints,
@@ -126,4 +127,5 @@ export {
   renderTaskListColumnCell,
   specialOrgIds,
   categoryConfig,
+  testimonials,
 };
