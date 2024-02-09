@@ -5,7 +5,7 @@ import { IntroDatasetStyle } from "styles";
 
 //Components
 import { Grid, Typography, Button, Box } from "@mui/material";
-import { Partners, Features, Principles } from "containers/intro/index";
+import { Partners, Features, Principles, Charts } from "containers/intro/index";
 import Footer from "../common/Footer";
 import { Chitralekhaimg } from "assets/profileImages/index";
 
@@ -65,6 +65,7 @@ const ChitralekhaPortal = () => {
       <Principles />
       <Features />
       <Partners />
+      <Charts />
       <Footer />
     </div>
   );
