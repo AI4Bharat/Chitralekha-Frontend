@@ -245,7 +245,7 @@ const IntroDatasetStyle = makeStyles({
     marginTop: "20px",
   },
   testimonialCardsWrapper: {
-    width: "50%",
+    width: "70%",
     height: "auto",
     margin: "auto",
     borderRadius: "20px",
@@ -281,6 +281,16 @@ const IntroDatasetStyle = makeStyles({
     width: "75%",
     borderRadius: "10px",
     padding: "10px",
+  },
+  testimonialContent: {
+    textAlign: "justify",
+    fontSize: "16px",
+    color: "rgb(44, 39, 153)",
+  },
+  testimonialContent2: {
+    fontSize: "16px",
+    color: "rgb(44, 39, 153)",
+    textAlign: "right",
   },
 });
 

@@ -4,21 +4,28 @@ export const testimonials = [
     name: "Vargil",
     role: "Translation Editor",
     organization: "NPTEL",
+    shortContent: `My interaction with Chitralekha has been incredibly stimulating and 
+    energetic. It enables teachers and content creators to reach a wide range 
+    of learners, aiding students in learning the most difficult subjects in their 
+    native tongues.`,
     content: `My interaction with Chitralekha has been incredibly stimulating and 
-        energetic. It enables teachers and content creators to reach a wide range 
-        of learners, aiding students in learning the most difficult subjects in their 
-        native tongues. In order to empower and provide every learner in the 
-        country with the best educational resource (the NPTEL courses), 
-        Chitralekha expands the MHRD's mission and ideology in a way that is 
-        both flexible and rational, offering students a much brighter and wider 
-        range of opportunities to master the topics. I personally discovered that 
-        the tool is continually improving assisting in advanced translations`,
+    energetic. It enables teachers and content creators to reach a wide range 
+    of learners, aiding students in learning the most difficult subjects in their 
+    native tongues. In order to empower and provide every learner in the 
+    country with the best educational resource (the NPTEL courses), 
+    Chitralekha expands the MHRD's mission and ideology in a way that is 
+    both flexible and rational, offering students a much brighter and wider 
+    range of opportunities to master the topics. I personally discovered that 
+    the tool is continually improving assisting in advanced translations`,
   },
   {
     id: "2",
     name: "Jayashree",
     role: "Translation Editor",
     organization: "NPTEL",
+    shortContent: `The process of translation has become much easier and more effective 
+    with Chitralekha. The quality of translation is very good and it has 
+    considerably reduced our working hours.`,
     content: `The process of translation has become much easier and more effective 
     with Chitralekha. The quality of translation is very good and it has 
     considerably reduced our working hours.`,
@@ -28,6 +35,10 @@ export const testimonials = [
     name: "Naresh",
     role: "Translation Editor and Voice Over Editor",
     organization: "NPTEL",
+    shortContent: `I recently translated the NPTEL course "C Programming and Assembly 
+    Language" using the Chitralekha tool. I must express my appreciation for 
+    the tool, as it delivers the lecture content very nicely in the local 
+    language.`,
     content: `I recently translated the NPTEL course "C Programming and Assembly 
     Language" using the Chitralekha tool. I must express my appreciation for 
     the tool, as it delivers the lecture content very nicely in the local 
@@ -44,6 +55,10 @@ export const testimonials = [
     name: "Ankur Sehgal",
     role: "Senior Project Lead",
     organization: "Central Square Foundation",
+    shortContent: `Employing   the   Chitralekha   tool   for   audio   transcription   has
+    revolutionized   the   way   TicTacLearn   operates.   It   has   greatly
+    simplified the task of subtitling our video content, allowing for
+    seamless conversion of audio material into written transcripts.`,
     content: `Employing   the   Chitralekha   tool   for   audio   transcription   has
     revolutionized   the   way   TicTacLearn   operates.   It   has   greatly
     simplified the task of subtitling our video content, allowing for
@@ -60,6 +75,9 @@ export const testimonials = [
     name: "Kavita Rawat",
     role: "Project Manager",
     organization: "Central Square Foundation",
+    shortContent: `In the past few months, we have used Chitralekha in multiple
+    projects   for   generating   subtitles   for   TicTacLearn   Hindi   YouTube
+    videos. The process has been nothing but very smooth and simple.`,
     content: `In the past few months, we have used Chitralekha in multiple
     projects   for   generating   subtitles   for   TicTacLearn   Hindi   YouTube
     videos. The process has been nothing but very smooth and simple.
@@ -77,6 +95,10 @@ export const testimonials = [
     name: "Prithaa More",
     role: "Universal Editor",
     organization: "TicTacLearn",
+    shortContent: `Chitralekha has been a very useful tool, in my opinion! It's made
+    translating inaccessible video into Hindi much easier. Its interface
+    has grown more friendly and I especially appreciate its automatic
+    word generation abilities.`,
     content: `Chitralekha has been a very useful tool, in my opinion! It's made
     translating inaccessible video into Hindi much easier. Its interface
     has grown more friendly and I especially appreciate its automatic
