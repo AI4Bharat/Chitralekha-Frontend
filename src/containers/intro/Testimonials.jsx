@@ -58,7 +58,6 @@ const Testimonials = () => {
       </Typography>
 
       <Carousel
-        autoPlay={false}
         stopAutoPlayOnHover
         animation="slide"
         navButtonsAlwaysVisible
