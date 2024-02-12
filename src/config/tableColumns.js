@@ -515,3 +515,26 @@ export const reopenTableColumns = [
     label: "Task Type",
   },
 ];
+
+export const glossaryColumns = [
+  {
+    name: "id",
+    label: "S. No.",
+  },
+  {
+    name: "source_language",
+    label: "Source Language",
+  },
+  {
+    name: "target_language",
+    label: "Target Language",
+  },
+  {
+    name: "source_text",
+    label: "Source Text",
+  },
+  {
+    name: "target_text",
+    label: "Target Text",
+  },
+];

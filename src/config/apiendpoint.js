@@ -36,6 +36,12 @@ const endpoints = {
 
   //Task
   task: "/task/",
+
+  //Transliteration
+  transliteration: "/api/generic/transliteration",
+
+  //Glossary
+  glossary: "/glossary/",
 };
 
 export default endpoints;

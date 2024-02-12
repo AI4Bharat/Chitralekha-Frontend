@@ -10,7 +10,7 @@ import {
   setAudioContent,
   onSubtitleChange,
 } from "utils";
-import { voiceoverFailInfoColumns } from "config";
+import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -22,7 +22,7 @@ import { Box, CardContent, Grid, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
 import {
@@ -597,6 +597,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                       {taskData?.target_language !== "en" &&
                       enableTransliteration ? (
                         <IndicTransliterate
+                          customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                           lang={taskData?.target_language}
                           value={item.text}
                           onChangeText={(text) => {
