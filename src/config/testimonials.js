@@ -58,7 +58,7 @@ export const testimonials = [
     shortContent: `Employing   the   Chitralekha   tool   for   audio   transcription   has
     revolutionized   the   way   TicTacLearn   operates.   It   has   greatly
     simplified the task of subtitling our video content, allowing for
-    seamless conversion of audio material into written transcripts.`,
+    seamless conversion of audio material.`,
     content: `Employing   the   Chitralekha   tool   for   audio   transcription   has
     revolutionized   the   way   TicTacLearn   operates.   It   has   greatly
     simplified the task of subtitling our video content, allowing for
