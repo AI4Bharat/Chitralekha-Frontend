@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Routes, Route, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 //Styles
 import { IntroDatasetStyle } from "styles";
@@ -43,68 +43,65 @@ function IntroHeader(props) {
         <Grid>
           <a
             target="_blank"
+            rel="noreferrer"
             href="https://www.youtube.com/@chitralekha-bhashini"
           >
-            <Button
-              sx={{
-                color: "#51504f",
-                textTransform: "capitalize",
-                fontSize: "16px",
-                fontFamily: "roboto,sans-serif",
-              }}
-            >
-              Tutorial
-            </Button>
+            <Button className={classes.headerDrawerButton}>Tutorial</Button>
           </a>
         </Grid>
+
         <Grid>
-          <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha">
-            <Button
-              sx={{
-                color: "#51504f",
-                textTransform: "capitalize",
-                fontSize: "16px",
-                fontFamily: "roboto,sans-serif",
-              }}
-            >
-              CodeBase
-            </Button>
+          <a
+            target="_blank"
+            href="https://github.com/AI4Bharat/Chitralekha"
+            rel="noreferrer"
+          >
+            <Button className={classes.headerDrawerButton}>CodeBase</Button>
           </a>
         </Grid>
+
         <Grid>
           <a
             target="_blank"
             href="https://github.com/AI4Bharat/Chitralekha/wiki"
+            rel="noreferrer"
           >
-            <Button
-              sx={{
-                color: "#51504f",
-                textTransform: "capitalize",
-                fontSize: "16px",
-                fontFamily: "roboto,sans-serif",
-              }}
-            >
-              Wiki
-            </Button>
+            <Button className={classes.headerDrawerButton}>Wiki</Button>
           </a>
         </Grid>
+
         <Grid>
           <Button
             onClick={handleClickUseCases}
-            sx={{
-              color: "#51504f",
-              textTransform: "capitalize",
-              fontSize: "16px",
-              fontFamily: "roboto,sans-serif",
-            }}
+            className={classes.headerDrawerButton}
           >
             Use Cases
           </Button>
         </Grid>
-        <Grid><Typography sx={{position: "absolute", bottom: 50, right: 1, left: 1, fontSize: "0.7rem", fontWeight: "500", color: "#000000", marginTop: "auto" }}>
-              Powered by EkStep Foundation
-            </Typography></Grid>
-        
+
+        <Grid>
+          <Button
+            onClick={() => navigate("/testimonials")}
+            className={classes.headerDrawerButton}
+          >
+            Testimonials
+          </Button>
+        </Grid>
+
+        <Grid>
+          <Button
+            onClick={() => navigate("/dashboards")}
+            className={classes.headerDrawerButton}
+          >
+            Dashboards
+          </Button>
+        </Grid>
+
+        <Grid>
+          <Typography className={classes.poweredByEkstep}>
+            Powered by EkStep Foundation
+          </Typography>
+        </Grid>
       </Grid>
     </Box>
   );
@@ -129,65 +126,45 @@ function IntroHeader(props) {
               <a
                 target="_blank"
                 href="https://www.youtube.com/@chitralekha-bhashini"
+                rel="noreferrer"
               >
-                <Button
-                  sx={{
-                    color: "#51504f",
-                    textTransform: "capitalize",
-                    fontSize: "16px",
-                    fontFamily: "roboto,sans-serif",
-                    ml: 3,
-                  }}
-                >
-                  Tutorial
-                </Button>
+                <Button className={classes.headerButtons}>Tutorial</Button>
               </a>
               <a
                 target="_blank"
                 href="https://github.com/AI4Bharat/Chitralekha"
+                rel="noreferrer"
               >
-                <Button
-                  sx={{
-                    color: "#51504f",
-                    textTransform: "capitalize",
-                    fontSize: "16px",
-                    fontFamily: "roboto,sans-serif",
-                    ml: 3,
-                  }}
-                >
-                  Codebase
-                </Button>
+                <Button className={classes.headerButtons}>Codebase</Button>
               </a>
               <a
                 target="_blank"
                 href="https://github.com/AI4Bharat/Chitralekha/wiki"
+                rel="noreferrer"
               >
-                <Button
-                  sx={{
-                    color: "#51504f",
-                    textTransform: "capitalize",
-                    fontSize: "16px",
-                    fontFamily: "roboto,sans-serif",
-                    ml: 3,
-                  }}
-                >
-                  Wiki
-                </Button>
+                <Button className={classes.headerButtons}>Wiki</Button>
               </a>
               <Button
                 onClick={handleClickUseCases}
-                sx={{
-                  color: "#51504f",
-                  textTransform: "capitalize",
-                  fontSize: "16px",
-                  fontFamily: "roboto,sans-serif",
-                  ml: 3,
-                }}
+                className={classes.headerButtons}
               >
                 Use Cases
               </Button>
+              <Button
+                onClick={() => navigate("/testimonials")}
+                className={classes.headerButtons}
+              >
+                Testimonials
+              </Button>
+              <Button
+                onClick={() => navigate("/dashboards")}
+                className={classes.headerButtons}
+              >
+                Dashboards
+              </Button>
             </Grid>
           </Box>
+
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -195,7 +172,7 @@ function IntroHeader(props) {
             onClick={handleDrawerToggle}
             sx={{
               mr: 2,
-              display: { sm: "flex", sm: "none" },
+              display: { xs: "flex", sm: "none" },
               color: "black",
               justifyContent: "end",
               ml: 3,
@@ -203,6 +180,7 @@ function IntroHeader(props) {
           >
             <MenuIcon />
           </IconButton>
+
           <Grid
             sx={{
               flexGrow: 1,
@@ -217,6 +195,7 @@ function IntroHeader(props) {
                 Login
               </Button>
             </Link>
+
             <Link to={`/`}>
               <img
                 src={Chitralekhalogo}
@@ -227,6 +206,7 @@ function IntroHeader(props) {
           </Grid>
         </Toolbar>
       </AppBar>
+
       <Box component="nav">
         <Drawer
           container={container}

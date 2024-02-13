@@ -61,7 +61,13 @@ const App = (props) => {
       {localStorage.getItem("token") === null ? (
         <div style={{ textAlign: "center" }}>
           <IntroHeader />
-          <Grid sx={{ overflowX: "hidden", backgroundColor: "white" }}>
+          <Grid
+            sx={{
+              overflowX: "hidden",
+              backgroundColor: "white",
+              height: "100vh",
+            }}
+          >
             {component}
           </Grid>
         </div>

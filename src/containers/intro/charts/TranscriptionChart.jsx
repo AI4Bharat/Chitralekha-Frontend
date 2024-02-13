@@ -143,7 +143,7 @@ const TranscriptionChart = ({ chartData, loading }) => {
           </Typography>
         </Typography>
 
-        <Typography variant="body">
+        <Typography variant="body2">
           Note: Transcriptions are the subtitles generated/edited in the
           language of the video.
         </Typography>
