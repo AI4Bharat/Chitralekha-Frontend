@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { IntroDatasetStyle } from "styles";
 
 //Components
-import { Grid, Typography, Button, Box } from "@mui/material";
+import { Grid, Typography, Button, Box, Divider } from "@mui/material";
 import { Features, Partners, Principles, Testimonials } from "containers/intro";
 import Footer from "../common/Footer";
 import { Chitralekhaimg } from "assets/profileImages/index";
@@ -62,8 +62,11 @@ const ChitralekhaPortal = () => {
         </Grid>
       </Grid>
       <Testimonials />
+      <Divider />
       <Principles />
+      <Divider />
       <Features />
+      <Divider />
       <Partners />
       <Footer />
     </div>

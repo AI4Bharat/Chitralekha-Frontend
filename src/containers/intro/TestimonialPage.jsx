@@ -23,12 +23,12 @@ const TestimonialCard = ({ index, testimonial }) => {
           textTransform="uppercase"
           fontWeight="bold"
         >
-          {testimonial.name},
+          {testimonial.name}
         </Typography>
-        <Typography className={classes.testimonialContent2} fontStyle="italic">
-          {testimonial.role},
+        <Typography className={classes.testimonialContent2}>
+          {testimonial.role}
         </Typography>
-        <Typography className={classes.testimonialContent2} fontStyle="italic">
+        <Typography className={classes.testimonialContent2}>
           {testimonial.organization}
         </Typography>
       </CardContent>

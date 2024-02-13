@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
 import { testimonials } from "config";
 import React from "react";
 import Carousel from "react-material-ui-carousel";
@@ -27,10 +27,10 @@ const TestimonialCards = ({ testimonial }) => {
           textTransform="uppercase"
           fontWeight="bold"
         >
-          {testimonial.name},
+          {testimonial.name}
         </Typography>
         <Typography className={classes.testimonialContent2}>
-          {testimonial.role},
+          {testimonial.role}
         </Typography>
         <Typography className={classes.testimonialContent2}>
           {testimonial.organization}
@@ -44,20 +44,23 @@ const Testimonials = () => {
   const classes = IntroDatasetStyle();
 
   return (
-    <>
-      <Typography variant="h4" className={classes.titles} marginTop="72px">
+    <Grid item xs={12} sx={{ my: 10 }}>
+      <Typography variant="h4" className={classes.titles}>
         Testimonials
       </Typography>
 
       <Carousel
-        autoPlay={false}
         stopAutoPlayOnHover
         animation="slide"
         navButtonsAlwaysVisible
-        duration="900"
+        duration="1200"
+        interval="12000"
         fullHeightHover
         navButtonsProps={{
           style: { borderRadius: "50%", width: "75px", height: "75px" },
+        }}
+        navButtonsWrapperProps={{
+          style: { top: "-35px" },
         }}
         NextIcon={<ArrowForwardIosIcon />}
         PrevIcon={<ArrowBackIosNewIcon />}
@@ -71,7 +74,7 @@ const Testimonials = () => {
           <TestimonialCards key={i} testimonial={item} />
         ))}
       </Carousel>
-    </>
+    </Grid>
   );
 };
 
