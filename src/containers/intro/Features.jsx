@@ -19,7 +19,7 @@ const Features = () => {
   return (
     <ThemeProvider theme={introTheme}>
       <div>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mt: 10 }}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ my: 10 }}>
           <Typography variant="h4" className={classes.titles}>
             Features
           </Typography>

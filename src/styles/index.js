@@ -6,8 +6,10 @@ import ProjectStyle from "./projectStyle";
 import TableStyles from "./tableStyles";
 import VideoLandingStyle from "./videoLandingStyles";
 import IntroDatasetStyle from "./introDataset";
+import ChartStyles from "./ChartStyles";
 
 export {
+  ChartStyles,
   DatasetStyle,
   headerStyle,
   GlobalStyles,

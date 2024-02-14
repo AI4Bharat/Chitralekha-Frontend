@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef, memo } from "react";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import { configs, endpoints } from "config";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -58,7 +59,6 @@ import {
   setSnackBar,
   setSubtitles,
 } from "redux/actions";
-
 import { failTranscriptionInfoColumns } from "config";
 
 const RightPanel = ({ currentIndex, setCurrentIndex }) => {
@@ -673,6 +673,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {

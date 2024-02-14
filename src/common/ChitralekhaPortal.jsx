@@ -4,8 +4,14 @@ import React, { useEffect } from "react";
 import { IntroDatasetStyle } from "styles";
 
 //Components
-import { Grid, Typography, Button, Box } from "@mui/material";
-import { Partners, Features, Principles } from "containers/intro/index";
+import { Grid, Typography, Button, Box, Divider } from "@mui/material";
+import {
+  Charts,
+  Features,
+  Partners,
+  Principles,
+  Testimonials,
+} from "containers/intro";
 import Footer from "../common/Footer";
 import { Chitralekhaimg } from "assets/profileImages/index";
 
@@ -54,16 +60,19 @@ const ChitralekhaPortal = () => {
         <Grid item xs={12} sm={12} md={5} lg={5} xl={5} sx={{ mt: 2 }}>
           <Box display={{ xs: "none", md: "inherit" }}>
             <img
+              alt="Chitralekhaimg"
               src={Chitralekhaimg}
-              style={{
-                width: "100%",
-              }}
+              style={{ width: "100%" }}
             />
           </Box>
         </Grid>
       </Grid>
+      <Testimonials />
+      <Divider />
       <Principles />
+      <Divider />
       <Features />
+      <Divider />
       <Partners />
       <Footer />
     </div>

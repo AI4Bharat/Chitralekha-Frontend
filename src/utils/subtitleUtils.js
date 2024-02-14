@@ -3,7 +3,7 @@ import { getDateTime, getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
 import { noiseTags } from "config";
-import { org_ids } from "config/taskTableConfig";
+import { specialOrgIds } from "config";
 import getLocalStorageData from "./getLocalStorageData";
 
 export const newSub = (item) => {
@@ -511,20 +511,26 @@ export const reGenerateTranslation = (index) => {
   return copySub;
 };
 
-export const exportVoiceover = (url, taskDetails, exportTypes) => {
+export const exportVoiceover = (data, taskDetails, exportTypes) => {
+  const userOrgId = getLocalStorageData("userData").organization.id;
+
   const { video_name: videoName, target_language: targetLanguage } =
     taskDetails;
 
   const { voiceover } = exportTypes;
 
-  if (url) {
+  if (data.azure_url) {
     const link = document.createElement("a");
-    link.href = url;
+    link.href = data.azure_url;
 
-    link.setAttribute(
-      "download",
-      `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`
-    );
+    let fileName = "";
+    if (specialOrgIds.includes(userOrgId)) {
+      fileName = data.video_name
+    } else {
+      fileName = `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`;
+    }
+
+    link.setAttribute("download", fileName);
 
     document.body.appendChild(link);
     link.click();
@@ -566,7 +572,7 @@ export const exportFile = (data, taskDetails, exportType, type) => {
   const language = type === "transcription" ? sourceLanguage : targetLanguage;
 
   let fileName = "";
-  if (org_ids.includes(userOrgId) && description.length) {
+  if (specialOrgIds.includes(userOrgId) && description.length) {
     fileName = `${description}.${format}`;
   } else {
     fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;

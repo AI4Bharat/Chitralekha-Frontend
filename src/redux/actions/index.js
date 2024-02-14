@@ -104,6 +104,11 @@ import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
 import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
 import UpdateSubscriptionAPI from "./api/User/NewsletterSubscribe";
 import NewsletterTemplate from "./api/Admin/NewsLetterTemplate";
+import FetchGlossaryAPI from "./api/User/FetchGlossary";
+import CreateGlossaryAPI from "./api/User/CreateGlossary";
+import UpdateTipsAPI from "./api/User/UpdateTips";
+import DeleteGlossaryAPI from "./api/User/DeleteGlossary";
+import UploadGlossaryAPI from "./api/User/UploadGlossary";
 
 //Commom Actions
 import {
@@ -122,6 +127,7 @@ import {
   setRangeEnd,
   setSnackBar,
   setTotalSentences,
+  setTipsOff,
 } from "./Common";
 
 import {
@@ -138,6 +144,11 @@ import {
   updateOrgSearchValues,
   updateCurrentOrgSearchedColumn,
 } from "./orgTaskFilters";
+
+//Charts API
+import FetchTranscriptionChartAPI from "./api/Intro/FetchTranscriptionChart";
+import FetchVoiceoverChartAPI from "./api/Intro/FetchVoiceoverChart";
+import FetchTranslationChartAPI from "./api/Intro/FetchTranslationChart";
 
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
@@ -268,6 +279,15 @@ export {
   updateOrgSearchValues,
   updateCurrentOrgSearchedColumn,
   UnSubscribeNewletterFromEmailAPI,
+  FetchGlossaryAPI,
+  CreateGlossaryAPI,
   CreateBulkProjectsAPI,
   RegenerateResponseAPI,
+  UpdateTipsAPI,
+  setTipsOff,
+  DeleteGlossaryAPI,
+  UploadGlossaryAPI,
+  FetchTranscriptionChartAPI,
+  FetchVoiceoverChartAPI,
+  FetchTranslationChartAPI,
 };

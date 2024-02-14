@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
 
 //Styles
@@ -80,11 +80,12 @@ const ButtonComponent = ({
 
       {taskData.task_type.includes("VOICEOVER") &&
         transcriptPayload.source_type === "MACHINE_GENERATED" &&
-        showChangeBtn && (
+        (
           <Tooltip title="Get Updated Audio" placement="bottom">
             <IconButton
               className={classes.optionIconBtn}
               onClick={() => saveTranscriptHandler(false, true)}
+              disabled={!showChangeBtn}
             >
               <TaskAltIcon className={classes.rightPanelSvg} />
             </IconButton>

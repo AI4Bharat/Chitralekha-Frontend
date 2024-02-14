@@ -3,8 +3,14 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
-import { Sub, base64toBlob, getSubtitleRange, setAudioContent, onSubtitleChange } from "utils";
-import { voiceoverFailInfoColumns } from "config";
+import {
+  Sub,
+  base64toBlob,
+  getSubtitleRange,
+  setAudioContent,
+  onSubtitleChange,
+} from "utils";
+import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -16,7 +22,7 @@ import { Box, CardContent, Grid, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
 import {
@@ -44,7 +50,7 @@ import {
   setSnackBar,
 } from "redux/actions";
 
-const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
+const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -93,12 +99,13 @@ const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
-  useState();
+    useState();
   const [subsuper, setsubsuper] = useState(false);
   const [selection, setselection] = useState(false);
-  const [selectionStart, setSelectionStart] = useState();
+  const [, setSelectionStart] = useState();
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [recorderTime, setRecorderTime] = useState(0);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -455,7 +462,6 @@ const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
     }
   };
 
-
   const shortcuts = [
     {
       keys: ["Control", "l"],
@@ -559,6 +565,7 @@ const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
                       handleFileUpload={handleFileUpload}
                       isDisabled={isDisabled(index)}
                       updateRecorderState={updateRecorderState}
+                      setRecorderTime={setRecorderTime}
                     />
                   )}
                 </Box>
@@ -590,6 +597,7 @@ const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
                       {taskData?.target_language !== "en" &&
                       enableTransliteration ? (
                         <IndicTransliterate
+                          customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                           lang={taskData?.target_language}
                           value={item.text}
                           onChangeText={(text) => {
@@ -691,12 +699,22 @@ const VoiceOverRightPanel = ({currentIndex, setCurrentIndex}) => {
                       </div>
                       <div
                         style={{
-                          color: "#fff",
+                          color: "#000",
                           margin: "18px auto",
+                          fontSize: "18px",
                           display: recordAudio[index] === "stop" ? "none" : "",
                         }}
                       >
-                        Recording Audio....
+                        <div>Recording Audio....</div>
+                        <div style={{ marginTop: "10px" }}>
+                          Remaining Time:{" "}
+                          {`${
+                            item.time_difference - recorderTime > 0
+                              ? item.time_difference - recorderTime
+                              : 0
+                          }`}{" "}
+                          sec
+                        </div>
                       </div>
                     </div>
                   </Box>

@@ -21,6 +21,7 @@ const initialState = {
     variant: "success",
   },
   totalSentences: 0,
+  tips: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -123,6 +124,12 @@ const reducer = (state = initialState, action) => {
       return result;
     }
 
+    case C.TIPS: {
+      let result = { ...state };
+      result.tips = action.payload;
+      return result;
+    }
+    
     default:
       return {
         ...state,
