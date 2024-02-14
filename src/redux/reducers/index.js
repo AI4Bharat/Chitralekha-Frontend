@@ -51,6 +51,7 @@ import newsletterPreviewReducer from "./Admin/NewsLetterPreview";
 import taskFilters from "./Project/TaskFilters";
 import orgTaskFilters from "./Organization/OrgTaskFilters";
 import getGlossary from "./User/FetchGlossary";
+import getChartsData from "./Intro/Charts";
 
 const rootReducer = {
   apiStatus,
@@ -106,6 +107,7 @@ const rootReducer = {
   taskFilters,
   orgTaskFilters,
   getGlossary,
+  getChartsData,
 };
 
 export default rootReducer;

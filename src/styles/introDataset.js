@@ -286,6 +286,16 @@ const IntroDatasetStyle = makeStyles({
     textAlign: "justify",
     fontSize: "16px",
     color: "rgb(44, 39, 153)",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    "-webkit-line-clamp": 3,
+    "-webkit-box-orient": "vertical",
+  },
+  testimonialPageContent: {
+    textAlign: "justify",
+    fontSize: "16px",
+    color: "rgb(44, 39, 153)",
   },
   testimonialContent2: {
     fontSize: "16px",

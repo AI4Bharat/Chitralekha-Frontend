@@ -145,6 +145,11 @@ import {
   updateCurrentOrgSearchedColumn,
 } from "./orgTaskFilters";
 
+//Charts API
+import FetchTranscriptionChartAPI from "./api/Intro/FetchTranscriptionChart";
+import FetchVoiceoverChartAPI from "./api/Intro/FetchVoiceoverChart";
+import FetchTranslationChartAPI from "./api/Intro/FetchTranslationChart";
+
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
 import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
@@ -282,4 +287,7 @@ export {
   setTipsOff,
   DeleteGlossaryAPI,
   UploadGlossaryAPI,
+  FetchTranscriptionChartAPI,
+  FetchVoiceoverChartAPI,
+  FetchTranslationChartAPI,
 };

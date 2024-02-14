@@ -24,7 +24,7 @@ import ChitralekhaPortal from "./common/ChitralekhaPortal";
 import Unsubscribe from "containers/UserManagement/Unsubscribe";
 import MyGlossary from "containers/UserManagement/MyGlossary";
 import CreateBulkProjects from "containers/Organization/Project/CreateBulkProjects";
-import { TestimonialPage, Thanks, UseCases } from "containers/intro";
+import { Charts, TestimonialPage, Thanks, UseCases } from "containers/intro";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -63,6 +63,7 @@ const RootRouter = () => {
         <Route path="/Thanks" element={<Layout component={<Thanks />} />} />
         <Route path="/useCases" element={<Layout component={<UseCases />} />} />
         <Route path="/testimonials" element={<Layout component={<TestimonialPage />} />} />
+        <Route path="/dashboards" element={<Layout component={<Charts />} />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/profile/:id"

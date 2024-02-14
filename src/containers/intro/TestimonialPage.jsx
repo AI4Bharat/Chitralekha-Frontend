@@ -15,7 +15,7 @@ const TestimonialCard = ({ index, testimonial }) => {
       className={classes.testimonialWrapper}
     >
       <CardContent style={{ padding: "16px" }}>
-        <Typography className={classes.testimonialContent} marginBottom="20px">
+        <Typography className={classes.testimonialPageContent} marginBottom="20px">
           "{testimonial.content}"
         </Typography>
         <Typography

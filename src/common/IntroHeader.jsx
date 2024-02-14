@@ -89,6 +89,15 @@ function IntroHeader(props) {
         </Grid>
 
         <Grid>
+          <Button
+            onClick={() => navigate("/dashboards")}
+            className={classes.headerDrawerButton}
+          >
+            Dashboards
+          </Button>
+        </Grid>
+
+        <Grid>
           <Typography className={classes.poweredByEkstep}>
             Powered by EkStep Foundation
           </Typography>
@@ -146,6 +155,12 @@ function IntroHeader(props) {
                 className={classes.headerButtons}
               >
                 Testimonials
+              </Button>
+              <Button
+                onClick={() => navigate("/dashboards")}
+                className={classes.headerButtons}
+              >
+                Dashboards
               </Button>
             </Grid>
           </Box>

@@ -106,4 +106,61 @@ export const testimonials = [
     gap in the industry and taking a step towards a more inclusive
     online world.`,
   },
+  {
+    id: "7",
+    name: "Srimoukthika",
+    role: "Language Expert",
+    organization: "AI4Bharat",
+    shortContent: `I've had the opportunity to work on the Chitralekha tool for subtitling and 
+    translation. Working on this tool was a butter smooth process, especially 
+    keeping in mind it was translation to an Indic language.`,
+    content: `I've had the opportunity to work on the Chitralekha tool for subtitling and 
+    translation. Working on this tool was a butter smooth process, especially 
+    keeping in mind it was translation to an Indic language. I must mention 
+    the interface of the tool, how it is interesting to navigate through all the 
+    technical and linguistic aspects, making the process of subtitling easy and
+    accessible. Everything you need is available on screen rather than having 
+    to search for them in drop down menus.
+    As a subtitling artist, I am aware of the pain involved in adjusting subtitles 
+    to the character per second limit/the character per line limit in other 
+    conventional subtitling tools. However, Chitralekha provides parallel text 
+    boxes and keeps tab on the aforementioned character limit. Navigating 
+    across the text boxes containing subtitles, to cross check and review was 
+    hassle free, much to my surprise. In addition, the word suggestions make 
+    the work easy breezy, not having to worry about the character count or 
+    text being input. These features make Chitralekha the first ever such 
+    platform in subtitling.
+    And for Voice Over, one does not need access to professional studio 
+    recording consoles to get the job done. It takes care of recording voice 
+    with much needed noise cancellation and gives crisp, clear and excellent 
+    audio output, matching the video.
+    Overall, Chitralekha is one solution for three tasks and ensures the best 
+    output.`,
+  },
+  {
+    id: "8",
+    name: "Jaspal Singh",
+    role: "Language Expert",
+    organization: "AI4Bharat",
+    shortContent: `Chitralekha is a user-friendly tool. A user can easily operate all the 
+    functions of Chitralekha without any prior training. It is the best software 
+    for Transcription, Translation, Subtitling, and Voice Over.`,
+    content: `Chitralekha is a user-friendly tool. A user can easily operate all the 
+    functions of Chitralekha without any prior training. It is the best software 
+    for Transcription, Translation, Subtitling, and Voice Over.`,
+  },
+  {
+    id: "9",
+    name: "KRISHNA ARAVIND S",
+    role: "Language Expert",
+    organization: "AI4Bharat",
+    shortContent: `I got an opportunity to translate from English to an Indic Language and 
+    lend voice for a very important video. And I'm very happy to say that this 
+    is how I learnt about the Chitralekha tool and its nuances.`,
+    content: `I got an opportunity to translate from English to an Indic Language and 
+    lend voice for a very important video. And I'm very happy to say that this 
+    is how I learnt about the Chitralekha tool and its nuances. It was a new 
+    and ultimate experience for me. My sincere thanks to the IT support team 
+    for helping me sincerely in this process.`,
+  },
 ];
