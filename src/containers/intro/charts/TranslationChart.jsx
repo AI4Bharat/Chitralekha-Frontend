@@ -23,6 +23,7 @@ import {
 } from "recharts";
 import { ChartStyles } from "styles";
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
+import { MenuProps } from "utils";
 
 const colors = [
   "188efc",
@@ -43,7 +44,7 @@ const TranslationChart = ({ chartData, loading }) => {
   const dispatch = useDispatch();
 
   const supportedLanguages = useSelector(
-    (state) => state.getSupportedLanguages.translationLanguages
+    (state) => state.getSupportedLanguages.translationLanguage
   );
 
   const [orgList, setOrgList] = useState([]);
@@ -235,6 +236,7 @@ const TranslationChart = ({ chartData, loading }) => {
                   textAlign: "left",
                   border: "0px solid transparent",
                 }}
+                MenuProps={MenuProps}
               >
                 {orgList?.map((item, index) => {
                   return (
@@ -260,6 +262,7 @@ const TranslationChart = ({ chartData, loading }) => {
                   textAlign: "left",
                   border: "0px solid transparent",
                 }}
+                MenuProps={MenuProps}
               >
                 {supportedLanguages?.map((item, index) => {
                   return (
