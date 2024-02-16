@@ -9,10 +9,13 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   Grid,
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   Typography,
 } from "@mui/material";
 import { IndicTransliterate } from "indic-transliterate";
@@ -28,8 +31,8 @@ const GlossaryDialog = ({
   submit,
   selectedWord,
   title,
-  srcLang,
-  tgtLang,
+  srcLang = "",
+  tgtLang = "",
   disableFields,
 }) => {
   const classes = ProjectStyle();
@@ -40,6 +43,7 @@ const GlossaryDialog = ({
   const [sourceLanguage, setSourceLanguage] = useState(srcLang);
   const [targetLanguage, setTargetLanguage] = useState(tgtLang);
   const [domain, setDomain] = useState("");
+  const [enableTransliteration, setEnableTransliteration] = useState(true);
 
   const supportedLanguages = useSelector(
     (state) => state.getSupportedLanguages.translationLanguage
@@ -65,13 +69,21 @@ const GlossaryDialog = ({
     submit(sentences);
   };
 
+  const enableHandler = (currentLang) => {
+    if (currentLang === "en") {
+      return false;
+    } else {
+      return enableTransliteration;
+    }
+  };
+
   return (
     <Dialog
       open={openDialog}
       onClose={handleClose}
       fullWidth
       maxWidth={"md"}
-      PaperProps={{ style: { borderRadius: "10px", height: "61%" } }}
+      PaperProps={{ style: { borderRadius: "10px", height: "67%" } }}
       scroll="paper"
     >
       <DialogTitle display="flex" alignItems={"center"}>
@@ -131,6 +143,30 @@ const GlossaryDialog = ({
             </FormControl>
           </Grid>
 
+          <Grid item md={12} xs={12} sx={{ mt: 3 }}>
+            <FormControl component="fieldset" variant="standard">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={enableTransliteration}
+                      onChange={(event) =>
+                        setEnableTransliteration(event.target.checked)
+                      }
+                    />
+                  }
+                  label="Transliteration"
+                  sx={{
+                    ".MuiFormControlLabel-label": {
+                      fontSize: "18px",
+                      fontWeight: 500,
+                    },
+                  }}
+                />
+              </FormGroup>
+            </FormControl>
+          </Grid>
+
           <Grid item md={6} xs={12} sx={{ mt: 3 }}>
             <IndicTransliterate
               customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
@@ -138,9 +174,9 @@ const GlossaryDialog = ({
               value={sourceText}
               onChange={(event) => setSourceText(event.target.value)}
               onChangeText={() => {}}
-              enabled={sourceLanguage !== "en"}
+              enabled={enableHandler(sourceLanguage)}
               className={classes.findReplaceTextbox}
-              disabled={disableFields}
+              disabled={disableFields || sourceLanguage.length === 0}
               renderComponent={(props) => (
                 <>
                   <div class="mui-input-outlined">
@@ -164,8 +200,9 @@ const GlossaryDialog = ({
               value={targetText}
               onChange={(event) => setTargetText(event.target.value)}
               onChangeText={() => {}}
-              enabled={targetLanguage !== "en"}
+              enabled={enableHandler(targetLanguage)}
               className={classes.findReplaceTextbox}
+              disabled={targetLanguage.length === 0}
               renderComponent={(props) => (
                 <>
                   <div
