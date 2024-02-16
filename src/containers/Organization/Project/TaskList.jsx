@@ -159,7 +159,7 @@ const TaskList = () => {
   const [exportTypes, setExportTypes] = useState({
     transcription: "srt",
     translation: "srt",
-    voiceover: "mp4",
+    voiceover: "mp3",
     speakerInfo: "false",
     bgMusic: "false",
   });
@@ -432,7 +432,13 @@ const TaskList = () => {
 
   const handleExportSubmitClick = () => {
     if (isBulkTaskDownload) {
-      handleBulkTaskDownload();
+      const tasks = currentSelectedTasks.map((item) => item.task_type);
+
+      if (tasks.every((item) => item === "VOICEOVER_EDIT")) {
+        handleBulkVoiceoverTaskDownload();
+      } else {
+        handleBulkTaskDownload();
+      }
     } else {
       const { task_type: taskType } = currentTaskDetails;
 
@@ -1040,6 +1046,43 @@ const TaskList = () => {
     }
   };
 
+  const handleBulkVoiceoverTaskDownload = async () => {
+    handleDialogClose("exportDialog");
+    const { translation } = exportTypes;
+
+    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+        exportZip(resp);
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "error",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
+  };
+
   const handleToolbarButtonClick = (key) => {
     switch (key) {
       case "bulkTaskUpdate":
@@ -1201,6 +1244,8 @@ const TaskList = () => {
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
+          isBulkTaskDownload={isBulkTaskDownload}
+          currentSelectedTasks={currentSelectedTasks}
         />
       )}
 
