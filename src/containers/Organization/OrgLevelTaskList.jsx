@@ -64,6 +64,7 @@ import { specialOrgIds } from "config";
 //Apis
 import {
   APITransport,
+  BulkExportVoiceoverTasksAPI,
   BulkTaskExportAPI,
   CompareTranscriptionSource,
   ComparisionTableAPI,
@@ -99,7 +100,7 @@ import moment from "moment";
 
 const OrgLevelTaskList = () => {
   const userOrgId = getLocalStorageData("userData").organization.id;
-  
+
   const [desc, setShowDesc] = useState(false);
   const [org_id, setId] = useState();
 
@@ -156,7 +157,7 @@ const OrgLevelTaskList = () => {
   const [exportTypes, setExportTypes] = useState({
     transcription: "srt",
     translation: "srt",
-    voiceover: "mp4",
+    voiceover: "mp3",
     speakerInfo: "false",
     bgMusic: "false",
   });
@@ -1083,6 +1084,41 @@ const OrgLevelTaskList = () => {
     }
   };
 
+  const handleBulkVoiceoverTaskDownload = async () => {
+    handleDialogClose("exportDialog");
+
+    const apiObj = new BulkExportVoiceoverTasksAPI(selectedBulkTaskid);
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+        exportZip(resp);
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "error",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
+  };
+
   const handleExportRadioButtonChange = (event) => {
     const {
       target: { name, value },
@@ -1096,7 +1132,13 @@ const OrgLevelTaskList = () => {
 
   const handleExportSubmitClick = () => {
     if (isBulkTaskDownload) {
-      handleBulkTaskDownload();
+      const tasks = currentSelectedTasks.map((item) => item.task_type);
+
+      if (tasks.every((item) => item === "VOICEOVER_EDIT")) {
+        handleBulkVoiceoverTaskDownload();
+      } else {
+        handleBulkTaskDownload();
+      }
     } else {
       const { task_type: taskType } = currentTaskDetails;
 
@@ -1167,6 +1209,8 @@ const OrgLevelTaskList = () => {
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
+          isBulkTaskDownload={isBulkTaskDownload}
+          currentSelectedTasks={currentSelectedTasks}
         />
       )}
 

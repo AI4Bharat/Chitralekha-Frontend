@@ -153,6 +153,7 @@ import FetchTranslationChartAPI from "./api/Intro/FetchTranslationChart";
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
 import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
+import BulkExportVoiceoverTasksAPI from "./api/Project/BulkExportVoiceoverTasks";
 
 export {
   FetchAdminLevelReportsAPI,
@@ -290,4 +291,5 @@ export {
   FetchTranscriptionChartAPI,
   FetchVoiceoverChartAPI,
   FetchTranslationChartAPI,
+  BulkExportVoiceoverTasksAPI,
 };
