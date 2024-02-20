@@ -19,6 +19,7 @@ const endpoints = {
   unSubscribeFromEmail: "/newsletter/unsubscribe",
   newsletter: "/newsletter/",
   preview: "/newsletter/preview/",
+  onboarding: "/onboarding/",
 
   //Video
   video: "/video/",

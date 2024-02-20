@@ -569,8 +569,13 @@ export const filterTaskList = (taskList, selectedFilters) => {
   return filterResult;
 };
 
-export const validateEmail=(email)=>{
+export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
   return emailRegex.test(email);
+};
+
+export const validatePhone = (phone) => {
+  const regex = /^[0-9\b]+$/;
+  return regex.test(phone);
 };

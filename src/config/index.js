@@ -39,6 +39,7 @@ import {
   bgMusicOptions,
   buttonConfig,
   domains,
+  orgTypeList,
   speakerFields,
   speakerInfoOptions,
   toolBarActions,
@@ -132,4 +133,5 @@ export {
   testimonials,
   glossaryColumns,
   domains,
+  orgTypeList,
 };

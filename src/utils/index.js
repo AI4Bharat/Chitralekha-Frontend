@@ -61,8 +61,9 @@ import {
   roles,
   snakeToTitleCase,
   steps,
+  validatePhone,
 } from "./utils";
-import {partnerData,useCaseData} from "./introUtils";
+import { partnerData, useCaseData } from "./introUtils";
 import teamDetails from "./userDetails";
 
 export {
@@ -127,4 +128,5 @@ export {
   teamDetails,
   partnerData,
   useCaseData,
+  validatePhone,
 };
