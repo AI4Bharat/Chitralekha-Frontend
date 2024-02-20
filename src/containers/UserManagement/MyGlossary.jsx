@@ -159,7 +159,16 @@ const MyGlossary = () => {
         </Typography>
 
         <Grid container direction="row" sx={{ my: 4 }}>
-          <Grid item md={loggedInUserData.id === orgOwnerId ? 6 : 12} xs={12}>
+          <Grid
+            item
+            md={
+              loggedInUserData.id === orgOwnerId ||
+              loggedInUserData.role === "PROJECT_MANAGER"
+                ? 6
+                : 12
+            }
+            xs={12}
+          >
             <Button
               style={{ marginRight: "10px", width: "100%" }}
               variant="contained"
@@ -169,7 +178,8 @@ const MyGlossary = () => {
             </Button>
           </Grid>
 
-          {loggedInUserData.id === orgOwnerId && (
+          {(loggedInUserData.id === orgOwnerId ||
+            loggedInUserData.role === "PROJECT_MANAGER") && (
             <Grid item md={6} xs={12}>
               <Button
                 style={{ marginLeft: "10px", width: "100%" }}
