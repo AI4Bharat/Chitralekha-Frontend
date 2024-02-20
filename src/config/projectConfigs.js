@@ -247,3 +247,9 @@ export const domains = [
   { code: "literature", label: "Literature" },
   { code: "geography", label: "Geography" },
 ];
+
+export const orgTypeList = [
+  { label: "NGO", value: "NGO" },
+  { label: "Startup", value: "Startup" },
+  { label: "Corporate", value: "Corporate" },
+];
