@@ -41,6 +41,15 @@ function IntroHeader(props) {
       <Grid>
         <img src={Chitralekhalogo} style={{ maxWidth: "90px" }} alt="logo" />
         <Grid>
+          <Button
+            onClick={() => navigate("/")}
+            className={classes.headerDrawerButton}
+          >
+            Home
+          </Button>
+        </Grid>
+
+        <Grid>
           <a
             target="_blank"
             rel="noreferrer"
@@ -123,6 +132,13 @@ function IntroHeader(props) {
         <Toolbar>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Grid>
+              <Button
+                onClick={() => navigate("/")}
+                className={classes.headerDrawerButton}
+              >
+                Home
+              </Button>
+
               <a
                 target="_blank"
                 href="https://www.youtube.com/@chitralekha-bhashini"
