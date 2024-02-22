@@ -135,7 +135,7 @@ const TranscriptionChart = ({ chartData, loading }) => {
 
   return (
     <Box className={classes.modelChartSection}>
-      <Box>
+      <Box sx={{ textAlign: "left" }}>
         <Typography variant="h4" className={classes.heading}>
           Transcriptions Report
           <Typography variant="body1">

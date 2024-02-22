@@ -86,7 +86,7 @@ const IntroDatasetStyle = makeStyles({
     lineHeight: 1.17,
     color: "#51504f",
     marginBottom: "50px",
-    fontFamily: '"rubik" ,"Roboto","Rowdies" ,sans-serif',
+    fontFamily: '"Rowdies" ,sans-serif',
     fontWeight: "500",
   },
   featuresTitle: {
@@ -302,6 +302,11 @@ const IntroDatasetStyle = makeStyles({
     color: "rgb(44, 39, 153)",
     textAlign: "right",
   },
+  chartHeader: {
+    marginTop: "6%",
+    fontSize: "55px",
+    color: "#51504f",
+  }
 });
 
 export default IntroDatasetStyle;
