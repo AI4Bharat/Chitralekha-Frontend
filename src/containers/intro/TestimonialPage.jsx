@@ -15,7 +15,10 @@ const TestimonialCard = ({ index, testimonial }) => {
       className={classes.testimonialWrapper}
     >
       <CardContent style={{ padding: "16px" }}>
-        <Typography className={classes.testimonialPageContent} marginBottom="20px">
+        <Typography
+          className={classes.testimonialPageContent}
+          marginBottom="20px"
+        >
           "{testimonial.content}"
         </Typography>
         <Typography
@@ -37,8 +40,14 @@ const TestimonialCard = ({ index, testimonial }) => {
 };
 
 export default function TestimonialPage() {
+  const classes = IntroDatasetStyle();
+
   return (
     <Container maxWidth="lg" sx={{ marginTop: "120px" }}>
+      <Typography variant="h2" className={classes.titles}>
+        Testimonials
+      </Typography>
+
       {testimonials.map((testimonial, index) => (
         <Box key={testimonial.name} sx={{ mb: 4 }}>
           <TestimonialCard index={index} testimonial={testimonial} />

@@ -6,7 +6,6 @@ import { IntroDatasetStyle } from "styles";
 //Components
 import { Grid, Typography, Button, Box, Divider } from "@mui/material";
 import {
-  Charts,
   Features,
   Partners,
   Principles,

@@ -167,7 +167,7 @@ const VoiceoverChart = ({ chartData, loading }) => {
 
   return (
     <Box className={classes.modelChartSection}>
-      <Box>
+      <Box sx={{ textAlign: "left" }}>
         <Typography variant="h4" className={classes.heading}>
           Voiceover Report
           <Typography variant="body1">

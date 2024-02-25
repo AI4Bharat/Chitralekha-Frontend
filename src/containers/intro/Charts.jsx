@@ -9,9 +9,12 @@ import {
   FetchTranslationChartAPI,
   FetchVoiceoverChartAPI,
 } from "redux/actions";
+import { Divider, Typography } from "@mui/material";
+import { IntroDatasetStyle } from "styles";
 
 const Charts = () => {
   const dispatch = useDispatch();
+  const classes = IntroDatasetStyle();
 
   const [loading, setLoading] = useState(false);
 
@@ -46,8 +49,13 @@ const Charts = () => {
 
   return (
     <>
+      <Typography variant="h4" className={classes.chartHeader}>
+        Dashboard
+      </Typography>
       <TranscriptionChart loading={loading} chartData={transcriptChartData} />
+      <Divider />
       <TranslationChart loading={loading} chartData={translationChartData} />
+      <Divider />
       <VoiceoverChart loading={loading} chartData={voiceoverChartData} />
     </>
   );

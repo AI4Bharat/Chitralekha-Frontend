@@ -9,7 +9,7 @@ const ChartStyles = makeStyles((theme) => ({
   },
 
   modelChartSection: {
-    padding: "5% 15%",
+    padding: "4% 15%",
     [theme.breakpoints.down("md")]: {
       padding: "5% 0%",
     },
@@ -25,11 +25,10 @@ const ChartStyles = makeStyles((theme) => ({
   },
 
   heading: {
-    fontSize: "55px",
+    fontSize: "36px",
     lineHeight: 1.17,
     color: "#51504f",
-    textAlign: "center",
-    marginBottom: "35px",
+    marginBottom: "5px",
     fontFamily: '"rubik" ,"Roboto","Rowdies" ,sans-serif',
     fontWeight: "500",
   },
