@@ -21,6 +21,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { DatasetStyle, TableStyles } from "styles";
 import GlossaryDialog from "common/GlossaryDialog";
+import UploadFileDialog from "common/UploadFileDialog";
 
 const MyGlossary = () => {
   const classes = DatasetStyle();
@@ -30,6 +31,8 @@ const MyGlossary = () => {
   const csvUpload = useRef();
 
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [openUploadGlossaryDialog, setOpenUploadGlossaryDialog] =
+    useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -59,6 +62,7 @@ const MyGlossary = () => {
 
         if (apiType === "UPLOAD_GLOSSARY") {
           getGlossaryList();
+          setOpenUploadGlossaryDialog(false);
         }
       }
     }
@@ -184,7 +188,7 @@ const MyGlossary = () => {
               <Button
                 style={{ marginLeft: "10px", width: "100%" }}
                 variant="contained"
-                onClick={() => csvUpload.current.click()}
+                onClick={() => setOpenUploadGlossaryDialog(true)}
               >
                 Upload Glossary
               </Button>
@@ -215,6 +219,15 @@ const MyGlossary = () => {
             submit={(sentences) => createGlossary(sentences)}
             title={"Add Glossary"}
             disableFields={false}
+          />
+        )}
+
+        {openUploadGlossaryDialog && (
+          <UploadFileDialog
+            openDialog={openUploadGlossaryDialog}
+            handleClose={() => setOpenUploadGlossaryDialog(false)}
+            title={"Upload Glossary"}
+            handleSubmit={uploadGlossary}
           />
         )}
       </Card>
