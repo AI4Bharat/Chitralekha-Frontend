@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import React, { memo, useState } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -26,8 +26,9 @@ import CheckIcon from "@mui/icons-material/Check";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
-import { FindAndReplace } from "common";
+import { FindAndReplace, PreviewDialog } from "common";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const anchorOrigin = {
   vertical: "top",
@@ -48,8 +49,6 @@ const SettingsButtonComponent = ({
   enableRTL_Typing,
   currentIndexToSplitTextBlock,
   setFontSize,
-  selection,
-  setselection,
   fontSize,
   saveTranscriptHandler,
   setOpenConfirmDialog,
@@ -66,12 +65,10 @@ const SettingsButtonComponent = ({
   handleInfoButtonClick,
 }) => {
   const classes = VideoLandingStyle();
-  // const dispatch = useDispatch();
 
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
-
-  // const [anchorElLimit, setAnchorElLimit] = useState(null);
+  const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -83,27 +80,6 @@ const SettingsButtonComponent = ({
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   );
-
-  // useEffect(()=>{
-  //   // if(textVal){
-  //   const textVal = document.getElementsByClassName(classes.boxHighlight)[0];
-  //     let cursorStart = textVal.selectionStart;
-  //     let cursorEnd = textVal.selectionEnd;
-  //     let selectedText = textVal.value.substring(cursorStart, cursorEnd)
-  //     if(selectedText!=""){
-  //       setselection(true)
-  //     }
-  //     else{
-  //       setselection(false)
-  //     }
-  //   // }
-  //  },[])
-
-  //  console.log(selection);
-
-   
-   
-
 
   const getDisbled = (flag) => {
     if (!transcriptPayload?.payload?.payload?.length) {
@@ -133,6 +109,22 @@ const SettingsButtonComponent = ({
     }
 
     return false;
+  };
+
+  const handleScript = () => {
+    setAnchorElSettings(null);
+    setsubsuper(!subsuper);
+
+    if (taskData.task_type === "TRANSCRIPTION_EDIT") {
+      localStorage.setItem(
+        "subscriptSuperscriptPreferenceTranscript",
+        !subsuper
+      );
+    }
+
+    if (taskData.task_type === "TRANSLATION_EDIT") {
+      localStorage.setItem("subscriptSuperscriptPreferenceTanslate", !subsuper);
+    }
   };
 
   return (
@@ -212,53 +204,42 @@ const SettingsButtonComponent = ({
             }
           />
         </MenuItem>
+
         <MenuItem>
           <FormControlLabel
             label="Subscript/Superscript"
-            control={
-              <Checkbox
-                checked={subsuper}
-                onChange={() => {
-                  setAnchorElSettings(null);
-                 // console.log(subsuper);
-                  setsubsuper(!subsuper);
-                  if(taskData.task_type=="TRANSCRIPTION_EDIT"){
-                  localStorage.setItem('subscriptSuperscriptPreferenceTranscript', !subsuper);
-                  }
-                  if(taskData.task_type=="TRANSLATION_EDIT"){
-                    localStorage.setItem('subscriptSuperscriptPreferenceTanslate', !subsuper);
-                    }
-                //  console.log(subsuper);
-                }}
-              />
-            }
+            control={<Checkbox checked={subsuper} onChange={handleScript} />}
           />
         </MenuItem>
       </Menu>
-      {subsuper === true  ? (
-        <Divider orientation="vertical" className={classes.rightPanelDivider} />
-      ) : null}
 
-      {subsuper === true  ? (
-        <Tooltip title="SubScript" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={() => handleSubscript()}
-          >
-            <SubscriptIcon className={classes.rightPanelSvg} />
-          </IconButton>
-        </Tooltip>
-      ) : null}
+      {subsuper && (
+        <>
+          <Divider
+            orientation="vertical"
+            className={classes.rightPanelDivider}
+          />
 
-      {subsuper===true?<Tooltip title="SuperScript" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          sx={{ marginLeft: "5px" }}
-          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
-        >
-          <SuperscriptIcon className={classes.rightPanelSvg}  />
-        </IconButton>
-      </Tooltip>:null}
+          <Tooltip title="SubScript" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              onClick={() => handleSubscript()}
+            >
+              <SubscriptIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="SuperScript" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              sx={{ marginLeft: "5px" }}
+              onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+            >
+              <SuperscriptIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+        </>
+      )}
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
@@ -324,6 +305,17 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <Tooltip title="Subtitle Preview" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => setOpenPreviewDialog(true)}
+          >
+            <VisibilityIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      )}
+
       <Tooltip title="Complete" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
@@ -358,6 +350,16 @@ const SettingsButtonComponent = ({
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
+      )}
+
+      {openPreviewDialog && (
+        <PreviewDialog
+          openPreviewDialog={openPreviewDialog}
+          handleClose={() => setOpenPreviewDialog(false)}
+          taskType={taskData?.task_type}
+          videoId={taskData?.video}
+          targetLanguage={taskData?.target_language}
+        />
       )}
     </>
   );

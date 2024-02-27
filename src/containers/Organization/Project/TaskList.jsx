@@ -80,7 +80,6 @@ import {
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
-  FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
   RegenerateResponseAPI,
   ReopenTaskAPI,
@@ -178,7 +177,6 @@ const TaskList = () => {
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector((state) => state.getPreviewData?.data);
   const selectedFilters = useSelector(
     (state) => state.taskFilters.selectedFilters
   );
@@ -588,11 +586,8 @@ const TaskList = () => {
     handleDialogClose("TaskReopenDialog");
   };
 
-  const handlePreviewTask = async (videoId, taskType, targetlanguage) => {
+  const handlePreviewTask = () => {
     handleDialogOpen("previewDialog");
-
-    const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetlanguage);
-    dispatch(APITransport(taskObj));
   };
 
   const generateTranslationCall = async (id, taskStatus) => {
@@ -695,7 +690,7 @@ const TaskList = () => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
 
-    const { id, task_type, status, video, target_language } = selectedTask;
+    const { id, task_type, status } = selectedTask;
     setCurrentTaskDetails(selectedTask);
 
     switch (action) {
@@ -736,7 +731,7 @@ const TaskList = () => {
         break;
 
       case "Preview":
-        handlePreviewTask(video, task_type, target_language);
+        handlePreviewTask();
         break;
 
       case "Delete":
@@ -1287,8 +1282,9 @@ const TaskList = () => {
         <PreviewDialog
           openPreviewDialog={openDialogs.previewDialog}
           handleClose={() => handleDialogClose("previewDialog")}
-          data={previewData}
-          task_type={currentTaskDetails?.task_type}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
         />
       )}
 
