@@ -79,7 +79,6 @@ import {
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
-  FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
   RegenerateResponseAPI,
   ReopenTaskAPI,
@@ -168,7 +167,6 @@ const OrgLevelTaskList = () => {
   const orgId = userData?.organization?.id;
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector((state) => state.getPreviewData?.data);
 
   //Fiters and Search
   const orgSelectedFilters = useSelector(
@@ -488,9 +486,6 @@ const OrgLevelTaskList = () => {
 
   const handlePreviewTask = async (id, taskType, targetlanguage) => {
     handleDialogOpen("previewDialog");
-
-    const taskObj = new FetchpreviewTaskAPI(id, taskType, targetlanguage);
-    dispatch(APITransport(taskObj));
   };
 
   const handleShowSearch = (col, event) => {
@@ -594,7 +589,7 @@ const OrgLevelTaskList = () => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
 
-    const { id, task_type, status, video, target_language } = selectedTask;
+    const { id, task_type, status } = selectedTask;
     setCurrentTaskDetails(selectedTask);
 
     switch (action) {
@@ -635,7 +630,7 @@ const OrgLevelTaskList = () => {
         break;
 
       case "Preview":
-        handlePreviewTask(video, task_type, target_language);
+        handlePreviewTask();
         break;
 
       case "Delete":
@@ -1241,8 +1236,9 @@ const OrgLevelTaskList = () => {
         <PreviewDialog
           openPreviewDialog={openDialogs.previewDialog}
           handleClose={() => handleDialogClose("previewDialog")}
-          data={previewData}
-          task_type={currentTaskDetails?.task_type}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
         />
       )}
 

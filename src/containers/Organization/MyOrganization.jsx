@@ -1,5 +1,5 @@
 //My Organization
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { roles } from "utils";
@@ -36,6 +36,7 @@ import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { AddOrganizationMember, AlertComponent, Loader } from "common";
+import UploadFileDialog from "common/UploadFileDialog";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -58,7 +59,6 @@ const MyOrganization = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const csvUpload = useRef();
 
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -69,6 +69,8 @@ const MyOrganization = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColumn, setAlertColumn] = useState([]);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
+    useState(false);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -83,6 +85,10 @@ const MyOrganization = () => {
 
     if (!progress) {
       if (success) {
+        if (apiType === "UPLOAD_CSV") {
+          setOpenUploadBulkVideoDialog(false);
+        }
+
         if (apiType === "GET_USERS_ROLES") {
           setNewMemberName([]);
           setNewMemberRole("");
@@ -95,6 +101,7 @@ const MyOrganization = () => {
           setAlertData(data.response);
           setAlertMessage(data.message);
           setAlertColumn("csvAlertColumns");
+          setOpenUploadBulkVideoDialog(false);
         }
       }
     }
@@ -242,7 +249,7 @@ const MyOrganization = () => {
                       style={{ marginLeft: "10px" }}
                       className={classes.projectButton}
                       variant="contained"
-                      onClick={() => csvUpload.current.click()}
+                      onClick={() => setOpenUploadBulkVideoDialog(true)}
                     >
                       Bulk Video Upload
                       <Tooltip title="Download sample CSV">
@@ -258,16 +265,6 @@ const MyOrganization = () => {
                           <InfoOutlinedIcon />
                         </IconButton>
                       </Tooltip>
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        ref={csvUpload}
-                        accept=".csv"
-                        onChange={(event) => {
-                          handeFileUpload(event.target.files);
-                          event.target.value = null;
-                        }}
-                      />
                     </Button>
                   )}
                 </Fragment>
@@ -357,6 +354,15 @@ const MyOrganization = () => {
           message={alertMessage}
           report={alertData}
           columns={alertColumn}
+        />
+      )}
+
+      {openUploadBulkVideoDialog && (
+        <UploadFileDialog
+          openDialog={openUploadBulkVideoDialog}
+          handleClose={() => setOpenUploadBulkVideoDialog(false)}
+          title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
         />
       )}
     </Grid>

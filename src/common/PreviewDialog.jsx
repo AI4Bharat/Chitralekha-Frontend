@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   Box,
@@ -8,15 +7,47 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import { FetchpreviewTaskAPI, setSnackBar } from "redux/actions";
+import { useDispatch } from "react-redux";
 
-const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
-  const [Previewdata, setPreviewdata] = useState();
+const PreviewDialog = ({
+  openPreviewDialog,
+  handleClose,
+  videoId,
+  taskType,
+  targetLanguage,
+}) => {
+  const dispatch = useDispatch();
+
+  const [previewdata, setPreviewdata] = useState([]);
+
+  const fetchPreviewData = useCallback(async () => {
+    const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetLanguage);
+    try {
+      const res = await fetch(taskObj.apiEndPoint(), {
+        method: "GET",
+        headers: taskObj.getHeaders().headers,
+      });
+
+      const response = await res.json();
+      setPreviewdata(response.data.payload);
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
+  }, [dispatch, videoId, taskType, targetLanguage]);
 
   useEffect(() => {
-    setPreviewdata(data);
-  }, [data]);
+    fetchPreviewData();
+  }, [fetchPreviewData]);
+
   return (
     <Dialog
       open={openPreviewDialog}
@@ -38,51 +69,25 @@ const PreviewDialog = ({ openPreviewDialog, handleClose, data, task_type }) => {
 
       <DialogContent sx={{ height: "410px" }}>
         <DialogContentText id="alert-dialog-description">
-          {Previewdata?.data?.payload &&
-          Previewdata?.data?.payload.length > 0 ? (
-            Previewdata?.data?.payload.map((el, i) => {
-              return (
-                <Box
-                  key={i}
-                  id={`sub_${i}`}
-                  textAlign={"start"}
-                  sx={{
-                    mb: 2,
-                    padding: 2,
-                    border: "1px solid #000000",
-                    borderRadius: 2,
-                    width: "90%",
-                  }}
-                >
-                  {task_type === "TRANSCRIPTION_EDIT" ||
-                  task_type === "TRANSCRIPTION_REVIEW"
-                    ? el.text
-                    : el.target_text}
-                </Box>
-              );
-            })
-          ) : (
-            <Box
-              sx={{
-                // marginY: 2,
-                padding: 3,
-                border: "1px solid #000000",
-                borderRadius: 2,
-                width: "80%",
-              }}
-            ></Box>
-          )}
+          {previewdata.map((el, i) => {
+            return (
+              <Box
+                key={`sub-${i}`}
+                textAlign={"start"}
+                sx={{
+                  mb: 2,
+                  padding: 2,
+                  border: "1px solid #000000",
+                  borderRadius: 2,
+                  width: "90%",
+                }}
+              >
+                {taskType.includes("TRANSCRIPTION") ? el.text : el.target_text}
+              </Box>
+            );
+          })}
         </DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ p: "20px" }}>
-        {/* <Button
-          variant="text"
-          onClick={handleClose}
-          sx={{ lineHeight: "1", borderRadius: "6px" }}
-        >
-          Close
-        </Button> */}
-      </DialogActions>
     </Dialog>
   );
 };

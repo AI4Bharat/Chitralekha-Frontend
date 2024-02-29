@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getColumns, getOptions } from "utils";
 import MUIDataTable from "mui-datatables";
@@ -21,15 +21,18 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { DatasetStyle, TableStyles } from "styles";
 import GlossaryDialog from "common/GlossaryDialog";
+import UploadFileDialog from "common/UploadFileDialog";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const MyGlossary = () => {
   const classes = DatasetStyle();
   const tableClasses = TableStyles();
 
   const dispatch = useDispatch();
-  const csvUpload = useRef();
 
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [openUploadGlossaryDialog, setOpenUploadGlossaryDialog] =
+    useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
 
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -59,6 +62,7 @@ const MyGlossary = () => {
 
         if (apiType === "UPLOAD_GLOSSARY") {
           getGlossaryList();
+          setOpenUploadGlossaryDialog(false);
         }
       }
     }
@@ -151,6 +155,20 @@ const MyGlossary = () => {
     reader.readAsBinaryString(file[0]);
   };
 
+  const handleSampleDownload = (event) => {
+    event.stopPropagation();
+
+    const link = document.createElement("a");
+
+    link.href = "expected_glossary_input.csv";
+    link.download = "expected_glossary_input.csv";
+
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
@@ -184,20 +202,18 @@ const MyGlossary = () => {
               <Button
                 style={{ marginLeft: "10px", width: "100%" }}
                 variant="contained"
-                onClick={() => csvUpload.current.click()}
+                onClick={() => setOpenUploadGlossaryDialog(true)}
               >
                 Upload Glossary
+                <Tooltip title="Download sample CSV">
+                  <IconButton
+                    onClick={(e) => handleSampleDownload(e)}
+                    sx={{ color: "white" }}
+                  >
+                    <InfoOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
               </Button>
-              <input
-                type="file"
-                style={{ display: "none" }}
-                ref={csvUpload}
-                accept=".csv"
-                onChange={(event) => {
-                  uploadGlossary(event.target.files);
-                  event.target.value = null;
-                }}
-              />
             </Grid>
           )}
         </Grid>
@@ -215,6 +231,15 @@ const MyGlossary = () => {
             submit={(sentences) => createGlossary(sentences)}
             title={"Add Glossary"}
             disableFields={false}
+          />
+        )}
+
+        {openUploadGlossaryDialog && (
+          <UploadFileDialog
+            openDialog={openUploadGlossaryDialog}
+            handleClose={() => setOpenUploadGlossaryDialog(false)}
+            title={"Upload Glossary"}
+            handleSubmit={uploadGlossary}
           />
         )}
       </Card>
