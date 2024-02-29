@@ -1,5 +1,5 @@
 //My Organization
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
@@ -48,6 +48,7 @@ import {
   CreateVideoDialog,
   Loader,
 } from "common";
+import UploadFileDialog from "common/UploadFileDialog";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -70,7 +71,6 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const csvUpload = useRef();
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -102,6 +102,8 @@ const Project = () => {
   const [alertColumn, setAlertColumn] = useState("");
   const [orgOwnerId, setOrgOwnerId] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
+  const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
+    useState(false);
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -130,6 +132,10 @@ const Project = () => {
           getProjectMembers();
         }
 
+        if (apiType === "UPLOAD_CSV") {
+          setOpenUploadBulkVideoDialog(false);
+        }
+
         if (apiType === "CREATE_NEW_VIDEO") {
           dispatch(setSnackBar({ open: false }));
           setShowAlert(true);
@@ -145,6 +151,7 @@ const Project = () => {
           setAlertMessage(data.message);
           setAlertData(data.response);
           setAlertColumn("csvAlertColumns");
+          setOpenUploadBulkVideoDialog(false);
         }
       }
     }
@@ -397,7 +404,7 @@ const Project = () => {
                   style={{ marginLeft: "10px" }}
                   className={classes.projectButton}
                   variant="contained"
-                  onClick={() => csvUpload.current.click()}
+                  onClick={() => setOpenUploadBulkVideoDialog(true)}
                 >
                   Bulk Video Upload
                   <Tooltip title="Download sample CSV">
@@ -413,16 +420,6 @@ const Project = () => {
                       <InfoOutlinedIcon />
                     </IconButton>
                   </Tooltip>
-                  <input
-                    type="file"
-                    style={{ display: "none" }}
-                    ref={csvUpload}
-                    accept=".csv"
-                    onChange={(event) => {
-                      handeFileUpload(event.target.files);
-                      event.target.value = null;
-                    }}
-                  />
                 </Button>
               </Box>
             )}
@@ -541,6 +538,15 @@ const Project = () => {
           message={alertMessage}
           report={alertData}
           columns={alertColumn}
+        />
+      )}
+
+      {openUploadBulkVideoDialog && (
+        <UploadFileDialog
+          openDialog={openUploadBulkVideoDialog}
+          handleClose={() => setOpenUploadBulkVideoDialog(false)}
+          title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
         />
       )}
     </Grid>

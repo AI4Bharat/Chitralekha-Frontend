@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getColumns, getOptions } from "utils";
 import MUIDataTable from "mui-datatables";
@@ -22,13 +22,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { DatasetStyle, TableStyles } from "styles";
 import GlossaryDialog from "common/GlossaryDialog";
 import UploadFileDialog from "common/UploadFileDialog";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const MyGlossary = () => {
   const classes = DatasetStyle();
   const tableClasses = TableStyles();
 
   const dispatch = useDispatch();
-  const csvUpload = useRef();
 
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
   const [openUploadGlossaryDialog, setOpenUploadGlossaryDialog] =
@@ -155,6 +155,20 @@ const MyGlossary = () => {
     reader.readAsBinaryString(file[0]);
   };
 
+  const handleSampleDownload = (event) => {
+    event.stopPropagation();
+
+    const link = document.createElement("a");
+
+    link.href = "expected_glossary_input.csv";
+    link.download = "expected_glossary_input.csv";
+
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
@@ -191,17 +205,15 @@ const MyGlossary = () => {
                 onClick={() => setOpenUploadGlossaryDialog(true)}
               >
                 Upload Glossary
+                <Tooltip title="Download sample CSV">
+                  <IconButton
+                    onClick={(e) => handleSampleDownload(e)}
+                    sx={{ color: "white" }}
+                  >
+                    <InfoOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
               </Button>
-              <input
-                type="file"
-                style={{ display: "none" }}
-                ref={csvUpload}
-                accept=".csv"
-                onChange={(event) => {
-                  uploadGlossary(event.target.files);
-                  event.target.value = null;
-                }}
-              />
             </Grid>
           )}
         </Grid>
