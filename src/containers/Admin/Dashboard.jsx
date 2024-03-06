@@ -9,7 +9,7 @@ import { DatasetStyle } from "styles";
 import { Box, Card, Grid, Tab, Tabs, Button } from "@mui/material";
 import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
-import { AddOrganizationMember } from "common";
+import { AddNewMember, AddOrganizationMember } from "common";
 import AdminLevelReport from "./AdminLevelReport";
 
 //Apis
@@ -40,6 +40,7 @@ const DashBoard = () => {
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [openMemberDialog, setOpenMemberDialog] = useState(false);
 
   const addNewMemberHandler = async () => {
     const data = {
@@ -80,24 +81,36 @@ const DashBoard = () => {
           index={0}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
-          <Box
-            display={"flex"}
-            flexDirection="Column"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Button
-              className={classes.projectButton}
-              onClick={() => navigate(`/admin/create-new-org`)}
-              variant="contained"
-            >
-              Add New Organization
-            </Button>
+          <Grid container direction="row" sx={{ my: 4 }}>
+            <Grid item md={6} xs={12}>
+              <Button
+                style={{ marginRight: "10px", width: "100%" }}
+                variant="contained"
+                onClick={() => navigate(`/admin/create-new-org`)}
+              >
+                Add New Organization
+              </Button>
+            </Grid>
 
-            <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <OrganizationList />
-            </div>
-          </Box>
+            <Grid item md={6} xs={12}>
+              <Button
+                style={{ marginLeft: "10px", width: "100%" }}
+                variant="contained"
+                onClick={() => setOpenMemberDialog(true)}
+              >
+                Create New Members
+              </Button>
+            </Grid>
+
+            <Grid item md={12} xs={12} style={{ width: "100%" }}>
+              <div
+                className={classes.workspaceTables}
+                style={{ width: "100%" }}
+              >
+                <OrganizationList />
+              </div>
+            </Grid>
+          </Grid>
         </TabPanel>
 
         <TabPanel
@@ -173,6 +186,13 @@ const DashBoard = () => {
           handleTextField={setNewMemberEmail}
           addBtnClickHandler={addNewMemberHandler}
           isAdmin={true}
+        />
+      )}
+
+      {openMemberDialog && (
+        <AddNewMember
+          open={openMemberDialog}
+          handleClose={() => setOpenMemberDialog(false)}
         />
       )}
     </Grid>
