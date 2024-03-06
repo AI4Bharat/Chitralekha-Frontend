@@ -66,6 +66,7 @@ import { specialOrgIds } from "config";
 //APIs
 import {
   APITransport,
+  BulkExportVoiceoverTasksAPI,
   BulkTaskExportAPI,
   CompareTranscriptionSource,
   ComparisionTableAPI,
@@ -1043,9 +1044,8 @@ const TaskList = () => {
 
   const handleBulkVoiceoverTaskDownload = async () => {
     handleDialogClose("exportDialog");
-    const { translation } = exportTypes;
 
-    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
+    const apiObj = new BulkExportVoiceoverTasksAPI(selectedBulkTaskid);
     dispatch(APITransport(apiObj));
   };
 
