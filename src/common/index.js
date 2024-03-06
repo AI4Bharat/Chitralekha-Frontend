@@ -46,6 +46,7 @@ import { TabPanel } from "./TabPanel";
 import ShortcutKeys from "./ShortcutKeys";
 import UnsubscribeHeader from "./UnsubscribeHeader";
 import OnBoardingForm from "./OnBoardingForm";
+import AddNewMember from "./AddNewMember";
 
 export {
   AddOrganizationMember,
@@ -96,4 +97,5 @@ export {
   ShortcutKeys,
   UnsubscribeHeader,
   OnBoardingForm,
+  AddNewMember,
 };

@@ -1083,35 +1083,7 @@ const OrgLevelTaskList = () => {
     handleDialogClose("exportDialog");
 
     const apiObj = new BulkExportVoiceoverTasksAPI(selectedBulkTaskid);
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        headers: apiObj.getHeaders().headers,
-      });
-
-      if (res.ok) {
-        const resp = await res.blob();
-        exportZip(resp);
-      } else {
-        const resp = await res.json();
-
-        dispatch(
-          setSnackBar({
-            open: true,
-            message: resp.message,
-            variant: "error",
-          })
-        );
-      }
-    } catch (error) {
-      dispatch(
-        setSnackBar({
-          open: true,
-          message: "Something went wrong!!",
-          variant: "error",
-        })
-      );
-    }
+    dispatch(APITransport(apiObj));
   };
 
   const handleExportRadioButtonChange = (event) => {

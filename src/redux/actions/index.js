@@ -3,6 +3,7 @@ import FetchAdminLevelReportsAPI from "./api/Admin/AdminLevelReport";
 import FetchAllUsersAPI from "./api/Admin/FetchAllUsers";
 import FetchOrgOwnersAPI from "./api/Admin/FetchOrgOwners";
 import UpdateMemberPasswordAPI from "./api/Admin/UpdateMemberPassword";
+import CreateMemberAPI from "./api/Admin/CreateMember";
 
 //Organization APIs
 import AddOrganizationMemberAPI from "./api/Organization/AddOrganizationMember";
@@ -294,4 +295,5 @@ export {
   FetchTranslationChartAPI,
   OnBoardingAPI,
   BulkExportVoiceoverTasksAPI,
+  CreateMemberAPI,
 };
