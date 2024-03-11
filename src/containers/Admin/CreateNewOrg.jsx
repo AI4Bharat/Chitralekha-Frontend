@@ -76,7 +76,7 @@ const CreateNewOrg = () => {
   useEffect(() => {
     const temp = [
       ...orgOwnerList,
-      { id: "createNewOwner", email: "+ Create New Email" },
+      { id: "createNewOwner", email: "+ Create New Org Owner" },
     ];
 
     setOrgOwners(temp);
