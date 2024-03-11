@@ -29,6 +29,7 @@ import {
   FetchBulkTaskTypeAPI,
   FetchSupportedLanguagesAPI,
 } from "redux/actions";
+import { validateEmail } from "utils/utils";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -67,6 +68,19 @@ const CreateNewOrg = () => {
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [voiceOverSourceType, setVoiceOverSourceType] =
     useState("MACHINE_GENERATED");
+  const [orgOwners, setOrgOwners] = useState([]);
+  const [enableOwnerTextBox, setEnableOwnerTextBox] = useState(false);
+  const [orgOwnerEmail, setOrgOwnerEmail] = useState("");
+  const [emailError, setEmailError] = useState(false);
+
+  useEffect(() => {
+    const temp = [
+      ...orgOwnerList,
+      { id: "createNewOwner", email: "+ Create New Org Owner" },
+    ];
+
+    setOrgOwners(temp);
+  }, [orgOwnerList]);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
@@ -83,7 +97,7 @@ const CreateNewOrg = () => {
   }, [apiStatus]);
 
   const disableBtn = () => {
-    if (!title || !owner) {
+    if (!title) {
       return true;
     }
 
@@ -91,6 +105,20 @@ const CreateNewOrg = () => {
       defaultTask.some((item) => item.value.includes("TRANSLATION")) &&
       translationLanguage.length <= 0
     ) {
+      return true;
+    }
+
+    if (enableOwnerTextBox) {
+      if (!orgOwnerEmail) {
+        return true;
+      }
+    } else {
+      if (!owner) {
+        return true;
+      }
+    }
+
+    if (emailError) {
       return true;
     }
 
@@ -120,7 +148,7 @@ const CreateNewOrg = () => {
     const reqBody = {
       title,
       email_domain_name: emailDomainName,
-      organization_owner: owner,
+      organization_owner: enableOwnerTextBox ? orgOwnerEmail : owner.id,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
       default_task_types: defaultTask.map((item) => item.value),
@@ -130,6 +158,23 @@ const CreateNewOrg = () => {
 
     const apiObj = new CreateNewOrganizationAPI(reqBody);
     dispatch(APITransport(apiObj));
+  };
+
+  const handleOrgOwnerChange = (value) => {
+    if (value.id === "createNewOwner") {
+      setOwner("");
+      setEnableOwnerTextBox(true);
+    } else {
+      setEnableOwnerTextBox(false);
+      setOwner(value);
+    }
+  };
+
+  const handleChange = (value) => {
+    setOrgOwnerEmail(value);
+
+    const emailValidation = validateEmail(value);
+    setEmailError(!emailValidation);
   };
 
   return (
@@ -146,10 +191,6 @@ const CreateNewOrg = () => {
           <Grid
             item
             xs={12}
-            sm={12}
-            md={12}
-            lg={12}
-            xl={12}
             style={{ display: "flex", justifyContent: "center" }}
           >
             <Typography variant="h3" align="center">
@@ -165,7 +206,6 @@ const CreateNewOrg = () => {
               name="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              InputLabelProps={{ shrink: true }}
             />
           </Grid>
 
@@ -177,12 +217,12 @@ const CreateNewOrg = () => {
                 id="demo-simple-select"
                 value={owner}
                 label="Owner"
-                onChange={(event) => setOwner(event.target.value)}
+                onChange={(event) => handleOrgOwnerChange(event.target.value)}
                 MenuProps={MenuProps}
               >
-                {orgOwnerList.map((item, index) => {
+                {orgOwners.map((item, index) => {
                   return (
-                    <MenuItem key={index} value={item.id}>
+                    <MenuItem key={index} value={item}>
                       {item.email}
                     </MenuItem>
                   );
@@ -190,6 +230,21 @@ const CreateNewOrg = () => {
               </Select>
             </FormControl>
           </Grid>
+
+          {enableOwnerTextBox && (
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <TextField
+                variant="outlined"
+                fullWidth
+                label="Org Owner Email"
+                name="orgOwnerEmail"
+                value={orgOwnerEmail}
+                onChange={(e) => handleChange(e.target.value)}
+                error={emailError}
+                helperText={emailError ? "Invalid email" : ""}
+              />
+            </Grid>
+          )}
 
           <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
             <TextField
@@ -199,7 +254,6 @@ const CreateNewOrg = () => {
               name="emailDomainName"
               value={emailDomainName}
               onChange={(e) => setEmailDomainName(e.target.value)}
-              InputLabelProps={{ shrink: true }}
             />
           </Grid>
 
