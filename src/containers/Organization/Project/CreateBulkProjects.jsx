@@ -115,7 +115,9 @@ const CreateBulkProjects = () => {
   };
 
   const disableBtn = () => {
-    if (numberOfProjects !== projectNames.length) {
+    const projects = projectNames.filter((item) => item !== "");
+
+    if (numberOfProjects !== projects.length) {
       return true;
     }
 
