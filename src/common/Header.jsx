@@ -59,7 +59,7 @@ const Header = () => {
   }, []);
 
   if(localStorage.getItem("source") !== undefined){
-    localStorage.setItem("source", "anudesh-frontend");
+    localStorage.setItem("source", "chitralekha-frontend");
   }
 
   const handleOpenUserMenu = (event) => {
