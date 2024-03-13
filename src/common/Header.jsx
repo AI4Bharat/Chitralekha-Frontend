@@ -58,6 +58,10 @@ const Header = () => {
     // eslint-disable-next-line
   }, []);
 
+  if(localStorage.getItem("source") !== undefined){
+    localStorage.setItem("source", "chitralekha-frontend");
+  }
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
