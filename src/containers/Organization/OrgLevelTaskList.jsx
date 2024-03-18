@@ -188,11 +188,11 @@ const OrgLevelTaskList = () => {
   );
 
   useEffect(() => {
-    let displayCols = {};
-    let displayColsLocalStorage = JSON.parse(
+    const displayCols = {};
+    const displayColsLocalStorage = JSON.parse(
       localStorage.getItem("orgTaskColDisplayFilter")
     );
-    let allCols = [
+    const allCols = [
       ...orgTaskListColumns.map((ele) => ele.name),
       "id",
       "video_name",
@@ -202,7 +202,7 @@ const OrgLevelTaskList = () => {
       "updated_at",
       "Action",
     ];
-    let defaultDisabledDisplayCols = [
+    const defaultDisabledDisplayCols = [
       "description",
       "created_at",
       "updated_at",
@@ -597,8 +597,8 @@ const OrgLevelTaskList = () => {
   };
 
   const updateLocalStorageDisplayCols = (changedColumn, action) => {
-    let data = JSON.parse(localStorage.getItem("orgTaskColDisplayFilter"));
-    let showStatus = action === "add" ? true : false;
+    const data = JSON.parse(localStorage.getItem("orgTaskColDisplayFilter"));
+    const showStatus = action === "add" ? true : false;
     data[changedColumn] = showStatus;
     localStorage.setItem("orgTaskColDisplayFilter", JSON.stringify(data));
   };

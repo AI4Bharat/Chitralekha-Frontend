@@ -191,11 +191,11 @@ const TaskList = () => {
   );
 
   useEffect(() => {
-    let displayCols = {};
-    let displayColsLocalStorage = JSON.parse(
+    const displayCols = {};
+    const displayColsLocalStorage = JSON.parse(
       localStorage.getItem("taskColDisplayFilter")
     );
-    let allCols = [
+    const allCols = [
       ...taskListColumns.map((ele) => ele.name),
       "id",
       "video_name",
@@ -205,7 +205,7 @@ const TaskList = () => {
       "updated_at",
       "Action",
     ];
-    let defaultDisabledDisplayCols = [
+    const defaultDisabledDisplayCols = [
       "description",
       "created_at",
       "updated_at",
@@ -363,8 +363,8 @@ const TaskList = () => {
   };
 
   const updateLocalStorageDisplayCols = (changedColumn, action) => {
-    let data = JSON.parse(localStorage.getItem("taskColDisplayFilter"));
-    let showStatus = action === "add" ? true : false;
+    const data = JSON.parse(localStorage.getItem("taskColDisplayFilter"));
+    const showStatus = action === "add" ? true : false;
     data[changedColumn] = showStatus;
     localStorage.setItem("taskColDisplayFilter", JSON.stringify(data));
   };
