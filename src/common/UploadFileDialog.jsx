@@ -11,6 +11,7 @@ import { DropzoneArea } from "react-mui-dropzone";
 
 const UploadFileDialog = ({ openDialog, handleClose, title, handleSubmit }) => {
   const [uploadedFile, setUploadedFile] = useState();
+  const [disableMultiClick, setDisableMultiClick] = useState(false);
 
   return (
     <Dialog
@@ -50,10 +51,16 @@ const UploadFileDialog = ({ openDialog, handleClose, title, handleSubmit }) => {
 
         <Button
           variant="contained"
-          onClick={() => handleSubmit(uploadedFile)}
+          onClick={() => {
+            setDisableMultiClick(true);
+            setTimeout(() => {
+              setDisableMultiClick(false);
+            }, 5000);
+            handleSubmit(uploadedFile);
+          }}
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "8px" }}
-          disabled={false}
+          disabled={disableMultiClick}
         >
           Upload
         </Button>
