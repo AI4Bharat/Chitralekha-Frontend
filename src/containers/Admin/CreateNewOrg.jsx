@@ -148,7 +148,8 @@ const CreateNewOrg = () => {
     const reqBody = {
       title,
       email_domain_name: emailDomainName,
-      organization_owner: enableOwnerTextBox ? orgOwnerEmail : owner.id,
+      organization_owner: enableOwnerTextBox ? null : owner.id,
+      new_org_owner_email: enableOwnerTextBox ? orgOwnerEmail : null,
       default_transcript_type: transcriptSourceType,
       default_translation_type: translationSourceType,
       default_task_types: defaultTask.map((item) => item.value),
