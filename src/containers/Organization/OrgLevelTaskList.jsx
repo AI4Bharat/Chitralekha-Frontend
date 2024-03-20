@@ -319,6 +319,12 @@ const OrgLevelTaskList = () => {
       assignee: orgSearchValue?.user,
     };
 
+    const taskDescriptionLocalStore=JSON.parse(localStorage.getItem('taskSearchFilters'))?.descriptionOrgLevel
+    if (!search["description"] && taskDescriptionLocalStore) {
+      search["description"] = taskDescriptionLocalStore
+      orgSearchValue["description"]=taskDescriptionLocalStore
+    }
+
     const filter = {
       task_type: orgSelectedFilters?.taskType,
       status: orgSelectedFilters?.status,

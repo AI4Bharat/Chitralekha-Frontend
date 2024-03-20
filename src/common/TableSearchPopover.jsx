@@ -25,6 +25,9 @@ const TableSearchPopover = ({
         [searchedCol.name]: searchValue,
       })
     );
+    const searchFilter = JSON.parse(localStorage.getItem("taskSearchFilters")) || {}
+    const keyColName = ((updateFilters().type).includes("ORG"))?`${searchedCol.name}OrgLevel`:`${searchedCol.name}ProjectLevel`
+    localStorage.setItem("taskSearchFilters",JSON.stringify({...searchFilter,[keyColName]: searchValue}))
 
     handleClose();
   };
@@ -39,6 +42,10 @@ const TableSearchPopover = ({
     setSearchValue("");
     document.getElementById(searchedCol.name + "_btn").style.color =
       "rgba(0, 0, 0, 0.54)";
+
+    const searchFilter = JSON.parse(localStorage.getItem("taskSearchFilters")) || {}
+    const keyColName = ((updateFilters().type).includes("ORG"))?`${searchedCol.name}OrgLevel`:`${searchedCol.name}ProjectLevel`
+    localStorage.setItem("taskSearchFilters",JSON.stringify({...searchFilter,[keyColName]: ""}))
     handleClose();
   };
 
