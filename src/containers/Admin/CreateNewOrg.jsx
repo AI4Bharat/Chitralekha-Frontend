@@ -255,6 +255,7 @@ const CreateNewOrg = () => {
               name="emailDomainName"
               value={emailDomainName}
               onChange={(e) => setEmailDomainName(e.target.value)}
+              helperText="eg: 'org_name.com'"
             />
           </Grid>
 
