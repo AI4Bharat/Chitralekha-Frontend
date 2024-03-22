@@ -97,7 +97,7 @@ const CreateNewOrg = () => {
   }, [apiStatus]);
 
   const disableBtn = () => {
-    if (!title) {
+    if (!title || !emailDomainName) {
       return true;
     }
 

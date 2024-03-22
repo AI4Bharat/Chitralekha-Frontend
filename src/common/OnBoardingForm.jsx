@@ -159,6 +159,12 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
         setSnackBar({ open: true, message: data.message, variant: "success" })
       );
       handleClose();
+    } else {
+      setLoading(false);
+      dispatch(
+        setSnackBar({ open: true, message: data.message, variant: "success" })
+      );
+      handleClose();
     }
   };
 
@@ -166,6 +172,10 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
     const { orgName, orgPortal, email, phone } = formFields;
 
     if (orgName === "" || orgPortal === "" || email === "" || phone === "") {
+      return true;
+    }
+
+    if (loading) {
       return true;
     }
 
