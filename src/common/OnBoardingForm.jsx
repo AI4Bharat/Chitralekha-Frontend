@@ -1,10 +1,14 @@
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
   Grid,
   IconButton,
   InputLabel,
@@ -13,37 +17,68 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { MenuProps, validatePhone } from "utils";
-import { domains } from "config";
-import { OnBoardingAPI, setSnackBar } from "redux/actions";
+import { domains, usageList } from "config";
+import {
+  APITransport,
+  FetchSupportedLanguagesAPI,
+  OnBoardingAPI,
+  setSnackBar,
+} from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { validateEmail } from "utils/utils";
 import { orgTypeList } from "config";
 import CustomizedSnackbars from "./Snackbar";
 import Loader from "./Spinner";
 
+const initialState = {
+  orgName: "",
+  orgPortal: "",
+  phone: "",
+  email: "",
+  orgType: "",
+  domain: "",
+  purpose: "",
+  source: "",
+  usage: {
+    transcription: false,
+    translation: false,
+    voiceOver: false,
+  },
+  srcLanguage: "",
+  tgtLanguage: "",
+};
+
+const initialErrorState = {
+  email: false,
+  phone: false,
+};
+
 const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
   const dispatch = useDispatch();
 
-  const [formFields, setFormFields] = useState({
-    orgName: "",
-    orgPortal: "",
-    phone: "",
-    email: "",
-    orgType: "",
-    domain: "",
-    purpose: "",
-    source: "",
-  });
-  const [errors, setErrors] = useState({
-    email: false,
-    phone: false,
-  });
+  const [formFields, setFormFields] = useState(initialState);
+  const [errors, setErrors] = useState(initialErrorState);
   const [loading, setLoading] = useState(false);
 
   const snackbar = useSelector((state) => state.commonReducer.snackbar);
+  const transcriptionLanguages = useSelector(
+    (state) => state.getSupportedLanguages.transcriptionLanguage
+  );
+  const translationLanguages = useSelector(
+    (state) => state.getSupportedLanguages.translationLanguage
+  );
+
+  useEffect(() => {
+    const langObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(langObj));
+
+    const translationlangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationlangObj));
+    // eslint-disable-next-line
+  }, []);
 
   const handleChange = (event) => {
     const {
@@ -78,22 +113,25 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
     });
   };
 
-  const handleClear = () => {
-    setFormFields({
-      orgName: "",
-      orgPortal: "",
-      phone: "",
-      email: "",
-      orgType: "",
-      domain: "",
-      purpose: "",
-      source: "",
-    });
+  const handleCheckboxChange = (event) => {
+    const {
+      target: { name, checked },
+    } = event;
 
-    setErrors({
-      phone: false,
-      email: false,
+    setFormFields((prev) => {
+      return {
+        ...prev,
+        usage: {
+          ...prev.usage,
+          [name]: checked,
+        },
+      };
     });
+  };
+
+  const handleClear = () => {
+    setFormFields(initialState);
+    setErrors(initialErrorState);
   };
 
   const handleSubmit = async () => {
@@ -264,6 +302,86 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
                 </Select>
               </FormControl>
             </Grid>
+
+            <Grid item xs={12} md={12} style={{ paddingLeft: 0 }}>
+              <FormControl
+                sx={{ m: 3 }}
+                component="fieldset"
+                variant="standard"
+              >
+                <FormLabel component="legend">
+                  What are you interested in using the tool for?
+                </FormLabel>
+                <FormGroup row>
+                  {usageList.map((item) => {
+                    return (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formFields.usage[item.value]}
+                            onChange={handleCheckboxChange}
+                            name={item.value}
+                          />
+                        }
+                        label={item.label}
+                      />
+                    );
+                  })}
+                </FormGroup>
+              </FormControl>
+            </Grid>
+
+            {formFields.usage.translation === true && (
+              <>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="src-lang-select">
+                      Source Language
+                    </InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="src-lang-select"
+                      label="Source Language"
+                      name="srcLanguage"
+                      value={formFields.srcLanguage}
+                      onChange={handleChange}
+                      MenuProps={MenuProps}
+                      inputProps={{ "aria-label": "Without label" }}
+                    >
+                      {transcriptionLanguages.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="tgt-lang-select">
+                      Target Language
+                    </InputLabel>
+                    <Select
+                      fullWidth
+                      labelId="tgt-lang-select"
+                      label="Target Language"
+                      name="tgtLanguage"
+                      value={formFields.tgtLanguage}
+                      onChange={handleChange}
+                      MenuProps={MenuProps}
+                      inputProps={{ "aria-label": "Without label" }}
+                    >
+                      {translationLanguages.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </>
+            )}
 
             <Grid item xs={12}>
               <TextField

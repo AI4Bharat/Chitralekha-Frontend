@@ -253,3 +253,9 @@ export const orgTypeList = [
   { label: "Startup", value: "Startup" },
   { label: "Corporate", value: "Corporate" },
 ];
+
+export const usageList = [
+  { label: "Transcription", value: "transcription" },
+  { label: "Translation", value: "translation" },
+  { label: "Voice Over", value: "voiceOver" },
+]
