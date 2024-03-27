@@ -44,6 +44,7 @@ const SettingsButtonComponent = ({
   setTransliteration,
   enableTransliteration,
   subsuper,
+  currentSubs,
   setsubsuper,
   setRTL_Typing,
   enableRTL_Typing,
@@ -357,6 +358,7 @@ const SettingsButtonComponent = ({
           openPreviewDialog={openPreviewDialog}
           handleClose={() => setOpenPreviewDialog(false)}
           taskType={taskData?.task_type}
+          currentSubs={currentSubs}
           videoId={taskData?.video}
           targetLanguage={taskData?.target_language}
         />

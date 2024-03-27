@@ -61,7 +61,7 @@ import {
 } from "redux/actions";
 import { failTranscriptionInfoColumns } from "config";
 
-const RightPanel = ({ currentIndex, setCurrentIndex }) => {
+const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -596,6 +596,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             subsuper={subsuper}
+            currentSubs={currentSubs}
             setsubsuper={setsubsuper}
             index={index}
             currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}

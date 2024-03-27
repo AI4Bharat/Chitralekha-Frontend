@@ -51,7 +51,7 @@ import {
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
 
-const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -604,6 +604,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             setsubsuper={setsubsuper}
+            currentSubs={currentSubs}
             subsuper={subsuper}
             handleSubscript={handleSubscript}
             handleSuperscript={handleSuperscript}
