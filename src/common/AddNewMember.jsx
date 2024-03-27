@@ -117,7 +117,7 @@ import {
   
       const { orgName, email, roles } = formFields;
   
-      const apiObj = new CreateMemberAPI(orgName, email, roles);
+      const apiObj = new CreateMemberAPI(orgName.title, email, roles);
       dispatch(APITransport(apiObj));
     };
   
