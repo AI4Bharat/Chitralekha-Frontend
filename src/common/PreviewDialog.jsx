@@ -17,6 +17,7 @@ const PreviewDialog = ({
   handleClose,
   videoId,
   taskType,
+  currentSubs,
   targetLanguage,
 }) => {
   const dispatch = useDispatch();
@@ -47,7 +48,12 @@ const PreviewDialog = ({
   useEffect(() => {
     fetchPreviewData();
   }, [fetchPreviewData]);
-
+  // let isSub ;
+  // if(taskType.includes("TRANSLATION")){
+  //   isSub=currentSubs.target_text
+  // }else if(taskType.includes("TRANSCRIPTION")){
+  //   isSub=currentSubs.text
+  // }
   return (
     <Dialog
       open={openPreviewDialog}
@@ -70,6 +76,10 @@ const PreviewDialog = ({
       <DialogContent sx={{ height: "410px" }}>
         <DialogContentText id="alert-dialog-description">
           {previewdata.map((el, i) => {
+            const isCurrentSub =
+              el.text === currentSubs?.text &&
+              el.target_text === currentSubs?.target_text;
+
             return (
               <Box
                 key={`sub-${i}`}
@@ -80,6 +90,7 @@ const PreviewDialog = ({
                   border: "1px solid #000000",
                   borderRadius: 2,
                   width: "90%",
+                  backgroundColor: isCurrentSub ? '#e0e0e0' : 'transparent',
                 }}
               >
                 {taskType.includes("TRANSCRIPTION") ? el.text : el.target_text}

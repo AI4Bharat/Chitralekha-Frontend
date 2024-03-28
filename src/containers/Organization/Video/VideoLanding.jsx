@@ -82,7 +82,6 @@ const VideoLanding = () => {
   const player = useSelector((state) => state.commonReducer.player);
 
   const ref = useRef(0);
-
   useEffect(() => {
     let intervalId;
 
@@ -120,7 +119,6 @@ const VideoLanding = () => {
     };
     // eslint-disable-next-line
   }, []);
-
   useEffect(() => {
     if (taskDetails && taskDetails?.id) {
       const apiObj = new FetchVideoDetailsAPI(
@@ -259,7 +257,6 @@ const VideoLanding = () => {
       localStorage.setItem("canReload", true);
     };
   }, []);
-
   return (
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderLoader()}
@@ -340,11 +337,13 @@ const VideoLanding = () => {
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
             <RightPanel
               currentIndex={currentIndex}
+              currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
           ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
             <TranslationRightPanel
               currentIndex={currentIndex}
+              currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
           ) : (
