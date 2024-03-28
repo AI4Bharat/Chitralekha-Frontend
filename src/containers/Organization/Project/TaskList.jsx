@@ -330,6 +330,12 @@ const TaskList = () => {
       assignee: searchValue?.user,
     };
 
+    const taskDescriptionLocalStore=JSON.parse(localStorage.getItem('taskSearchFilters'))?.descriptionProjectLevel
+    if (!search["description"] && taskDescriptionLocalStore) {
+      search["description"] = taskDescriptionLocalStore
+      searchValue["description"]=taskDescriptionLocalStore
+    }
+
     const filter = {
       task_type: selectedFilters?.taskType,
       status: selectedFilters?.status,
