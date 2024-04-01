@@ -44,6 +44,7 @@ import {
   speakerInfoOptions,
   toolBarActions,
   voiceOptions,
+  usageList,
 } from "./projectConfigs";
 import {
   reportLevels,
@@ -134,4 +135,5 @@ export {
   glossaryColumns,
   domains,
   orgTypeList,
+  usageList,
 };

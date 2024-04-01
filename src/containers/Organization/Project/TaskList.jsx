@@ -130,6 +130,8 @@ const TaskList = () => {
   const [currentSelectedTasks, setCurrentSelectedTasks] = useState([]);
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
 
+  const [taskColDisplayState, setTaskColDisplayState] = useState({});
+
   //Dialogs
   const [openDialogs, setOpenDialogs] = useState({
     exportDialog: false,
@@ -187,6 +189,40 @@ const TaskList = () => {
   const currentSearchedColumn = useSelector(
     (state) => state.taskFilters.currentSearchedColumn
   );
+
+  useEffect(() => {
+    const displayCols = {};
+    const displayColsLocalStorage = JSON.parse(
+      localStorage.getItem("taskColDisplayFilter")
+    );
+    const allCols = [
+      ...taskListColumns.map((ele) => ele.name),
+      "id",
+      "video_name",
+      "user",
+      "description",
+      "created_at",
+      "updated_at",
+      "Action",
+    ];
+    const defaultDisabledDisplayCols = [
+      "description",
+      "created_at",
+      "updated_at",
+      "video_name",
+    ];
+    allCols.forEach((ele) => {
+      if (displayColsLocalStorage && ele in displayColsLocalStorage) {
+        displayCols[ele] = displayColsLocalStorage[ele];
+      } else if (defaultDisabledDisplayCols.includes(ele)) {
+        displayCols[ele] = false;
+      } else {
+        displayCols[ele] = true;
+      }
+    });
+    setTaskColDisplayState(displayCols);
+    localStorage.setItem("taskColDisplayFilter", JSON.stringify(displayCols));
+  }, []);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -294,6 +330,12 @@ const TaskList = () => {
       assignee: searchValue?.user,
     };
 
+    const taskDescriptionLocalStore=JSON.parse(localStorage.getItem('taskSearchFilters'))?.descriptionProjectLevel
+    if (!search["description"] && taskDescriptionLocalStore) {
+      search["description"] = taskDescriptionLocalStore
+      searchValue["description"]=taskDescriptionLocalStore
+    }
+
     const filter = {
       task_type: selectedFilters?.taskType,
       status: selectedFilters?.status,
@@ -324,6 +366,13 @@ const TaskList = () => {
       sortOptions
     );
     dispatch(APITransport(apiObj));
+  };
+
+  const updateLocalStorageDisplayCols = (changedColumn, action) => {
+    const data = JSON.parse(localStorage.getItem("taskColDisplayFilter"));
+    const showStatus = action === "add" ? true : false;
+    data[changedColumn] = showStatus;
+    localStorage.setItem("taskColDisplayFilter", JSON.stringify(data));
   };
 
   useEffect(() => {
@@ -381,6 +430,9 @@ const TaskList = () => {
       count: totalCount,
       jumpToPage: true,
       selectToolbarPlacement: "none",
+      onViewColumnsChange: (changedColumn, action) => {
+        updateLocalStorageDisplayCols(changedColumn, action);
+      },
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
@@ -768,6 +820,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: taskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -784,6 +837,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: taskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -800,6 +854,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: taskColDisplayState["user"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
@@ -829,7 +884,7 @@ const TaskList = () => {
         canBeSorted: true,
         display: specialOrgIds.includes(userOrgId)
           ? true
-          : columnDisplay.description,
+          : taskColDisplayState["description"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: !specialOrgIds.includes(userOrgId)
@@ -870,9 +925,9 @@ const TaskList = () => {
       label: "Created At",
       options: {
         filter: false,
-        display: columnDisplay.created_at,
         sort: false,
         canBeSorted: true,
+        display: taskColDisplayState["created_at"],
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -896,9 +951,9 @@ const TaskList = () => {
       label: "Updated At",
       options: {
         filter: false,
-        display: columnDisplay.updated_at,
         sort: false,
         canBeSorted: true,
+        display: taskColDisplayState["updated_at"],
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -923,6 +978,7 @@ const TaskList = () => {
       options: {
         filter: false,
         sort: false,
+        display: taskColDisplayState["Action"],
         align: "center",
         setCellHeaderProps: () => ({
           className: tableClasses.cellHeaderProps,
@@ -965,7 +1021,10 @@ const TaskList = () => {
       },
     };
 
-    const columns = [...getColumns(taskListColumns), actionColumn];
+    const columns = [
+      ...getColumns(taskListColumns, taskColDisplayState),
+      actionColumn,
+    ];
     columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
     columns.splice(3, 0, createdAtColumn);

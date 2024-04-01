@@ -123,6 +123,8 @@ const OrgLevelTaskList = () => {
   const [currentSelectedTasks, setCurrentSelectedTasks] = useState([]);
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
 
+  const [orgTaskColDisplayState, setOrgTaskColDisplayState] = useState({});
+
   //Dialogs
   const [openDialogs, setOpenDialogs] = useState({
     exportDialog: false,
@@ -184,6 +186,43 @@ const OrgLevelTaskList = () => {
   const currentOrgSearchedColumn = useSelector(
     (state) => state.orgTaskFilters.currentOrgSearchedColumn
   );
+
+  useEffect(() => {
+    const displayCols = {};
+    const displayColsLocalStorage = JSON.parse(
+      localStorage.getItem("orgTaskColDisplayFilter")
+    );
+    const allCols = [
+      ...orgTaskListColumns.map((ele) => ele.name),
+      "id",
+      "video_name",
+      "user",
+      "description",
+      "created_at",
+      "updated_at",
+      "Action",
+    ];
+    const defaultDisabledDisplayCols = [
+      "description",
+      "created_at",
+      "updated_at",
+      "video_name",
+    ];
+    allCols.forEach((ele) => {
+      if (displayColsLocalStorage && ele in displayColsLocalStorage) {
+        displayCols[ele] = displayColsLocalStorage[ele];
+      } else if (defaultDisabledDisplayCols.includes(ele)) {
+        displayCols[ele] = false;
+      } else {
+        displayCols[ele] = true;
+      }
+    });
+    setOrgTaskColDisplayState(displayCols);
+    localStorage.setItem(
+      "orgTaskColDisplayFilter",
+      JSON.stringify(displayCols)
+    );
+  }, []);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -279,6 +318,12 @@ const OrgLevelTaskList = () => {
       description: orgSearchValue?.description,
       assignee: orgSearchValue?.user,
     };
+
+    const taskDescriptionLocalStore=JSON.parse(localStorage.getItem('taskSearchFilters'))?.descriptionOrgLevel
+    if (!search["description"] && taskDescriptionLocalStore) {
+      search["description"] = taskDescriptionLocalStore
+      orgSearchValue["description"]=taskDescriptionLocalStore
+    }
 
     const filter = {
       task_type: orgSelectedFilters?.taskType,
@@ -557,6 +602,13 @@ const OrgLevelTaskList = () => {
     );
   };
 
+  const updateLocalStorageDisplayCols = (changedColumn, action) => {
+    const data = JSON.parse(localStorage.getItem("orgTaskColDisplayFilter"));
+    const showStatus = action === "add" ? true : false;
+    data[changedColumn] = showStatus;
+    localStorage.setItem("orgTaskColDisplayFilter", JSON.stringify(data));
+  };
+
   const generateTranslationCall = async (id, taskStatus) => {
     if (taskStatus === "SELECTED_SOURCE") {
       const apiObj = new GenerateTranslationOutputAPI(id);
@@ -665,6 +717,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: orgTaskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -681,6 +734,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: orgTaskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -697,6 +751,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: orgTaskColDisplayState["user"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
@@ -724,7 +779,7 @@ const OrgLevelTaskList = () => {
         sort: false,
         display: specialOrgIds.includes(userOrgId)
           ? true
-          : orgColumnDisplay.description,
+          : orgTaskColDisplayState["description"],
         align: "center",
         canBeSearch: true,
         canBeSorted: true,
@@ -769,7 +824,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSorted: true,
-        display: orgColumnDisplay.created_at,
+        display: orgTaskColDisplayState["created_at"],
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -793,7 +848,7 @@ const OrgLevelTaskList = () => {
       label: "Updated At",
       options: {
         filter: false,
-        display: orgColumnDisplay.updated_at,
+        display: orgTaskColDisplayState["updated_at"],
         sort: false,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
@@ -819,6 +874,7 @@ const OrgLevelTaskList = () => {
       label: "Actions",
       options: {
         filter: false,
+        display: orgTaskColDisplayState["Action"],
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
@@ -862,7 +918,10 @@ const OrgLevelTaskList = () => {
       },
     };
 
-    const columns = [...getColumns(orgTaskListColumns), actionColumn];
+    const columns = [
+      ...getColumns(orgTaskListColumns, orgTaskColDisplayState),
+      actionColumn,
+    ];
     columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
     columns.splice(3, 0, createdAtColumn);
@@ -998,6 +1057,9 @@ const OrgLevelTaskList = () => {
       rowsSelected: rows,
       rowsPerPage: limit,
       count: totalCount,
+      onViewColumnsChange: (changedColumn, action) => {
+        updateLocalStorageDisplayCols(changedColumn, action);
+      },
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);

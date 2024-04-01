@@ -45,7 +45,7 @@ const DashBoard = () => {
   const addNewMemberHandler = async () => {
     const data = {
       role: "ORG_OWNER",
-      emails: [newMemberEmail],
+      emails: newMemberEmail,
     };
 
     const apiObj = new AddOrganizationMemberAPI(data);

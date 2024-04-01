@@ -31,7 +31,7 @@ export const getOptions = (loading) => {
   return options;
 };
 
-export const getColumns = (config) => {
+export const getColumns = (config, displayColsData) => {
   const classes = TableStyles();
   const columns = [];
 
@@ -58,6 +58,9 @@ export const getColumns = (config) => {
           className: classes.cellHeaderProps,
         }),
       };
+      if (displayColsData) {
+        element.options.display = displayColsData[element["name"]];
+      }
     }
 
     columns.push({
