@@ -10,7 +10,7 @@ export default class OnBoardingAPI extends API {
 
     const keysString = Object.keys(payload.usage)
       .filter((key) => payload.usage[key])
-      .join(", ");
+      .join(" ");
 
     this.orgName = payload.orgName;
     this.orgPortal = payload.orgPortal;
