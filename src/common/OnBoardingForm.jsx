@@ -137,18 +137,7 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
   const handleSubmit = async () => {
     setLoading(true);
 
-    const { orgName, orgPortal, email, phone, orgType, purpose, source } =
-      formFields;
-
-    const apiObj = new OnBoardingAPI(
-      orgName,
-      orgPortal,
-      email,
-      phone,
-      orgType,
-      purpose,
-      source
-    );
+    const apiObj = new OnBoardingAPI(formFields);
 
     const response = await fetch(apiObj.endpoint);
     const data = await response.json();
