@@ -7,7 +7,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState} from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { FetchpreviewTaskAPI, setSnackBar } from "redux/actions";
 import { useDispatch } from "react-redux";
@@ -23,6 +23,8 @@ const PreviewDialog = ({
   const dispatch = useDispatch();
 
   const [previewdata, setPreviewdata] = useState([]);
+  const [selectedSubtitleIndex,setSelectedSubtitleIndex] = useState();
+
 
   const fetchPreviewData = useCallback(async () => {
     const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetLanguage);
@@ -48,12 +50,32 @@ const PreviewDialog = ({
   useEffect(() => {
     fetchPreviewData();
   }, [fetchPreviewData]);
-  // let isSub ;
-  // if(taskType.includes("TRANSLATION")){
-  //   isSub=currentSubs.target_text
-  // }else if(taskType.includes("TRANSCRIPTION")){
-  //   isSub=currentSubs.text
-  // }
+
+ 
+  useEffect(() => {
+    if (
+      openPreviewDialog &&
+      selectedSubtitleIndex !== null
+    ) {
+      const subtitleId = `sub-${selectedSubtitleIndex}`;
+      const subtitleElement = document.getElementById(subtitleId);
+      if (subtitleElement) {
+        subtitleElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [openPreviewDialog, selectedSubtitleIndex]);
+
+
+  useEffect(() => {
+    if (currentSubs) {
+      const selectedIndex = previewdata.findIndex((el) => 
+        el.text === currentSubs.text && el.target_text === currentSubs.target_text
+      );
+      setSelectedSubtitleIndex(selectedIndex);
+    }
+  }, [currentSubs, previewdata]);
+
+
   return (
     <Dialog
       open={openPreviewDialog}
@@ -83,6 +105,7 @@ const PreviewDialog = ({
             return (
               <Box
                 key={`sub-${i}`}
+                id={`sub-${i}`}
                 textAlign={"start"}
                 sx={{
                   mb: 2,
@@ -90,6 +113,7 @@ const PreviewDialog = ({
                   border: "1px solid #000000",
                   borderRadius: 2,
                   width: "90%",
+                  cursor:"pointer",
                   backgroundColor: isCurrentSub ? '#e0e0e0' : 'transparent',
                 }}
               >
