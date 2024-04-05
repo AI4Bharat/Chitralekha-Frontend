@@ -158,11 +158,17 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
   };
 
   const disableForm = () => {
-    const { orgName, orgPortal, email, phone, usage } = formFields;
+    const { orgName, orgPortal, email, phone, usage, srcLanguage, tgtLanguage } = formFields;
     const usageSelected = Object.values(usage).includes(true)
 
     if (orgName === "" || orgPortal === "" || email === "" || phone === "" || usageSelected === false) {
       return true;
+    }
+
+    if (usage["translation"] === true) {
+      if (srcLanguage === "" || tgtLanguage === "") {
+        return true;
+      }
     }
 
     if (loading) {
