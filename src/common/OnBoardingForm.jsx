@@ -158,9 +158,10 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
   };
 
   const disableForm = () => {
-    const { orgName, orgPortal, email, phone } = formFields;
+    const { orgName, orgPortal, email, phone, usage } = formFields;
+    const usageSelected = Object.values(usage).includes(true)
 
-    if (orgName === "" || orgPortal === "" || email === "" || phone === "") {
+    if (orgName === "" || orgPortal === "" || email === "" || phone === "" || usageSelected === false) {
       return true;
     }
 
@@ -309,7 +310,7 @@ const OnBoardingForm = ({ openOnboardingForm, handleClose }) => {
                 variant="standard"
               >
                 <FormLabel component="legend">
-                  What are you interested in using the tool for?
+                  What are you interested in using the tool for?*
                 </FormLabel>
                 <FormGroup row>
                   {usageList.map((item) => {
