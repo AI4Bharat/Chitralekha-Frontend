@@ -372,6 +372,7 @@ const TaskList = () => {
     const data = JSON.parse(localStorage.getItem("taskColDisplayFilter"));
     const showStatus = action === "add" ? true : false;
     data[changedColumn] = showStatus;
+    setTaskColDisplayState(data)
     localStorage.setItem("taskColDisplayFilter", JSON.stringify(data));
   };
 
