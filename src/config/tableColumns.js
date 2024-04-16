@@ -5,7 +5,7 @@ import statusColor from "../utils/getStatusColor";
 export const projectColumns = [
   {
     name: "id",
-    label: "Id"
+    label: "Id",
   },
   {
     name: "title",
@@ -536,5 +536,53 @@ export const glossaryColumns = [
   {
     name: "target_text",
     label: "Target Text",
+  },
+];
+
+export const onBoardingRequestColumns = [
+  {
+    name: "S No",
+    label: "S No",
+  },
+  {
+    name: "Org Name",
+    label: "Org Name",
+  },
+  {
+    name: "Org Portal",
+    label: "Org Portal",
+  },
+  {
+    name: "Email ID",
+    label: "Email ID",
+  },
+  {
+    name: "Phone",
+    label: "Phone",
+  },
+  {
+    name: "Org Type",
+    label: "Org Type",
+  },
+  {
+    name: "Usage",
+    label: "Usage",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "Purpose",
+    label: "Purpose",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "Lead",
+    label: "Lead",
+    options: {
+      display: false,
+    },
   },
 ];

@@ -67,6 +67,7 @@ import {
   reopenTableColumns,
   renderTaskListColumnCell,
   glossaryColumns,
+  onBoardingRequestColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 import { specialOrgIds } from "./taskTableConfig";
@@ -136,4 +137,5 @@ export {
   domains,
   orgTypeList,
   usageList,
+  onBoardingRequestColumns,
 };
