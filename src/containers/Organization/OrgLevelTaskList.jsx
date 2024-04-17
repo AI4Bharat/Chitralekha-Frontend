@@ -606,6 +606,7 @@ const OrgLevelTaskList = () => {
     const data = JSON.parse(localStorage.getItem("orgTaskColDisplayFilter"));
     const showStatus = action === "add" ? true : false;
     data[changedColumn] = showStatus;
+    setOrgTaskColDisplayState(data)
     localStorage.setItem("orgTaskColDisplayFilter", JSON.stringify(data));
   };
 
