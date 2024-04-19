@@ -412,7 +412,7 @@ const Project = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         window.location.assign(
-                          `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
+                          `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
                         );
                       }}
                       sx={{ color: "white" }}
