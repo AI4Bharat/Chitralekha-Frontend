@@ -257,7 +257,7 @@ const MyOrganization = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             window.location.assign(
-                              `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
+                              `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
                             );
                           }}
                           sx={{ color: "white" }}
