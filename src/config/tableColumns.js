@@ -416,6 +416,44 @@ export const taskQueueStatusColumns = [
   },
 ];
 
+export const taskQueueStatusAdminColumns = [
+  {
+    name: "S. No",
+    label: "Seq. No.",
+  },
+  {
+    name: "task_id",
+    label: "Task Id",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "uuid",
+    label: "Queue UUID",
+  },
+  {
+    name: "name",
+    label: "Name",
+  },
+  {
+    name: "state",
+    label: "Task State",
+  },
+  {
+    name: "received_time",
+    label: "Received Time",
+  },
+  {
+    name: "started_time",
+    label: "Started Time",
+  },
+  {
+    name: "worker",
+    label: "Worker Name",
+  },
+]
+
 export const failInfoColumns = [
   {
     name: "page_number",
