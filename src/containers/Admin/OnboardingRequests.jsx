@@ -1,47 +1,172 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { tableTheme } from "theme";
 import { getColumns, getOptions } from "utils";
-import { onBoardingRequestColumns } from "config";
+import { onBoardingRequestColumns, onBoardingTableActionBtns } from "config";
 import { TableStyles } from "styles";
 
-import { Button, ThemeProvider } from "@mui/material";
+import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
+import { EditOnBoardingFormDialog, NotesDialog } from "common";
+import {
+  APITransport,
+  CreateNewOrganizationAPI,
+  FetchOnboardingListAPI,
+  UpdateOnboardingFormAPI,
+} from "redux/actions";
+import { useDispatch, useSelector } from "react-redux";
 
 const OnboardingRequests = () => {
   const classes = TableStyles();
+  const dispatch = useDispatch();
 
-  const columns = getColumns(onBoardingRequestColumns);
-  columns.push({
-    name: "Action",
-    label: "Action",
-    options: {
-      filter: false,
-      sort: false,
-      align: "center",
-      customBodyRender: () => {
-        return (
-          <div>
-            <Button variant="text" className={classes.rejectBtn}>
-              Reject
-            </Button>
+  const [notes, setNotes] = useState("");
+  const [openNotesPopup, setOpenNotesPopup] = useState(false);
+  const [openOnboardingForm, setOpenOnboardingForm] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState({});
+  const [selectedRowStatus, setSelectedRowStatus] = useState("");
 
-            <Button variant="outlined" className={classes.approveBtn}>
-              Approve
-            </Button>
-          </div>
-        );
+  const onboardingList = useSelector((state) => state.getOnboardingList.data);
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  const getOnboardingList = useCallback(() => {
+    const apiObj = new FetchOnboardingListAPI();
+    dispatch(APITransport(apiObj));
+  }, [dispatch]);
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress) {
+      if (success) {
+        if (apiType === "UPDATE_ONBOARDING_FORM") {
+          getOnboardingList();
+        }
+
+        if (apiType === "CREATE_NEW_ORGANIZATION") {
+          getOnboardingList();
+        }
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [apiStatus]);
+
+  useEffect(() => {
+    getOnboardingList();
+  }, [getOnboardingList, dispatch]);
+
+  const handleActionBtnClick = (item, data) => {
+    const editData = {
+      orgName: data.orgName,
+      orgPortal: data.orgPortal,
+      phone: data.phone,
+      email: data.email,
+      orgType: data.orgType,
+    };
+
+    if (item.key === "edit") {
+      setOpenOnboardingForm(true);
+      setSelectedRowData(editData);
+    } else {
+      setNotes(item.notesText);
+      setSelectedRowStatus(item.notesText);
+      setOpenNotesPopup(true);
+    }
+  };
+
+  const initColumns = () => {
+    const actionColumn = {
+      name: "Action",
+      label: "Action",
+      options: {
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          className: classes.cellHeaderProps,
+        }),
+        customBodyRender: (_value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+
+          return (
+            <Box sx={{ display: "flex" }}>
+              {onBoardingTableActionBtns.map((item) => {
+                return (
+                  <Tooltip key={item.key} title={item.tooltipText}>
+                    <IconButton
+                      onClick={() => handleActionBtnClick(item, selectedTask)}
+                    >
+                      {item.icon}
+                    </IconButton>
+                  </Tooltip>
+                );
+              })}
+            </Box>
+          );
+        },
       },
-    },
-  });
+    };
+
+    const columns = [...getColumns(onBoardingRequestColumns)];
+    columns.splice(7, 0, actionColumn);
+
+    return columns;
+  };
+
+  const handleSubmit = () => {
+    if (selectedRowStatus !== "Approved") {
+      const payload = {
+        status: selectedRowStatus,
+        notes,
+      };
+
+      const apiObj = new UpdateOnboardingFormAPI(selectedRowData.id, payload);
+      dispatch(APITransport(apiObj));
+    } else {
+      const reqBody = {
+        title: selectedRowData.org_name,
+        new_org_owner_email: selectedRowData.email,
+      };
+
+      const apiObj = new CreateNewOrganizationAPI(reqBody);
+      dispatch(APITransport(apiObj));
+    }
+  };
+
+  const handleEditPopupClose = () => {
+    setOpenOnboardingForm(false);
+    getOnboardingList();
+  };
 
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MUIDataTable
-        data={[{ "S No": 1 }]}
-        columns={columns}
-        options={getOptions()}
-      />
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={tableTheme}>
+        <MUIDataTable
+          data={onboardingList}
+          columns={initColumns()}
+          options={getOptions()}
+        />
+      </ThemeProvider>
+
+      {openNotesPopup && (
+        <NotesDialog
+          open={openNotesPopup}
+          handleClose={() => setOpenNotesPopup(false)}
+          text={notes}
+          setText={setNotes}
+          handleSubmit={handleSubmit}
+        />
+      )}
+
+      {openOnboardingForm && (
+        <EditOnBoardingFormDialog
+          open={openOnboardingForm}
+          handleClose={handleEditPopupClose}
+          formData={selectedRowData}
+        />
+      )}
+    </>
   );
 };
 

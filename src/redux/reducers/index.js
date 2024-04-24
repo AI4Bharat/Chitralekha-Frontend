@@ -52,6 +52,7 @@ import taskFilters from "./Project/TaskFilters";
 import orgTaskFilters from "./Organization/OrgTaskFilters";
 import getGlossary from "./User/FetchGlossary";
 import getChartsData from "./Intro/Charts";
+import getOnboardingList from "./Admin/FetchOnboardingList";
 
 const rootReducer = {
   apiStatus,
@@ -108,6 +109,7 @@ const rootReducer = {
   orgTaskFilters,
   getGlossary,
   getChartsData,
+  getOnboardingList,
 };
 
 export default rootReducer;

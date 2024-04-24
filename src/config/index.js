@@ -45,6 +45,7 @@ import {
   toolBarActions,
   voiceOptions,
   usageList,
+  onBoardingTableActionBtns,
 } from "./projectConfigs";
 import {
   reportLevels,
@@ -138,4 +139,5 @@ export {
   orgTypeList,
   usageList,
   onBoardingRequestColumns,
+  onBoardingTableActionBtns,
 };

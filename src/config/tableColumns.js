@@ -541,28 +541,62 @@ export const glossaryColumns = [
 
 export const onBoardingRequestColumns = [
   {
-    name: "S No",
+    name: "id",
     label: "S No",
   },
   {
-    name: "Org Name",
+    name: "orgname",
     label: "Org Name",
   },
   {
-    name: "Org Portal",
+    name: "email",
+    label: "Org Type",
+  },
+  {
+    name: "org_portal",
     label: "Org Portal",
   },
   {
-    name: "Email ID",
+    name: "email",
     label: "Email ID",
   },
   {
-    name: "Phone",
+    name: "phone",
     label: "Phone",
   },
   {
-    name: "Org Type",
-    label: "Org Type",
+    name: "status",
+    label: "Status",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{statusColor(value)?.element}</Box>;
+      },
+    },
+  },
+  {
+    name: "notes",
+    label: "Notes",
+  },
+  {
+    name: "interested_in",
+    label: "Interested In",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "src_language",
+    label: "Source Language",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "tgt_language",
+    label: "Target Language",
+    options: {
+      display: false,
+    },
   },
   {
     name: "Usage",
@@ -572,15 +606,15 @@ export const onBoardingRequestColumns = [
     },
   },
   {
-    name: "Purpose",
+    name: "purpose",
     label: "Purpose",
     options: {
       display: false,
     },
   },
   {
-    name: "Lead",
-    label: "Lead",
+    name: "source",
+    label: "Source",
     options: {
       display: false,
     },

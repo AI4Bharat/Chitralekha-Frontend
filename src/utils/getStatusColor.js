@@ -29,6 +29,22 @@ const colors = [
     label: "Reopen",
     color: "darkblue",
   },
+  {
+    label: "Pending",
+    color: "purple",
+  },
+  {
+    label: "On Hold",
+    color: "blue",
+  },
+  {
+    label: "Approved",
+    color: "green",
+  },
+  {
+    label: "Rejected",
+    color: "red",
+  },
 ];
 
 const getColor = (status) => {
