@@ -9,7 +9,6 @@ import MUIDataTable from "mui-datatables";
 import { EditOnBoardingFormDialog, NotesDialog } from "common";
 import {
   APITransport,
-  CreateNewOrganizationAPI,
   FetchOnboardingListAPI,
   UpdateOnboardingFormAPI,
 } from "redux/actions";
@@ -41,10 +40,6 @@ const OnboardingRequests = () => {
         if (apiType === "UPDATE_ONBOARDING_FORM") {
           getOnboardingList();
         }
-
-        if (apiType === "CREATE_NEW_ORGANIZATION") {
-          getOnboardingList();
-        }
       }
     }
 
@@ -56,17 +51,9 @@ const OnboardingRequests = () => {
   }, [getOnboardingList, dispatch]);
 
   const handleActionBtnClick = (item, data) => {
-    const editData = {
-      orgName: data.orgName,
-      orgPortal: data.orgPortal,
-      phone: data.phone,
-      email: data.email,
-      orgType: data.orgType,
-    };
-
     if (item.key === "edit") {
       setOpenOnboardingForm(true);
-      setSelectedRowData(editData);
+      setSelectedRowData(data);
     } else {
       setNotes(item.notesText);
       setSelectedRowStatus(item.notesText);
@@ -115,23 +102,13 @@ const OnboardingRequests = () => {
   };
 
   const handleSubmit = () => {
-    if (selectedRowStatus !== "Approved") {
-      const payload = {
-        status: selectedRowStatus,
-        notes,
-      };
+    const payload = {
+      status: selectedRowStatus,
+      notes,
+    };
 
-      const apiObj = new UpdateOnboardingFormAPI(selectedRowData.id, payload);
-      dispatch(APITransport(apiObj));
-    } else {
-      const reqBody = {
-        title: selectedRowData.org_name,
-        new_org_owner_email: selectedRowData.email,
-      };
-
-      const apiObj = new CreateNewOrganizationAPI(reqBody);
-      dispatch(APITransport(apiObj));
-    }
+    const apiObj = new UpdateOnboardingFormAPI(selectedRowData.id, payload);
+    dispatch(APITransport(apiObj));
   };
 
   const handleEditPopupClose = () => {

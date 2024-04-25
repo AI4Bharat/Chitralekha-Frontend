@@ -41,7 +41,15 @@ const EditOnBoardingFormDialog = ({ open, handleClose, formData }) => {
   const [errors, setErrors] = useState(initialErrorState);
 
   useEffect(() => {
-    setFormFields(formData);
+    const fields = {
+      orgName: formData.orgname,
+      orgPortal: formData.org_portal,
+      phone: formData.phone,
+      email: formData.email,
+      orgType: formData.org_type,
+    };
+
+    setFormFields(fields);
   }, [formData]);
 
   const handleChange = (event) => {

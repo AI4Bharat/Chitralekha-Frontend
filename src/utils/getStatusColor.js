@@ -48,7 +48,9 @@ const colors = [
 ];
 
 const getColor = (status) => {
-  const temp = colors.filter((item) => item.label === status);
+  const temp = colors.filter(
+    (item) => item.label.toLocaleLowerCase() === status.toLocaleLowerCase()
+  );
   return temp[0].color;
 };
 
