@@ -56,7 +56,7 @@ const OnboardingRequests = () => {
       setSelectedRowData(data);
     } else {
       setNotes(item.notesText);
-      setSelectedRowStatus(item.notesText);
+      setSelectedRowStatus(item.key);
       setOpenNotesPopup(true);
     }
   };
@@ -96,7 +96,7 @@ const OnboardingRequests = () => {
     };
 
     const columns = [...getColumns(onBoardingRequestColumns)];
-    columns.splice(7, 0, actionColumn);
+    columns.splice(8, 0, actionColumn);
 
     return columns;
   };

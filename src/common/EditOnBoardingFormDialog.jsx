@@ -24,6 +24,7 @@ import { useDispatch } from "react-redux";
 const initialState = {
   orgName: "",
   orgPortal: "",
+  email_domain_name: "",
   phone: "",
   email: "",
   orgType: "",
@@ -43,6 +44,7 @@ const EditOnBoardingFormDialog = ({ open, handleClose, formData }) => {
   useEffect(() => {
     const fields = {
       orgName: formData.orgname,
+      email_domain_name: formData.email_domain_name,
       orgPortal: formData.org_portal,
       phone: formData.phone,
       email: formData.email,
@@ -94,9 +96,10 @@ const EditOnBoardingFormDialog = ({ open, handleClose, formData }) => {
     const payload = {
       orgname: formFields.orgName,
       org_portal: formFields.orgPortal,
-      email: formFields.phone,
-      org_type: formFields.email,
-      phone: formFields.orgType,
+      email_domain_name: formFields.email_domain_name,
+      phone: formFields.phone,
+      email: formFields.email,
+      org_type: formFields.orgType,
     };
 
     const apiObj = new UpdateOnboardingFormAPI(formData.id, payload);
@@ -104,9 +107,9 @@ const EditOnBoardingFormDialog = ({ open, handleClose, formData }) => {
   };
 
   const disableForm = () => {
-    const { orgName, orgPortal, email, phone } = formFields;
+    const { orgName, orgPortal, email, phone, email_domain_name } = formFields;
 
-    if (orgName === "" || orgPortal === "" || email === "" || phone === "") {
+    if (orgName === "" || orgPortal === "" || email === "" || phone === "" || email_domain_name === "" ) {
       return true;
     }
 
@@ -143,6 +146,16 @@ const EditOnBoardingFormDialog = ({ open, handleClose, formData }) => {
                 label="Organization Name*"
                 onChange={handleChange}
                 value={formFields.orgName}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                name="email_domain_name"
+                label="Email Domain Name*"
+                onChange={handleChange}
+                value={formFields.email_domain_name}
               />
             </Grid>
 

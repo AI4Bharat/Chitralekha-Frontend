@@ -259,6 +259,21 @@ export const renderTaskListColumnCell = (value, tableMeta) => {
   );
 };
 
+export const parseNotesResponseData = (value) => {
+  let notesTextData = ['']
+  if (value){
+    notesTextData = value.split("'")
+    notesTextData=notesTextData.filter((ele)=>ele!='[' && ele!=']' && ele!=', ' && ele!='[]')
+  }
+
+  return (
+    <Box
+    >
+      {notesTextData.length?notesTextData[notesTextData.length-1].split("||").join(": "):''}
+    </Box>
+  );
+};
+
 export const taskListColumns = [
   {
     name: "id",
@@ -549,12 +564,16 @@ export const onBoardingRequestColumns = [
     label: "Org Name",
   },
   {
-    name: "email",
+    name: "org_type",
     label: "Org Type",
   },
   {
     name: "org_portal",
     label: "Org Portal",
+  },
+  {
+    name: "email_domain_name",
+    label: "Email Domain Name",
   },
   {
     name: "email",
@@ -567,15 +586,18 @@ export const onBoardingRequestColumns = [
   {
     name: "status",
     label: "Status",
-    options: {
-      customBodyRender: (value) => {
-        return <Box>{statusColor(value)?.element}</Box>;
-      },
-    },
+    // options: {
+    //   customBodyRender: (value) => {
+    //     return <Box>{statusColor(value)?.element}</Box>;
+    //   },
+    // },
   },
   {
     name: "notes",
     label: "Notes",
+    options: {
+      customBodyRender: parseNotesResponseData,
+    },
   },
   {
     name: "interested_in",

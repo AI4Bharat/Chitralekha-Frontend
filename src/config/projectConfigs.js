@@ -265,19 +265,19 @@ export const usageList = [
 
 export const onBoardingTableActionBtns = [
   {
-    key: "approve",
+    key: "APPROVED",
     tooltipText: "Approve",
     icon: <ThumbUpIcon color="green" />,
     notesText: "Approved",
   },
   {
-    key: "reject",
+    key: "REJECTED",
     tooltipText: "Reject",
     icon: <ThumbDownIcon color="error" />,
     notesText: "Rejected",
   },
   {
-    key: "hold",
+    key: "ON_HOLD",
     tooltipText: "Hold",
     icon: <PanToolIcon color="primary" />,
     notesText: "On Hold",
