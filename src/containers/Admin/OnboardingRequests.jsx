@@ -51,9 +51,9 @@ const OnboardingRequests = () => {
   }, [getOnboardingList, dispatch]);
 
   const handleActionBtnClick = (item, data) => {
+    setSelectedRowData(data);
     if (item.key === "edit") {
       setOpenOnboardingForm(true);
-      setSelectedRowData(data);
     } else {
       setNotes(item.notesText);
       setSelectedRowStatus(item.key);
