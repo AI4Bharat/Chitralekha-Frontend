@@ -8,6 +8,9 @@ import UploadIcon from "@mui/icons-material/Upload";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockResetIcon from "@mui/icons-material/LockReset";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import PanToolIcon from '@mui/icons-material/PanTool';
 
 export const genderOptions = [
   {
@@ -258,4 +261,30 @@ export const usageList = [
   { label: "Transcription", value: "transcription" },
   { label: "Translation", value: "translation" },
   { label: "Voice Over", value: "voiceOver" },
-]
+];
+
+export const onBoardingTableActionBtns = [
+  {
+    key: "APPROVED",
+    tooltipText: "Approve",
+    icon: <ThumbUpIcon color="green" />,
+    notesText: "Approved",
+  },
+  {
+    key: "REJECTED",
+    tooltipText: "Reject",
+    icon: <ThumbDownIcon color="error" />,
+    notesText: "Rejected",
+  },
+  {
+    key: "ON_HOLD",
+    tooltipText: "Hold",
+    icon: <PanToolIcon color="primary" />,
+    notesText: "On Hold",
+  },
+  {
+    key: "edit",
+    tooltipText: "Edit",
+    icon: <EditIcon color={"primary"} />,
+  },
+];

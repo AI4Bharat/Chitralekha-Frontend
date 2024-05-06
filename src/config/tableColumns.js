@@ -259,6 +259,21 @@ export const renderTaskListColumnCell = (value, tableMeta) => {
   );
 };
 
+export const parseNotesResponseData = (value) => {
+  let notesTextData = ['']
+  if (value){
+    notesTextData = value.split("'")
+    notesTextData=notesTextData.filter((ele)=>ele!='[' && ele!=']' && ele!=', ' && ele!='[]')
+  }
+
+  return (
+    <Box
+    >
+      {notesTextData.length?notesTextData[notesTextData.length-1].split("||").join(": "):''}
+    </Box>
+  );
+};
+
 export const taskListColumns = [
   {
     name: "id",
@@ -579,28 +594,69 @@ export const glossaryColumns = [
 
 export const onBoardingRequestColumns = [
   {
-    name: "S No",
+    name: "id",
     label: "S No",
   },
   {
-    name: "Org Name",
+    name: "orgname",
     label: "Org Name",
   },
   {
-    name: "Org Portal",
+    name: "org_type",
+    label: "Org Type",
+  },
+  {
+    name: "org_portal",
     label: "Org Portal",
   },
   {
-    name: "Email ID",
+    name: "email_domain_name",
+    label: "Email Domain Name",
+  },
+  {
+    name: "email",
     label: "Email ID",
   },
   {
-    name: "Phone",
+    name: "phone",
     label: "Phone",
   },
   {
-    name: "Org Type",
-    label: "Org Type",
+    name: "status",
+    label: "Status",
+    // options: {
+    //   customBodyRender: (value) => {
+    //     return <Box>{statusColor(value)?.element}</Box>;
+    //   },
+    // },
+  },
+  {
+    name: "notes",
+    label: "Notes",
+    options: {
+      customBodyRender: parseNotesResponseData,
+    },
+  },
+  {
+    name: "interested_in",
+    label: "Interested In",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "src_language",
+    label: "Source Language",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "tgt_language",
+    label: "Target Language",
+    options: {
+      display: false,
+    },
   },
   {
     name: "Usage",
@@ -610,15 +666,15 @@ export const onBoardingRequestColumns = [
     },
   },
   {
-    name: "Purpose",
+    name: "purpose",
     label: "Purpose",
     options: {
       display: false,
     },
   },
   {
-    name: "Lead",
-    label: "Lead",
+    name: "source",
+    label: "Source",
     options: {
       display: false,
     },
