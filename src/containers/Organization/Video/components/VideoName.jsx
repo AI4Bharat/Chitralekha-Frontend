@@ -29,11 +29,11 @@ const VideoName = ({
   return (
     <Box
       className={classes.videoNameBox}
-      style={fullscreenVideo ? { width: "60%", margin: "auto" } : {}}
+      style={fullscreenVideo ? { width: "60%", margin: "auto" } : { border:"solid", borderColor: "#F5F5F5", borderWidth: "1px"}}
     >
       <Tooltip title={videoDetails?.video?.name} placement="bottom">
         <Typography
-          variant="h4"
+          variant="h6"
           className={classes.videoName}
           style={fullscreenVideo ? { color: "white" } : {}}
         >
