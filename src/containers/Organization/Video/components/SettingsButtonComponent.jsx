@@ -28,7 +28,9 @@ import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { FindAndReplace, PreviewDialog } from "common";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
+import MergeIcon from "@mui/icons-material/Merge";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const anchorOrigin = {
   vertical: "top",
@@ -64,9 +66,14 @@ const SettingsButtonComponent = ({
   showPopOver,
   showSplit,
   handleInfoButtonClick,
+  currentIndex,
+  onMergeClick,
+  onDelete,
+  addNewSubtitleBox,
+  subtitles,
 }) => {
   const classes = VideoLandingStyle();
-
+  
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
@@ -130,6 +137,50 @@ const SettingsButtonComponent = ({
 
   return (
     <>
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <>
+          <Tooltip title="Merge Next" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex==-1 || currentIndex >= subtitles?.length - 1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => onMergeClick(currentIndex)}
+            >
+              <MergeIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Delete" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex==-1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => onDelete(currentIndex)}
+            >
+              <DeleteIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Add Subtitle Box" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex==-1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => addNewSubtitleBox(currentIndex)}
+            >
+              <AddIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+        </>
+      )}
+
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
           <IconButton
@@ -213,32 +264,32 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-
+      
       {subsuper && (
         <>
-          <Divider
+        <Divider
             orientation="vertical"
             className={classes.rightPanelDivider}
           />
-
-          <Tooltip title="SubScript" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              onClick={() => handleSubscript()}
-            >
-              <SubscriptIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="SuperScript" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              sx={{ marginLeft: "5px" }}
-              onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
-            >
-              <SuperscriptIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
+      
+        <Tooltip title="SubScript" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => handleSubscript()}
+          >
+            <SubscriptIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      
+      <Tooltip title="SuperScript" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          sx={{ marginLeft: "5px" }}
+          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+        >
+          <SuperscriptIcon className={classes.rightPanelSvg} />
+        </IconButton>
+      </Tooltip>
         </>
       )}
 

@@ -31,11 +31,11 @@ const WaveForm = memo(({ setWaveform, setRender }) => {
       pixelRatio: 2,
       container: $waveform.current,
       mediaElement: player,
-      backgroundColor: "rgb(28, 32, 34)",
-      waveColor: "rgb(255, 255, 255, 0.5)",
-      progressColor: "rgb(255, 255, 255, 0.5)",
-      gridColor: "rgba(255, 255, 255, 0.05)",
-      rulerColor: "rgba(255, 255, 255, 0.5)",
+      backgroundColor: "#fff",
+      waveColor: "#000",
+      progressColor: "#00a",
+      gridColor: "rgba(0, 0, 0, 0.05)",
+      rulerColor: "rgba(0, 0, 0, 0.5)",
       paddingColor: "rgba(0, 0, 0, 0)",
     });
 
