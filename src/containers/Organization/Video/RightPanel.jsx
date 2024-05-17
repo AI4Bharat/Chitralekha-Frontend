@@ -618,6 +618,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
             showPopOver={showPopOver}
             showSplit={true}
             handleInfoButtonClick={handleInfoButtonClick}
+            currentIndex={currentIndex}
+            onMergeClick={onMergeClick}
+            onDelete={onDelete}
+            addNewSubtitleBox={addNewSubtitleBox}
+            subtitles={subtitles}
           />
         </Grid>
 
@@ -628,40 +633,19 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "16px",
+                  padding: "0",
                   borderBottom: "1px solid lightgray",
-                  backgroundColor:
-                    index % 2 === 0
-                      ? "rgb(214, 238, 255)"
-                      : "rgb(233, 247, 239)",
+                  backgroundColor: "white",
+                  display: "flex"
                 }}
               >
-                <Box className={classes.topBox}>
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.start_time}
-                    index={index}
-                    type={"startTime"}
-                  />
-
-                  <ButtonComponent
-                    index={index}
-                    lastItem={index < subtitles.length - 1}
-                    onMergeClick={onMergeClick}
-                    onDelete={onDelete}
-                    addNewSubtitleBox={addNewSubtitleBox}
-                  />
-
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.end_time}
-                    index={index}
-                    type={"endTime"}
-                  />
-                </Box>
+                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%" }}>
+                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.start_time}</div>
+                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.end_time}</div>
+                </div>
 
                 <CardContent
-                  className={classes.cardContent}
+                  style={{alignItems:"center", padding: 0, width:"100%"}}
                   aria-describedby={"suggestionList"}
                   onClick={() => {
                     if (player) {
@@ -674,7 +658,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
-                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {
@@ -696,7 +679,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                               currentIndex === index ? classes.boxHighlight : ""
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
-                            rows={4}
+                            rows={2}
                             onMouseUp={(e) => onMouseUp(e, index)}
                             onBlur={() => {
                               setTimeout(() => {
@@ -707,9 +690,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
                           />
-                          <span id="charNum" className={classes.wordCount}>
-                            {targetLength(index)}
-                          </span>
                         </div>
                       )}
                     />
@@ -729,7 +709,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                           fontSize: fontSize,
                           height: "120px",
                         }}
-                        rows={4}
+                        rows={2}
                         ref={(el) => (textboxes.current[index] = el)}
                         onBlur={() => {
                           setTimeout(() => {
@@ -737,14 +717,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                           }, 200);
                         }}
                       />
-                      <span id="charNum" className={classes.wordCount}>
-                        {targetLength(index)}
-                      </span>
                     </div>
                   )}
                 </CardContent>
 
-                {showSpeakerIdDropdown ? (
+                {showSpeakerIdDropdown && (
                   <FormControl
                     sx={{ width: "50%", mr: "auto", float: "left" }}
                     size="small"
@@ -775,7 +752,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                       ))}
                     </Select>
                   </FormControl>
-                ) : null}
+                )}
               </Box>
             );
           })}

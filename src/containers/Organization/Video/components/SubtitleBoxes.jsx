@@ -370,7 +370,7 @@ export default memo(
             return (
               <div
                 className={`${classes.subItem} ${
-                  key === currentIndex ? classes.subHighlight : ""
+                  key === currentIndex ? classes.subHighlight : classes.subNonHighlight
                 } `}
                 key={key}
                 style={{
@@ -401,7 +401,7 @@ export default memo(
                     title={sub.text}
                     onMouseDown={(event) => onMouseDown(key, event)}
                   >
-                    <p className={classes.subTextP}>
+                    <p className={classes.subTextP} style={{color: "black"}}>
                       {taskDetails.task_type.includes("TRANSCRIPTION") ||
                       taskDetails.task_type.includes("VOICEOVER")
                         ? sub.text
@@ -417,7 +417,7 @@ export default memo(
                     }}
                     onMouseDown={(event) => onMouseDown(key, event, "right")}
                   ></div>
-                  <div className={classes.subDuration}>{sub.duration}</div>
+                  <div className={classes.subDuration} style={{color: "black"}}>{sub.duration}</div>
                 </ContextMenuTrigger>
               </div>
             );

@@ -22,12 +22,12 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     flexDirection: "row",
     // backgroundColor: "rgba(254, 191, 44, 0.1)",
-    backgroundColor: "#fcf7e9",
+    backgroundColor: "white",
   },
 
   videoName: {
     textAlign: "center",
-    margin: "29.5px",
+    margin: "28px",
     width: "90%",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -172,7 +172,7 @@ const VideoLandingStyle = makeStyles({
     width: "0%",
     height: "100%",
     display: "inline-block",
-    backgroundColor: "#730000",
+    backgroundColor: "rgba(33, 150, 243, 0.5)",
     overflow: "hidden",
   },
 
@@ -181,9 +181,9 @@ const VideoLandingStyle = makeStyles({
     right: "0",
     top: "0",
     bottom: "0",
-    width: "10px",
+    width: "2px",
     cursor: "ew-resize",
-    backgroundColor: "#ff9800",
+    backgroundColor: "red",
   },
 
   timelineSubtitle: {
@@ -317,6 +317,11 @@ const VideoLandingStyle = makeStyles({
     border: "1px solid rgba(33, 150, 243, 0.5)",
   },
 
+  subNonHighlight: {
+    backgroundColor: "rgba(238, 238, 238, 0.5)",
+    border: "1px solid rgba(33, 150, 243, 0.5)",
+  },
+
   subHandle: {
     position: "absolute",
     top: "0",
@@ -338,8 +343,6 @@ const VideoLandingStyle = makeStyles({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
-    textShadow:
-      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
     height: "100%",
     wordWrap: "break-word",
   },
@@ -377,7 +380,10 @@ const VideoLandingStyle = makeStyles({
 
   optionIconBtn: {
     //backgroundColor: "#fff",
-    backgroundColor: "#fcf7e9",
+    // backgroundColor: "#fcf7e9",
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: "#EEEEEE",
     borderRadius: "50%",
     marginRight: "10px",
     color: "blue",
@@ -399,13 +405,13 @@ const VideoLandingStyle = makeStyles({
     padding: "26.5px 0",
     justifyContent: "center",
     // backgroundColor: "rgba(254, 191, 44, 0.1)",
-    backgroundColor: "#fcf7e9",
+    // backgroundColor: "#fcf7e9",
   },
 
   rightPanelParentBox: {
     display: "flex",
     flexDirection: "column",
-    border: "1px solid #eaeaea",
+    border: "1px solid #eeeeee",
   },
 
   rightPanelBtnGrp: {
@@ -466,7 +472,7 @@ const VideoLandingStyle = makeStyles({
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
-    borderColor: "rgba(0, 0, 0, 0.23)",
+    borderColor: "white",
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
