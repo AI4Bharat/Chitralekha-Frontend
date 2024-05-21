@@ -6,7 +6,7 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
   const classes = ProjectStyle();
 
   return (
-    <Box display="flex">
+    <div style={{display: "flex", margin:"0"}}>
       <TextField
         variant="standard"
         onChange={(event) =>
@@ -16,15 +16,15 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         onFocus={(event) => event.target.select()}
         className={classes.timeInputBox}
         style={{
-          paddingLeft: "10px",
-          marginLeft: type === "endTime" ? "auto" : "",
+          // paddingLeft: "10px",
+          // marginLeft: type === "endTime" ? "auto" : "",
         }}
       />
 
       <TextField
         variant="standard"
         value={":"}
-        style={{ width: "2%" }}
+        style={{ width: "1ch" }}
         className={classes.timeInputBox}
       />
 
@@ -42,7 +42,7 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
       <TextField
         variant="standard"
         value={":"}
-        style={{ width: "2%" }}
+        style={{ width: "1ch" }}
         className={classes.timeInputBox}
       />
 
@@ -55,22 +55,23 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         onChange={(event) =>
           handleTimeChange(event.target.value, index, type, "seconds")
         }
-        style={{
+        // style={{
           
-        }}
+        // }}
       />
 
       <TextField
         variant="standard"
         value={"."}
-        style={{ width: "2%" }}
+        style={{ width: "1ch" }}
         className={classes.timeInputBox}
       />
 
       <TextField
         variant="standard"
         value={time.split(":")[2].split(".")[1]}
-        style={{ width: "20%", paddingRight: "10px" }}
+        style={{width: "3ch"}}
+        // style={{ width: "20%", paddingRight: "10px" }}
         onFocus={(event) => event.target.select()}
         InputProps={{ inputProps: { min: 0, max: 999 } }}
         className={classes.timeInputBox}
@@ -78,7 +79,7 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
           handleTimeChange(event.target.value, index, type, "miliseconds")
         }
       />
-    </Box>
+    </div>
   );
 };
 
