@@ -448,6 +448,7 @@ const VideoLandingStyle = makeStyles({
     textAlign: "center",
     boxSizing: "border-box",
     height: "calc(100vh - 370px)",
+    backgroundColor: "white",
   },
 
   topBox: {

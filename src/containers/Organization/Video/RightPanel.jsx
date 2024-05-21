@@ -639,9 +639,20 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                   display: "flex"
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%" }}>
-                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.start_time}</div>
-                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.end_time}</div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%"}}>
+                  <TimeBoxes
+                     handleTimeChange={handleTimeChange}
+                     time={item.start_time}
+                     index={index}
+                     type={"startTime"}
+                   />
+                  <br/>
+                  <TimeBoxes
+                     handleTimeChange={handleTimeChange}
+                     time={item.end_time}
+                     index={index}
+                     type={"endTime"}
+                   />
                 </div>
 
                 <CardContent
@@ -707,7 +718,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                         }`}
                         style={{
                           fontSize: fontSize,
-                          height: "120px",
                         }}
                         rows={2}
                         ref={(el) => (textboxes.current[index] = el)}

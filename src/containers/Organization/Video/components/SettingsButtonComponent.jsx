@@ -147,6 +147,9 @@ const SettingsButtonComponent = ({
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
+              style={{
+                transform: "rotate(180deg)"
+              }}
               onClick={() => onMergeClick(currentIndex)}
             >
               <MergeIcon className={classes.rightPanelSvg} />
