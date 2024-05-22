@@ -520,6 +520,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
   };
 
   const onNavigationClick = (value) => {
+    saveTranscriptHandler(false, true)
     getPayload(value, limit);
   };
 
