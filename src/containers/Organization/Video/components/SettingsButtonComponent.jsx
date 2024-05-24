@@ -32,6 +32,7 @@ import AddIcon from "@mui/icons-material/Add";
 import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import LoopIcon from "@mui/icons-material/Loop";
 
 const anchorOrigin = {
   vertical: "top",
@@ -72,6 +73,7 @@ const SettingsButtonComponent = ({
   onDelete,
   addNewSubtitleBox,
   subtitles,
+  handleReGenerateTranslation,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -181,6 +183,20 @@ const SettingsButtonComponent = ({
               <AddIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
+
+          {taskData?.task_type?.includes("TRANSLATION") && (
+            <Tooltip title="Regenerate Translation" placement="bottom">
+              <IconButton
+                className={classes.rightPanelBtnGrp}
+                onClick={() => handleReGenerateTranslation(currentIndex)}
+                sx={{
+                  "&.Mui-disabled": { backgroundColor: "lightgray" },
+                }}
+              >
+                <LoopIcon className={classes.rightPanelSvg} />
+              </IconButton>
+            </Tooltip>
+          )}
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
         </>
       )}

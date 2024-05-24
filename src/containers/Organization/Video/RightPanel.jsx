@@ -669,6 +669,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {
@@ -770,11 +771,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
 
         <Box
           className={classes.paginationBox}
-          style={{
-            ...(!xl && {
-              bottom: "-11%",
-            }),
-          }}
+          // style={{
+          //   ...(!xl && {
+          //     bottom: "-11%",
+          //   }),
+          // }}
         >
           <Pagination
             range={getSubtitleRangeTranscript()}

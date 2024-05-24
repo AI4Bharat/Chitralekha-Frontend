@@ -27,7 +27,7 @@ const VideoLandingStyle = makeStyles({
 
   videoName: {
     textAlign: "center",
-    margin: "28px",
+    margin: "13.5px",
     width: "90%",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -53,7 +53,6 @@ const VideoLandingStyle = makeStyles({
     right: "0",
     bottom: "7%",
     width: "94%",
-    padding: "0 22px",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -134,7 +133,7 @@ const VideoLandingStyle = makeStyles({
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    height: "150px",
+    height: "100px",
     width: "100%",
   },
 
@@ -402,7 +401,7 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     direction: "row",
     flexWrap: "wrap",
-    padding: "26.5px 0",
+    padding: "12px 0",
     justifyContent: "center",
     // backgroundColor: "rgba(254, 191, 44, 0.1)",
     // backgroundColor: "#fcf7e9",
@@ -443,11 +442,10 @@ const VideoLandingStyle = makeStyles({
     borderTop: "1px solid #eaeaea",
     overflowY: "scroll",
     overflowX: "hidden",
-    backgroundColor: "black",
     width: "100%",
     textAlign: "center",
     boxSizing: "border-box",
-    height: "calc(100vh - 370px)",
+    height: "calc(100vh - 270px)",
     backgroundColor: "white",
   },
 
@@ -512,7 +510,7 @@ const VideoLandingStyle = makeStyles({
   },
 
   textAreaTransliteration: {
-    width: "85%",
+    width: "90%",
     padding: "16.5px 12px",
     fontSize: "1rem",
     fontWeight: "400",
@@ -532,7 +530,7 @@ const VideoLandingStyle = makeStyles({
 
   videoPlayerParent: {
     boxSizing: "border-box",
-    height: "calc(100vh - 310px)",
+    height: "calc(100vh - 250px)",
   },
 
   videoPlayer: {
@@ -553,8 +551,8 @@ const VideoLandingStyle = makeStyles({
   },
 
   paginationBox: {
-    position: "absolute",
-    bottom: "-62px",
+    // position: "absolute",
+    bottom: "0px",
     background: "#fff",
     width: "100%",
     color: "#fff",
@@ -562,7 +560,7 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: "10px",
+    padding: "0, 5px",
     border: "1px solid #EAEAEA",
   },
 
