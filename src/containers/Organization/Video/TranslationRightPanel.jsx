@@ -619,6 +619,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
             undoStack={undoStack}
             redoStack={redoStack}
             handleInfoButtonClick={handleInfoButtonClick}
+            currentIndex={currentIndex}
+            onMergeClick={onMergeClick}
+            onDelete={onDelete}
+            addNewSubtitleBox={addNewSubtitleBox}
+            subtitles={subtitles}
+            handleReGenerateTranslation={handleReGenerateTranslation}
           />
         </Grid>
 
@@ -632,50 +638,18 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "15px",
+                  padding: "0",
                   borderBottom: "1px solid lightgray",
-                  backgroundColor:
-                    index % 2 === 0
-                      ? "rgb(214, 238, 255)"
-                      : "rgb(233, 247, 239)",
+                  backgroundColor: "white",
+                  display: "flex"
                 }}
               >
-                <Box
-                  display="flex"
-                  alignItems={"center"}
-                  justifyContent="center"
-                  sx={{ margin: "0 10px" }}
-                >
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.start_time}
-                    index={index}
-                    type={"startTime"}
-                  />
-
-                  <ButtonComponent
-                    index={index}
-                    lastItem={index < sourceText.length - 1}
-                    onMergeClick={onMergeClick}
-                    onDelete={onDelete}
-                    addNewSubtitleBox={addNewSubtitleBox}
-                    handleReGenerateTranslation={handleReGenerateTranslation}
-                  />
-
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.end_time}
-                    index={index}
-                    type={"endTime"}
-                  />
-                </Box>
-
                 <CardContent
                   sx={{
                     display: "flex",
-                    padding: "5px 0",
+                    padding: "0",
                   }}
-                  className={classes.cardContent}
+                  style={{alignItems:"center", padding: 0, width:"100%"}}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -692,13 +666,13 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                       onContextMenu={handleContextMenu}
                     >
                       <textarea
-                        rows={4}
+                        rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
-                        style={{ fontSize: fontSize, height: "100px" }}
+                        style={{ fontSize: fontSize }}
                         ref={(el) => (textboxes.current[index] = el)}
                         value={item.text}
                         onChange={(event) => {
@@ -709,7 +683,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                           );
                         }}
                       />
-                      <span
+                      {/* <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -722,9 +696,25 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                         }}
                       >
                         {sourceLength(index)}
-                      </span>
+                      </span> */}
                     </div>
                   )}
+
+                <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
+                    <TimeBoxes
+                      handleTimeChange={handleTimeChange}
+                      time={item.start_time}
+                      index={index}
+                      type={"startTime"}
+                    />
+                    <br/>
+                    <TimeBoxes
+                      handleTimeChange={handleTimeChange}
+                      time={item.end_time}
+                      index={index}
+                      type={"endTime"}
+                    />
+                  </div>
 
                   {enableTransliteration ? (
                     <IndicTransliterate
@@ -738,7 +728,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                         width: "100%",
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
-                      style={{ fontSize: fontSize, height: "100px" }}
+                      style={{ fontSize: fontSize }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
@@ -750,10 +740,10 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             ref={(el) => (textboxes.current[index] = el)}
-                            rows={4}
+                            rows={2}
                             {...props}
                           />
-                          <span
+                          {/* <span
                             className={classes.wordCount}
                             style={{
                               color:
@@ -766,14 +756,14 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             }}
                           >
                             {targetLength(index)}
-                          </span>
+                          </span> */}
                         </div>
                       )}
                     />
                   ) : (
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
-                        rows={4}
+                        rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
                         } ${
@@ -783,7 +773,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                         ref={(el) => (textboxes.current[index] = el)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
-                        style={{ fontSize: fontSize, height: "100px" }}
+                        style={{ fontSize: fontSize }}
                         onChange={(event) => {
                           changeTranscriptHandler(
                             event.target.value,
@@ -793,7 +783,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                         }}
                         value={item.target_text}
                       />
-                      <span
+                      {/* <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -806,12 +796,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                         }}
                       >
                         {targetLength(index)}
-                      </span>
+                      </span> */}
                     </div>
                   )}
                 </CardContent>
 
-                <Menu
+                {/* <Menu
                   open={contextMenu !== null}
                   onClose={() => setContextMenu(null)}
                   anchorReference="anchorPosition"
@@ -826,12 +816,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                   >
                     Add Glossary
                   </MenuItem>
-                  {/* <MenuItem
+                  <MenuItem
                     onClick={() => handleContextMenuClick("Suggest Glossary")}
                   >
                     Suggest Glossary
-                  </MenuItem> */}
-                </Menu>
+                  </MenuItem>
+                </Menu> */}
               </Box>
             );
           })}
@@ -839,11 +829,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
 
         <Box
           className={classes.paginationBox}
-          style={{
-            ...(!xl && {
-              bottom: "-11%",
-            }),
-          }}
+          // style={{
+          //   ...(!xl && {
+          //     bottom: "-11%",
+          //   }),
+          // }}
         >
           <Pagination
             range={getSubtitleRangeTranscript()}
