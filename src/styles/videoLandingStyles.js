@@ -490,16 +490,16 @@ const VideoLandingStyle = makeStyles({
   },
 
   wordCount: {
-    background: "white",
     color: "green",
     fontWeight: 700,
     height: "20px",
     width: "30px",
     borderRadius: "50%",
     position: "absolute",
-    bottom: "-25px",
+    top: "5px",
     right: "10px",
     textAlign: "center",
+    zIndex:"100"
   },
 
   topBoxTranslation: {
