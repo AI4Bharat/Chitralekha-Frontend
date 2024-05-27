@@ -683,7 +683,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                           );
                         }}
                       />
-                      {/* <span
+                      <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -692,11 +692,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             ) >= 3
                               ? "red"
                               : "green",
-                          left: "6px",
+                          left: "15px",
+                          top: "3px"
                         }}
                       >
                         {sourceLength(index)}
-                      </span> */}
+                      </span>
                     </div>
                   )}
 
@@ -743,7 +744,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             rows={2}
                             {...props}
                           />
-                          {/* <span
+                          <span
                             className={classes.wordCount}
                             style={{
                               color:
@@ -752,11 +753,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "10px",
-                            }}
+                              right: "15px",
+                          top: "3px"
+                        }}
                           >
                             {targetLength(index)}
-                          </span> */}
+                          </span>
                         </div>
                       )}
                     />
@@ -783,7 +785,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                         }}
                         value={item.target_text}
                       />
-                      {/* <span
+                      <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -792,11 +794,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "10px",
+                          right: "15px",
+                          top: "3px"
                         }}
                       >
                         {targetLength(index)}
-                      </span> */}
+                      </span>
                     </div>
                   )}
                 </CardContent>
