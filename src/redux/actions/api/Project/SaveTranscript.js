@@ -9,7 +9,7 @@ export default class SaveTranscriptAPI extends API {
     this.payload = payload;
     this.payloadEndpoint = taskType?.includes("TRANSCRIPTION")
       ? ENDPOINTS.transcript
-      : taskType.includes("TRANSLATION")
+      : taskType?.includes("TRANSLATION")
       ? ENDPOINTS.translation
       : ENDPOINTS.voiceover;
     this.endpoint = `${super.apiEndPointAuto()}${
