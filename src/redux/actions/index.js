@@ -4,6 +4,8 @@ import FetchAllUsersAPI from "./api/Admin/FetchAllUsers";
 import FetchOrgOwnersAPI from "./api/Admin/FetchOrgOwners";
 import UpdateMemberPasswordAPI from "./api/Admin/UpdateMemberPassword";
 import CreateMemberAPI from "./api/Admin/CreateMember";
+import UpdateOnboardingFormAPI from "./api/Admin/UpdateOnboardingForm";
+import FetchOnboardingListAPI from "./api/Admin/FetchOnboardingList";
 
 //Organization APIs
 import AddOrganizationMemberAPI from "./api/Organization/AddOrganizationMember";
@@ -296,4 +298,6 @@ export {
   OnBoardingAPI,
   BulkExportVoiceoverTasksAPI,
   CreateMemberAPI,
+  UpdateOnboardingFormAPI,
+  FetchOnboardingListAPI,
 };

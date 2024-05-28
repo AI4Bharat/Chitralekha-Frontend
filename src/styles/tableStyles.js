@@ -56,6 +56,22 @@ const TableStyles = makeStyles({
     alignItems: "center",
     marginBottom: "10px",
   },
+
+  rejectBtn: {
+    color: "#E02B1D",
+    fontSize: "14px",
+    fontWeight: 500,
+    padding: "8px 24px 8px 24px",
+    lineHeight: "16px",
+    marginRight: "8px",
+  },
+
+  approveBtn: {
+    fontSize: "14px",
+    fontWeight: 500,
+    padding: "8px 24px 8px 24px",
+    lineHeight: "16px",
+  },
 });
 
 export default TableStyles;

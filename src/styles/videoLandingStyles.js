@@ -22,12 +22,12 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     flexDirection: "row",
     // backgroundColor: "rgba(254, 191, 44, 0.1)",
-    backgroundColor: "#fcf7e9",
+    backgroundColor: "white",
   },
 
   videoName: {
     textAlign: "center",
-    margin: "29.5px",
+    margin: "13.5px",
     width: "90%",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -53,7 +53,6 @@ const VideoLandingStyle = makeStyles({
     right: "0",
     bottom: "7%",
     width: "94%",
-    padding: "0 22px",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -134,7 +133,7 @@ const VideoLandingStyle = makeStyles({
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    height: "150px",
+    height: "100px",
     width: "100%",
   },
 
@@ -172,7 +171,7 @@ const VideoLandingStyle = makeStyles({
     width: "0%",
     height: "100%",
     display: "inline-block",
-    backgroundColor: "#730000",
+    backgroundColor: "rgba(33, 150, 243, 0.5)",
     overflow: "hidden",
   },
 
@@ -181,9 +180,9 @@ const VideoLandingStyle = makeStyles({
     right: "0",
     top: "0",
     bottom: "0",
-    width: "10px",
+    width: "2px",
     cursor: "ew-resize",
-    backgroundColor: "#ff9800",
+    backgroundColor: "red",
   },
 
   timelineSubtitle: {
@@ -317,6 +316,11 @@ const VideoLandingStyle = makeStyles({
     border: "1px solid rgba(33, 150, 243, 0.5)",
   },
 
+  subNonHighlight: {
+    backgroundColor: "rgba(238, 238, 238, 0.5)",
+    border: "1px solid rgba(33, 150, 243, 0.5)",
+  },
+
   subHandle: {
     position: "absolute",
     top: "0",
@@ -338,8 +342,6 @@ const VideoLandingStyle = makeStyles({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
-    textShadow:
-      "rgb(0 0 0) 1px 0px 1px, rgb(0 0 0) 0px 1px 1px, rgb(0 0 0) -1px 0px 1px, rgb(0 0 0) 0px -1px 1px",
     height: "100%",
     wordWrap: "break-word",
   },
@@ -377,7 +379,10 @@ const VideoLandingStyle = makeStyles({
 
   optionIconBtn: {
     //backgroundColor: "#fff",
-    backgroundColor: "#fcf7e9",
+    // backgroundColor: "#fcf7e9",
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: "#EEEEEE",
     borderRadius: "50%",
     marginRight: "10px",
     color: "blue",
@@ -396,16 +401,16 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     direction: "row",
     flexWrap: "wrap",
-    padding: "26.5px 0",
+    padding: "12px 0",
     justifyContent: "center",
     // backgroundColor: "rgba(254, 191, 44, 0.1)",
-    backgroundColor: "#fcf7e9",
+    // backgroundColor: "#fcf7e9",
   },
 
   rightPanelParentBox: {
     display: "flex",
     flexDirection: "column",
-    border: "1px solid #eaeaea",
+    border: "1px solid #eeeeee",
   },
 
   rightPanelBtnGrp: {
@@ -437,11 +442,11 @@ const VideoLandingStyle = makeStyles({
     borderTop: "1px solid #eaeaea",
     overflowY: "scroll",
     overflowX: "hidden",
-    backgroundColor: "black",
     width: "100%",
     textAlign: "center",
     boxSizing: "border-box",
-    height: "calc(100vh - 370px)",
+    height: "calc(100vh - 270px)",
+    backgroundColor: "white",
   },
 
   topBox: {
@@ -466,7 +471,7 @@ const VideoLandingStyle = makeStyles({
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
-    borderColor: "rgba(0, 0, 0, 0.23)",
+    borderColor: "white",
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
@@ -485,16 +490,16 @@ const VideoLandingStyle = makeStyles({
   },
 
   wordCount: {
-    background: "white",
     color: "green",
     fontWeight: 700,
     height: "20px",
     width: "30px",
     borderRadius: "50%",
     position: "absolute",
-    bottom: "-25px",
+    top: "5px",
     right: "10px",
     textAlign: "center",
+    zIndex:"100"
   },
 
   topBoxTranslation: {
@@ -505,7 +510,7 @@ const VideoLandingStyle = makeStyles({
   },
 
   textAreaTransliteration: {
-    width: "85%",
+    width: "90%",
     padding: "16.5px 12px",
     fontSize: "1rem",
     fontWeight: "400",
@@ -525,7 +530,7 @@ const VideoLandingStyle = makeStyles({
 
   videoPlayerParent: {
     boxSizing: "border-box",
-    height: "calc(100vh - 310px)",
+    height: "calc(100vh - 250px)",
   },
 
   videoPlayer: {
@@ -546,8 +551,8 @@ const VideoLandingStyle = makeStyles({
   },
 
   paginationBox: {
-    position: "absolute",
-    bottom: "-62px",
+    // position: "absolute",
+    bottom: "0px",
     background: "#fff",
     width: "100%",
     color: "#fff",
@@ -555,7 +560,7 @@ const VideoLandingStyle = makeStyles({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: "10px",
+    padding: "0, 5px",
     border: "1px solid #EAEAEA",
   },
 

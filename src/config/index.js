@@ -45,6 +45,7 @@ import {
   toolBarActions,
   voiceOptions,
   usageList,
+  onBoardingTableActionBtns,
 } from "./projectConfigs";
 import {
   reportLevels,
@@ -60,6 +61,7 @@ import {
   videoListColumns,
   taskListColumns,
   taskQueueStatusColumns,
+  taskQueueStatusAdminColumns,
   orgTaskListColumns,
   failInfoColumns,
   voiceoverFailInfoColumns,
@@ -67,6 +69,7 @@ import {
   reopenTableColumns,
   renderTaskListColumnCell,
   glossaryColumns,
+  onBoardingRequestColumns,
 } from "./tableColumns";
 import { taskStatus, taskTypes } from "./taskItems";
 import { specialOrgIds } from "./taskTableConfig";
@@ -96,6 +99,7 @@ export {
   videoListColumns,
   taskListColumns,
   taskQueueStatusColumns,
+  taskQueueStatusAdminColumns,
   taskStatus,
   taskTypes,
   voiceOptions,
@@ -136,4 +140,6 @@ export {
   domains,
   orgTypeList,
   usageList,
+  onBoardingRequestColumns,
+  onBoardingTableActionBtns,
 };

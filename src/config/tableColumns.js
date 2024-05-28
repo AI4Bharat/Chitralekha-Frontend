@@ -5,7 +5,7 @@ import statusColor from "../utils/getStatusColor";
 export const projectColumns = [
   {
     name: "id",
-    label: "Id"
+    label: "Id",
   },
   {
     name: "title",
@@ -259,6 +259,21 @@ export const renderTaskListColumnCell = (value, tableMeta) => {
   );
 };
 
+export const parseNotesResponseData = (value) => {
+  let notesTextData = ['']
+  if (value){
+    notesTextData = value.split("'")
+    notesTextData=notesTextData.filter((ele)=>ele!='[' && ele!=']' && ele!=', ' && ele!='[]')
+  }
+
+  return (
+    <Box
+    >
+      {notesTextData.length?notesTextData[notesTextData.length-1].split("||").join(": "):''}
+    </Box>
+  );
+};
+
 export const taskListColumns = [
   {
     name: "id",
@@ -416,6 +431,44 @@ export const taskQueueStatusColumns = [
   },
 ];
 
+export const taskQueueStatusAdminColumns = [
+  {
+    name: "S. No",
+    label: "Seq. No.",
+  },
+  {
+    name: "task_id",
+    label: "Task Id",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "uuid",
+    label: "Queue UUID",
+  },
+  {
+    name: "name",
+    label: "Name",
+  },
+  {
+    name: "state",
+    label: "Task State",
+  },
+  {
+    name: "received_time",
+    label: "Received Time",
+  },
+  {
+    name: "started_time",
+    label: "Started Time",
+  },
+  {
+    name: "worker",
+    label: "Worker Name",
+  },
+]
+
 export const failInfoColumns = [
   {
     name: "page_number",
@@ -536,5 +589,94 @@ export const glossaryColumns = [
   {
     name: "target_text",
     label: "Target Text",
+  },
+];
+
+export const onBoardingRequestColumns = [
+  {
+    name: "id",
+    label: "S No",
+  },
+  {
+    name: "orgname",
+    label: "Org Name",
+  },
+  {
+    name: "org_type",
+    label: "Org Type",
+  },
+  {
+    name: "org_portal",
+    label: "Org Portal",
+  },
+  {
+    name: "email_domain_name",
+    label: "Email Domain Name",
+  },
+  {
+    name: "email",
+    label: "Email ID",
+  },
+  {
+    name: "phone",
+    label: "Phone",
+  },
+  {
+    name: "status",
+    label: "Status",
+    // options: {
+    //   customBodyRender: (value) => {
+    //     return <Box>{statusColor(value)?.element}</Box>;
+    //   },
+    // },
+  },
+  {
+    name: "notes",
+    label: "Notes",
+    options: {
+      customBodyRender: parseNotesResponseData,
+    },
+  },
+  {
+    name: "interested_in",
+    label: "Interested In",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "src_language",
+    label: "Source Language",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "tgt_language",
+    label: "Target Language",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "Usage",
+    label: "Usage",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "purpose",
+    label: "Purpose",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "source",
+    label: "Source",
+    options: {
+      display: false,
+    },
   },
 ];
