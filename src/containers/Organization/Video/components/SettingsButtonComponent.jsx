@@ -74,6 +74,8 @@ const SettingsButtonComponent = ({
   addNewSubtitleBox,
   subtitles,
   handleReGenerateTranslation,
+  setDisableSaveBtnTillApiResponse,
+  disableSaveBtnTillApiResponse
 }) => {
   const classes = VideoLandingStyle();
   
@@ -117,6 +119,10 @@ const SettingsButtonComponent = ({
       if (!transcriptPayload?.payload?.payload.length) {
         return true;
       }
+    }
+
+    if (disableSaveBtnTillApiResponse) {
+      return true
     }
 
     return false;
@@ -371,7 +377,10 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           disabled={getDisbled()}
-          onClick={() => saveTranscriptHandler(false)}
+          onClick={() => {
+            setDisableSaveBtnTillApiResponse(true)
+            saveTranscriptHandler(false)
+          }}
         >
           <SaveIcon className={classes.rightPanelSvg} />
         </IconButton>

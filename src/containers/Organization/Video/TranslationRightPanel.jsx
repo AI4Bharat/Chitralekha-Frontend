@@ -92,6 +92,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
   const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
+  const [disableSaveBtnTillApiResponse, setDisableSaveBtnTillApiResponse] = useState(false)
   const [regenerate, setRegenerate] = useState(false);
   const [complete, setComplete] = useState(false);
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
@@ -111,6 +112,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
       if (success) {
         switch (apiType) {
           case "SAVE_TRANSCRIPT":
+            setDisableSaveBtnTillApiResponse(false)
             if (regenerate) {
               getPayload(currentPage, limit);
               setRegenerate(false);
@@ -144,6 +146,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
         switch (apiType) {
           case "SAVE_TRANSCRIPT":
             setOpenConfirmDialog(false);
+            setDisableSaveBtnTillApiResponse(false)
 
             if (complete) {
               setOpenInfoDialog(true);
@@ -613,6 +616,8 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
             setFontSize={setFontSize}
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
+            disableSaveBtnTillApiResponse={disableSaveBtnTillApiResponse}
+            setDisableSaveBtnTillApiResponse={setDisableSaveBtnTillApiResponse}
             setOpenConfirmDialog={setOpenConfirmDialog}
             onUndo={onUndo}
             onRedo={onRedo}

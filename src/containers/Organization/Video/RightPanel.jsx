@@ -113,6 +113,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     useState(true);
   const [complete, setComplete] = useState(false);
   const [autoSave, setAutoSave] = useState(false);
+  const [disableSaveBtnTillApiResponse, setDisableSaveBtnTillApiResponse] = useState(false)
 
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const [tableDialogMessage, setTableDialogMessage] = useState("");
@@ -127,6 +128,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
         switch (apiType) {
           case "SAVE_TRANSCRIPT":
             if (!autoSave) {
+              setDisableSaveBtnTillApiResponse(false)
               setTimeout(() => {
                 dispatch(setSnackBar({ open: false }));
               }, 1000);
@@ -154,6 +156,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
       } else {
         switch (apiType) {
           case "SAVE_TRANSCRIPT":
+            setDisableSaveBtnTillApiResponse(false)
             setOpenConfirmDialog(false);
 
             if (complete) {
@@ -607,6 +610,8 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
             setFontSize={setFontSize}
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
+            disableSaveBtnTillApiResponse={disableSaveBtnTillApiResponse}
+            setDisableSaveBtnTillApiResponse={setDisableSaveBtnTillApiResponse}
             setOpenConfirmDialog={setOpenConfirmDialog}
             onUndo={onUndo}
             onRedo={onRedo}

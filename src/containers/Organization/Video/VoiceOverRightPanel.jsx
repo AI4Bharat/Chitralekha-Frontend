@@ -100,6 +100,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
+  const [disableSaveBtnTillApiResponse, setDisableSaveBtnTillApiResponse] = useState(false)
   const [subsuper, setsubsuper] = useState(false);
   const [selection, setselection] = useState(false);
   const [, setSelectionStart] = useState();
@@ -113,6 +114,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     if (!progress) {
       if (success) {
         if (apiType === "SAVE_TRANSCRIPT") {
+          setDisableSaveBtnTillApiResponse(false)
           setCanSave(false);
           setOpenConfirmDialog(false);
 
@@ -148,6 +150,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
         }
       } else {
         if (apiType === "SAVE_TRANSCRIPT") {
+          setDisableSaveBtnTillApiResponse(false)
           setOpenConfirmDialog(false);
 
           if (complete) {
@@ -508,6 +511,8 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
             setFontSize={setFontSize}
             fontSize={fontSize}
             saveTranscriptHandler={saveTranscriptHandler}
+            disableSaveBtnTillApiResponse={disableSaveBtnTillApiResponse}
+            setDisableSaveBtnTillApiResponse={setDisableSaveBtnTillApiResponse}
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
