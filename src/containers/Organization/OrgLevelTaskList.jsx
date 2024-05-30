@@ -666,10 +666,10 @@ const OrgLevelTaskList = () => {
       case "Edit":
         if (task_type.includes("TRANSCRIPTION")) {
           navigate(`/task/${id}/transcript`);
-        } else if (task_type.includes("TRANSLATION")) {
-          generateTranslationCall(id, status);
-        } else {
+        } else if (task_type.includes("VOICEOVER")) {
           navigate(`/task/${id}/voiceover`);
+        } else {
+          generateTranslationCall(id, status);
         }
         break;
 

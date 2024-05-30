@@ -341,17 +341,17 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
-          ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
-            <TranslationRightPanel
-              currentIndex={currentIndex}
-              currentSubs={currentSubs}
-              setCurrentIndex={setCurrentIndex}
-            />
-          ) : (
+          ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
             // <VoiceOverRightPanel currentIndex={currentIndex}
             // setCurrentIndex={setCurrentIndex} />
             <VoiceOverRightPanel1
               currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+            />
+          ) : (
+            <TranslationRightPanel
+              currentIndex={currentIndex}
+              currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
           )}
