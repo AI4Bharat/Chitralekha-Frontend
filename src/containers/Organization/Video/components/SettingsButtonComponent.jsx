@@ -205,7 +205,7 @@ const SettingsButtonComponent = ({
         </>
       )}
 
-      {taskData?.task_type?.includes("TRANSLATION") && (
+      {/* {taskData?.task_type?.includes("TRANSLATION") && (
         <>
           <Tooltip title="Regenerate Translation" placement="bottom">
             <IconButton
@@ -220,7 +220,7 @@ const SettingsButtonComponent = ({
           </Tooltip>
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
         </>
-      )}
+      )} */}
 
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
