@@ -33,6 +33,8 @@ import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoopIcon from "@mui/icons-material/Loop";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import LyricsIcon from "@mui/icons-material/Lyrics";
 
 const anchorOrigin = {
   vertical: "top",
@@ -74,6 +76,8 @@ const SettingsButtonComponent = ({
   addNewSubtitleBox,
   subtitles,
   handleReGenerateTranslation,
+  textChangeBtn,
+  speedChangeBtn,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -140,7 +144,7 @@ const SettingsButtonComponent = ({
 
   return (
     <>
-      {!taskData?.task_type?.includes("VOICEOVER") && (
+      {taskData?.task_type?.includes("TRANSCRIPTION") && (
         <>
           <Tooltip title="Merge Next" placement="bottom">
             <IconButton
@@ -197,6 +201,23 @@ const SettingsButtonComponent = ({
               </IconButton>
             </Tooltip>
           )}
+          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+        </>
+      )}
+
+      {taskData?.task_type?.includes("TRANSLATION") && (
+        <>
+          <Tooltip title="Regenerate Translation" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              onClick={() => handleReGenerateTranslation(currentIndex)}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+            >
+              <LoopIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
         </>
       )}
@@ -434,6 +455,38 @@ const SettingsButtonComponent = ({
           targetLanguage={taskData?.target_language}
         />
       )}
+
+      {taskData?.task_type?.includes("VOICEOVER") &&
+        transcriptPayload?.source_type === "MACHINE_GENERATED" && textChangeBtn &&
+        (
+          <Tooltip title="Get Updated Audio" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              onClick={() => saveTranscriptHandler(false, true)}
+              disabled={!textChangeBtn[currentIndex]}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+            >
+              <TaskAltIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+        )}
+
+      {taskData?.task_type?.includes("VOICEOVER") && speedChangeBtn &&
+      (speedChangeBtn[currentIndex] && (
+        <Tooltip title="Get Updated Audio Speed" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => saveTranscriptHandler(false, true)}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+          >
+            <LyricsIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      ))}
     </>
   );
 };

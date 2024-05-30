@@ -692,7 +692,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             ) >= 3
                               ? "red"
                               : "green",
-                          left: "15px",
+                          left: "20px",
                           top: "3px"
                         }}
                       >
@@ -703,17 +703,19 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
 
                 <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
                     <TimeBoxes
-                      handleTimeChange={handleTimeChange}
+                      // handleTimeChange={handleTimeChange}
                       time={item.start_time}
                       index={index}
                       type={"startTime"}
+                      readOnly={true}
                     />
                     <br/>
                     <TimeBoxes
-                      handleTimeChange={handleTimeChange}
+                      // handleTimeChange={handleTimeChange}
                       time={item.end_time}
                       index={index}
                       type={"endTime"}
+                      readOnly={true}
                     />
                   </div>
 
@@ -753,7 +755,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "15px",
+                              right: "20px",
                           top: "3px"
                         }}
                           >
@@ -794,7 +796,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "15px",
+                          right: "20px",
                           top: "3px"
                         }}
                       >
