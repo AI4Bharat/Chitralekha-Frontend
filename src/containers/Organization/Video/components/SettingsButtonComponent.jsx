@@ -33,7 +33,6 @@ import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoopIcon from "@mui/icons-material/Loop";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import LyricsIcon from "@mui/icons-material/Lyrics";
 
 const anchorOrigin = {
@@ -468,7 +467,7 @@ const SettingsButtonComponent = ({
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
             >
-              <TaskAltIcon className={classes.rightPanelSvg} />
+              <LoopIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
         )}
