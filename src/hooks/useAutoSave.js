@@ -16,6 +16,10 @@ export const useAutoSave = () => {
 
   useEffect(() => {
     const handleAutosave = () => {
+      // if (SaveTranscriptAPI.shouldSkipAutoSave) {
+      //   return;
+      // }
+
       const reqBody = {
         task_id: taskId,
         offset: currentPage,

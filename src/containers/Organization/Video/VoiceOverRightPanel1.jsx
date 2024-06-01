@@ -128,6 +128,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
           }
 
           if (getUpdatedAudio) {
+            // SaveTranscriptAPI.isSaveInProgress(false);
             const sub = data?.payload?.payload.map((item) => new Sub(item));
 
             const newSub = cloneDeep(sub);
@@ -269,6 +270,10 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
         variant: "info",
       })
     );
+    
+    // if(isGetUpdatedAudio){
+    //   SaveTranscriptAPI.isSaveInProgress(true);
+    // }
 
     const reqBody = {
       task_id: taskId,

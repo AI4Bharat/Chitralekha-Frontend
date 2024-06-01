@@ -3,6 +3,8 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class SaveTranscriptAPI extends API {
+  // static isSaveInProgress = false;
+
   constructor(payload, taskType, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.SAVE_TRANSCRIPT;
@@ -16,6 +18,14 @@ export default class SaveTranscriptAPI extends API {
       this.payloadEndpoint
     }save/`;
   }
+
+  // static setSaveInProgress(status) {
+  //   SaveTranscriptAPI.isSaveInProgress = status;
+  // }
+
+  // static shouldSkipAutoSave() {
+  //   return SaveTranscriptAPI.isSaveInProgress;
+  // }
 
   processResponse(res) {
     super.processResponse(res);

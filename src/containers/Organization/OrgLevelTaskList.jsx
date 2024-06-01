@@ -1174,10 +1174,10 @@ const OrgLevelTaskList = () => {
 
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
-      } else if (taskType?.includes("TRANSLATION")) {
-        handleTranslationExport();
-      } else {
+      } else if (taskType?.includes("VOICEOVER")) {
         exportVoiceoverTask();
+      } else {
+        handleTranslationExport();
       }
     }
   };
