@@ -54,6 +54,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
+import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
@@ -135,6 +136,7 @@ const OrgLevelTaskList = () => {
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
+    taskType: "",
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -682,6 +684,11 @@ const OrgLevelTaskList = () => {
         setIsBulkTaskDownload(false);
         break;
 
+      case "ExportVO":
+        handleDialogOpen("exportDialog", "VO");
+        setIsBulkTaskDownload(false);
+        break;
+
       case "Preview":
         handlePreviewTask();
         break;
@@ -893,6 +900,18 @@ const OrgLevelTaskList = () => {
                 alignItems: "center",
               }}
             >
+              {(selectedTask?.task_type === "TRANSLATION_VOICEOVER_EDIT" && selectedTask?.status === "COMPLETE") &&
+                <Tooltip key="Export Voiceover" title="Export Voiceover" >
+                  <IconButton
+                    onClick={() =>
+                      handleActionButtonClick(tableMeta, "ExportVO")
+                    }
+                    color="primary"
+                  >
+                    <AudiotrackOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              }
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -1174,10 +1193,12 @@ const OrgLevelTaskList = () => {
 
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
-      } else if (taskType?.includes("VOICEOVER")) {
+      } else if (openDialogs.taskType === "VO"){
         exportVoiceoverTask();
-      } else {
+      } else if (taskType?.includes("TRANSLATION")) {
         handleTranslationExport();
+      } else {
+        exportVoiceoverTask();
       }
     }
   };
@@ -1198,10 +1219,11 @@ const OrgLevelTaskList = () => {
     }));
   };
 
-  const handleDialogOpen = (key) => {
+  const handleDialogOpen = (key, taskType="") => {
     setOpenDialogs((prevState) => ({
       ...prevState,
       [key]: true,
+      taskType: taskType,
     }));
   };
 
