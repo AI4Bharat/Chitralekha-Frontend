@@ -189,12 +189,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     }
   }, [currentPage]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById("subTitleContainer");
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subTitleContainer");
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -661,7 +661,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }
