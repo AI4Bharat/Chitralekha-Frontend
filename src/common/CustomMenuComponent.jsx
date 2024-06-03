@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "utils";
 
 //Components
-import { Checkbox, Menu, MenuItem, Switch, Typography } from "@mui/material";
+import { Menu, MenuItem, Typography } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
 
