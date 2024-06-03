@@ -1257,6 +1257,7 @@ const OrgLevelTaskList = () => {
         <ExportDialog
           open={openDialogs.exportDialog}
           handleClose={() => handleDialogClose("exportDialog")}
+          task_type={openDialogs.taskType}
           taskType={currentTaskDetails?.task_type}
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}

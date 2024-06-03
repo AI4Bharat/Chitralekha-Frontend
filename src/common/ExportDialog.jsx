@@ -22,6 +22,7 @@ import { speakerInfoOptions, bgMusicOptions } from "config";
 const ExportDialog = ({
   open,
   handleClose,
+  task_type,
   taskType,
   exportTypes,
   handleExportSubmitClick,
@@ -97,26 +98,7 @@ const ExportDialog = ({
               </RadioGroup>
             </FormControl>
           </DialogActions>
-        ) : currentTaskType?.includes("VOICEOVER") ? (
-          <DialogActions sx={{ mb: 1, mt: 1 }}>
-            <FormControl>
-              <RadioGroup row>
-                {voiceoverExportTypes?.map((item, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={item}
-                    control={<Radio />}
-                    checked={voiceover === item}
-                    label={item}
-                    name="voiceover"
-                    disabled={isBulkTaskDownload && item === "mp4"}
-                    onClick={(event) => handleExportRadioButtonChange(event)}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </DialogActions>
-        ) : (
+        ) : currentTaskType?.includes("TRANSLATION") && task_type !== "VO" ? (
           <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
               <RadioGroup row>
@@ -131,9 +113,28 @@ const ExportDialog = ({
                     onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
-              </RadioGroup>
-            </FormControl>
-          </DialogActions>
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
+          ) : (
+            <DialogActions sx={{ mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup row>
+                  {voiceoverExportTypes?.map((item, index) => (
+                    <FormControlLabel
+                      key={index}
+                      value={item}
+                      control={<Radio />}
+                      checked={voiceover === item}
+                      label={item}
+                      name="voiceover"
+                      disabled={isBulkTaskDownload && item === "mp4"}
+                      onClick={(event) => handleExportRadioButtonChange(event)}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
         )}
 
         {!currentTaskType?.includes("VOICEOVER") ? (
