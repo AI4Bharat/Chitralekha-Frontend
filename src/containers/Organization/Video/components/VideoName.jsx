@@ -16,6 +16,8 @@ const VideoName = ({
   setDarkAndLightMode,
   subtitlePlacement,
   setSubtitlePlacement,
+  showSubtitles,
+  setShowSubtitles,
 }) => {
   const classes = VideoLandingStyle();
 
@@ -60,6 +62,8 @@ const VideoName = ({
         contianer={document.getElementById("video")}
         subtitlePlacement={subtitlePlacement}
         setSubtitlePlacement={setSubtitlePlacement}
+        showSubtitles={showSubtitles}
+        setShowSubtitles={setShowSubtitles}
       />
     </Box>
   );

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu, playbackSpeed, themeMenu, placementMenu } from "utils";
 
 //Components
-import { Menu, MenuItem, Typography } from "@mui/material";
+import { Checkbox, Menu, MenuItem, Switch, Typography } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
 
@@ -17,6 +17,8 @@ const CustomMenuComponent = ({
   contianer,
   subtitlePlacement,
   setSubtitlePlacement,
+  showSubtitles,
+  setShowSubtitles,
 }) => {
   const player = useSelector((state) => state.commonReducer.player);
 
@@ -79,6 +81,19 @@ const CustomMenuComponent = ({
             </div>
           </MenuItem>
         ))}
+        <MenuItem key="Show Subtitles">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Show Subtitles</span>
+              <input type="checkbox" checked={showSubtitles} onChange={() => {setShowSubtitles(!showSubtitles)}}/>
+            </div>
+          </MenuItem>
       </Menu>
 
       <Menu

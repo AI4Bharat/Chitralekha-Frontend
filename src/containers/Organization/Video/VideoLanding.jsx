@@ -64,6 +64,7 @@ const VideoLanding = () => {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubs, setCurrentSubs] = useState();
+  const [showSubtitles, setShowSubtitles] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
@@ -274,6 +275,8 @@ const VideoLanding = () => {
               setDarkAndLightMode={setDarkAndLightMode}
               subtitlePlacement={subtitlePlacement}
               setSubtitlePlacement={setSubtitlePlacement}
+              showSubtitles={showSubtitles}
+              setShowSubtitles={setShowSubtitles}
             />
 
             <VideoPanel
@@ -281,7 +284,7 @@ const VideoLanding = () => {
               setPlaying={setPlaying}
             />
 
-            {currentSubs && (
+            {currentSubs && showSubtitles && (
               <div
                 className={classes.subtitlePanel}
                 style={{
