@@ -140,7 +140,7 @@ const SettingsButtonComponent = ({
 
   return (
     <>
-      {!taskData?.task_type?.includes("VOICEOVER") && (
+      {taskData?.task_type?.includes("TRANSCRIPTION") && (
         <>
           <Tooltip title="Merge Next" placement="bottom">
             <IconButton
