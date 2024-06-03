@@ -259,14 +259,14 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
     setSourceText(subtitles);
   }, [subtitles]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById(
-      "subtitleContainerTranslation"
-    );
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById(
+  //     "subtitleContainerTranslation"
+  //   );
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
@@ -653,7 +653,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }
@@ -666,6 +666,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                       onContextMenu={handleContextMenu}
                     >
                       <textarea
+                        readOnly={true}
                         rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
