@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import RightPanel from "./RightPanel";
-import VoiceOverRightPanel from "./VoiceOverRightPanel";
+// import VoiceOverRightPanel from "./VoiceOverRightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./components/VideoPanel";
 import TranslationRightPanel from "./TranslationRightPanel";
@@ -55,6 +55,7 @@ import {
 } from "redux/actions";
 import C from "redux/constants";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
+import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -340,15 +341,19 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
-          ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
+          ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
+            // <VoiceOverRightPanel currentIndex={currentIndex}
+            // setCurrentIndex={setCurrentIndex} />
+            <VoiceOverRightPanel1
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+            />
+          ) : (
             <TranslationRightPanel
               currentIndex={currentIndex}
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
-          ) : (
-            <VoiceOverRightPanel currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex} />
           )}
         </Grid>
       </Grid>
