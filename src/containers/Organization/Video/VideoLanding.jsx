@@ -290,23 +290,22 @@ const VideoLanding = () => {
                   top: subtitlePlacement === "top" ? "15%" : "",
                 }}
               >
-                <ReactTextareaAutosize
-                  className={`${classes.playerTextarea} ${
-                    darkAndLightMode === "dark"
+                <div
+                  className={`${classes.playerTextarea} ${darkAndLightMode === "dark"
                       ? classes.darkMode
                       : classes.lightMode
-                  }`}
-                  value={
+                    }`}
+                  style={{
+                    fontSize: fontSize, maxHeight: "100px"
+                  }}
+                >
+                  {
                     taskDetails.task_type.includes("TRANSCRIPTION") ||
-                    taskDetails.task_type.includes("VOICEOVER")
+                      taskDetails.task_type.includes("VOICEOVER")
                       ? currentSubs.text
                       : currentSubs.target_text
                   }
-                  style={{
-                    fontSize: fontSize,
-                  }}
-                  spellCheck={false}
-                />
+                </div>
               </div>
             )}
 

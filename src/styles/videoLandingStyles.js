@@ -74,12 +74,13 @@ const VideoLandingStyle = makeStyles({
     outline: "none",
     resize: "none",
     textAlign: "center",
-    lineHeight: "1.2",
+    lineHeight: "1",
     border: "none",
     color: "#fff",
     fontSize: "20px",
     padding: "5px 10px",
     pointerEvents: "all",
+    overflow: "scroll",
   },
 
   darkMode: {
