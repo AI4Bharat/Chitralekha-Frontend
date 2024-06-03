@@ -32,7 +32,7 @@ const ButtonComponent = ({
 
   return (
     <>
-      {!taskData.task_type.includes("VOICEOVER") && lastItem && (
+      {taskData.task_type.includes("TRANSCRIPTION") && lastItem && (
         <Tooltip title="Merge Next" placement="bottom">
           <IconButton
             sx={{ transform: "rotate(180deg)" }}
@@ -44,7 +44,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {!taskData.task_type.includes("VOICEOVER") && (
+      {taskData.task_type.includes("TRANSCRIPTION") && (
         <Tooltip title="Delete" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
@@ -56,7 +56,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {!taskData.task_type.includes("VOICEOVER") && (
+      {taskData.task_type.includes("TRANSCRIPTION") && (
         <Tooltip title="Add Subtitle Box" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
