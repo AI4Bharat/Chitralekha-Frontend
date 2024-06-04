@@ -43,6 +43,7 @@ const FindAndReplace = (props) => {
   const [foundIndices, setFoundIndices] = useState([]);
   const [currentFound, setCurrentFound] = useState();
   const [replaceFullWord, setReplaceFullWord] = useState(true);
+  const [transliterate, setTransliterate] = useState(true);
 
   const onReplacementDone = (updatedSource) => {
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
@@ -221,13 +222,22 @@ const FindAndReplace = (props) => {
                 />
                 <Typography variant="body2">Full Word Replace</Typography>
               </Box>
+              <Box className={classes.matchTypeSwitch}>
+                <Typography variant="body2">Transliteration: OFF</Typography>
+                <Switch
+                  checked={transliterate}
+                  onChange={() => setTransliterate(!transliterate)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+                <Typography variant="body2">ON</Typography>
+              </Box>
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                 lang={transliterationLanguage}
                 value={findValue}
                 onChangeText={(text) => setFindValue(text)}
-                enabled={transliterationLanguage !== "en"}
+                enabled={transliterate && transliterationLanguage !== "en"}
                 className={classes.findReplaceTextbox}
                 renderComponent={(props) => (
                   <>
@@ -293,7 +303,7 @@ const FindAndReplace = (props) => {
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}
                 disabled={!(foundIndices?.length > 0)}
-                enabled={transliterationLanguage !== "en"}
+                enabled={transliterate && transliterationLanguage !== "en"}
                 className={classes.findReplaceTextbox}
                 renderComponent={(props) => (
                   <>
