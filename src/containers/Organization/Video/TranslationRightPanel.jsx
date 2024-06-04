@@ -820,11 +820,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                   >
                     Add Glossary
                   </MenuItem>
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => handleContextMenuClick("Suggest Glossary")}
                   >
                     Suggest Glossary
-                  </MenuItem>
+                  </MenuItem> */}
                 </Menu>
               </Box>
             );
