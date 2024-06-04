@@ -666,7 +666,6 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                       onContextMenu={handleContextMenu}
                     >
                       <textarea
-                        readOnly={true}
                         rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
