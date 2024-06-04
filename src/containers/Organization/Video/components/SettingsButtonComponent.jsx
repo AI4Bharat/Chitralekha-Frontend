@@ -143,7 +143,7 @@ const SettingsButtonComponent = ({
 
   return (
     <>
-      {taskData?.task_type?.includes("TRANSCRIPTION") && (
+      {!taskData?.task_type?.includes("VOICEOVER") && (
         <>
           <Tooltip title="Merge Next" placement="bottom">
             <IconButton
@@ -161,6 +161,8 @@ const SettingsButtonComponent = ({
             </IconButton>
           </Tooltip>
 
+          {taskData?.task_type?.includes("TRANSCRIPTION") && (
+            <>
           <Tooltip title="Delete" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
@@ -186,6 +188,8 @@ const SettingsButtonComponent = ({
               <AddIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
+          </>
+          )}
 
           {taskData?.task_type?.includes("TRANSLATION") && (
             <Tooltip title="Regenerate Translation" placement="bottom">

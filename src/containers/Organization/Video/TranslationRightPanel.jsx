@@ -666,7 +666,6 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                       onContextMenu={handleContextMenu}
                     >
                       <textarea
-                        readOnly={true}
                         rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
@@ -821,11 +820,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                   >
                     Add Glossary
                   </MenuItem>
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => handleContextMenuClick("Suggest Glossary")}
                   >
                     Suggest Glossary
-                  </MenuItem>
+                  </MenuItem> */}
                 </Menu>
               </Box>
             );
