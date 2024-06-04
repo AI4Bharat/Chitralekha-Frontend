@@ -161,7 +161,7 @@ const TaskList = () => {
   const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
 
   const [exportTypes, setExportTypes] = useState({
-    transcription: "srt",
+    transcription: ["srt"],
     translation: "srt",
     voiceover: "mp3",
     speakerInfo: "false",
@@ -512,9 +512,10 @@ const TaskList = () => {
     const { id: taskId } = currentTaskDetails;
     const { transcription, speakerInfo } = exportTypes;
 
+    transcription.map(async (transcript)=>{
     const apiObj = new exportTranscriptionAPI(
       taskId,
-      transcription,
+      transcript,
       speakerInfo
     );
     handleDialogClose("exportDialog");
@@ -528,7 +529,7 @@ const TaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, transcription, "transcription");
+        exportFile(resp, currentTaskDetails, transcript , "transcription");
       } else {
         const resp = await res.json();
 
@@ -548,7 +549,7 @@ const TaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const handleTranslationExport = async () => {
@@ -600,6 +601,25 @@ const TaskList = () => {
       [name]: value,
     }));
   };
+
+  const handleTranscriptExportCheckboxChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    console.log(name,value)
+    let new_val=exportTypes[name]
+    console.log(new_val)
+    if (new_val.includes(value)){
+      new_val = new_val.filter(item => item !== value)
+    } else{
+      new_val.push(value)
+    }
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: new_val,
+    }));
+  }
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
@@ -1293,6 +1313,7 @@ const TaskList = () => {
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
+          handleTranscriptExportCheckboxChange = {handleTranscriptExportCheckboxChange}
           isBulkTaskDownload={isBulkTaskDownload}
           currentSelectedTasks={currentSelectedTasks}
         />
