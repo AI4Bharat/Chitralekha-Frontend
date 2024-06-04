@@ -806,8 +806,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                     </div>
                   )}
                 </CardContent>
-
-                {/* <Menu
+                <Menu
                   open={contextMenu !== null}
                   onClose={() => setContextMenu(null)}
                   anchorReference="anchorPosition"
@@ -827,7 +826,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                   >
                     Suggest Glossary
                   </MenuItem>
-                </Menu> */}
+                </Menu>
               </Box>
             );
           })}
