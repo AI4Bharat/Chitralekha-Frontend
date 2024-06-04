@@ -56,7 +56,7 @@ const VideoPanel = memo(
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
         <video
-          onClick={onClick}
+          // onClick={onClick}
           src={
             videoDetails?.video?.audio_only
               ? videoDetails?.direct_audio_url
@@ -72,6 +72,8 @@ const VideoPanel = memo(
           poster={videoDetails?.video?.audio_only ? poster : ""}
           ref={$video}
           className={classes.videoPlayer}
+          controls={true}
+          controlsList="nodownload"
         />
       </div>
     );
