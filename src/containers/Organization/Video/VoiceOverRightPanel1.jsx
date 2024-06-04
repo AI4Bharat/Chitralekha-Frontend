@@ -374,16 +374,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
     }, 1000);
   };
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById("subtitleContainerVO");
-    subtitleScrollEle
-      .querySelector(`#container-1`)
-      ?.scrollIntoView({ block: "center" });
-  }, [
-    document
-      .getElementById("subtitleContainerVO")
-      ?.querySelector(`#container-1`),
-  ]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+  //   subtitleScrollEle
+  //     .querySelector(`#container-1`)
+  //     ?.scrollIntoView({ block: "center" });
+  // }, [
+  //   document
+  //     .getElementById("subtitleContainerVO")
+  //     ?.querySelector(`#container-1`),
+  // ]);
 
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
@@ -576,7 +576,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }
