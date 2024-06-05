@@ -707,7 +707,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             ) >= 3
                               ? "red"
                               : "green",
-                          left: "15px",
+                          left: "20px",
                           top: "3px"
                         }}
                       >
@@ -768,7 +768,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "15px",
+                              right: "20px",
                           top: "3px"
                         }}
                           >
@@ -809,7 +809,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "15px",
+                          right: "20px",
                           top: "3px"
                         }}
                       >

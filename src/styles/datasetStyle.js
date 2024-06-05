@@ -50,7 +50,7 @@ const DatasetStyle = makeStyles({
     borderBottom: "1px solid #00000029",
     paddingLeft: "18.5px",
     marginTop: "20px",
-    width: "750px",
+    width: "950px",
     maxHeight: "270px",
     overflow: "auto",
     "@media (max-width:550px)": {

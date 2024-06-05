@@ -34,6 +34,7 @@ import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoopIcon from "@mui/icons-material/Loop";
+import LyricsIcon from "@mui/icons-material/Lyrics";
 
 const anchorOrigin = {
   vertical: "top",
@@ -75,6 +76,8 @@ const SettingsButtonComponent = ({
   addNewSubtitleBox,
   subtitles,
   handleReGenerateTranslation,
+  textChangeBtn,
+  speedChangeBtn,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -212,6 +215,23 @@ const SettingsButtonComponent = ({
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
         </>
       )}
+
+      {/* {taskData?.task_type?.includes("TRANSLATION") && (
+        <>
+          <Tooltip title="Regenerate Translation" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              onClick={() => handleReGenerateTranslation(currentIndex)}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+            >
+              <LoopIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+        </>
+      )} */}
 
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">

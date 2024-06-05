@@ -173,7 +173,7 @@ export const onSplit = (
       !text2 ||
       (targetSelectionStart && (!targetText1 || !targetText2))
     )
-      return;
+      return subtitles;
 
     copySub.splice(currentIndex, 1);
     let middleTime = null;
@@ -185,7 +185,7 @@ export const onSplit = (
       ).toFixed(3);
 
       if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-        return;
+        return subtitles;
 
       middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
     }

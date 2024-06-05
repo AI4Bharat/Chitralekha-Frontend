@@ -472,7 +472,7 @@ const VideoLandingStyle = makeStyles({
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
-    borderColor: "white",
+    borderColor: "#616A6B",
     outlineColor: "#2C2799",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
@@ -495,12 +495,13 @@ const VideoLandingStyle = makeStyles({
     fontWeight: 700,
     height: "20px",
     width: "30px",
-    borderRadius: "50%",
+    borderRadius: "40%",
     position: "absolute",
     top: "5px",
-    right: "10px",
+    right: "15px",
     textAlign: "center",
-    zIndex:"100"
+    zIndex:"100",
+    backgroundColor: "white",
   },
 
   topBoxTranslation: {
