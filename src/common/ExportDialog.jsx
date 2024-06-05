@@ -14,6 +14,7 @@ import {
   IconButton,
   Radio,
   RadioGroup,
+  Checkbox,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,6 +28,8 @@ const ExportDialog = ({
   exportTypes,
   handleExportSubmitClick,
   handleExportRadioButtonChange,
+  handleTranscriptExportCheckboxChange,
+  handleTranslationExportCheckboxChange,
   isBulkTaskDownload,
   currentSelectedTasks,
 }) => {
@@ -88,11 +91,11 @@ const ExportDialog = ({
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Radio />}
-                    checked={transcription === item}
+                    control={<Checkbox />}
+                    checked={transcription.includes(item)}
                     label={item}
                     name="transcription"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
+                    onClick={(event) => handleTranscriptExportCheckboxChange(event)}
                   />
                 ))}
               </RadioGroup>
@@ -106,11 +109,11 @@ const ExportDialog = ({
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Radio />}
-                    checked={translation === item}
+                    control={<Checkbox />}
+                    checked={translation.includes(item)}
                     label={item}
                     name="translation"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
+                    onClick={(event) => handleTranslationExportCheckboxChange(event)}
                   />
                 ))}
                 </RadioGroup>
