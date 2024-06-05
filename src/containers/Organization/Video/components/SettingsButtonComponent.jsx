@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -80,6 +80,7 @@ const SettingsButtonComponent = ({
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -91,6 +92,13 @@ const SettingsButtonComponent = ({
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+    setApiInProgress(progress);
+  }, [apiStatus]);
 
   const getDisbled = (flag) => {
     if (!transcriptPayload?.payload?.payload?.length) {
@@ -374,7 +382,7 @@ const SettingsButtonComponent = ({
       <Tooltip title="Save" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          disabled={getDisbled()}
+          disabled={getDisbled() || apiInProgress}
           onClick={() => saveTranscriptHandler(false)}
         >
           <SaveIcon className={classes.rightPanelSvg} />
