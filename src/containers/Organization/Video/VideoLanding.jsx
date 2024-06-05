@@ -55,6 +55,7 @@ import {
 } from "redux/actions";
 import C from "redux/constants";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -262,8 +263,8 @@ const VideoLanding = () => {
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderLoader()}
 
-      <Grid container direction={"row"} className={classes.parentGrid}>
-        <Grid md={3} xs={12} id="video" className={classes.videoParent}>
+      <PanelGroup direction="horizontal" className={classes.parentGrid}>
+        <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
             style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
             className={classes.videoBox}
@@ -333,9 +334,9 @@ const VideoLanding = () => {
               </Box>
             )}
           </Box>
-        </Grid>
-
-        <Grid md={9} xs={18} sx={{ width: "100%" }}>
+        </Panel>
+        <PanelResizeHandle />
+        <Panel defaultSize={75} minSize={50}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
             <RightPanel
               currentIndex={currentIndex}
@@ -352,8 +353,8 @@ const VideoLanding = () => {
             <VoiceOverRightPanel currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex} />
           )}
-        </Grid>
-      </Grid>
+        </Panel>
+      </PanelGroup>
 
       <Grid
         width={"100%"}
