@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Checkbox,
   Typography,
+  FormGroup,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { speakerInfoOptions, bgMusicOptions } from "config";
@@ -91,11 +92,14 @@ const ExportDialog = ({
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Checkbox />}
-                    checked={transcription.includes(item)}
+                    control={
+                      <Checkbox 
+                        checked={translation.includes(item)}
+                        onChange={(event) => handleTranscriptExportCheckboxChange(event)}  
+                      />
+                    }
                     label={item}
                     name="transcription"
-                    onClick={(event) => handleTranscriptExportCheckboxChange(event)}
                   />
                 ))}
               </RadioGroup>
@@ -104,19 +108,20 @@ const ExportDialog = ({
         ) : currentTaskType?.includes("TRANSLATION") && task_type !== "VO" ? (
           <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup row>
                 {translationExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Checkbox />}
-                    checked={translation.includes(item)}
+                    control={
+                      <Checkbox 
+                        checked={translation.includes(item)}
+                        onChange={(event) => handleTranslationExportCheckboxChange(event)}
+                      />
+                    }
                     label={item}
                     name="translation"
-                    onClick={(event) => handleTranslationExportCheckboxChange(event)}
                   />
                 ))}
-                </RadioGroup>
               </FormControl>
             </DialogActions>
           ) : (
