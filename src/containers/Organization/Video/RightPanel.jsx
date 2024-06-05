@@ -189,12 +189,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     }
   }, [currentPage]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById("subTitleContainer");
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subTitleContainer");
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -519,7 +519,22 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     return 0;
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayload(value, limit);
   };
 
@@ -661,7 +676,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }

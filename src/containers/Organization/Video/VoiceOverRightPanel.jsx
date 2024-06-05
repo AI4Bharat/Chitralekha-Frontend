@@ -67,6 +67,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const subtitlesForCheck = useSelector(
     (state) => state.commonReducer.subtitlesForCheck
   );
+  const limit = useSelector((state) => state.commonReducer.limit);
   const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
@@ -275,7 +276,22 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayloadAPI(value);
   };
 
@@ -346,16 +362,16 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     }, 1000);
   };
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById("subtitleContainerVO");
-    subtitleScrollEle
-      .querySelector(`#container-1`)
-      ?.scrollIntoView({ block: "center" });
-  }, [
-    document
-      .getElementById("subtitleContainerVO")
-      ?.querySelector(`#container-1`),
-  ]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+  //   subtitleScrollEle
+  //     .querySelector(`#container-1`)
+  //     ?.scrollIntoView({ block: "center" });
+  // }, [
+  //   document
+  //     .getElementById("subtitleContainerVO")
+  //     ?.querySelector(`#container-1`),
+  // ]);
 
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
@@ -581,7 +597,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }

@@ -259,14 +259,14 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
     setSourceText(subtitles);
   }, [subtitles]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById(
-      "subtitleContainerTranslation"
-    );
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById(
+  //     "subtitleContainerTranslation"
+  //   );
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
@@ -508,7 +508,22 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
     return 0;
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayload(value, limit);
   };
 
@@ -653,7 +668,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }
@@ -708,7 +723,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
                       index={index}
                       type={"startTime"}
                     />
-                    <br/>
+                    <br />
                     <TimeBoxes
                       handleTimeChange={handleTimeChange}
                       time={item.end_time}

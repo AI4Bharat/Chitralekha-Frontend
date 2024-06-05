@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -15,6 +15,7 @@ import {
   Tooltip,
   Typography,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import SubscriptIcon from "@mui/icons-material/Subscript";
 import SuperscriptIcon from "@mui/icons-material/Superscript";
@@ -83,6 +84,7 @@ const SettingsButtonComponent = ({
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -94,6 +96,12 @@ const SettingsButtonComponent = ({
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+    setApiInProgress(progress);
+  }, [apiStatus]);
 
   const getDisbled = (flag) => {
     if (!transcriptPayload?.payload?.payload?.length) {
@@ -143,12 +151,12 @@ const SettingsButtonComponent = ({
 
   return (
     <>
-      {!taskData?.task_type?.includes("VOICEOVER") && (
+       {!taskData?.task_type?.includes("VOICEOVER") && (
         <>
           <Tooltip title="Merge Next" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex==-1 || currentIndex >= subtitles?.length - 1}
+              disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -166,7 +174,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Delete" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex==-1}
+              disabled={currentIndex===-1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -179,7 +187,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Add Subtitle Box" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex==-1}
+              disabled={currentIndex===-1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -392,6 +400,10 @@ const SettingsButtonComponent = ({
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
       <Tooltip title="Save" placement="bottom">
+        <>
+        {apiInProgress ?
+        <CircularProgress size={35} style={{margin:"auto 6px auto 0px", padding:"0"}}/>
+        :
         <IconButton
           className={classes.rightPanelBtnGrp}
           disabled={getDisbled()}
@@ -399,6 +411,8 @@ const SettingsButtonComponent = ({
         >
           <SaveIcon className={classes.rightPanelSvg} />
         </IconButton>
+        }
+        </>
       </Tooltip>
 
       {!taskData?.task_type?.includes("VOICEOVER") && (
