@@ -51,7 +51,7 @@ import {
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
 
-const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -646,6 +646,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) =>
         <Box
           className={classes.subTitleContainer}
           id={"subtitleContainerTranslation"}
+          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}
         >
           {sourceText?.map((item, index) => {
             return (
