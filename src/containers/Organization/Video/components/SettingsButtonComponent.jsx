@@ -15,6 +15,7 @@ import {
   Tooltip,
   Typography,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import SubscriptIcon from "@mui/icons-material/Subscript";
 import SuperscriptIcon from "@mui/icons-material/Superscript";
@@ -93,7 +94,6 @@ const SettingsButtonComponent = ({
     (state) => state.commonReducer.totalSentences
   );
   const apiStatus = useSelector((state) => state.apiStatus);
-
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -380,13 +380,19 @@ const SettingsButtonComponent = ({
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
       <Tooltip title="Save" placement="bottom">
+        <>
+        {apiInProgress ?
+        <CircularProgress size={35} style={{margin:"auto 6px auto 0px", padding:"0"}}/>
+        :
         <IconButton
           className={classes.rightPanelBtnGrp}
-          disabled={getDisbled() || apiInProgress}
+          disabled={getDisbled()}
           onClick={() => saveTranscriptHandler(false)}
         >
           <SaveIcon className={classes.rightPanelSvg} />
         </IconButton>
+        }
+        </>
       </Tooltip>
 
       {!taskData?.task_type?.includes("VOICEOVER") && (
