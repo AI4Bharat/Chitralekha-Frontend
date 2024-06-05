@@ -637,18 +637,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                       </Tooltip>
                     <div>
                     <TimeBoxes
-                      // handleTimeChange={handleTimeChange}
+                      handleTimeChange={handleTimeChange}
                       time={item.start_time}
                       index={index}
                       type={"startTime"}
-                      readOnly={true}
                     />
                     <TimeBoxes
-                      // handleTimeChange={handleTimeChange}
+                      handleTimeChange={handleTimeChange}
                       time={item.end_time}
                       index={index}
                       type={"endTime"}
-                      readOnly={true}
                     />
                     </div>
                     {taskData.source_type === "Machine Generated" ? (
