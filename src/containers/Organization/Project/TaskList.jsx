@@ -162,7 +162,7 @@ const TaskList = () => {
 
   const [exportTypes, setExportTypes] = useState({
     transcription: ["srt"],
-    translation: ["srt"],
+    translation: "srt",
     voiceover: "mp3",
     speakerInfo: "false",
     bgMusic: "false",
@@ -556,8 +556,7 @@ const TaskList = () => {
     const { id: taskId } = currentTaskDetails;
     const { translation, speakerInfo } = exportTypes;
 
-    translation.map(async (translate)=>{
-    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
+    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
@@ -569,7 +568,7 @@ const TaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, translate, "translation");
+        exportFile(resp, currentTaskDetails, translation, "translation");
       } else {
         const resp = await res.json();
 
@@ -589,7 +588,7 @@ const TaskList = () => {
           variant: "error",
         })
       );
-    }})
+    }
   };
 
   const handleExportRadioButtonChange = (event) => {
@@ -604,25 +603,6 @@ const TaskList = () => {
   };
 
   const handleTranscriptExportCheckboxChange = (event) => {
-    const {
-      target: { name, value },
-    } = event;
-    console.log(name,value)
-    let new_val=exportTypes[name]
-    console.log(new_val)
-    if (new_val.includes(value)){
-      new_val = new_val.filter(item => item !== value)
-    } else{
-      new_val.push(value)
-    }
-
-    setExportTypes((prevState) => ({
-      ...prevState,
-      [name]: new_val,
-    }));
-  }
-
-  const handleTranslationExportCheckboxChange = (event) => {
     const {
       target: { name, value },
     } = event;
@@ -1334,7 +1314,6 @@ const TaskList = () => {
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
           handleTranscriptExportCheckboxChange = {handleTranscriptExportCheckboxChange}
-          handleTranslationExportCheckboxChange = {handleTranslationExportCheckboxChange}
           isBulkTaskDownload={isBulkTaskDownload}
           currentSelectedTasks={currentSelectedTasks}
         />
