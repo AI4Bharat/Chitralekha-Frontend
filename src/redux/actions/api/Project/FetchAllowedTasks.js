@@ -9,7 +9,7 @@ export default class FetchAllowedTasksAPI extends API {
     this.videoId = videoId;
     this.taskType = taskType;
     this.language = language;
-    this.queryStr = taskType === "TRANSLATION" || taskType === "VOICEOVER" ? `&target_language=${language}`:""
+    this.queryStr = taskType === "TRANSLATION" || taskType === "VOICEOVER" || taskType === "TRANSLATION_VOICEOVER" ? `&target_language=${language}`:""
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}get_allowed_task/?video_id=${videoId}&type=${taskType}${this.queryStr}`;
   }
 
