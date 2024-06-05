@@ -519,7 +519,22 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     return 0;
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayload(value, limit);
   };
 

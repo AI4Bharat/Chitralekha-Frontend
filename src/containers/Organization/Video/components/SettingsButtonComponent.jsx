@@ -145,7 +145,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Merge Next" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex==-1 || currentIndex >= subtitles?.length - 1}
+              disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -163,7 +163,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Delete" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex==-1}
+              disabled={currentIndex===-1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -176,7 +176,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Add Subtitle Box" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex==-1}
+              disabled={currentIndex===-1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
