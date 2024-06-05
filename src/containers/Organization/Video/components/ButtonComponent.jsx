@@ -67,7 +67,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {taskData.task_type.includes("TRANSLATION") && (
+      {taskData.task_type.includes("TRANSLATION") && !taskData.task_type.includes("VOICEOVER") && (
         <Tooltip title="Regenerate Translation" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}

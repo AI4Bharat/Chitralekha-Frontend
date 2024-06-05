@@ -17,9 +17,11 @@ import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 import "../../../styles/scrollbarStyle.css";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { VideoLandingStyle } from "styles";
+import LoopIcon from "@mui/icons-material/Loop";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, Grid, Typography } from "@mui/material";
+import { Box, CardContent, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
@@ -170,9 +172,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
   }, [apiStatus]);
 
   const isDisabled = (index) => {
-    if (next && sourceText.length - 1 === index) {
-      return true;
-    }
+    // if (next && sourceText.length - 1 === index) {
+    //   return true;
+    // }
 
     return false;
   };
@@ -548,9 +550,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
-            textChangeBtn={textChangeBtn}
-            currentIndex={currentIndex}
-            speedChangeBtn={speedChangeBtn}
           />
         </Grid>
 
@@ -625,22 +624,42 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                   <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
                     <div style={{ backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", border: "1px solid", borderRadius: "100%", width: "20px", height: "20px" }}>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
+                    <div style={{display: "flex"}}>
+                      <Tooltip title="Regenerate Translation" placement="bottom">
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          style={{marginRight:"20px", marginLeft:"20px"}}
+                          disabled={true}
+                          // onClick={() => handleReGenerateTranslation(index)}
+                        >
+                          <LoopIcon className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                    <div>
                     <TimeBoxes
-                      // handleTimeChange={handleTimeChange}
+                      handleTimeChange={handleTimeChange}
                       time={item.start_time}
                       index={index}
                       type={"startTime"}
-                      readOnly={true}
                     />
                     <TimeBoxes
-                      // handleTimeChange={handleTimeChange}
+                      handleTimeChange={handleTimeChange}
                       time={item.end_time}
                       index={index}
                       type={"endTime"}
-                      readOnly={true}
                     />
+                    </div>
                     {taskData.source_type === "Machine Generated" ? (
-                      <></>
+                        <Tooltip title="Get Updated Audio" placement="bottom">
+                          <IconButton
+                            className={classes.optionIconBtn}
+                            onClick={() => saveTranscriptHandler(false, true)}
+                            style={{marginRight:"20px", marginLeft:"20px"}}
+                            disabled={!textChangeBtn[index]}
+                          >
+                            <TaskAltIcon className={classes.rightPanelSvg} />
+                          </IconButton>
+                        </Tooltip>
                     ) : (
                       <RecorderComponent
                         index={index}
@@ -652,6 +671,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                         setRecorderTime={setRecorderTime}
                       />
                     )}
+                    </div>
                     <Box
                       sx={{
                         width: index === 2 ? "100%" : "50%",
@@ -684,8 +704,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                                 : recordAudio[index] === "stop"
                                   ? ""
                                   : "none",
-                              width: index === 2 ? "91%" : "",
-                              margin: index === 2 ? "0 auto 25px auto" : "",
+                              // width: index === 2 ? "91%" : "",
+                              // margin: index === 2 ? "0 auto 25px auto" : "",
                             }}
                           />
                         </div>
