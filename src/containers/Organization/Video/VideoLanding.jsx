@@ -56,6 +56,8 @@ import {
 import C from "redux/constants";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import PlayArrow from "@mui/icons-material/PlayArrow";
+import { Pause } from "@mui/icons-material";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -225,7 +227,7 @@ const VideoLanding = () => {
   }, [onKeyDown]);
 
   const handleFullscreen = () => {
-    const res = fullscreenUtil(document.documentElement);
+    const res = fullscreenUtil(document.getElementById("right-panel"));
     dispatch(FullScreen(res, C.FULLSCREEN));
   };
 
@@ -336,7 +338,7 @@ const VideoLanding = () => {
           </Box>
         </Panel>
         <PanelResizeHandle />
-        <Panel defaultSize={75} minSize={50}>
+        <Panel defaultSize={75} minSize={50} id="right-panel" style={{backgroundColor:"white", paddingTop: fullscreen?"4%":"0"}}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
             <RightPanel
               currentIndex={currentIndex}
@@ -353,6 +355,21 @@ const VideoLanding = () => {
             <VoiceOverRightPanel currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex} />
           )}
+          {fullscreen && 
+          <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
+          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.play()}}/>
+          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.pause()}}/>
+          </div>}
+          <Box>
+            <Button
+              className={classes.fullscreenBtn}
+              aria-label="fullscreen"
+              onClick={() => handleFullscreen()}
+              variant="contained"
+            >
+              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+            </Button>
+          </Box>
         </Panel>
       </PanelGroup>
 
@@ -364,17 +381,6 @@ const VideoLanding = () => {
       >
         <Timeline currentTime={currentTime} playing={playing} />
       </Grid>
-
-      <Box>
-        <Button
-          className={classes.fullscreenBtn}
-          aria-label="fullscreen"
-          onClick={() => handleFullscreen()}
-          variant="contained"
-        >
-          {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </Button>
-      </Box>
     </Grid>
   );
 };
