@@ -68,7 +68,8 @@ const VideoLanding = () => {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubs, setCurrentSubs] = useState();
-  const [showSubtitles, setShowSubtitles] = useState(true);
+  const [showSubtitles, setShowSubtitles] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
@@ -269,7 +270,7 @@ const VideoLanding = () => {
       <PanelGroup direction="horizontal" className={classes.parentGrid}>
         <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
-            style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(93.5vh)" }}
             className={classes.videoBox}
           >
             <VideoName
@@ -281,6 +282,8 @@ const VideoLanding = () => {
               setSubtitlePlacement={setSubtitlePlacement}
               showSubtitles={showSubtitles}
               setShowSubtitles={setShowSubtitles}
+              showTimeline={showTimeline}
+              setShowTimeline={setShowTimeline}
             />
 
             <VideoPanel
@@ -345,6 +348,7 @@ const VideoLanding = () => {
               currentIndex={currentIndex}
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
             />
           ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
             // <VoiceOverRightPanel currentIndex={currentIndex}
@@ -352,12 +356,14 @@ const VideoLanding = () => {
             <VoiceOverRightPanel1
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
             />
           ) : (
             <TranslationRightPanel
               currentIndex={currentIndex}
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
             />
           )}
           {fullscreen && 
@@ -378,6 +384,7 @@ const VideoLanding = () => {
         </Panel>
       </PanelGroup>
 
+      {showTimeline && 
       <Grid
         width={"100%"}
         position="fixed"
@@ -386,6 +393,7 @@ const VideoLanding = () => {
       >
         <Timeline currentTime={currentTime} playing={playing} />
       </Grid>
+      }
     </Grid>
   );
 };

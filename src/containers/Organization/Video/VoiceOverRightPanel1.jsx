@@ -54,7 +54,7 @@ import {
   setSnackBar,
 } from "redux/actions";
 
-const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
+const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -553,7 +553,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
           />
         </Grid>
 
-        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"}>
+        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
           {sourceText?.map((item, index) => {
             return (
               <div
@@ -622,7 +622,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                     </div>}
 
                   <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
-                    <div style={{ backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", border: "1px solid", borderRadius: "100%", width: "20px", height: "20px" }}>{item.id}</div>
+                    <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
                       <Tooltip title="Regenerate Translation" placement="bottom">
