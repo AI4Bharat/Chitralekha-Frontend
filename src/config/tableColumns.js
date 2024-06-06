@@ -409,9 +409,9 @@ export const taskQueueStatusColumns = [
   {
     name: "task_id",
     label: "Task Id",
-    options: {
-      display: false,
-    },
+    // options: {
+    //   display: false,
+    // },
   },
   {
     name: "video_id",
@@ -439,9 +439,9 @@ export const taskQueueStatusAdminColumns = [
   {
     name: "task_id",
     label: "Task Id",
-    options: {
-      display: false,
-    },
+    // options: {
+    //   display: false,
+    // },
   },
   {
     name: "uuid",
