@@ -58,7 +58,7 @@ export default function AppInfo() {
             </Typography>
           </Hidden>
 
-          <Button
+          {/* <Button
             variant="contained"
             color="secondary"
             sx={{
@@ -70,7 +70,7 @@ export default function AppInfo() {
             onClick={() => setOpenOnboardingForm(true)}
           >
             Request to Join
-          </Button>
+          </Button> */}
 
           <Typography
             style={{
