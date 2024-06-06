@@ -199,6 +199,21 @@ const SettingsButtonComponent = ({
           </>
           )}
 
+          {showSplit && (
+            <Tooltip title="Split Subtitle" placement="bottom">
+              <IconButton
+                className={classes.rightPanelBtnGrp}
+                onClick={onSplitClick}
+                disabled={!showPopOver}
+                sx={{
+                  "&.Mui-disabled": { backgroundColor: "lightgray" },
+                }}
+              >
+                <SplitscreenIcon className={classes.rightPanelSvg} />
+              </IconButton>
+            </Tooltip>
+          )}
+
           {taskData?.task_type?.includes("TRANSLATION") && (
             <Tooltip title="Regenerate Translation" placement="bottom">
               <IconButton
@@ -214,38 +229,6 @@ const SettingsButtonComponent = ({
           )}
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
         </>
-      )}
-
-      {/* {taskData?.task_type?.includes("TRANSLATION") && (
-        <>
-          <Tooltip title="Regenerate Translation" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              onClick={() => handleReGenerateTranslation(currentIndex)}
-              sx={{
-                "&.Mui-disabled": { backgroundColor: "lightgray" },
-              }}
-            >
-              <LoopIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-          <Divider orientation="vertical" className={classes.rightPanelDivider} />
-        </>
-      )} */}
-
-      {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
-        <Tooltip title="Split Subtitle" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={onSplitClick}
-            disabled={!showPopOver}
-            sx={{
-              "&.Mui-disabled": { backgroundColor: "lightgray" },
-            }}
-          >
-            <SplitscreenIcon className={classes.rightPanelSvg} />
-          </IconButton>
-        </Tooltip>
       )}
 
       {taskData?.task_type?.includes("TRANSCRIPTION") && (
