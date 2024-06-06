@@ -179,6 +179,8 @@ const SettingsButtonComponent = ({
         </>
       )}
 
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+        <>
         <Tooltip title="Merge Next" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
@@ -207,6 +209,7 @@ const SettingsButtonComponent = ({
               <SplitscreenIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
+        </>)}
 
           {taskData?.task_type?.includes("TRANSLATION") && !taskData?.task_type?.includes("VOICEOVER") && (
              <>
@@ -413,6 +416,8 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+      <>
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
         <Tooltip title="Undo" placement="bottom">
@@ -434,6 +439,7 @@ const SettingsButtonComponent = ({
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
+        </>)}
 
       {openPreviewDialog && (
         <PreviewDialog
