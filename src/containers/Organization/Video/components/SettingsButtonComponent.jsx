@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { fontMenu } from "utils";
 
@@ -15,6 +15,7 @@ import {
   Tooltip,
   Typography,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import SubscriptIcon from "@mui/icons-material/Subscript";
 import SuperscriptIcon from "@mui/icons-material/Superscript";
@@ -28,7 +29,12 @@ import RedoIcon from "@mui/icons-material/Redo";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 import { FindAndReplace, PreviewDialog } from "common";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import AddIcon from "@mui/icons-material/Add";
+import MergeIcon from "@mui/icons-material/Merge";
+import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import LoopIcon from "@mui/icons-material/Loop";
+import LyricsIcon from "@mui/icons-material/Lyrics";
 
 const anchorOrigin = {
   vertical: "top",
@@ -64,12 +70,21 @@ const SettingsButtonComponent = ({
   showPopOver,
   showSplit,
   handleInfoButtonClick,
+  currentIndex,
+  onMergeClick,
+  onDelete,
+  addNewSubtitleBox,
+  subtitles,
+  handleReGenerateTranslation,
+  textChangeBtn,
+  speedChangeBtn,
 }) => {
   const classes = VideoLandingStyle();
-
+  
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const [anchorElFont, setAnchorElFont] = useState(null);
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -81,6 +96,12 @@ const SettingsButtonComponent = ({
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   );
+  const apiStatus = useSelector((state) => state.apiStatus);
+
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+    setApiInProgress(progress);
+  }, [apiStatus]);
 
   const getDisbled = (flag) => {
     if (!transcriptPayload?.payload?.payload?.length) {
@@ -130,6 +151,88 @@ const SettingsButtonComponent = ({
 
   return (
     <>
+       {!taskData?.task_type?.includes("VOICEOVER") && (
+        <>
+          <Tooltip title="Merge Next" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              style={{
+                transform: "rotate(180deg)"
+              }}
+              onClick={() => onMergeClick(currentIndex)}
+            >
+              <MergeIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+
+          {taskData?.task_type?.includes("TRANSCRIPTION") && (
+            <>
+          <Tooltip title="Delete" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex===-1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => onDelete(currentIndex)}
+            >
+              <DeleteIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Add Subtitle Box" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex===-1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => addNewSubtitleBox(currentIndex)}
+            >
+              <AddIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+          </>
+          )}
+
+          {taskData?.task_type?.includes("TRANSLATION") && (
+            <Tooltip title="Regenerate Translation" placement="bottom">
+              <IconButton
+                className={classes.rightPanelBtnGrp}
+                onClick={() => handleReGenerateTranslation(currentIndex)}
+                sx={{
+                  "&.Mui-disabled": { backgroundColor: "lightgray" },
+                }}
+              >
+                <LoopIcon className={classes.rightPanelSvg} />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+        </>
+      )}
+
+      {/* {taskData?.task_type?.includes("TRANSLATION") && (
+        <>
+          <Tooltip title="Regenerate Translation" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              onClick={() => handleReGenerateTranslation(currentIndex)}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+            >
+              <LoopIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+        </>
+      )} */}
+
       {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
         <Tooltip title="Split Subtitle" placement="bottom">
           <IconButton
@@ -213,32 +316,32 @@ const SettingsButtonComponent = ({
           />
         </MenuItem>
       </Menu>
-
+      
       {subsuper && (
         <>
-          <Divider
+        <Divider
             orientation="vertical"
             className={classes.rightPanelDivider}
           />
-
-          <Tooltip title="SubScript" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              onClick={() => handleSubscript()}
-            >
-              <SubscriptIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="SuperScript" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              sx={{ marginLeft: "5px" }}
-              onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
-            >
-              <SuperscriptIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
+      
+        <Tooltip title="SubScript" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => handleSubscript()}
+          >
+            <SubscriptIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      
+      <Tooltip title="SuperScript" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          sx={{ marginLeft: "5px" }}
+          onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+        >
+          <SuperscriptIcon className={classes.rightPanelSvg} />
+        </IconButton>
+      </Tooltip>
         </>
       )}
 
@@ -297,6 +400,10 @@ const SettingsButtonComponent = ({
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
       <Tooltip title="Save" placement="bottom">
+        <>
+        {apiInProgress ?
+        <CircularProgress size={35} style={{margin:"auto 6px auto 0px", padding:"0"}}/>
+        :
         <IconButton
           className={classes.rightPanelBtnGrp}
           disabled={getDisbled()}
@@ -304,6 +411,8 @@ const SettingsButtonComponent = ({
         >
           <SaveIcon className={classes.rightPanelSvg} />
         </IconButton>
+        }
+        </>
       </Tooltip>
 
       {!taskData?.task_type?.includes("VOICEOVER") && (

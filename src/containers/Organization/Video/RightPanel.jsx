@@ -189,12 +189,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     }
   }, [currentPage]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById("subTitleContainer");
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subTitleContainer");
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -519,7 +519,22 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
     return 0;
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayload(value, limit);
   };
 
@@ -618,6 +633,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
             showPopOver={showPopOver}
             showSplit={true}
             handleInfoButtonClick={handleInfoButtonClick}
+            currentIndex={currentIndex}
+            onMergeClick={onMergeClick}
+            onDelete={onDelete}
+            addNewSubtitleBox={addNewSubtitleBox}
+            subtitles={subtitles}
           />
         </Grid>
 
@@ -628,45 +648,35 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "16px",
+                  padding: "0",
                   borderBottom: "1px solid lightgray",
-                  backgroundColor:
-                    index % 2 === 0
-                      ? "rgb(214, 238, 255)"
-                      : "rgb(233, 247, 239)",
+                  backgroundColor: "white",
+                  display: "flex"
                 }}
               >
-                <Box className={classes.topBox}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%"}}>
                   <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.start_time}
-                    index={index}
-                    type={"startTime"}
-                  />
-
-                  <ButtonComponent
-                    index={index}
-                    lastItem={index < subtitles.length - 1}
-                    onMergeClick={onMergeClick}
-                    onDelete={onDelete}
-                    addNewSubtitleBox={addNewSubtitleBox}
-                  />
-
+                     handleTimeChange={handleTimeChange}
+                     time={item.start_time}
+                     index={index}
+                     type={"startTime"}
+                   />
+                  <br/>
                   <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.end_time}
-                    index={index}
-                    type={"endTime"}
-                  />
-                </Box>
+                     handleTimeChange={handleTimeChange}
+                     time={item.end_time}
+                     index={index}
+                     type={"endTime"}
+                   />
+                </div>
 
                 <CardContent
-                  className={classes.cardContent}
+                  style={{alignItems:"center", padding: 0, width:"100%"}}
                   aria-describedby={"suggestionList"}
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }
@@ -696,7 +706,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                               currentIndex === index ? classes.boxHighlight : ""
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
-                            rows={4}
+                            rows={2}
                             onMouseUp={(e) => onMouseUp(e, index)}
                             onBlur={() => {
                               setTimeout(() => {
@@ -708,7 +718,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                             {...props}
                           />
                           <span id="charNum" className={classes.wordCount}>
-                            {targetLength(index)}
+                            {targetLength(index)} 
                           </span>
                         </div>
                       )}
@@ -727,9 +737,8 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                         }`}
                         style={{
                           fontSize: fontSize,
-                          height: "120px",
                         }}
-                        rows={4}
+                        rows={2}
                         ref={(el) => (textboxes.current[index] = el)}
                         onBlur={() => {
                           setTimeout(() => {
@@ -738,13 +747,13 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                         }}
                       />
                       <span id="charNum" className={classes.wordCount}>
-                        {targetLength(index)}
+                         {targetLength(index)} 
                       </span>
                     </div>
                   )}
                 </CardContent>
 
-                {showSpeakerIdDropdown ? (
+                {showSpeakerIdDropdown && (
                   <FormControl
                     sx={{ width: "50%", mr: "auto", float: "left" }}
                     size="small"
@@ -775,7 +784,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
                       ))}
                     </Select>
                   </FormControl>
-                ) : null}
+                )}
               </Box>
             );
           })}
@@ -783,11 +792,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
 
         <Box
           className={classes.paginationBox}
-          style={{
-            ...(!xl && {
-              bottom: "-11%",
-            }),
-          }}
+          // style={{
+          //   ...(!xl && {
+          //     bottom: "-11%",
+          //   }),
+          // }}
         >
           <Pagination
             range={getSubtitleRangeTranscript()}

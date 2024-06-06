@@ -1,5 +1,5 @@
 // Voice Over Right Panel
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
@@ -9,6 +9,7 @@ import {
   getSubtitleRange,
   setAudioContent,
   onSubtitleChange,
+  timeChange,
 } from "utils";
 import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 
@@ -16,9 +17,11 @@ import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 import "../../../styles/scrollbarStyle.css";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { VideoLandingStyle } from "styles";
+import LoopIcon from "@mui/icons-material/Loop";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, Grid, Typography } from "@mui/material";
+import { Box, CardContent, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
@@ -31,6 +34,7 @@ import {
   RecorderComponent,
   ShortcutKeys,
   TableDialog,
+  TimeBoxes,
 } from "common";
 
 //APIs
@@ -50,7 +54,7 @@ import {
   setSnackBar,
 } from "redux/actions";
 
-const VoiceOverRightPanel = ({ setCurrentIndex }) => {
+const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -67,7 +71,6 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const subtitlesForCheck = useSelector(
     (state) => state.commonReducer.subtitlesForCheck
   );
-  const limit = useSelector((state) => state.commonReducer.limit);
   const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
@@ -79,6 +82,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const totalSentences = useSelector(
     (state) => state.commonReducer.totalSentences
   );
+  const textboxes = useRef([]);
 
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
@@ -107,6 +111,8 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [recorderTime, setRecorderTime] = useState(0);
+  const limit = useSelector((state) => state.commonReducer.limit);
+  const [currentOffset, setCurrentOffset] = useState(1);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -124,6 +130,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
           }
 
           if (getUpdatedAudio) {
+            // SaveTranscriptAPI.isSaveInProgress(false);
             const sub = data?.payload?.payload.map((item) => new Sub(item));
 
             const newSub = cloneDeep(sub);
@@ -165,9 +172,9 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   }, [apiStatus]);
 
   const isDisabled = (index) => {
-    if (next && sourceText.length - 1 === index) {
-      return true;
-    }
+    // if (next && sourceText.length - 1 === index) {
+    //   return true;
+    // }
 
     return false;
   };
@@ -176,6 +183,18 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     setAudioPlayer($audioRef.current);
     // eslint-disable-next-line
   }, [$audioRef.current]);
+
+  const sourceLength = (index) => {
+    if (sourceText[index]?.transcription_text?.trim() !== "")
+      return sourceText[index]?.transcription_text?.trim().split(" ").length;
+    return 0;
+  };
+
+  const targetLength = (index) => {
+    if (sourceText[index]?.text?.trim() !== "")
+      return sourceText[index]?.text?.trim().split(" ").length;
+    return 0;
+  };
 
   useEffect(() => {
     let temp = [];
@@ -186,6 +205,12 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     setSpeedChangeBtn(subtitlesForCheck?.map(() => false));
     setDurationError(subtitlesForCheck?.map(() => false));
   }, [subtitlesForCheck]);
+
+  useEffect(() => {
+    if (currentPage) {
+      setCurrentOffset(currentPage);
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     let updatedArray = [];
@@ -247,6 +272,10 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
         variant: "info",
       })
     );
+    
+    // if(isGetUpdatedAudio){
+    //   SaveTranscriptAPI.isSaveInProgress(true);
+    // }
 
     const reqBody = {
       task_id: taskId,
@@ -276,22 +305,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     dispatch(APITransport(payloadObj));
   };
 
-  const handleAutosave = () => {
-    const reqBody = {
-      task_id: taskId,
-      offset: currentPage,
-      limit: limit,
-      payload: {
-        payload: subtitles,
-      },
-    };
-
-    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
-    dispatch(APITransport(obj));
-  };
-
   const onNavigationClick = (value) => {
-    handleAutosave();
     getPayloadAPI(value);
   };
 
@@ -425,6 +439,15 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     }, 0);
   };
 
+  const handleTimeChange = useCallback(
+    (value, index, type, time) => {
+      const sub = timeChange(value, index, type, time);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    // eslint-disable-next-line
+    [limit, currentOffset]
+  );
+
   const replaceSelectedText = (text, index) => {
     const textarea = document.getElementsByClassName(classes.boxHighlight)[0];
     const start = textarea.selectionStart;
@@ -537,63 +560,18 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                 key={index}
                 className={isDisabled(index) ? classes.disabledCard : ""}
                 style={{
+                  padding: "5px 0",
                   borderBottom: "1px solid grey",
-                  backgroundColor:
-                    index % 2 === 0
-                      ? "rgb(214, 238, 255)"
-                      : "rgb(233, 247, 239)",
+                  backgroundColor: "white"
                 }}
                 id={`container-${index}`}
               >
-                <Box
-                  display="flex"
-                  paddingTop={index === 1 ? "100px" : "25px"}
-                  sx={{ paddingX: "20px", justifyContent: "space-between" }}
-                >
-                  <Typography
-                    variant="body1"
-                    className={classes.durationBox}
-                    marginRight={"5px"}
-                  >
-                    {item.id}
-                  </Typography>
-
-                  <Typography
-                    variant="body1"
-                    className={classes.durationBox}
-                    marginRight={"auto"}
-                  >
-                    Duration: {item.time_difference} sec
-                  </Typography>
-
-                  {taskData.source_type === "Machine Generated" ? (
-                    <ButtonComponent
-                      index={index}
-                      showChangeBtn={textChangeBtn[index]}
-                      saveTranscriptHandler={saveTranscriptHandler}
-                      showSpeedChangeBtn={speedChangeBtn[index]}
-                    />
-                  ) : (
-                    <RecorderComponent
-                      index={index}
-                      onStopRecording={onStopRecording}
-                      durationError={durationError}
-                      handleFileUpload={handleFileUpload}
-                      isDisabled={isDisabled(index)}
-                      updateRecorderState={updateRecorderState}
-                      setRecorderTime={setRecorderTime}
-                    />
-                  )}
-                </Box>
-
                 <CardContent
-                  style={{
+                  sx={{
                     display: "flex",
-                    padding: "5px 0",
-                    paddingBottom: index === 1 ? "100px" : "0px",
-                    borderBottom: 2,
-                    flexWrap: "wrap",
+                    padding: "0",
                   }}
+                  style={{ alignItems: "center", padding: 0, width: "100%" }}
                   onClick={() => {
                     if (player) {
                       player.pause();
@@ -603,137 +581,240 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
                     }
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: index === 2 ? "100%" : "50%",
-                      ...(!xl && { width: "100%", margin: "25px 0" }),
-                    }}
-                  >
-                    <div className={classes.relative} style={{ width: "100%" }}>
-                      {taskData?.target_language !== "en" &&
-                      enableTransliteration ? (
-                        <IndicTransliterate
-                          customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
-                          lang={taskData?.target_language}
-                          value={item.text}
-                          onChangeText={(text) => {
-                            changeTranscriptHandler(text, index);
-                          }}
-                          onMouseUp={(e) => onMouseUp(e, index)}
-                          style={{
-                            fontSize: fontSize,
-                            height: "100px",
-                            width: "89%",
-                            opacity: "1 !important",
-                            ...(xl && {
-                              width: index === 2 ? "89%" : "80%",
-                              margin: "15px 0",
-                            }),
-                          }}
-                          renderComponent={(props) => (
-                            <div>
-                              <textarea
-                                className={`${
-                                  classes.textAreaTransliteration
-                                } ${index === 1 ? classes.boxHighlight : ""}`}
-                                dir={enableRTL_Typing ? "rtl" : "ltr"}
-                                rows={4}
-                                disabled={isDisabled(index)}
-                                {...props}
-                              />
-                            </div>
-                          )}
-                        />
-                      ) : (
-                        <div>
-                          <textarea
-                            disabled={isDisabled(index)}
-                            onChange={(event) => {
-                              changeTranscriptHandler(
-                                event.target.value,
-                                index
-                              );
-                            }}
-                            onMouseUp={(e) => onMouseUp(e, index)}
-                            style={{
-                              fontSize: fontSize,
-                              height: "100px",
-                              width: "89%",
-                              ...(xl && {
-                                width: index === 2 ? "89%" : "80%",
-                                margin: "15px 0",
-                              }),
-                            }}
-                            value={item.text}
-                            dir={enableRTL_Typing ? "rtl" : "ltr"}
-                            className={`${classes.textAreaTransliteration} ${
-                              index === 1 ? classes.boxHighlight : ""
-                            }`}
-                            rows={4}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </Box>
+                  {item.transcription_text &&
+                    <div
+                      className={classes.relative}
+                      style={{ width: "100%" }}
+                    >
+                      <textarea
+                        readOnly={true}
+                        rows={item.transcription_text ? 4 : 6}
+                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                          }`}
+                        onMouseUp={(e) => onMouseUp(e, index)}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        style={{ fontSize: fontSize }}
+                        ref={(el) => (textboxes.current[index] = el)}
+                        value={item.transcription_text}
+                      // onChange={(event) => {
+                      //   changeTranscriptHandler(
+                      //     event.target.value,
+                      //     index,
+                      //     "transcript"
+                      //   );
+                      // }}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          left: "20px",
+                          top: "3px"
+                        }}
+                      >
+                        {sourceLength(index)}
+                      </span>
+                    </div>}
 
-                  <Box
-                    sx={{
-                      width: index === 2 ? "100%" : "50%",
-                      ...(!xl && { width: "100%", margin: "0 0 25px 0" }),
-                    }}
-                  >
-                    <div className={classes.recorder}>
-                      <div
-                        className={classes.audioBox}
-                        style={
-                          !xl
-                            ? {
+                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
+                    <div style={{ backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", border: "1px solid", borderRadius: "100%", width: "20px", height: "20px" }}>{item.id}</div>
+                    <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
+                    <div style={{display: "flex"}}>
+                      <Tooltip title="Regenerate Translation" placement="bottom">
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          style={{marginRight:"20px", marginLeft:"20px"}}
+                          disabled={true}
+                          // onClick={() => handleReGenerateTranslation(index)}
+                        >
+                          <LoopIcon className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                    <div>
+                    <TimeBoxes
+                      handleTimeChange={handleTimeChange}
+                      time={item.start_time}
+                      index={index}
+                      type={"startTime"}
+                    />
+                    <TimeBoxes
+                      handleTimeChange={handleTimeChange}
+                      time={item.end_time}
+                      index={index}
+                      type={"endTime"}
+                    />
+                    </div>
+                    {taskData.source_type === "Machine Generated" ? (
+                        <Tooltip title="Get Updated Audio" placement="bottom">
+                          <IconButton
+                            className={classes.optionIconBtn}
+                            onClick={() => saveTranscriptHandler(false, true)}
+                            style={{marginRight:"20px", marginLeft:"20px"}}
+                            disabled={!textChangeBtn[index]}
+                          >
+                            <TaskAltIcon className={classes.rightPanelSvg} />
+                          </IconButton>
+                        </Tooltip>
+                    ) : (
+                      <RecorderComponent
+                        index={index}
+                        onStopRecording={onStopRecording}
+                        durationError={durationError}
+                        handleFileUpload={handleFileUpload}
+                        isDisabled={isDisabled(index)}
+                        updateRecorderState={updateRecorderState}
+                        setRecorderTime={setRecorderTime}
+                      />
+                    )}
+                    </div>
+                    <Box
+                      sx={{
+                        width: index === 2 ? "100%" : "50%",
+                        ...(!xl && { width: "100%", margin: "0" }),
+                      }}
+                    >
+                      <div className={classes.recorder}>
+                        <div
+                          className={classes.audioBox}
+                          style={
+                            !xl
+                              ? {
                                 alignItems: "center",
                                 flexDirection: "row",
                               }
-                            : {}
-                        }
-                      >
-                        <audio
-                          disabled={isDisabled(index)}
-                          src={data[index]}
-                          controls
-                          ref={(element) =>
-                            ($audioRef.current[index] = element)
+                              : {}
                           }
-                          className={classes.audioPlayer}
+                        >
+                          <audio
+                            disabled={isDisabled(index)}
+                            src={data[index]}
+                            controls
+                            ref={(element) =>
+                              ($audioRef.current[index] = element)
+                            }
+                            className={classes.audioPlayer}
+                            style={{
+                              display: isDisabled(index)
+                                ? "none"
+                                : recordAudio[index] === "stop"
+                                  ? ""
+                                  : "none",
+                              // width: index === 2 ? "91%" : "",
+                              // margin: index === 2 ? "0 auto 25px auto" : "",
+                            }}
+                          />
+                        </div>
+                        <div
                           style={{
-                            display: isDisabled(index)
-                              ? "none"
-                              : recordAudio[index] === "stop"
-                              ? ""
-                              : "none",
-                            width: index === 2 ? "91%" : "",
-                            margin: index === 2 ? "0 auto 25px auto" : "",
+                            color: "#000",
+                            margin: "18px auto",
+                            fontSize: "18px",
+                            display: recordAudio[index] === "stop" ? "none" : "",
                           }}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          color: "#000",
-                          margin: "18px auto",
-                          fontSize: "18px",
-                          display: recordAudio[index] === "stop" ? "none" : "",
-                        }}
-                      >
-                        <div>Recording Audio....</div>
-                        <div style={{ marginTop: "10px" }}>
-                          Remaining Time:{" "}
-                          {`${
-                            item.time_difference - recorderTime > 0
+                        >
+                          <div>Recording Audio....</div>
+                          <div style={{ marginTop: "10px" }}>
+                            Remaining Time:{" "}
+                            {`${item.time_difference - recorderTime > 0
                               ? item.time_difference - recorderTime
                               : 0
-                          }`}{" "}
-                          sec
+                              }`}{" "}
+                            sec
+                          </div>
                         </div>
                       </div>
+                    </Box>
+                  </div>
+
+                  {taskData?.target_language !== "en" &&
+                    enableTransliteration ? (
+                    <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      lang={taskData?.target_language}
+                      value={item.text}
+                      onChangeText={(text) => {
+                        changeTranscriptHandler(text, index);
+                      }}
+                      containerStyles={{
+                        width: "100%",
+                      }}
+                      onMouseUp={(e) => onMouseUp(e, index)}
+                      style={{ fontSize: fontSize }}
+                      renderComponent={(props) => (
+                        <div className={classes.relative}>
+                          <textarea
+                            className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                              } ${taskData?.source_type === "Original Source" &&
+                              classes.w95
+                              }`}
+                            dir={enableRTL_Typing ? "rtl" : "ltr"}
+                            ref={(el) => (textboxes.current[index] = el)}
+                            rows={item.transcription_text ? 4 : 6}
+                            disabled={isDisabled(index)}
+                            {...props}
+                          />
+                          <span
+                            className={classes.wordCount}
+                            style={{
+                              color:
+                                Math.abs(
+                                  sourceLength(index) - targetLength(index)
+                                ) >= 3
+                                  ? "red"
+                                  : "green",
+                              right: item.transcription_text ? "20px" : "32px",
+                              top: "3px"
+                            }}
+                          >
+                            {targetLength(index)}
+                          </span>
+                        </div>
+                      )}
+                    />
+                  ) : (
+                    <div className={classes.relative} style={{ width: "100%" }}>
+                      <textarea
+                        rows={item.transcription_text ? 4 : 6}
+                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
+                          } ${taskData?.source_type === "Original Source" &&
+                          classes.w95
+                          }`}
+                        ref={(el) => (textboxes.current[index] = el)}
+                        dir={enableRTL_Typing ? "rtl" : "ltr"}
+                        onMouseUp={(e) => onMouseUp(e, index)}
+                        style={{ fontSize: fontSize }}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transaltion"
+                          );
+                        }}
+                        value={item.text}
+                        disabled={isDisabled(index)}
+                      />
+                      <span
+                        className={classes.wordCount}
+                        style={{
+                          color:
+                            Math.abs(
+                              sourceLength(index) - targetLength(index)
+                            ) >= 3
+                              ? "red"
+                              : "green",
+                          right: item.transcription_text ? "20px" : "32px",
+                          top: "3px"
+                        }}
+                      >
+                        {targetLength(index)}
+                      </span>
                     </div>
-                  </Box>
+                  )}
                 </CardContent>
               </div>
             );
@@ -795,4 +876,4 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   );
 };
 
-export default VoiceOverRightPanel;
+export default VoiceOverRightPanel1;

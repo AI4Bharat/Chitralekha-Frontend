@@ -238,14 +238,14 @@ const Header = () => {
               </Grid>
 
               <Box className={classes.avatarBox}>
-                <IconButton
+                { userData?.role === "ADMIN" || userData?.role === "ORG_OWNER" || userData?.role === "PROJECT_MANAGER" ? <IconButton
                   onClick={() => navigate('/task-queue-status')}
                   className={`${classes.icon} help`}
                 >
-                  <Tooltip title="Task Queue Status">
+                  <Tooltip title="Task Queue Status">                    
                     <HourglassBottomIcon color="primary" className={classes.icon2}/>
                   </Tooltip>
-                </IconButton>
+                </IconButton> : "" }
 
                 <IconButton
                   onClick={handleOpenHelpMenu}

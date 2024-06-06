@@ -190,13 +190,15 @@ const ProjectStyle = makeStyles({
   },
 
   timeInputBox: {
-    backgroundColor: "#616A6B",
-    width: "15%",
+    backgroundColor: "#F5F5F5",
+    width: "2ch",
+    margin: "0",
+    padding: "0",
     "& .MuiInputBase-input": {
       textAlign: "center",
-      color: "#fff",
-      fontSize: "1rem",
-      padding: "5px 0",
+      color: "#000",
+      fontSize: "0.8rem",
+      padding: "0",
     },
     "& .MuiInput-root:after": {
       border: "none",

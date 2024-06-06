@@ -17,6 +17,8 @@ const CustomMenuComponent = ({
   contianer,
   subtitlePlacement,
   setSubtitlePlacement,
+  showSubtitles,
+  setShowSubtitles,
 }) => {
   const player = useSelector((state) => state.commonReducer.player);
 
@@ -79,6 +81,19 @@ const CustomMenuComponent = ({
             </div>
           </MenuItem>
         ))}
+        <MenuItem key="Show Subtitles">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Show Subtitles</span>
+              <input type="checkbox" checked={showSubtitles} onChange={() => {setShowSubtitles(!showSubtitles)}}/>
+            </div>
+          </MenuItem>
       </Menu>
 
       <Menu

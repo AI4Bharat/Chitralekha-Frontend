@@ -101,9 +101,9 @@ export const addSubtitleBox = (index) => {
         index < subtitles.length - 1
           ? copySub[index + 1].start_time
           : DT.d2t(duration + 0.5),
-      text: "SUB_TEXT",
+      text: "",
       speaker_id: "",
-      target_text: "SUB_TEXT",
+      target_text: "",
     })
   );
 
@@ -159,64 +159,66 @@ export const onSplit = (
 
   const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
   const text2 = targetTextBlock.text.slice(selectionStart).trim();
-  const targetText1 = targetSelectionStart
-    ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
-    : null;
-  const targetText2 = targetSelectionStart
-    ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
-    : null;
 
-  if (
-    !text1 ||
-    !text2 ||
-    (targetSelectionStart && (!targetText1 || !targetText2))
-  )
-    return;
+  if(text1 && text2){
+    const targetText1 = targetSelectionStart
+      ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
+      : null;
+    const targetText2 = targetSelectionStart
+      ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
+      : null;
 
-  copySub.splice(currentIndex, 1);
-  let middleTime = null;
+    if (
+      !text1 ||
+      !text2 ||
+      (targetSelectionStart && (!targetText1 || !targetText2))
+    )
+      return subtitles;
 
-  if (!timings) {
-    const splitDuration = (
-      targetTextBlock.duration *
-      (selectionStart / targetTextBlock.text.length)
-    ).toFixed(3);
+    copySub.splice(currentIndex, 1);
+    let middleTime = null;
 
-    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-      return;
+    if (!timings) {
+      const splitDuration = (
+        targetTextBlock.duration *
+        (selectionStart / targetTextBlock.text.length)
+      ).toFixed(3);
 
-    middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
+      if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
+        return subtitles;
+
+      middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
+    }
+
+    copySub.splice(
+      index,
+      0,
+      newSub({
+        start_time: middleTime
+          ? subtitles[currentIndex].start_time
+          : timings[0].start,
+        end_time: middleTime ?? timings[0].end,
+        text: text1,
+        ...(targetSelectionStart && { target_text: targetText1 }),
+        speaker_id: "",
+      })
+    );
+
+    copySub.splice(
+      index + 1,
+      0,
+      newSub({
+        start_time: middleTime ?? timings[1].start ?? timings[0].end,
+        end_time:
+          middleTime || !timings[1].end
+            ? subtitles[currentIndex].end_time
+            : timings[1].end,
+        text: text2,
+        ...(targetSelectionStart && { target_text: targetText2 }),
+        speaker_id: "",
+      })
+    );
   }
-
-  copySub.splice(
-    index,
-    0,
-    newSub({
-      start_time: middleTime
-        ? subtitles[currentIndex].start_time
-        : timings[0].start,
-      end_time: middleTime ?? timings[0].end,
-      text: text1,
-      ...(targetSelectionStart && { target_text: targetText1 }),
-      speaker_id: "",
-    })
-  );
-
-  copySub.splice(
-    index + 1,
-    0,
-    newSub({
-      start_time: middleTime ?? timings[1].start ?? timings[0].end,
-      end_time:
-        middleTime || !timings[1].end
-          ? subtitles[currentIndex].end_time
-          : timings[1].end,
-      text: text2,
-      ...(targetSelectionStart && { target_text: targetText2 }),
-      speaker_id: "",
-    })
-  );
-
   return copySub;
 };
 

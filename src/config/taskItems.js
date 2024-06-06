@@ -14,4 +14,6 @@ export const taskTypes = [
   { value: "TRANSLATION_EDIT", label: "Translation Edit" },
   { value: "TRANSLATION_REVIEW", label: "Translation Review" },
   { value: "VOICEOVER_EDIT", label: "VoiceOver Edit" },
+  { value: "TRANSLATION_VOICEOVER_EDIT", label: "Translation VoiceOver Edit" },
+  { value: "TRANSLATION_VOICEOVER_REVIEW", label: "Translation VoiceOver Review" },
 ];

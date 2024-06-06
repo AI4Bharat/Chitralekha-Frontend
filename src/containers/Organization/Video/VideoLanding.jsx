@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import RightPanel from "./RightPanel";
-import VoiceOverRightPanel from "./VoiceOverRightPanel";
+// import VoiceOverRightPanel from "./VoiceOverRightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./components/VideoPanel";
 import TranslationRightPanel from "./TranslationRightPanel";
@@ -55,6 +55,10 @@ import {
 } from "redux/actions";
 import C from "redux/constants";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
+import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import PlayArrow from "@mui/icons-material/PlayArrow";
+import { Pause } from "@mui/icons-material";
 
 const VideoLanding = () => {
   const { taskId } = useParams();
@@ -64,6 +68,7 @@ const VideoLanding = () => {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubs, setCurrentSubs] = useState();
+  const [showSubtitles, setShowSubtitles] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
@@ -223,7 +228,7 @@ const VideoLanding = () => {
   }, [onKeyDown]);
 
   const handleFullscreen = () => {
-    const res = fullscreenUtil(document.documentElement);
+    const res = fullscreenUtil(document.getElementById("right-panel"));
     dispatch(FullScreen(res, C.FULLSCREEN));
   };
 
@@ -261,8 +266,8 @@ const VideoLanding = () => {
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderLoader()}
 
-      <Grid container direction={"row"} className={classes.parentGrid}>
-        <Grid md={6} xs={12} id="video" className={classes.videoParent}>
+      <PanelGroup direction="horizontal" className={classes.parentGrid}>
+        <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
             style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
             className={classes.videoBox}
@@ -274,6 +279,8 @@ const VideoLanding = () => {
               setDarkAndLightMode={setDarkAndLightMode}
               subtitlePlacement={subtitlePlacement}
               setSubtitlePlacement={setSubtitlePlacement}
+              showSubtitles={showSubtitles}
+              setShowSubtitles={setShowSubtitles}
             />
 
             <VideoPanel
@@ -281,7 +288,7 @@ const VideoLanding = () => {
               setPlaying={setPlaying}
             />
 
-            {currentSubs && (
+            {currentSubs && showSubtitles && (
               <div
                 className={classes.subtitlePanel}
                 style={{
@@ -290,23 +297,22 @@ const VideoLanding = () => {
                   top: subtitlePlacement === "top" ? "15%" : "",
                 }}
               >
-                <ReactTextareaAutosize
-                  className={`${classes.playerTextarea} ${
-                    darkAndLightMode === "dark"
+                <div
+                  className={`${classes.playerTextarea} ${darkAndLightMode === "dark"
                       ? classes.darkMode
                       : classes.lightMode
-                  }`}
-                  value={
+                    }`}
+                  style={{
+                    fontSize: fontSize, maxHeight: "100px"
+                  }}
+                >
+                  {
                     taskDetails.task_type.includes("TRANSCRIPTION") ||
-                    taskDetails.task_type.includes("VOICEOVER")
+                      taskDetails.task_type.includes("VOICEOVER")
                       ? currentSubs.text
                       : currentSubs.target_text
                   }
-                  style={{
-                    fontSize: fontSize,
-                  }}
-                  spellCheck={false}
-                />
+                </div>
               </div>
             )}
 
@@ -331,27 +337,46 @@ const VideoLanding = () => {
               </Box>
             )}
           </Box>
-        </Grid>
-
-        <Grid md={6} xs={12} sx={{ width: "100%" }}>
+        </Panel>
+        <PanelResizeHandle />
+        <Panel defaultSize={75} minSize={50} id="right-panel" style={{backgroundColor:"white", paddingTop: fullscreen?"4%":"0"}}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
             <RightPanel
               currentIndex={currentIndex}
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
-          ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
+          ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
+            // <VoiceOverRightPanel currentIndex={currentIndex}
+            // setCurrentIndex={setCurrentIndex} />
+            <VoiceOverRightPanel1
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+            />
+          ) : (
             <TranslationRightPanel
               currentIndex={currentIndex}
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
             />
-          ) : (
-            <VoiceOverRightPanel currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex} />
           )}
-        </Grid>
-      </Grid>
+          {fullscreen && 
+          <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
+          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.play()}}/>
+          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.pause()}}/>
+          </div>}
+          <Box>
+            <Button
+              className={classes.fullscreenBtn}
+              aria-label="fullscreen"
+              onClick={() => handleFullscreen()}
+              variant="contained"
+            >
+              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+            </Button>
+          </Box>
+        </Panel>
+      </PanelGroup>
 
       <Grid
         width={"100%"}
@@ -361,17 +386,6 @@ const VideoLanding = () => {
       >
         <Timeline currentTime={currentTime} playing={playing} />
       </Grid>
-
-      <Box>
-        <Button
-          className={classes.fullscreenBtn}
-          aria-label="fullscreen"
-          onClick={() => handleFullscreen()}
-          variant="contained"
-        >
-          {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </Button>
-      </Box>
     </Grid>
   );
 };

@@ -2,15 +2,15 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class FetchAllowedTasksAPI extends API {
-  constructor(videoId, taskType,language, timeout = 2000) {
+export default class FetchOnboardingListAPI extends API {
+  constructor(timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.GET_ALLOWED_TASK;
-    this.videoId = videoId;
-    this.taskType = taskType;
-    this.language = language;
-    this.queryStr = taskType === "TRANSLATION" || taskType === "VOICEOVER" || taskType === "TRANSLATION_VOICEOVER" ? `&target_language=${language}`:""
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.task}get_allowed_task/?video_id=${videoId}&type=${taskType}${this.queryStr}`;
+
+    this.type = C.GET_ONBOARDING_LIST;
+
+    this.endpoint = `${super.apiEndPointAuto()}${
+      ENDPOINTS.organization
+    }onboard/`;
   }
 
   processResponse(res) {
