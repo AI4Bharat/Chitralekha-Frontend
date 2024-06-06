@@ -472,22 +472,22 @@ const VideoLandingStyle = makeStyles({
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
-    borderColor: "#616A6B",
-    outlineColor: "#2C2799",
+    borderColor: "#ffffff",
+    outlineColor: "rgba(44,39,153,0.9)",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
     width: "95.5%",
 
     "&::selection": {
-     // backgroundColor: "#8ebf42",
+    //  backgroundColor: "#8ebf42",
       backgroundColor: "#808080"
     }
   },
 
   boxHighlight: {
-    backgroundColor: "rgb(0 87 158)",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
-    color: "#fff !important",
+    backgroundColor: "rgba(214, 234, 248, 0.4)",
+    border: "1px solid rgb(44,39,153)",
+    color: "#000 !important",
   },
 
   wordCount: {
