@@ -52,7 +52,7 @@ export default function AppInfo() {
             <Typography
               variant={"body1"}
               className={classes.body}
-              style={{ margin: "20px 0px 50px 39px" }}
+              style={{ margin: "10px 0px 40px 39px" }}
             >
               {translate("label.chitralekhaInfo")}
             </Typography>
@@ -74,10 +74,10 @@ export default function AppInfo() {
 
           <Typography
             style={{
-              position: "absolute",
+              // position: "absolute",
               fontSize: "1rem",
-              bottom: "0.5rem",
-              margin: "20px 0px 50px 39px",
+              // bottom: "0.5rem",
+              margin: "10px 0px 10px 39px",
             }}
           >
             Powered by EkStep Foundation
