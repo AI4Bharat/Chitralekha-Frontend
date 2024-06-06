@@ -471,8 +471,8 @@ const VideoLandingStyle = makeStyles({
     fontWeight: "400",
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
+    border:"none",
     borderRadius: "4px",
-    borderColor: "#ffffff",
     outline:"none",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
@@ -481,7 +481,10 @@ const VideoLandingStyle = makeStyles({
     "&::selection": {
     //  backgroundColor: "#8ebf42",
       backgroundColor: "#808080"
-    }
+    },
+    "&:hover, &:focus": {
+      backgroundColor: "rgba(214, 234, 248, 0.4)"
+    },
   },
 
   boxHighlight: {
@@ -520,10 +523,10 @@ const VideoLandingStyle = makeStyles({
     fontWeight: "400",
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
+    border: "none",
     borderRadius: "4px",
-    // borderColor: "#616A6B",
     // outlineColor: "#2C2799",
-    borderColor: "#ffffff",
+    // borderColor: "#ffffff",
     outline:"none",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
@@ -531,7 +534,10 @@ const VideoLandingStyle = makeStyles({
     "&::selection": {
     //  backgroundColor: "#8ebf42",
       backgroundColor: "#808080"
-    }
+    },
+    "&:hover, &:focus": {
+      backgroundColor: "rgba(214, 234, 248, 0.4)"
+    },
   },
 
   videoPlayerParent: {
