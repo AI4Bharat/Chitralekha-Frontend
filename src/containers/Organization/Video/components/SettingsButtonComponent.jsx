@@ -68,7 +68,6 @@ const SettingsButtonComponent = ({
   handleSuperscript,
   handleSubscript,
   showPopOver,
-  showSplit,
   handleInfoButtonClick,
   currentIndex,
   onMergeClick,
@@ -151,9 +150,36 @@ const SettingsButtonComponent = ({
 
   return (
     <>
-       {!taskData?.task_type?.includes("VOICEOVER") && (
+      {taskData?.task_type?.includes("TRANSCRIPTION") && (
         <>
-          <Tooltip title="Merge Next" placement="bottom">
+          <Tooltip title="Add Subtitle Box" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex === -1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => addNewSubtitleBox(currentIndex)}
+            >
+              <AddIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              disabled={currentIndex === -1}
+              sx={{
+                "&.Mui-disabled": { backgroundColor: "lightgray" },
+              }}
+              onClick={() => onDelete(currentIndex)}
+            >
+              <DeleteIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+        </>
+      )}
+
+        <Tooltip title="Merge Next" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
               disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
@@ -169,38 +195,25 @@ const SettingsButtonComponent = ({
             </IconButton>
           </Tooltip>
 
-          {taskData?.task_type?.includes("TRANSCRIPTION") && (
-            <>
-          <Tooltip title="Delete" placement="bottom">
+          <Tooltip title="Split Subtitle" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex===-1}
+              onClick={onSplitClick}
+              disabled={!showPopOver}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
-              onClick={() => onDelete(currentIndex)}
             >
-              <DeleteIcon className={classes.rightPanelSvg} />
+              <SplitscreenIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Add Subtitle Box" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              disabled={currentIndex===-1}
-              sx={{
-                "&.Mui-disabled": { backgroundColor: "lightgray" },
-              }}
-              onClick={() => addNewSubtitleBox(currentIndex)}
-            >
-              <AddIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-          </>
-          )}
-
-          {taskData?.task_type?.includes("TRANSLATION") && (
-            <Tooltip title="Regenerate Translation" placement="bottom">
+          {taskData?.task_type?.includes("TRANSLATION") && !taskData?.task_type?.includes("VOICEOVER") && (
+             <>
+             {apiInProgress ?
+             <CircularProgress size={35} style={{margin:"auto 6px auto 0px", padding:"0"}}/>
+             :
+             <Tooltip title="Regenerate Translation" placement="bottom">
               <IconButton
                 className={classes.rightPanelBtnGrp}
                 onClick={() => handleReGenerateTranslation(currentIndex)}
@@ -211,46 +224,10 @@ const SettingsButtonComponent = ({
                 <LoopIcon className={classes.rightPanelSvg} />
               </IconButton>
             </Tooltip>
+            }
+            </>
           )}
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
-        </>
-      )}
-
-      {/* {taskData?.task_type?.includes("TRANSLATION") && (
-        <>
-          <Tooltip title="Regenerate Translation" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              onClick={() => handleReGenerateTranslation(currentIndex)}
-              sx={{
-                "&.Mui-disabled": { backgroundColor: "lightgray" },
-              }}
-            >
-              <LoopIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-          <Divider orientation="vertical" className={classes.rightPanelDivider} />
-        </>
-      )} */}
-
-      {!taskData?.task_type?.includes("VOICEOVER") && showSplit && (
-        <Tooltip title="Split Subtitle" placement="bottom">
-          <IconButton
-            className={classes.rightPanelBtnGrp}
-            onClick={onSplitClick}
-            disabled={!showPopOver}
-            sx={{
-              "&.Mui-disabled": { backgroundColor: "lightgray" },
-            }}
-          >
-            <SplitscreenIcon className={classes.rightPanelSvg} />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {taskData?.task_type?.includes("TRANSCRIPTION") && (
-        <Divider orientation="vertical" className={classes.rightPanelDivider} />
-      )}
 
       <Tooltip title="Incorrect Subtitles Info" placement="bottom">
         <IconButton
@@ -438,7 +415,6 @@ const SettingsButtonComponent = ({
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
-      {!taskData?.task_type?.includes("VOICEOVER") && (
         <Tooltip title="Undo" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
@@ -448,9 +424,7 @@ const SettingsButtonComponent = ({
             <UndoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
-      )}
 
-      {!taskData?.task_type?.includes("VOICEOVER") && (
         <Tooltip title="Redo" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
@@ -460,7 +434,6 @@ const SettingsButtonComponent = ({
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
-      )}
 
       {openPreviewDialog && (
         <PreviewDialog

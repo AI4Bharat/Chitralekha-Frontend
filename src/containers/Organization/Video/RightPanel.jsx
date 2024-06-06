@@ -61,7 +61,7 @@ import {
 } from "redux/actions";
 import { failTranscriptionInfoColumns } from "config";
 
-const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
+const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -631,7 +631,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
             handleSubscript={handleSubscript}
             handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
-            showSplit={true}
             handleInfoButtonClick={handleInfoButtonClick}
             currentIndex={currentIndex}
             onMergeClick={onMergeClick}
@@ -641,7 +640,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex }) => {
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box

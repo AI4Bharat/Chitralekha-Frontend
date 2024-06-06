@@ -54,7 +54,7 @@ const VideoPanel = memo(
     }, [$video]);
 
     return (
-      <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+      <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
         <video
           // onClick={onClick}
           src={

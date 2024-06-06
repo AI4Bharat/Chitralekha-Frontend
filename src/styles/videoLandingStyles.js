@@ -446,7 +446,6 @@ const VideoLandingStyle = makeStyles({
     width: "100%",
     textAlign: "center",
     boxSizing: "border-box",
-    height: "calc(100vh - 270px)",
     backgroundColor: "white",
   },
 
@@ -532,7 +531,6 @@ const VideoLandingStyle = makeStyles({
 
   videoPlayerParent: {
     boxSizing: "border-box",
-    height: "calc(100vh - 250px)",
   },
 
   videoPlayer: {

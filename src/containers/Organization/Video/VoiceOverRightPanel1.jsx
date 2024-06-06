@@ -10,6 +10,12 @@ import {
   setAudioContent,
   onSubtitleChange,
   timeChange,
+  getSelectionStart,
+  getTargetSelectionStart,
+  onMerge,
+  onRedoAction,
+  onUndoAction,
+  onSplit,
 } from "utils";
 import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 
@@ -21,9 +27,8 @@ import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, CardContent, CircularProgress, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "indic-transliterate";
 import subscript from "config/subscript";
@@ -54,7 +59,7 @@ import {
   setSnackBar,
 } from "redux/actions";
 
-const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
+const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -91,7 +96,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
   const [data, setData] = useState([]);
   const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
-  const [textChangeBtn, setTextChangeBtn] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
   const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
@@ -107,16 +111,20 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
     useState();
   const [subsuper, setsubsuper] = useState(false);
   const [selection, setselection] = useState(false);
-  const [, setSelectionStart] = useState();
+  const [selectionStart, setSelectionStart] = useState();
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [recorderTime, setRecorderTime] = useState(0);
   const limit = useSelector((state) => state.commonReducer.limit);
   const [currentOffset, setCurrentOffset] = useState(1);
+  const [apiInProgress, setApiInProgress] = useState(false);
+  const [undoStack, setUndoStack] = useState([]);
+  const [showPopOver, setShowPopOver] = useState(false);
+  const [redoStack, setRedoStack] = useState([]);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
-
+    setApiInProgress(progress);
     if (!progress) {
       if (success) {
         if (apiType === "SAVE_TRANSCRIPT") {
@@ -201,7 +209,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
     subtitlesForCheck?.forEach(() => temp.push(1));
 
     $audioRef.current = $audioRef.current.slice(0, subtitlesForCheck?.length);
-    setTextChangeBtn(subtitlesForCheck?.map(() => false));
     setSpeedChangeBtn(subtitlesForCheck?.map(() => false));
     setDurationError(subtitlesForCheck?.map(() => false));
   }, [subtitlesForCheck]);
@@ -234,29 +241,27 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
     setSourceText(subtitles);
   }, [subtitles]);
 
-  const changeTranscriptHandler = (text, index, type) => {
+  const changeTranscriptHandler = (text, index, type="translation") => {
     const arr = [...sourceText];
-    const temp = [...textChangeBtn];
 
-    subtitlesForCheck.forEach((item, i) => {
+    arr.forEach((element, i) => {
       if (index === i) {
-        if (item.text === text) {
-          temp[index] = false;
-        } else {
-          temp[index] = true;
+        if(type==="translation"){
+        element.text = text;
+        }else if(type === "audio"){
+        element.text_changed = true;
+        }else if(type === "retranslate"){
+        element.retranslate = true;  
+        }else{
+        element.transcription_text = text;
         }
       }
     });
 
-    arr.forEach((element, i) => {
-      if (index === i) {
-        element.text = text;
-        element.text_changed = temp[index];
-      }
-    });
-
-    setTextChangeBtn(temp);
     dispatch(setSubtitles(arr, C.SUBTITLES));
+    if(type === "audio" || type === "retranslate"){
+      saveTranscriptHandler(false, true);
+    }
     // saveTranscriptHandler(false, false);
   };
 
@@ -409,6 +414,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
+        setShowPopOver(true);
         setCurrentIndexToSplitTextBlock(blockIdx);
         setSelectionStart(selectionStart);
       }
@@ -526,6 +532,74 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
     },
   ];
 
+  const prevOffsetRef = useRef(currentOffset);
+  useEffect(() => {
+    if (prevOffsetRef.current !== currentOffset) {
+      setUndoStack([]);
+      setRedoStack([]);
+      prevOffsetRef.current = currentOffset;
+    }
+  }, [limit, currentOffset]);
+
+  const onUndo = useCallback(() => {
+    if (undoStack.length > 0) {
+      const lastAction = undoStack[undoStack.length - 1];
+      const sub = onUndoAction(lastAction, true);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setUndoStack(undoStack.slice(0, undoStack.length - 1));
+      setRedoStack((prevState) => [...prevState, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const onRedo = useCallback(() => {
+    if (redoStack.length > 0) {
+      const lastAction = redoStack[redoStack.length - 1];
+      const sub = onRedoAction(lastAction, true);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setRedoStack(redoStack.slice(0, redoStack.length - 1));
+      setUndoStack((prevState) => [...prevState, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const onMergeClick = useCallback(
+    (index) => {
+      const selectionStart = getSelectionStart(index, true);
+      const targetSelectionStart = getTargetSelectionStart(index, true);
+
+      setUndoStack((prevState) => [
+        ...prevState,
+        {
+          type: "merge",
+          index: index,
+          selectionStart,
+          targetSelectionStart,
+        },
+      ]);
+      setRedoStack([]);
+
+      const sub = onMerge(index, true);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [limit, currentOffset]
+  );
+
+  const onSplitClick = useCallback(() => {
+    setUndoStack((prevState) => [
+      ...prevState,
+      {
+        type: "split",
+        index: currentIndexToSplitTextBlock,
+        selectionStart,
+      },
+    ]);
+    setRedoStack([]);
+
+    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, true, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    // saveTranscriptHandler(false, true, sub);
+
+  }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
   return (
     <>
       <ShortcutKeys shortcuts={shortcuts} />
@@ -550,10 +624,18 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
+            undoStack={undoStack}
+            redoStack={redoStack}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            currentIndex={currentIndex}
+            onMergeClick={onMergeClick}
+            onSplitClick={onSplitClick}
+            showPopOver={showPopOver}
           />
         </Grid>
 
-        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"}>
+        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
           {sourceText?.map((item, index) => {
             return (
               <div
@@ -587,7 +669,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                       style={{ width: "100%" }}
                     >
                       <textarea
-                        readOnly={true}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           }`}
@@ -596,13 +677,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                         style={{ fontSize: fontSize }}
                         ref={(el) => (textboxes.current[index] = el)}
                         value={item.transcription_text}
-                      // onChange={(event) => {
-                      //   changeTranscriptHandler(
-                      //     event.target.value,
-                      //     index,
-                      //     "transcript"
-                      //   );
-                      // }}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transcript"
+                          );
+                        }}
                       />
                       <span
                         className={classes.wordCount}
@@ -622,19 +703,22 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                     </div>}
 
                   <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
-                    <div style={{ backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", border: "1px solid", borderRadius: "100%", width: "20px", height: "20px" }}>{item.id}</div>
+                    <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
+                    {apiInProgress ?
+                      <CircularProgress size={35} style={{margin:"0 20px", padding:"0"}}/>
+                      :
                       <Tooltip title="Regenerate Translation" placement="bottom">
                         <IconButton
                           className={classes.optionIconBtn}
                           style={{marginRight:"20px", marginLeft:"20px"}}
-                          disabled={true}
-                          // onClick={() => handleReGenerateTranslation(index)}
+                          onClick={() => changeTranscriptHandler(null, index, "retranslate")}
                         >
                           <LoopIcon className={classes.rightPanelSvg} />
                         </IconButton>
                       </Tooltip>
+                    }
                     <div>
                     <TimeBoxes
                       handleTimeChange={handleTimeChange}
@@ -649,28 +733,19 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                       type={"endTime"}
                     />
                     </div>
-                    {taskData.source_type === "Machine Generated" ? (
+                    {taskData.source_type === "Machine Generated" ? apiInProgress ?
+                      <CircularProgress size={35} style={{margin:"0 20px", padding:"0"}}/>
+                      : 
                         <Tooltip title="Get Updated Audio" placement="bottom">
                           <IconButton
                             className={classes.optionIconBtn}
-                            onClick={() => saveTranscriptHandler(false, true)}
+                            onClick={() => changeTranscriptHandler(null, index, "audio")}
                             style={{marginRight:"20px", marginLeft:"20px"}}
-                            disabled={!textChangeBtn[index]}
                           >
                             <TaskAltIcon className={classes.rightPanelSvg} />
                           </IconButton>
                         </Tooltip>
-                    ) : (
-                      <RecorderComponent
-                        index={index}
-                        onStopRecording={onStopRecording}
-                        durationError={durationError}
-                        handleFileUpload={handleFileUpload}
-                        isDisabled={isDisabled(index)}
-                        updateRecorderState={updateRecorderState}
-                        setRecorderTime={setRecorderTime}
-                      />
-                    )}
+                    :<></>}
                     </div>
                     <Box
                       sx={{
@@ -744,6 +819,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                         width: "100%",
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          setShowPopOver(false);
+                        }, 200);
+                      }}
                       style={{ fontSize: fontSize }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -755,6 +835,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             ref={(el) => (textboxes.current[index] = el)}
                             rows={item.transcription_text ? 4 : 6}
+                            onBlur={() => {
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200);
+                            }}
                             disabled={isDisabled(index)}
                             {...props}
                           />
@@ -792,10 +877,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex }) => {
                           changeTranscriptHandler(
                             event.target.value,
                             index,
-                            "transaltion"
                           );
                         }}
                         value={item.text}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200);
+                        }}
                         disabled={isDisabled(index)}
                       />
                       <span
