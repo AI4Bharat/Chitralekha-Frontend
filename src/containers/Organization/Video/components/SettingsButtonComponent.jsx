@@ -215,7 +215,11 @@ const SettingsButtonComponent = ({
           )}
 
           {taskData?.task_type?.includes("TRANSLATION") && (
-            <Tooltip title="Regenerate Translation" placement="bottom">
+             <>
+             {apiInProgress ?
+             <CircularProgress size={35} style={{margin:"auto 6px auto 0px", padding:"0"}}/>
+             :
+             <Tooltip title="Regenerate Translation" placement="bottom">
               <IconButton
                 className={classes.rightPanelBtnGrp}
                 onClick={() => handleReGenerateTranslation(currentIndex)}
@@ -226,13 +230,11 @@ const SettingsButtonComponent = ({
                 <LoopIcon className={classes.rightPanelSvg} />
               </IconButton>
             </Tooltip>
+            }
+            </>
           )}
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
         </>
-      )}
-
-      {taskData?.task_type?.includes("TRANSCRIPTION") && (
-        <Divider orientation="vertical" className={classes.rightPanelDivider} />
       )}
 
       <Tooltip title="Incorrect Subtitles Info" placement="bottom">

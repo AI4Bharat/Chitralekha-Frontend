@@ -21,9 +21,8 @@ import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, CardContent, CircularProgress, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
-import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "indic-transliterate";
 import subscript from "config/subscript";
@@ -91,7 +90,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const [data, setData] = useState([]);
   const [recordAudio, setRecordAudio] = useState([]);
   const [enableRTL_Typing, setRTL_Typing] = useState(false);
-  const [textChangeBtn, setTextChangeBtn] = useState([]);
   const [audioPlayer, setAudioPlayer] = useState([]);
   const [speedChangeBtn, setSpeedChangeBtn] = useState([]);
   const [openConfirmErrorDialog, setOpenConfirmErrorDialog] = useState(false);
@@ -113,10 +111,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const [recorderTime, setRecorderTime] = useState(0);
   const limit = useSelector((state) => state.commonReducer.limit);
   const [currentOffset, setCurrentOffset] = useState(1);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
-
+    setApiInProgress(progress);
     if (!progress) {
       if (success) {
         if (apiType === "SAVE_TRANSCRIPT") {
@@ -201,7 +200,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     subtitlesForCheck?.forEach(() => temp.push(1));
 
     $audioRef.current = $audioRef.current.slice(0, subtitlesForCheck?.length);
-    setTextChangeBtn(subtitlesForCheck?.map(() => false));
     setSpeedChangeBtn(subtitlesForCheck?.map(() => false));
     setDurationError(subtitlesForCheck?.map(() => false));
   }, [subtitlesForCheck]);
@@ -236,33 +234,24 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
   const changeTranscriptHandler = (text, index, type="translation") => {
     const arr = [...sourceText];
-    const temp = [...textChangeBtn];
-
-    if(type==="translation"){
-    subtitlesForCheck.forEach((item, i) => {
-      if (index === i) {
-        if (item.text === text) {
-          temp[index] = false;
-        } else {
-          temp[index] = true;
-        }
-      }
-    });
-    }
 
     arr.forEach((element, i) => {
       if (index === i) {
         if(type==="translation"){
         element.text = text;
-        element.text_changed = temp[index];
-        }else{
+        }else if(type === "audio"){
+        element.text_changed = true;
+        }
+        else{
         element.transcription_text = text;
         }
       }
     });
 
-    setTextChangeBtn(temp);
     dispatch(setSubtitles(arr, C.SUBTITLES));
+    if(type === "audio"){
+      saveTranscriptHandler(false, true);
+    }
     // saveTranscriptHandler(false, false);
   };
 
@@ -630,6 +619,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
+                    {apiInProgress ?
+                      <CircularProgress size={35} style={{margin:"0 20px", padding:"0"}}/>
+                      :
                       <Tooltip title="Regenerate Translation" placement="bottom">
                         <IconButton
                           className={classes.optionIconBtn}
@@ -640,6 +632,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                           <LoopIcon className={classes.rightPanelSvg} />
                         </IconButton>
                       </Tooltip>
+                    }
                     <div>
                     <TimeBoxes
                       handleTimeChange={handleTimeChange}
@@ -654,28 +647,19 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                       type={"endTime"}
                     />
                     </div>
-                    {taskData.source_type === "Machine Generated" ? (
+                    {taskData.source_type === "Machine Generated" ? apiInProgress ?
+                      <CircularProgress size={35} style={{margin:"0 20px", padding:"0"}}/>
+                      : 
                         <Tooltip title="Get Updated Audio" placement="bottom">
                           <IconButton
                             className={classes.optionIconBtn}
-                            onClick={() => saveTranscriptHandler(false, true)}
+                            onClick={() => changeTranscriptHandler(null, index, "audio")}
                             style={{marginRight:"20px", marginLeft:"20px"}}
-                            disabled={!textChangeBtn[index]}
                           >
                             <TaskAltIcon className={classes.rightPanelSvg} />
                           </IconButton>
                         </Tooltip>
-                    ) : (
-                      <RecorderComponent
-                        index={index}
-                        onStopRecording={onStopRecording}
-                        durationError={durationError}
-                        handleFileUpload={handleFileUpload}
-                        isDisabled={isDisabled(index)}
-                        updateRecorderState={updateRecorderState}
-                        setRecorderTime={setRecorderTime}
-                      />
-                    )}
+                    :<></>}
                     </div>
                     <Box
                       sx={{
