@@ -148,7 +148,8 @@ export const onSplit = (
   currentIndex,
   selectionStart,
   timings = null,
-  targetSelectionStart = null
+  targetSelectionStart = null,
+  translateSplit = false,
 ) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
@@ -161,10 +162,10 @@ export const onSplit = (
   const text2 = targetTextBlock.text.slice(selectionStart).trim();
 
   if(text1 && text2){
-    const targetText1 = targetSelectionStart
+    const targetText1 = translateSplit ? targetTextBlock.target_text : targetSelectionStart
       ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
       : null;
-    const targetText2 = targetSelectionStart
+    const targetText2 = translateSplit ? " " : targetSelectionStart
       ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
       : null;
 
@@ -199,7 +200,7 @@ export const onSplit = (
           : timings[0].start,
         end_time: middleTime ?? timings[0].end,
         text: text1,
-        ...(targetSelectionStart && { target_text: targetText1 }),
+        ...((translateSplit || targetSelectionStart) && { target_text: targetText1 }),
         speaker_id: "",
       })
     );
@@ -214,7 +215,7 @@ export const onSplit = (
             ? subtitles[currentIndex].end_time
             : timings[1].end,
         text: text2,
-        ...(targetSelectionStart && { target_text: targetText2 }),
+        ...((translateSplit || targetSelectionStart) && { target_text: targetText2 }),
         speaker_id: "",
       })
     );

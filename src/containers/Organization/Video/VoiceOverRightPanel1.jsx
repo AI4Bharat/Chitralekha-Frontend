@@ -234,10 +234,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     setSourceText(subtitles);
   }, [subtitles]);
 
-  const changeTranscriptHandler = (text, index, type) => {
+  const changeTranscriptHandler = (text, index, type="translation") => {
     const arr = [...sourceText];
     const temp = [...textChangeBtn];
 
+    if(type==="translation"){
     subtitlesForCheck.forEach((item, i) => {
       if (index === i) {
         if (item.text === text) {
@@ -247,11 +248,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
         }
       }
     });
+    }
 
     arr.forEach((element, i) => {
       if (index === i) {
+        if(type==="translation"){
         element.text = text;
         element.text_changed = temp[index];
+        }else{
+        element.transcription_text = text;
+        }
       }
     });
 
@@ -587,7 +593,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                       style={{ width: "100%" }}
                     >
                       <textarea
-                        readOnly={true}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           }`}
@@ -596,13 +601,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                         style={{ fontSize: fontSize }}
                         ref={(el) => (textboxes.current[index] = el)}
                         value={item.transcription_text}
-                      // onChange={(event) => {
-                      //   changeTranscriptHandler(
-                      //     event.target.value,
-                      //     index,
-                      //     "transcript"
-                      //   );
-                      // }}
+                        onChange={(event) => {
+                          changeTranscriptHandler(
+                            event.target.value,
+                            index,
+                            "transcript"
+                          );
+                        }}
                       />
                       <span
                         className={classes.wordCount}
@@ -629,7 +634,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                         <IconButton
                           className={classes.optionIconBtn}
                           style={{marginRight:"20px", marginLeft:"20px"}}
-                          disabled={true}
+                          // disabled={true}
                           // onClick={() => handleReGenerateTranslation(index)}
                         >
                           <LoopIcon className={classes.rightPanelSvg} />
@@ -792,7 +797,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                           changeTranscriptHandler(
                             event.target.value,
                             index,
-                            "transaltion"
                           );
                         }}
                         value={item.text}

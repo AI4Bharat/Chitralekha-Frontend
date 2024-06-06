@@ -18,6 +18,7 @@ import {
   getSelectionStart,
   getTargetSelectionStart,
   reGenerateTranslation,
+  onSplit,
 } from "utils";
 
 //Styles
@@ -88,7 +89,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [, setSelectionStart] = useState();
+  const [selectionStart, setSelectionStart] = useState();
   const [selection, setselection] = useState(false);
   const [currentIndexToSplitTextBlock, setCurrentIndexToSplitTextBlock] =
     useState();
@@ -103,6 +104,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [selectedWord, setSelectedWord] = useState("");
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
+  const [showPopOver, setShowPopOver] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -255,6 +257,24 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     [limit, currentOffset]
   );
 
+  const onSplitClick = useCallback(() => {
+    setUndoStack((prevState) => [
+      ...prevState,
+      {
+        type: "split",
+        index: currentIndexToSplitTextBlock,
+        selectionStart,
+      },
+    ]);
+    setRedoStack([]);
+
+    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    // saveTranscriptHandler(false, true, sub);
+
+    // eslint-disable-next-line
+  }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
@@ -327,6 +347,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
+        setShowPopOver(true);
         setCurrentIndexToSplitTextBlock(blockIdx);
         setSelectionStart(selectionStart);
       }
@@ -640,6 +661,9 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
             handleReGenerateTranslation={handleReGenerateTranslation}
+            showSplit={true}
+            showPopOver={showPopOver}
+            onSplitClick={onSplitClick}
           />
         </Grid>
 
@@ -744,6 +768,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                       containerStyles={{
                         width: "100%",
                       }}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          setShowPopOver(false);
+                        }, 200);
+                      }}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       style={{ fontSize: fontSize }}
                       renderComponent={(props) => (
@@ -758,6 +787,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             ref={(el) => (textboxes.current[index] = el)}
                             rows={2}
+                            onBlur={() => {
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200);
+                            }}
                             {...props}
                           />
                           <span
@@ -800,6 +834,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                           );
                         }}
                         value={item.target_text}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200);
+                        }}
                       />
                       <span
                         className={classes.wordCount}
