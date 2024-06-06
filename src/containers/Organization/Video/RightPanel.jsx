@@ -631,7 +631,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
             handleSubscript={handleSubscript}
             handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
-            showSplit={true}
             handleInfoButtonClick={handleInfoButtonClick}
             currentIndex={currentIndex}
             onMergeClick={onMergeClick}

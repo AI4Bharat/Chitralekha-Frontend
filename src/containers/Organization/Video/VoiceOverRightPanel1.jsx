@@ -10,6 +10,12 @@ import {
   setAudioContent,
   onSubtitleChange,
   timeChange,
+  getSelectionStart,
+  getTargetSelectionStart,
+  onMerge,
+  onRedoAction,
+  onUndoAction,
+  onSplit,
 } from "utils";
 import { configs, endpoints, voiceoverFailInfoColumns } from "config";
 
@@ -105,13 +111,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     useState();
   const [subsuper, setsubsuper] = useState(false);
   const [selection, setselection] = useState(false);
-  const [, setSelectionStart] = useState();
+  const [selectionStart, setSelectionStart] = useState();
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [recorderTime, setRecorderTime] = useState(0);
   const limit = useSelector((state) => state.commonReducer.limit);
   const [currentOffset, setCurrentOffset] = useState(1);
   const [apiInProgress, setApiInProgress] = useState(false);
+  const [undoStack, setUndoStack] = useState([]);
+  const [showPopOver, setShowPopOver] = useState(false);
+  const [redoStack, setRedoStack] = useState([]);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -241,15 +250,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
         element.text = text;
         }else if(type === "audio"){
         element.text_changed = true;
-        }
-        else{
+        }else if(type === "retranslate"){
+        element.retranslate = true;  
+        }else{
         element.transcription_text = text;
         }
       }
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    if(type === "audio"){
+    if(type === "audio" || type === "retranslate"){
       saveTranscriptHandler(false, true);
     }
     // saveTranscriptHandler(false, false);
@@ -404,6 +414,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
+        setShowPopOver(true);
         setCurrentIndexToSplitTextBlock(blockIdx);
         setSelectionStart(selectionStart);
       }
@@ -521,6 +532,74 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     },
   ];
 
+  const prevOffsetRef = useRef(currentOffset);
+  useEffect(() => {
+    if (prevOffsetRef.current !== currentOffset) {
+      setUndoStack([]);
+      setRedoStack([]);
+      prevOffsetRef.current = currentOffset;
+    }
+  }, [limit, currentOffset]);
+
+  const onUndo = useCallback(() => {
+    if (undoStack.length > 0) {
+      const lastAction = undoStack[undoStack.length - 1];
+      const sub = onUndoAction(lastAction, true);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setUndoStack(undoStack.slice(0, undoStack.length - 1));
+      setRedoStack((prevState) => [...prevState, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const onRedo = useCallback(() => {
+    if (redoStack.length > 0) {
+      const lastAction = redoStack[redoStack.length - 1];
+      const sub = onRedoAction(lastAction, true);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+      setRedoStack(redoStack.slice(0, redoStack.length - 1));
+      setUndoStack((prevState) => [...prevState, lastAction]);
+    }
+  }, [undoStack, redoStack]);
+
+  const onMergeClick = useCallback(
+    (index) => {
+      const selectionStart = getSelectionStart(index, true);
+      const targetSelectionStart = getTargetSelectionStart(index, true);
+
+      setUndoStack((prevState) => [
+        ...prevState,
+        {
+          type: "merge",
+          index: index,
+          selectionStart,
+          targetSelectionStart,
+        },
+      ]);
+      setRedoStack([]);
+
+      const sub = onMerge(index, true);
+      dispatch(setSubtitles(sub, C.SUBTITLES));
+    },
+    [limit, currentOffset]
+  );
+
+  const onSplitClick = useCallback(() => {
+    setUndoStack((prevState) => [
+      ...prevState,
+      {
+        type: "split",
+        index: currentIndexToSplitTextBlock,
+        selectionStart,
+      },
+    ]);
+    setRedoStack([]);
+
+    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, true, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    // saveTranscriptHandler(false, true, sub);
+
+  }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
   return (
     <>
       <ShortcutKeys shortcuts={shortcuts} />
@@ -545,6 +624,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
+            undoStack={undoStack}
+            redoStack={redoStack}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            currentIndex={currentIndex}
+            onMergeClick={onMergeClick}
+            onSplitClick={onSplitClick}
+            showPopOver={showPopOver}
           />
         </Grid>
 
@@ -626,8 +713,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                         <IconButton
                           className={classes.optionIconBtn}
                           style={{marginRight:"20px", marginLeft:"20px"}}
-                          // disabled={true}
-                          // onClick={() => handleReGenerateTranslation(index)}
+                          onClick={() => changeTranscriptHandler(null, index, "retranslate")}
                         >
                           <LoopIcon className={classes.rightPanelSvg} />
                         </IconButton>
@@ -733,6 +819,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                         width: "100%",
                       }}
                       onMouseUp={(e) => onMouseUp(e, index)}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          setShowPopOver(false);
+                        }, 200);
+                      }}
                       style={{ fontSize: fontSize }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
@@ -744,6 +835,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             ref={(el) => (textboxes.current[index] = el)}
                             rows={item.transcription_text ? 4 : 6}
+                            onBlur={() => {
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200);
+                            }}
                             disabled={isDisabled(index)}
                             {...props}
                           />
@@ -784,6 +880,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                           );
                         }}
                         value={item.text}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200);
+                        }}
                         disabled={isDisabled(index)}
                       />
                       <span
