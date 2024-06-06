@@ -110,11 +110,32 @@ export const addSubtitleBox = (index) => {
   return copySub;
 };
 
-export const onMerge = (index) => {
+export const onMerge = (index, votr=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const existingsourceData = [...subtitles];
 
+  if(votr){
+  existingsourceData.splice(
+    index,
+    2,
+    newSub({
+      id: existingsourceData[index].id,
+      start_time: existingsourceData[index].start_time,
+      end_time: existingsourceData[index + 1].end_time,
+      time_difference: (parseFloat(existingsourceData[index].time_difference) + parseFloat(existingsourceData[index+1].time_difference)).toFixed(3),
+      text: `${existingsourceData[index].text} ${
+        existingsourceData[index + 1].text
+      }`,
+      transcription_text: `${existingsourceData[index].transcription_text} ${
+        existingsourceData[index + 1].transcription_text
+      }`,
+      audio:existingsourceData[index].audio,
+      audio_speed: existingsourceData[index].audio_speed,
+      blobUrl: existingsourceData[index].blobUrl,
+    })
+  );
+  }else{
   existingsourceData.splice(
     index,
     2,
@@ -131,6 +152,7 @@ export const onMerge = (index) => {
       speaker_id: "",
     })
   );
+  }
 
   return existingsourceData;
 };
@@ -150,6 +172,7 @@ export const onSplit = (
   timings = null,
   targetSelectionStart = null,
   translateSplit = false,
+  votr=false,
 ) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
@@ -158,16 +181,31 @@ export const onSplit = (
   const targetTextBlock = subtitles[currentIndex];
   const index = hasSub(subtitles[currentIndex], subtitles);
 
-  const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
-  const text2 = targetTextBlock.text.slice(selectionStart).trim();
-
+  let text1, text2, targetText1, targetText2;
+  if(votr){
+    text1 = targetTextBlock.transcription_text.slice(0, selectionStart).trim();
+    text2 = targetTextBlock.transcription_text.slice(selectionStart).trim();
+  }else{
+    text1 = targetTextBlock.text.slice(0, selectionStart).trim();
+    text2 = targetTextBlock.text.slice(selectionStart).trim();  
+  }
+  
   if(text1 && text2){
-    const targetText1 = translateSplit ? targetTextBlock.target_text : targetSelectionStart
-      ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
+    if(votr){
+      targetText1 = translateSplit ? targetTextBlock.text : targetSelectionStart
+      ? targetTextBlock.text.slice(0, targetSelectionStart).trim()
       : null;
-    const targetText2 = translateSplit ? " " : targetSelectionStart
-      ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
-      : null;
+      targetText2 = translateSplit ? " " : targetSelectionStart
+        ? targetTextBlock.text.slice(targetSelectionStart).trim()
+        : null;
+    }else{
+      targetText1 = translateSplit ? targetTextBlock.target_text : targetSelectionStart
+        ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
+        : null;
+      targetText2 = translateSplit ? " " : targetSelectionStart
+        ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
+        : null;
+    }
 
     if (
       !text1 ||
@@ -182,7 +220,7 @@ export const onSplit = (
     if (!timings) {
       const splitDuration = (
         targetTextBlock.duration *
-        (selectionStart / targetTextBlock.text.length)
+        (selectionStart / targetTextBlock.transcription_text.length)
       ).toFixed(3);
 
       if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
@@ -191,6 +229,42 @@ export const onSplit = (
       middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
     }
 
+    if(votr){
+    copySub.splice(
+      index,
+      0,
+      newSub({
+        start_time: middleTime
+          ? subtitles[currentIndex].start_time
+          : timings[0].start,
+        end_time: middleTime ?? timings[0].end,
+        time_difference: (DT.t2d(middleTime)-DT.t2d(targetTextBlock.start_time)).toFixed(3),
+        text: targetText1,
+        transcription_text: text1,
+        audio:targetTextBlock.audio,
+        audio_speed: targetTextBlock.audio_speed,
+        blobUrl: targetTextBlock.blobUrl,
+      })
+    );
+
+    copySub.splice(
+      index + 1,
+      0,
+      newSub({
+        start_time: middleTime ?? timings[1].start ?? timings[0].end,
+        end_time:
+          middleTime || !timings[1].end
+            ? subtitles[currentIndex].end_time
+            : timings[1].end,
+        time_difference: (DT.t2d(targetTextBlock.end_time)-DT.t2d(middleTime)).toFixed(3),
+        text: targetText2,
+        transcription_text: text2,
+        audio:targetTextBlock.audio,
+        audio_speed: targetTextBlock.audio_speed,
+        blobUrl: targetTextBlock.blobUrl,
+      })
+    );
+    }else{
     copySub.splice(
       index,
       0,
@@ -219,6 +293,7 @@ export const onSplit = (
         speaker_id: "",
       })
     );
+    }
   }
   return copySub;
 };
@@ -316,7 +391,7 @@ export const placementMenu = [
   { label: "Bottom", mode: "bottom" },
 ];
 
-export const onUndoAction = (lastAction) => {
+export const onUndoAction = (lastAction, votr=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const { type, index, selectionStart, targetSelectionStart, timings, data } =
@@ -325,12 +400,12 @@ export const onUndoAction = (lastAction) => {
   switch (type) {
     case "merge":
       return (
-        onSplit(index, selectionStart, timings, targetSelectionStart) ||
+        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr) ||
         subtitles
       );
 
     case "split":
-      return onMerge(index) || subtitles;
+      return onMerge(index, votr) || subtitles;
 
     case "delete":
       const copySub = copySubs();
@@ -345,18 +420,18 @@ export const onUndoAction = (lastAction) => {
   }
 };
 
-export const onRedoAction = (lastAction) => {
+export const onRedoAction = (lastAction, votr=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const { type, index, selectionStart, targetSelectionStart, timings } =
     lastAction;
 
   switch (type) {
     case "merge":
-      return onMerge(index) || subtitles;
+      return onMerge(index, votr) || subtitles;
 
     case "split":
       return (
-        onSplit(index, selectionStart, timings, targetSelectionStart) ||
+        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr) ||
         subtitles
       );
 
@@ -429,14 +504,22 @@ export const isPlaying = (player) => {
   );
 };
 
-export const getSelectionStart = (index) => {
+export const getSelectionStart = (index, votr=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  return subtitles[index].text.length;
+  if(votr){
+    return subtitles[index].transcription_text.length;
+  }else{
+    return subtitles[index].text.length;
+  }
 };
 
-export const getTargetSelectionStart = (index) => {
+export const getTargetSelectionStart = (index, votr=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  return subtitles[index].target_text.length;
+  if(votr){
+    return subtitles[index].text.length;
+  }else{
+    return subtitles[index].target_text.length;
+  }
 };
 
 export const getTimings = (index) => {

@@ -661,7 +661,6 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
             handleReGenerateTranslation={handleReGenerateTranslation}
-            showSplit={true}
             showPopOver={showPopOver}
             onSplitClick={onSplitClick}
           />
