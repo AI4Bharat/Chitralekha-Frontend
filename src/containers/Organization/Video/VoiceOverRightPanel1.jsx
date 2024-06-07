@@ -643,7 +643,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                 className={isDisabled(index) ? classes.disabledCard : ""}
                 style={{
                   padding: "5px 0",
-                  borderBottom: "1px solid grey",
+                  // borderBottom: "1px solid grey",
                   backgroundColor: "white"
                 }}
                 id={`container-${index}`}

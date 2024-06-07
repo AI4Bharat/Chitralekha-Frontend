@@ -678,7 +678,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                 id={`sub_${index}`}
                 style={{
                   padding: "0",
-                  borderBottom: "1px solid lightgray",
+                  // borderBottom: "1px solid lightgray",
                   backgroundColor: "white",
                   display: "flex"
                 }}
