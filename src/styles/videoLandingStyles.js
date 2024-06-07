@@ -470,9 +470,9 @@ const VideoLandingStyle = makeStyles({
     fontWeight: "400",
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
+    border:"none",
     borderRadius: "4px",
-    borderColor: "#ffffff",
-    outlineColor: "rgba(44,39,153,0.9)",
+    outline:"none",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
     width: "95.5%",
@@ -480,13 +480,18 @@ const VideoLandingStyle = makeStyles({
     "&::selection": {
     //  backgroundColor: "#8ebf42",
       backgroundColor: "#808080"
-    }
+    },
+    "&:hover, &:focus": {
+      backgroundColor: "rgba(214, 234, 248, 0.4)"
+    },
   },
 
   boxHighlight: {
     backgroundColor: "rgba(214, 234, 248, 0.4)",
-    border: "1px solid rgb(44,39,153)",
+    // border: "1px solid rgb(44,39,153)",
     color: "#000 !important",
+    border: "2.5px solid rgba(44,39,153,0.9) !important",
+    borderRadius: "4px",
   },
 
   wordCount: {
@@ -517,16 +522,21 @@ const VideoLandingStyle = makeStyles({
     fontWeight: "400",
     lineHeight: "1.4375em",
     color: "rgba(0, 0, 0, 0.87)",
+    border: "none",
     borderRadius: "4px",
-    borderColor: "#616A6B",
-    outlineColor: "#2C2799",
+    // outlineColor: "#2C2799",
+    // borderColor: "#ffffff",
+    outline:"none",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
 
     "&::selection": {
     //  backgroundColor: "#8ebf42",
       backgroundColor: "#808080"
-    }
+    },
+    "&:hover, &:focus": {
+      backgroundColor: "rgba(214, 234, 248, 0.4)"
+    },
   },
 
   videoPlayerParent: {
