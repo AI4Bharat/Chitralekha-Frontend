@@ -213,9 +213,6 @@ const SettingsButtonComponent = ({
 
           {taskData?.task_type?.includes("TRANSLATION") && !taskData?.task_type?.includes("VOICEOVER") && (
              <>
-             {apiInProgress ?
-             <CircularProgress size={35} style={{margin:"auto 6px auto 0px", padding:"0"}}/>
-             :
              <Tooltip title="Regenerate Translation" placement="bottom">
               <IconButton
                 className={classes.rightPanelBtnGrp}
@@ -223,11 +220,11 @@ const SettingsButtonComponent = ({
                 sx={{
                   "&.Mui-disabled": { backgroundColor: "lightgray" },
                 }}
+                disabled={apiInProgress}
               >
                 <LoopIcon className={classes.rightPanelSvg} />
               </IconButton>
             </Tooltip>
-            }
             </>
           )}
           <Divider orientation="vertical" className={classes.rightPanelDivider} />
