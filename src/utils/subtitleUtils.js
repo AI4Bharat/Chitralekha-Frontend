@@ -181,7 +181,7 @@ export const onSplit = (
   const targetTextBlock = subtitles[currentIndex];
   const index = hasSub(subtitles[currentIndex], subtitles);
 
-  let text1, text2, targetText1, targetText2;
+  let text1, text2, targetText1, targetText2, splitDuration;
   if(votr){
     text1 = targetTextBlock.transcription_text.slice(0, selectionStart).trim();
     text2 = targetTextBlock.transcription_text.slice(selectionStart).trim();
@@ -218,10 +218,17 @@ export const onSplit = (
     let middleTime = null;
 
     if (!timings) {
-      const splitDuration = (
-        targetTextBlock.duration *
-        (selectionStart / targetTextBlock.transcription_text.length)
-      ).toFixed(3);
+      if(votr){
+        splitDuration = (
+          targetTextBlock.duration *
+          (selectionStart / targetTextBlock.transcription_text.length)
+        ).toFixed(3);
+      }else{
+        splitDuration = (
+          targetTextBlock.duration *
+          (selectionStart / targetTextBlock.text.length)
+        ).toFixed(3);
+      }
 
       if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
         return subtitles;
