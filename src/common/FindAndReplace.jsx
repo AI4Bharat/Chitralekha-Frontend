@@ -54,9 +54,9 @@ const FindAndReplace = (props) => {
   const transliterationLanguage = !taskType?.includes("TRANSCRIPTION")
     ? transliterationLang?.target_language
     : transliterationLang?.src_language;
-  useEffect(() => {
-    setSubtitlesData(sourceData);
-  }, [sourceData, subtitleDataKey]);
+  // useEffect(() => {
+  //   setSubtitlesData(sourceData);
+  // }, [sourceData, subtitleDataKey]);
 
   const resetComponentValue = () => {
     setFindValue("");
@@ -102,7 +102,7 @@ const FindAndReplace = (props) => {
     if (showFindReplaceModel) {
       fetchPreviewData();
     }
-  }, [fetchPreviewData, showFindReplaceModel]);
+  }, [showFindReplaceModel]);
 
  
 
@@ -137,46 +137,44 @@ const FindAndReplace = (props) => {
       .querySelector(`#sub_${foundIndices[currentFound + 1]}`)
       .scrollIntoView(true, { block: "start" });
   };
+const onReplaceClick = () => {
+  const currentSubtitleSource = [...previewdata];
+  const updatedSubtitleData = [];
 
-  const onReplaceClick = () => {
-    const currentSubtitleSource = [...previewdata];
-    const updatedSubtitleData = [];
+  currentSubtitleSource.forEach((ele, index) => {
+    if (foundIndices[currentFound] === index) {
+      let textToReplace;
+      const lowerCaseFindValue = findValue.trim().toLowerCase();
+      const lowerCaseReplaceValue = replaceValue.trim();
+      const lowerCaseText = ele[subtitleDataKey].toLowerCase();
 
-    currentSubtitleSource.forEach((ele, index) => {
-      if (foundIndices[currentFound] === index) {
-        let textToReplace;
-
-        if (replaceFullWord) {
-          if (transliterationLanguage === "en") {
-            textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
-              replaceValue.trim()
-            );
-          } else {
-            textToReplace = ele[subtitleDataKey]
-              .split(findValue.trim())
-              .join(replaceValue.trim());
-          }
+      if (replaceFullWord) {
+        if (transliterationLanguage === "en") {
+          const regex = new RegExp(`\\b${lowerCaseFindValue}\\b`, "g");
+          textToReplace = lowerCaseText.replace(regex, lowerCaseReplaceValue);
+          console.log(textToReplace);
         } else {
-          textToReplace = ele[subtitleDataKey].replace(
-            new RegExp(findValue.trim(), "gi"),
-            replaceValue.trim()
-          );
+          textToReplace = lowerCaseText
+            .split(lowerCaseFindValue)
+            .join(lowerCaseReplaceValue);
         }
-
-        ele[subtitleDataKey] = textToReplace;
+      } else {
+        const regex = new RegExp(lowerCaseFindValue, "g");
+        textToReplace = lowerCaseText.replace(regex, lowerCaseReplaceValue);
       }
 
-      updatedSubtitleData.push(ele);
-    });
+      ele[subtitleDataKey] = textToReplace;
+    }
 
-    setSubtitlesData(updatedSubtitleData);
-    onReplacementDone(updatedSubtitleData);
-    // handleCloseModel();
-  };
+    updatedSubtitleData.push(ele);
+  });
 
+  setPreviewdata(updatedSubtitleData);
+  onReplacementDone(updatedSubtitleData);
+  // handleCloseModel();
+};
   const onReplaceAllClick = () => {
-    const currentSubtitleSource = [...subtitlesData];
+    const currentSubtitleSource = [...previewdata];
     const updatedSubtitleData = [];
 
     currentSubtitleSource.forEach((ele, index) => {
@@ -185,14 +183,15 @@ const FindAndReplace = (props) => {
 
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
+            console.log(ele[subtitleDataKey]);
             textToReplace = ele[subtitleDataKey].replace(
               new RegExp(`\\b${findValue.trim()}\\b`, "g"),
               replaceValue.trim()
             );
           } else {
             textToReplace = ele[subtitleDataKey]
-              .split(findValue.trim())
-              .join(replaceValue.trim());
+            .split(findValue.trim())
+            .join(replaceValue.trim());
           }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
@@ -206,10 +205,12 @@ const FindAndReplace = (props) => {
       updatedSubtitleData.push(ele);
     });
 
-    setSubtitlesData(updatedSubtitleData);
+    setPreviewdata(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
   };
+  console.log(subtitleDataKey,previewdata);
+
 
   return (
     <>
