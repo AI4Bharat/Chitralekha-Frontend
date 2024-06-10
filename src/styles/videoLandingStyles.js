@@ -390,7 +390,7 @@ const VideoLandingStyle = makeStyles({
     height: "fit-content",
     width: "fit-content",
     "&:disabled": {
-      background: "grey",
+      background: "lightgray",
     },
     "&:hover": {
       // backgroundColor: "#fff",

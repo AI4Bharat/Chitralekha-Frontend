@@ -706,19 +706,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
-                    {apiInProgress ?
-                      <CircularProgress size={35} style={{margin:"0 20px", padding:"0"}}/>
-                      :
-                      <Tooltip title="Regenerate Translation" placement="bottom">
-                        <IconButton
-                          className={classes.optionIconBtn}
-                          style={{marginRight:"20px", marginLeft:"20px"}}
-                          onClick={() => changeTranscriptHandler(null, index, "retranslate")}
-                        >
-                          <LoopIcon className={classes.rightPanelSvg} />
-                        </IconButton>
-                      </Tooltip>
-                    }
+                    <Tooltip title="Regenerate Translation" placement="bottom">
+                      <IconButton
+                        className={classes.optionIconBtn}
+                        style={{marginRight:"20px", marginLeft:"20px"}}
+                        onClick={() => changeTranscriptHandler(null, index, "retranslate")}
+                        disabled={apiInProgress}
+                      >
+                        <LoopIcon className={classes.rightPanelSvg} />
+                      </IconButton>
+                    </Tooltip>
                     <div>
                     <TimeBoxes
                       handleTimeChange={handleTimeChange}
@@ -733,19 +730,18 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                       type={"endTime"}
                     />
                     </div>
-                    {taskData.source_type === "Machine Generated" ? apiInProgress ?
-                      <CircularProgress size={35} style={{margin:"0 20px", padding:"0"}}/>
-                      : 
-                        <Tooltip title="Get Updated Audio" placement="bottom">
-                          <IconButton
-                            className={classes.optionIconBtn}
-                            onClick={() => changeTranscriptHandler(null, index, "audio")}
-                            style={{marginRight:"20px", marginLeft:"20px"}}
-                          >
-                            <TaskAltIcon className={classes.rightPanelSvg} />
-                          </IconButton>
-                        </Tooltip>
-                    :<></>}
+                    {taskData.source_type === "Machine Generated" &&
+                    <Tooltip title="Get Updated Audio" placement="bottom">
+                      <IconButton
+                        className={classes.optionIconBtn}
+                        onClick={() => changeTranscriptHandler(null, index, "audio")}
+                        style={{marginRight:"20px", marginLeft:"20px"}}
+                        disabled={apiInProgress}
+                      >
+                        <TaskAltIcon className={classes.rightPanelSvg} />
+                      </IconButton>
+                    </Tooltip>
+                    }
                     </div>
                     <Box
                       sx={{
