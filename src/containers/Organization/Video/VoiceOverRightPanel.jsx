@@ -49,6 +49,7 @@ import {
   setTotalSentences,
   setSnackBar,
 } from "redux/actions";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
 const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const { taskId } = useParams();
@@ -503,6 +504,12 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     },
   ];
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndexToSplitTextBlock, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndexToSplitTextBlock, limit]);
+
   return (
     <>
       <ShortcutKeys shortcuts={shortcuts} />
@@ -527,6 +534,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
+            expandTimestamp={expandTimestamp}
           />
         </Grid>
 
