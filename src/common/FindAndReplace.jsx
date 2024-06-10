@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
+import MenuItem from '@mui/material/MenuItem';
 
 //Styles
 import { ProjectStyle } from "styles";
@@ -24,6 +25,11 @@ import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import C from "redux/constants";
 import { setSubtitles } from "redux/actions";
+import Menu from '@mui/material/Menu';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { styled } from '@mui/material/styles';
+
+
 
 const FindAndReplace = (props) => {
   const classes = ProjectStyle();
@@ -42,6 +48,8 @@ const FindAndReplace = (props) => {
   const [foundIndices, setFoundIndices] = useState([]);
   const [currentFound, setCurrentFound] = useState();
   const [replaceFullWord, setReplaceFullWord] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+
 
   const onReplacementDone = (updatedSource) => {
     dispatch(setSubtitles(updatedSource, C.SUBTITLES));
@@ -173,6 +181,70 @@ const FindAndReplace = (props) => {
     // handleCloseModel();
   };
 
+  
+    const StyledMenu = styled((props) => (
+      <Menu
+        elevation={3}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        {...props}
+      />
+    ))(({ theme }) => ({
+      '& .MuiPaper-root': {
+        borderRadius: 6,
+        marginTop: theme.spacing(1),
+        minWidth: 100,
+
+
+      },
+    }));
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const onReplaceInAllPages = () => {
+    const currentSubtitleSource = [...subtitlesData];
+    const updatedSubtitleData = [];
+  
+    currentSubtitleSource.forEach((ele) => {
+      let textToReplace;
+  
+      if (replaceFullWord) {
+        if (transliterationLanguage === "en") {
+          textToReplace = ele[subtitleDataKey].replace(
+            new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+            replaceValue.trim()
+          );
+        } else {
+          textToReplace = ele[subtitleDataKey]
+            .split(findValue.trim())
+            .join(replaceValue.trim());
+        }
+      } else {
+        textToReplace = ele[subtitleDataKey].replace(
+          new RegExp(findValue.trim(), "gi"),
+          replaceValue.trim()
+        );
+      }
+  
+      ele[subtitleDataKey] = textToReplace;
+      updatedSubtitleData.push(ele);
+    });
+  
+    setSubtitlesData(updatedSubtitleData);
+    onReplacementDone(updatedSubtitleData);
+  };
+  const open = Boolean(anchorEl);
+
+
   return (
     <>
       <Tooltip title="Find/Replace" placement="bottom">
@@ -198,6 +270,7 @@ const FindAndReplace = (props) => {
             onClick={handleCloseModel}
             sx={{ marginLeft: "auto" }}
           >
+
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -311,8 +384,9 @@ const FindAndReplace = (props) => {
                 alignItems={"center"}
                 paddingY={3}
               >
-                <Button
+                {/* <Button
                   variant="contained"
+                  key={0}
                   className={classes.findBtn}
                   disabled={!replaceValue}
                   onClick={onReplaceClick}
@@ -322,13 +396,58 @@ const FindAndReplace = (props) => {
                 </Button>
                 <Button
                   variant="contained"
+                  key={1}
                   className={classes.findBtn}
                   disabled={!replaceValue}
                   onClick={onReplaceAllClick}
                   style={{ width: "auto" }}
                 >
-                  Replace All
+                  Replace on this page
                 </Button>
+
+                <Button
+                  variant="contained"
+                  key={2}
+                  className={classes.findBtn}
+                  disabled={!replaceValue}
+                  onClick={onReplaceInAllPages}
+                  style={{ width: "auto" }}
+                >
+                  Replace on all pages
+                </Button> */}
+                <Button
+                  sx={{ inlineSize: "max-content", p: 2, borderRadius: 3, ml: 2,width:"300px" }}
+                  id="demo-customized-button"
+                  variant="contained"
+                  disabled={!replaceValue}
+                  onClick={handleClick}
+                  endIcon={<KeyboardArrowDownIcon />}
+                >
+                  Replace Word
+                </Button>
+                <StyledMenu
+                  sytle={{ width: "20px" }}
+                  id="demo-customized-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'demo-customized-button',
+                  }}
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+
+                >
+                <MenuItem  disabled={!replaceValue}
+                  onClick={onReplaceClick}>
+                  Replace
+                </MenuItem>
+                <MenuItem  disabled={!replaceValue}
+                  onClick={onReplaceAllClick}>
+                  Replace on this page
+                </MenuItem>
+                <MenuItem onClick={onReplaceInAllPages} >
+                  Replace on all pages
+                </MenuItem>
+              </StyledMenu>
               </Grid>
             </Grid>
 
