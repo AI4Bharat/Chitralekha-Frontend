@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef, memo } from "react";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import { configs, endpoints } from "config";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -58,10 +59,10 @@ import {
   setSnackBar,
   setSubtitles,
 } from "redux/actions";
+import { failTranscriptionInfoColumns } from "config";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
-import { failInfoColumns } from "config";
-
-const RightPanel = ({ currentIndex, setCurrentIndex }) => {
+const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -143,7 +144,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
           case "GET_TASK_FAIL_INFO":
             setOpenInfoDialog(true);
-            setTableDialogColumn(failInfoColumns.filter((col)=>col.name!='target_text'));
+            setTableDialogColumn(failTranscriptionInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
             break;
@@ -158,7 +159,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
             if (complete) {
               setOpenInfoDialog(true);
-              setTableDialogColumn(failInfoColumns.filter((col)=>col.name!='target_text'));
+              setTableDialogColumn(failTranscriptionInfoColumns);
               setTableDialogMessage(data.message);
               setTableDialogResponse(data.data);
             }
@@ -189,14 +190,18 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
     }
   }, [currentPage]);
 
-  useEffect(() => {
-    const subtitleScrollEle = document.getElementById("subTitleContainer");
-    subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
-      ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subTitleContainer");
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
 
-  const getPayload = (offset = currentOffset, lim = limit) => {
+  // if(subtitles)
+  //   {
+  //     console.log('all_sub',subtitles)
+  //   }
+  const getPayload = (offset = currentOffset, lim) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
@@ -365,6 +370,12 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex]);
+
   const changeTranscriptHandler = (event, index) => {
     const {
       target: { value },
@@ -519,7 +530,22 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
     return 0;
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayload(value, limit);
   };
 
@@ -596,6 +622,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             subsuper={subsuper}
+            currentSubs={currentSubs}
             setsubsuper={setsubsuper}
             index={index}
             currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}
@@ -615,17 +642,17 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             handleSubscript={handleSubscript}
             handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
-            showSplit={true}
             handleInfoButtonClick={handleInfoButtonClick}
             currentIndex={currentIndex}
             onMergeClick={onMergeClick}
             onDelete={onDelete}
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
+            expandTimestamp={expandTimestamp}
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box
@@ -638,9 +665,20 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                   display: "flex"
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%" }}>
-                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.start_time}</div>
-                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.end_time}</div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%"}}>
+                  <TimeBoxes
+                     handleTimeChange={handleTimeChange}
+                     time={item.start_time}
+                     index={index}
+                     type={"startTime"}
+                   />
+                  <br/>
+                  <TimeBoxes
+                     handleTimeChange={handleTimeChange}
+                     time={item.end_time}
+                     index={index}
+                     type={"endTime"}
+                   />
                 </div>
 
                 <CardContent
@@ -649,7 +687,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                   onClick={() => {
                     if (player) {
                       player.pause();
-                      if (player.duration >= item.startTime) {
+                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
                         player.currentTime = item.startTime + 0.001;
                       }
                     }
@@ -657,6 +695,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {
@@ -689,6 +728,9 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
                           />
+                          <span id="charNum" className={classes.wordCount}>
+                            {targetLength(index)} 
+                          </span>
                         </div>
                       )}
                     />
@@ -706,7 +748,6 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                         }`}
                         style={{
                           fontSize: fontSize,
-                          height: "120px",
                         }}
                         rows={2}
                         ref={(el) => (textboxes.current[index] = el)}
@@ -716,6 +757,9 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                           }, 200);
                         }}
                       />
+                      <span id="charNum" className={classes.wordCount}>
+                         {targetLength(index)} 
+                      </span>
                     </div>
                   )}
                 </CardContent>
@@ -759,11 +803,11 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
         <Box
           className={classes.paginationBox}
-          style={{
-            ...(!xl && {
-              bottom: "-11%",
-            }),
-          }}
+          // style={{
+          //   ...(!xl && {
+          //     bottom: "-11%",
+          //   }),
+          // }}
         >
           <Pagination
             range={getSubtitleRangeTranscript()}

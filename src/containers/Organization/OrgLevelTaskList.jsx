@@ -54,16 +54,18 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
+import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
 
 // Config
-import { org_ids } from "config";
+import { specialOrgIds } from "config";
 
 //Apis
 import {
   APITransport,
+  BulkExportVoiceoverTasksAPI,
   BulkTaskExportAPI,
   CompareTranscriptionSource,
   ComparisionTableAPI,
@@ -78,8 +80,8 @@ import {
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
-  FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -97,7 +99,8 @@ import {
 import moment from "moment";
 
 const OrgLevelTaskList = () => {
-  const user_org_id = getLocalStorageData("userData").organization.id;
+  const userOrgId = getLocalStorageData("userData").organization.id;
+
   const [desc, setShowDesc] = useState(false);
   const [org_id, setId] = useState();
 
@@ -121,6 +124,8 @@ const OrgLevelTaskList = () => {
   const [currentSelectedTasks, setCurrentSelectedTasks] = useState([]);
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
 
+  const [orgTaskColDisplayState, setOrgTaskColDisplayState] = useState({});
+
   //Dialogs
   const [openDialogs, setOpenDialogs] = useState({
     exportDialog: false,
@@ -131,6 +136,7 @@ const OrgLevelTaskList = () => {
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
+    taskType: "",
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -152,9 +158,9 @@ const OrgLevelTaskList = () => {
   const [searchAnchor, setSearchAnchor] = useState(null);
 
   const [exportTypes, setExportTypes] = useState({
-    transcription: "srt",
-    translation: "srt",
-    voiceover: "mp4",
+    transcription: ["srt"],
+    translation: ["srt"],
+    voiceover: "mp3",
     speakerInfo: "false",
     bgMusic: "false",
   });
@@ -165,7 +171,6 @@ const OrgLevelTaskList = () => {
   const orgId = userData?.organization?.id;
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector((state) => state.getPreviewData?.data);
 
   //Fiters and Search
   const orgSelectedFilters = useSelector(
@@ -185,12 +190,49 @@ const OrgLevelTaskList = () => {
   );
 
   useEffect(() => {
+    const displayCols = {};
+    const displayColsLocalStorage = JSON.parse(
+      localStorage.getItem("orgTaskColDisplayFilter")
+    );
+    const allCols = [
+      ...orgTaskListColumns.map((ele) => ele.name),
+      "id",
+      "video_name",
+      "user",
+      "description",
+      "created_at",
+      "updated_at",
+      "Action",
+    ];
+    const defaultDisabledDisplayCols = [
+      "description",
+      "created_at",
+      "updated_at",
+      "video_name",
+    ];
+    allCols.forEach((ele) => {
+      if (displayColsLocalStorage && ele in displayColsLocalStorage) {
+        displayCols[ele] = displayColsLocalStorage[ele];
+      } else if (defaultDisabledDisplayCols.includes(ele)) {
+        displayCols[ele] = false;
+      } else {
+        displayCols[ele] = true;
+      }
+    });
+    setOrgTaskColDisplayState(displayCols);
+    localStorage.setItem(
+      "orgTaskColDisplayFilter",
+      JSON.stringify(displayCols)
+    );
+  }, []);
+
+  useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
     if (!progress) {
       if (success) {
         switch (apiType) {
           case "EXPORT_VOICEOVER_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
+            exportVoiceover(data, currentTaskDetails, exportTypes);
             handleDialogClose("exportDialog");
             break;
 
@@ -227,6 +269,7 @@ const OrgLevelTaskList = () => {
             break;
 
           case "GET_TASK_FAIL_INFO":
+            dispatch(setSnackBar({ open: false }));
             handleDialogOpen("tableDialog");
             setTableDialogColumn(failInfoColumns);
             setTableDialogMessage(data.message);
@@ -250,6 +293,14 @@ const OrgLevelTaskList = () => {
           setDeleteMsg(data.message);
           setDeleteResponse(data.error_report);
         }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn([]);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(null);
+        }
       }
     }
 
@@ -269,6 +320,12 @@ const OrgLevelTaskList = () => {
       description: orgSearchValue?.description,
       assignee: orgSearchValue?.user,
     };
+
+    const taskDescriptionLocalStore=JSON.parse(localStorage.getItem('taskSearchFilters'))?.descriptionOrgLevel
+    if (!search["description"] && taskDescriptionLocalStore) {
+      search["description"] = taskDescriptionLocalStore
+      orgSearchValue["description"]=taskDescriptionLocalStore
+    }
 
     const filter = {
       task_type: orgSelectedFilters?.taskType,
@@ -361,10 +418,12 @@ const OrgLevelTaskList = () => {
   const handleTranscriptExport = async () => {
     const { id: taskId } = currentTaskDetails;
     const { transcription, speakerInfo } = exportTypes;
+    console.log(transcription)
 
+    transcription.map(async (transcript)=>{
     const apiObj = new exportTranscriptionAPI(
       taskId,
-      transcription,
+      transcript,
       speakerInfo
     );
     handleDialogClose("exportDialog");
@@ -378,7 +437,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, transcription, "transcription");
+        exportFile(resp, currentTaskDetails, transcript, "transcription");
       } else {
         const resp = await res.json();
 
@@ -398,14 +457,16 @@ const OrgLevelTaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const handleTranslationExport = async () => {
     const { id: taskId } = currentTaskDetails;
     const { translation, speakerInfo } = exportTypes;
+    console.log(translation)
 
-    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
+    translation.map(async (translate)=>{
+    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
@@ -417,7 +478,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, translation, "translation");
+        exportFile(resp, currentTaskDetails, translate, "translation");
       } else {
         const resp = await res.json();
 
@@ -437,7 +498,7 @@ const OrgLevelTaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
@@ -476,9 +537,6 @@ const OrgLevelTaskList = () => {
 
   const handlePreviewTask = async (id, taskType, targetlanguage) => {
     handleDialogOpen("previewDialog");
-
-    const taskObj = new FetchpreviewTaskAPI(id, taskType, targetlanguage);
-    dispatch(APITransport(taskObj));
   };
 
   const handleShowSearch = (col, event) => {
@@ -550,6 +608,14 @@ const OrgLevelTaskList = () => {
     );
   };
 
+  const updateLocalStorageDisplayCols = (changedColumn, action) => {
+    const data = JSON.parse(localStorage.getItem("orgTaskColDisplayFilter"));
+    const showStatus = action === "add" ? true : false;
+    data[changedColumn] = showStatus;
+    setOrgTaskColDisplayState(data)
+    localStorage.setItem("orgTaskColDisplayFilter", JSON.stringify(data));
+  };
+
   const generateTranslationCall = async (id, taskStatus) => {
     if (taskStatus === "SELECTED_SOURCE") {
       const apiObj = new GenerateTranslationOutputAPI(id);
@@ -582,7 +648,7 @@ const OrgLevelTaskList = () => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
 
-    const { id, task_type, status, video, target_language } = selectedTask;
+    const { id, task_type, status } = selectedTask;
     setCurrentTaskDetails(selectedTask);
 
     switch (action) {
@@ -606,10 +672,10 @@ const OrgLevelTaskList = () => {
       case "Edit":
         if (task_type.includes("TRANSCRIPTION")) {
           navigate(`/task/${id}/transcript`);
-        } else if (task_type.includes("TRANSLATION")) {
-          generateTranslationCall(id, status);
-        } else {
+        } else if (task_type.includes("VOICEOVER")) {
           navigate(`/task/${id}/voiceover`);
+        } else {
+          generateTranslationCall(id, status);
         }
         break;
 
@@ -622,8 +688,13 @@ const OrgLevelTaskList = () => {
         setIsBulkTaskDownload(false);
         break;
 
+      case "ExportVO":
+        handleDialogOpen("exportDialog", "VO");
+        setIsBulkTaskDownload(false);
+        break;
+
       case "Preview":
-        handlePreviewTask(video, task_type, target_language);
+        handlePreviewTask();
         break;
 
       case "Delete":
@@ -640,6 +711,11 @@ const OrgLevelTaskList = () => {
         dispatch(APITransport(apiObj));
         break;
 
+      case "Regenerate":
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
+        break;
+
       default:
         break;
     }
@@ -653,6 +729,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: orgTaskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -669,6 +746,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: orgTaskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -685,6 +763,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: orgTaskColDisplayState["user"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
@@ -710,14 +789,14 @@ const OrgLevelTaskList = () => {
       options: {
         filter: false,
         sort: false,
-        display: org_ids.includes(user_org_id)
+        display: specialOrgIds.includes(userOrgId)
           ? true
-          : orgColumnDisplay.description,
+          : orgTaskColDisplayState["description"],
         align: "center",
         canBeSearch: true,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: !org_ids.includes(user_org_id)
+        customBodyRender: !specialOrgIds.includes(userOrgId)
           ? renderTaskListColumnCell
           : (value, tableMeta) => {
               const { tableData: data, rowIndex } = tableMeta;
@@ -757,7 +836,7 @@ const OrgLevelTaskList = () => {
         filter: false,
         sort: false,
         canBeSorted: true,
-        display: orgColumnDisplay.created_at,
+        display: orgTaskColDisplayState["created_at"],
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -781,7 +860,7 @@ const OrgLevelTaskList = () => {
       label: "Updated At",
       options: {
         filter: false,
-        display: orgColumnDisplay.updated_at,
+        display: orgTaskColDisplayState["updated_at"],
         sort: false,
         canBeSorted: true,
         customHeadLabelRender: CustomTableHeader,
@@ -807,6 +886,7 @@ const OrgLevelTaskList = () => {
       label: "Actions",
       options: {
         filter: false,
+        display: orgTaskColDisplayState["Action"],
         sort: false,
         align: "center",
         setCellHeaderProps: () => ({
@@ -824,6 +904,18 @@ const OrgLevelTaskList = () => {
                 alignItems: "center",
               }}
             >
+              {(selectedTask?.task_type === "TRANSLATION_VOICEOVER_EDIT" && selectedTask?.status === "COMPLETE") &&
+                <Tooltip key="Export Voiceover" title="Export Voiceover" >
+                  <IconButton
+                    onClick={() =>
+                      handleActionButtonClick(tableMeta, "ExportVO")
+                    }
+                    color="primary"
+                  >
+                    <AudiotrackOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              }
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -850,7 +942,10 @@ const OrgLevelTaskList = () => {
       },
     };
 
-    const columns = [...getColumns(orgTaskListColumns), actionColumn];
+    const columns = [
+      ...getColumns(orgTaskListColumns, orgTaskColDisplayState),
+      actionColumn,
+    ];
     columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
     columns.splice(3, 0, createdAtColumn);
@@ -986,6 +1081,9 @@ const OrgLevelTaskList = () => {
       rowsSelected: rows,
       rowsPerPage: limit,
       count: totalCount,
+      onViewColumnsChange: (changedColumn, action) => {
+        updateLocalStorageDisplayCols(changedColumn, action);
+      },
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
@@ -1035,7 +1133,8 @@ const OrgLevelTaskList = () => {
     handleDialogClose("exportDialog");
     const { translation } = exportTypes;
 
-    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
+    translation.map(async (translate)=>{
+    const apiObj = new BulkTaskExportAPI(translate, selectedBulkTaskid);
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
         method: "GET",
@@ -1064,7 +1163,14 @@ const OrgLevelTaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
+  };
+
+  const handleBulkVoiceoverTaskDownload = async () => {
+    handleDialogClose("exportDialog");
+
+    const apiObj = new BulkExportVoiceoverTasksAPI(selectedBulkTaskid);
+    dispatch(APITransport(apiObj));
   };
 
   const handleExportRadioButtonChange = (event) => {
@@ -1078,14 +1184,41 @@ const OrgLevelTaskList = () => {
     }));
   };
 
+  const handleExportCheckboxChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    console.log(name,value)
+    let new_val=exportTypes[name]
+    console.log(new_val)
+    if (new_val.includes(value)){
+      new_val = new_val.filter(item => item !== value)
+    } else{
+      new_val.push(value)
+    }
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: new_val,
+    }));
+  }
+
   const handleExportSubmitClick = () => {
     if (isBulkTaskDownload) {
-      handleBulkTaskDownload();
+      const tasks = currentSelectedTasks.map((item) => item.task_type);
+
+      if (tasks.every((item) => item === "VOICEOVER_EDIT")) {
+        handleBulkVoiceoverTaskDownload();
+      } else {
+        handleBulkTaskDownload();
+      }
     } else {
       const { task_type: taskType } = currentTaskDetails;
 
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
+      } else if (openDialogs.taskType === "VO"){
+        exportVoiceoverTask();
       } else if (taskType?.includes("TRANSLATION")) {
         handleTranslationExport();
       } else {
@@ -1110,10 +1243,11 @@ const OrgLevelTaskList = () => {
     }));
   };
 
-  const handleDialogOpen = (key) => {
+  const handleDialogOpen = (key, taskType="") => {
     setOpenDialogs((prevState) => ({
       ...prevState,
       [key]: true,
+      taskType: taskType,
     }));
   };
 
@@ -1147,10 +1281,14 @@ const OrgLevelTaskList = () => {
         <ExportDialog
           open={openDialogs.exportDialog}
           handleClose={() => handleDialogClose("exportDialog")}
+          task_type={openDialogs.taskType}
           taskType={currentTaskDetails?.task_type}
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
+          handleExportCheckboxChange={handleExportCheckboxChange}
+          isBulkTaskDownload={isBulkTaskDownload}
+          currentSelectedTasks={currentSelectedTasks}
         />
       )}
 
@@ -1181,8 +1319,9 @@ const OrgLevelTaskList = () => {
         <PreviewDialog
           openPreviewDialog={openDialogs.previewDialog}
           handleClose={() => handleDialogClose("previewDialog")}
-          data={previewData}
-          task_type={currentTaskDetails?.task_type}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
         />
       )}
 
@@ -1255,6 +1394,7 @@ const OrgLevelTaskList = () => {
           message={tableDialogMessage}
           response={tableDialogResponse}
           columns={tableDialogColumn}
+          taskId={currentTaskDetails.id}
         />
       )}
     </>

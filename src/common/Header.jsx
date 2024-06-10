@@ -121,13 +121,13 @@ const Header = () => {
         navigate(`/profile/${userData?.id}`);
       },
     },
-    // {
-    //   name: "Change Password",
-    //   onClick: () => {
-    //     handleCloseUserMenu();
-    //     navigate(`/profile/${userData?.id}/change-password`);
-    //   },
-    // },
+    {
+      name: "My Glossary",
+      onClick: () => {
+        handleCloseUserMenu();
+        navigate(`/profile/${userData?.id}/my-glossary`);
+      },
+    },
     {
       name: "Logout",
       onClick: () => {
@@ -238,14 +238,14 @@ const Header = () => {
               </Grid>
 
               <Box className={classes.avatarBox}>
-                <IconButton
+                { userData?.role === "ADMIN" || userData?.role === "ORG_OWNER" || userData?.role === "PROJECT_MANAGER" ? <IconButton
                   onClick={() => navigate('/task-queue-status')}
                   className={`${classes.icon} help`}
                 >
-                  <Tooltip title="Task Queue Status">
+                  <Tooltip title="Task Queue Status">                    
                     <HourglassBottomIcon color="primary" className={classes.icon2}/>
                   </Tooltip>
-                </IconButton>
+                </IconButton> : "" }
 
                 <IconButton
                   onClick={handleOpenHelpMenu}

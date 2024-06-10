@@ -17,6 +17,10 @@ const CustomMenuComponent = ({
   contianer,
   subtitlePlacement,
   setSubtitlePlacement,
+  showSubtitles,
+  setShowSubtitles,
+  showTimeline,
+  setShowTimeline,
 }) => {
   const player = useSelector((state) => state.commonReducer.player);
 
@@ -79,6 +83,32 @@ const CustomMenuComponent = ({
             </div>
           </MenuItem>
         ))}
+        <MenuItem key="Show Subtitles">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Show Subtitles</span>
+              <input type="checkbox" checked={showSubtitles} onChange={() => {setShowSubtitles(!showSubtitles)}}/>
+            </div>
+          </MenuItem>
+          <MenuItem key="Show Timeline">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Show Timeline</span>
+              <input type="checkbox" checked={showTimeline} onChange={() => {setShowTimeline(!showTimeline)}}/>
+            </div>
+          </MenuItem>
       </Menu>
 
       <Menu

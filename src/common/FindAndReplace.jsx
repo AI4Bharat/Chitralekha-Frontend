@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import MenuItem from '@mui/material/MenuItem';
+import { configs, endpoints } from "config";
 
 //Styles
 import { ProjectStyle } from "styles";
@@ -18,23 +19,29 @@ import {
   Tooltip,
   IconButton,
   Switch,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import C from "redux/constants";
-import { setSubtitles } from "redux/actions";
+import { APITransport, setSubtitles } from "redux/actions";
 import Menu from '@mui/material/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { styled } from '@mui/material/styles';
+import { useParams } from "react-router-dom";
 
-
+import { useTheme, useMediaQuery } from '@mui/material';
+import Loader from "./Spinner";
+import UpdateAndReplaceWordsAPI from "redux/actions/api/Project/UpdateAndReplaceWords";
 
 const FindAndReplace = (props) => {
   const classes = ProjectStyle();
+  const theme = useTheme();
 
   const dispatch = useDispatch();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const { subtitleDataKey, taskType } = { ...props };
 
@@ -50,9 +57,15 @@ const FindAndReplace = (props) => {
   const [replaceFullWord, setReplaceFullWord] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
 
-
+  const [transliterate, setTransliterate] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [reloading, resetLoading] = useState(false);
+  const [reallloading, reallsetLoading] = useState(false);
+  const [findloading, findsetLoading] = useState(false);
+  const {taskId} = useParams();
   const onReplacementDone = (updatedSource) => {
-    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
+    dispatch(setSubtitles(updatedSource, C.SUBTITLES))
+
   };
   const transliterationLanguage = !taskType?.includes("TRANSCRIPTION")
     ? transliterationLang?.target_language
@@ -76,7 +89,21 @@ const FindAndReplace = (props) => {
     setShowFindReplaceModel(true);
   };
 
+  const SaveReplacedWords= ()=>{    
+    const payloadObj = new UpdateAndReplaceWordsAPI(
+      taskId,
+      transliterationLang.task_type,
+      findValue,
+      replaceValue,
+      replaceFullWord,
+      transliterationLang.src_language
+    )
+    dispatch(APITransport(payloadObj))
+  }
+
+ 
   const onFindClick = () => {
+    findsetLoading(true);
     const textToFind = findValue.toLowerCase().trim();
     const indexListInDataOfTextOccurence = [];
     subtitlesData.forEach((item, index) => {
@@ -90,7 +117,21 @@ const FindAndReplace = (props) => {
     if (indexListInDataOfTextOccurence?.length > 0) {
       setCurrentFound(0);
     }
+    setTimeout(() => {
+      findsetLoading(false);
+      // setShowLoading(false);
+    }, 500);
+
   };
+  useEffect(() => {
+    if (foundIndices.length > 0 && currentFound === 0) {
+      const scrollableElement = document.getElementById("subtitle_scroll_view");
+      scrollableElement
+        ?.querySelector(`#sub_${foundIndices[0]}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [currentFound, foundIndices]);
+  
 
   const previousOccurenceClick = () => {
     setCurrentFound(currentFound - 1);
@@ -109,6 +150,8 @@ const FindAndReplace = (props) => {
   };
 
   const onReplaceClick = () => {
+    resetLoading(true);
+
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
 
@@ -119,7 +162,7 @@ const FindAndReplace = (props) => {
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
               replaceValue.trim()
             );
           } else {
@@ -143,9 +186,15 @@ const FindAndReplace = (props) => {
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
+    setTimeout(() => {
+      resetLoading(false);
+      // setShowLoading(false);
+    }, 500);
   };
 
   const onReplaceAllClick = () => {
+    reallsetLoading(true);
+
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
 
@@ -156,7 +205,7 @@ const FindAndReplace = (props) => {
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
               replaceValue.trim()
             );
           } else {
@@ -179,8 +228,12 @@ const FindAndReplace = (props) => {
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
+    setTimeout(() => {
+      reallsetLoading(false);
+      // setShowLoading(false);
+    }, 500);
   };
-
+  const open = Boolean(anchorEl);
   
     const StyledMenu = styled((props) => (
       <Menu
@@ -238,12 +291,14 @@ const FindAndReplace = (props) => {
       ele[subtitleDataKey] = textToReplace;
       updatedSubtitleData.push(ele);
     });
-  
+    SaveReplacedWords();
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
   };
-  const open = Boolean(anchorEl);
-
+ 
+  // useEffect(()=>{
+  //   SaveReplacedWords()
+  // },[onReplaceInAllPages])
 
   return (
     <>
@@ -277,9 +332,9 @@ const FindAndReplace = (props) => {
 
         <DialogContent
           sx={{
-            overflow: "hidden",
+            overflowY: subtitlesData && subtitlesData[subtitleDataKey] == undefined ? "Hidden" : "auto",
             position: "unset",
-            overscrollBehavior: "none",
+            // overscrollBehavior: "none",
           }}
         >
           <Grid container flexDirection={"flex"} justifyContent="space-around">
@@ -293,12 +348,22 @@ const FindAndReplace = (props) => {
                 />
                 <Typography variant="body2">Full Word Replace</Typography>
               </Box>
+              <Box className={classes.matchTypeSwitch}>
+                <Typography variant="body2">Transliteration: OFF</Typography>
+                <Switch
+                  checked={transliterate}
+                  onChange={() => setTransliterate(!transliterate)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+                <Typography variant="body2">ON</Typography>
+              </Box>
 
               <IndicTransliterate
+                customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                 lang={transliterationLanguage}
                 value={findValue}
                 onChangeText={(text) => setFindValue(text)}
-                enabled={transliterationLanguage !== "en"}
+                enabled={transliterate && transliterationLanguage !== "en"}
                 className={classes.findReplaceTextbox}
                 renderComponent={(props) => (
                   <>
@@ -344,8 +409,8 @@ const FindAndReplace = (props) => {
                   onClick={onFindClick}
                   style={{ width: "auto" }}
                 >
-                  Find
-                </Button>
+                  {findloading ? <CircularProgress size={24} color="inherit"/> : "Find"}
+                  </Button>
                 {foundIndices?.length > 0 && (
                   <Button
                     variant="contained"
@@ -359,11 +424,12 @@ const FindAndReplace = (props) => {
               </Grid>
 
               <IndicTransliterate
+                customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                 lang={transliterationLanguage}
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}
                 disabled={!(foundIndices?.length > 0)}
-                enabled={transliterationLanguage !== "en"}
+                enabled={transliterate && transliterationLanguage !== "en"}
                 className={classes.findReplaceTextbox}
                 renderComponent={(props) => (
                   <>
@@ -392,8 +458,9 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceClick}
                   style={{ width: "auto" }}
                 >
-                  Replace
-                </Button>
+                  {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace"}
+                   {/* Replace */}
+                {/* </Button>
                 <Button
                   variant="contained"
                   key={1}
@@ -403,9 +470,11 @@ const FindAndReplace = (props) => {
                   style={{ width: "auto" }}
                 >
                   Replace on this page
-                </Button>
+                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace All"}
+                 {/* Replace All */}
+              
 
-                <Button
+                {/* <Button
                   variant="contained"
                   key={2}
                   className={classes.findBtn}
@@ -414,7 +483,7 @@ const FindAndReplace = (props) => {
                   style={{ width: "auto" }}
                 >
                   Replace on all pages
-                </Button> */}
+                </Button>    */}
                 <Button
                   sx={{ inlineSize: "max-content", p: 2, borderRadius: 3, ml: 2,width:"300px" }}
                   id="demo-customized-button"
@@ -453,16 +522,27 @@ const FindAndReplace = (props) => {
 
             <Grid
               item
+              xs={12}
               md={7}
               width={"100%"}
               textAlign={"-webkit-center"}
               height={window.innerHeight * 0.7}
-              sx={{ overflowY: "scroll" }}
+              sx={{ overflowY: "auto" }}
               paddingBottom={5}
               id={"subtitle_scroll_view"}
+              order={isSmallScreen ? 1 : 0}
             >
-              {subtitlesData?.map((el, i) => {
-                return (
+          {(!subtitlesData) && (
+                <div style={{
+                  position: 'relative',
+                  top: '50%',
+                  zIndex: 1,
+                  
+                }}>
+                  <Loader />
+                </div>
+              )} {!loading && 
+                subtitlesData?.map((el, i) => (
                   <Box
                     key={i}
                     id={`sub_${i}`}
@@ -487,10 +567,10 @@ const FindAndReplace = (props) => {
                   >
                     {el[subtitleDataKey]}
                   </Box>
-                );
-              })}
+                ))}
             </Grid>
           </Grid>
+
         </DialogContent>
       </Dialog>
     </>

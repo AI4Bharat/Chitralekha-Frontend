@@ -3,6 +3,9 @@ import FetchAdminLevelReportsAPI from "./api/Admin/AdminLevelReport";
 import FetchAllUsersAPI from "./api/Admin/FetchAllUsers";
 import FetchOrgOwnersAPI from "./api/Admin/FetchOrgOwners";
 import UpdateMemberPasswordAPI from "./api/Admin/UpdateMemberPassword";
+import CreateMemberAPI from "./api/Admin/CreateMember";
+import UpdateOnboardingFormAPI from "./api/Admin/UpdateOnboardingForm";
+import FetchOnboardingListAPI from "./api/Admin/FetchOnboardingList";
 
 //Organization APIs
 import AddOrganizationMemberAPI from "./api/Organization/AddOrganizationMember";
@@ -83,6 +86,7 @@ import UploadToYoutubeAPI from "./api/Project/UploadToYoutube";
 import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskTypes";
 import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
 import ReopenTaskAPI from "./api/Project/ReopenTask";
+import CreateBulkProjectsAPI from "./api/Project/CreateBulkProjects";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -103,6 +107,11 @@ import VerifyUpdateEmailAPI from "./api/User/VerifyUpdateEmail";
 import UpdateUserRoleAPI from "./api/User/UpdateUserRole";
 import UpdateSubscriptionAPI from "./api/User/NewsletterSubscribe";
 import NewsletterTemplate from "./api/Admin/NewsLetterTemplate";
+import FetchGlossaryAPI from "./api/User/FetchGlossary";
+import CreateGlossaryAPI from "./api/User/CreateGlossary";
+import UpdateTipsAPI from "./api/User/UpdateTips";
+import DeleteGlossaryAPI from "./api/User/DeleteGlossary";
+import UploadGlossaryAPI from "./api/User/UploadGlossary";
 
 //Commom Actions
 import {
@@ -121,6 +130,7 @@ import {
   setRangeEnd,
   setSnackBar,
   setTotalSentences,
+  setTipsOff,
 } from "./Common";
 
 import {
@@ -138,8 +148,16 @@ import {
   updateCurrentOrgSearchedColumn,
 } from "./orgTaskFilters";
 
+//Charts API
+import FetchTranscriptionChartAPI from "./api/Intro/FetchTranscriptionChart";
+import FetchVoiceoverChartAPI from "./api/Intro/FetchVoiceoverChart";
+import FetchTranslationChartAPI from "./api/Intro/FetchTranslationChart";
+
 import APITransport from "./apitransport/apitransport";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
+import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
+import OnBoardingAPI from "./api/User/OnBoarding";
+import BulkExportVoiceoverTasksAPI from "./api/Project/BulkExportVoiceoverTasks";
 
 export {
   FetchAdminLevelReportsAPI,
@@ -266,4 +284,20 @@ export {
   updateOrgSearchValues,
   updateCurrentOrgSearchedColumn,
   UnSubscribeNewletterFromEmailAPI,
+  FetchGlossaryAPI,
+  CreateGlossaryAPI,
+  CreateBulkProjectsAPI,
+  RegenerateResponseAPI,
+  UpdateTipsAPI,
+  setTipsOff,
+  DeleteGlossaryAPI,
+  UploadGlossaryAPI,
+  FetchTranscriptionChartAPI,
+  FetchVoiceoverChartAPI,
+  FetchTranslationChartAPI,
+  OnBoardingAPI,
+  BulkExportVoiceoverTasksAPI,
+  CreateMemberAPI,
+  UpdateOnboardingFormAPI,
+  FetchOnboardingListAPI,
 };

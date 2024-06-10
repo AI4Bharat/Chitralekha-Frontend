@@ -45,6 +45,10 @@ import RecorderComponent from "./RecorderComponent";
 import { TabPanel } from "./TabPanel";
 import ShortcutKeys from "./ShortcutKeys";
 import UnsubscribeHeader from "./UnsubscribeHeader";
+import OnBoardingForm from "./OnBoardingForm";
+import AddNewMember from "./AddNewMember";
+import NotesDialog from "./NotesDialog";
+import EditOnBoardingFormDialog from "./EditOnBoardingFormDialog";
 
 export {
   AddOrganizationMember,
@@ -94,4 +98,8 @@ export {
   TabPanel,
   ShortcutKeys,
   UnsubscribeHeader,
+  OnBoardingForm,
+  AddNewMember,
+  NotesDialog,
+  EditOnBoardingFormDialog,
 };

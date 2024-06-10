@@ -50,6 +50,9 @@ import getPreviewData from "./Project/FetchPreviewData";
 import newsletterPreviewReducer from "./Admin/NewsLetterPreview";
 import taskFilters from "./Project/TaskFilters";
 import orgTaskFilters from "./Organization/OrgTaskFilters";
+import getGlossary from "./User/FetchGlossary";
+import getChartsData from "./Intro/Charts";
+import getOnboardingList from "./Admin/FetchOnboardingList";
 
 const rootReducer = {
   apiStatus,
@@ -104,6 +107,9 @@ const rootReducer = {
   newsletterPreviewReducer,
   taskFilters,
   orgTaskFilters,
+  getGlossary,
+  getChartsData,
+  getOnboardingList,
 };
 
 export default rootReducer;
