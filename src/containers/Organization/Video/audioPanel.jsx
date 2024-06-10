@@ -140,6 +140,17 @@ const AudioPlayer = ({ src }) => {
     setVolume(e.target.value);
   };
 
+  useEffect(() => {
+    const player = playerRef.current;
+    if (player) {
+      player.pause();
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime('0:00');
+      player.load();
+    }
+  }, [src]);
+
   return (
     <PlayerContainer style={{opacity:disabled&&"0.5", cursor:disabled&&"not-allowed"}}>
       <Controls>
