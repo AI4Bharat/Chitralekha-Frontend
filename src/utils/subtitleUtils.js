@@ -305,6 +305,28 @@ export const onSplit = (
   return copySub;
 };
 
+export const onExpandTimeline = (id, vo=false) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
+  const copySub = [...subtitles];
+
+  if(id === 0 && copySub.length > 1){
+    copySub[id].start_time = DT.d2t(0);
+    copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
+  }else if(id+1 === copySub.length){
+    copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
+  }else{
+    copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
+    copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
+  }
+
+  if(vo===true){
+    copySub[id].time_difference = (DT.t2d(copySub[id].end_time) - DT.t2d(copySub[id].start_time)).toFixed(3);
+  }
+
+  return copySub;
+};
+
 export const onSubtitleChange = (text, index, id) => {
   const subtitles = store.getState().commonReducer.subtitles;
 

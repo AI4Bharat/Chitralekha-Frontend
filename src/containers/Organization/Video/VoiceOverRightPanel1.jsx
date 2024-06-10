@@ -61,6 +61,7 @@ import {
 } from "redux/actions";
 import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
@@ -645,6 +646,12 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     // saveTranscriptHandler(false, true, sub);
 
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+  
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex, limit]);
 
   return (
     <>
@@ -678,6 +685,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             onMergeClick={onMergeClick}
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
+            expandTimestamp={expandTimestamp}
           />
         </Grid>
 
