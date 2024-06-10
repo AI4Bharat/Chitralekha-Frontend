@@ -226,7 +226,7 @@ const SettingsButtonComponent = ({
 
         {taskData?.task_type?.includes("TRANSLATION") && (
             <>
-            <Tooltip title={taskData?.task_type?.includes("VOICEOVER") ? "Regenerate Translation For All" : "Regenerate Translation"} placement="bottom">
+            <Tooltip title={taskData?.task_type?.includes("VOICEOVER") ? "Regenerate Translation For All Segments" : "Regenerate Translation"} placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
               onClick={() => handleReGenerateTranslation(currentIndex)}
