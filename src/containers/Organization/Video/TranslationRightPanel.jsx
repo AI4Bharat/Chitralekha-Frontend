@@ -677,7 +677,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
         <Box
           className={classes.subTitleContainer}
           id={"subtitleContainerTranslation"}
-          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}
+          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}
         >
           {sourceText?.map((item, index) => {
             return (
