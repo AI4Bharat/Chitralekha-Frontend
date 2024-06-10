@@ -27,7 +27,7 @@ import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, CircularProgress, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "indic-transliterate";
@@ -57,7 +57,10 @@ import {
   FetchTaskFailInfoAPI,
   setTotalSentences,
   setSnackBar,
+  CreateGlossaryAPI,
 } from "redux/actions";
+import { MenuItem } from "react-contextmenu";
+import GlossaryDialog from "common/GlossaryDialog";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
@@ -121,6 +124,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const [undoStack, setUndoStack] = useState([]);
   const [showPopOver, setShowPopOver] = useState(false);
   const [redoStack, setRedoStack] = useState([]);
+  const [contextMenu, setContextMenu] = React.useState(null);
+  const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
+  const [selectedWord, setSelectedWord] = useState("");
+  const loggedInUserData = useSelector(
+    (state) => state.getLoggedInUserDetails.data
+  );
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -162,6 +172,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
           setTableDialogMessage(data.message);
           setTableDialogResponse(data.data);
         }
+
+        if(apiType === "CREATE_GLOSSARY"){
+          setOpenGlossaryDialog(false);
+        }
+
       } else {
         if (apiType === "SAVE_TRANSCRIPT") {
           setOpenConfirmDialog(false);
@@ -343,6 +358,37 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
       temp[index] = false;
     }
     setDurationError(temp);
+  };
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+
+    const selectedText = window.getSelection().toString();
+    setSelectedWord(selectedText);
+
+    if (selectedText !== "") {
+      setContextMenu(
+        contextMenu === null
+          ? {
+              mouseX: event.clientX + 2,
+              mouseY: event.clientY - 6,
+            }
+          : null
+      );
+    }
+  };
+
+  const handleContextMenuClick = (dialogTitle) => {
+    setContextMenu(null);
+    setOpenGlossaryDialog(true);
+    setGlossaryDialogTitle(dialogTitle);
+  };
+
+  const createGlossary = (sentences) => {
+    const userId = loggedInUserData.id;
+
+    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    dispatch(APITransport(apiObj));
   };
 
   const handleFileUpload = (event, index) => {
@@ -666,6 +712,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                   {item.transcription_text &&
                     <div
                       className={classes.relative}
+                      onContextMenu={handleContextMenu}
                       style={{ width: "100%" }}
                     >
                       <textarea
@@ -901,6 +948,27 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     </div>
                   )}
                 </CardContent>
+                <Menu
+                  open={contextMenu !== null}
+                  onClose={() => setContextMenu(null)}
+                  anchorReference="anchorPosition"
+                  anchorPosition={
+                    contextMenu !== null
+                      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                      : undefined
+                  }
+                >
+                  <MenuItem
+                    onClick={() => handleContextMenuClick("Add Glossary")}
+                  >
+                    Add Glossary
+                  </MenuItem>
+                  {/* <MenuItem
+                    onClick={() => handleContextMenuClick("Suggest Glossary")}
+                  >
+                    Suggest Glossary
+                  </MenuItem> */}
+                </Menu>
               </div>
             );
           })}
@@ -954,6 +1022,19 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             message={tableDialogMessage}
             response={tableDialogResponse}
             columns={tableDialogColumn}
+          />
+        )}
+
+        {openGlossaryDialog && (
+          <GlossaryDialog
+            openDialog={openGlossaryDialog}
+            handleClose={() => setOpenGlossaryDialog(false)}
+            submit={(sentences) => createGlossary(sentences)}
+            selectedWord={selectedWord}
+            title={glossaryDialogTitle}
+            srcLang={taskData?.src_language}
+            tgtLang={taskData?.target_language}
+            disableFields={true}
           />
         )}
       </Box>
