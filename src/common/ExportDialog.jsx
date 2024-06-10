@@ -13,8 +13,10 @@ import {
   FormControlLabel,
   IconButton,
   Radio,
+  Checkbox,
   RadioGroup,
   Typography,
+  FormGroup,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { speakerInfoOptions, bgMusicOptions } from "config";
@@ -27,6 +29,7 @@ const ExportDialog = ({
   exportTypes,
   handleExportSubmitClick,
   handleExportRadioButtonChange,
+  handleExportCheckboxChange,
   isBulkTaskDownload,
   currentSelectedTasks,
 }) => {
@@ -83,37 +86,43 @@ const ExportDialog = ({
         {currentTaskType?.includes("TRANSCRIPTION") ? (
           <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup row>
+              <FormGroup row>
                 {transcriptExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Radio />}
-                    checked={transcription === item}
+                    control={
+                      <Checkbox 
+                        checked={transcription.includes(item)}
+                        onChange={(event) => handleExportCheckboxChange(event)}  
+                      />
+                    }
                     label={item}
                     name="transcription"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
-              </RadioGroup>
+              </FormGroup>
             </FormControl>
           </DialogActions>
         ) : currentTaskType?.includes("TRANSLATION") && task_type !== "VO" ? (
           <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup row>
+              <FormGroup row>
                 {translationExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Radio />}
-                    checked={translation === item}
+                    control={
+                      <Checkbox 
+                        checked={translation.includes(item)}
+                        onChange={(event) => handleExportCheckboxChange(event)}  
+                      />
+                    }
                     label={item}
                     name="translation"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
-                </RadioGroup>
+                </FormGroup>
               </FormControl>
             </DialogActions>
           ) : (

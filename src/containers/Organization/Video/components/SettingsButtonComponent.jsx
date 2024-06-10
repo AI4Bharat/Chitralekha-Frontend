@@ -426,27 +426,30 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+      <>
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
-      <Tooltip title="Undo" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          onClick={onUndo}
-          disabled={undoStack?.length === 0}
-        >
-          <UndoIcon className={classes.rightPanelSvg} />
-        </IconButton>
-      </Tooltip>
+        <Tooltip title="Undo" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onUndo}
+            disabled={undoStack?.length === 0}
+          >
+            <UndoIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
 
-      <Tooltip title="Redo" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          onClick={onRedo}
-          disabled={redoStack?.length === 0}
-        >
-          <RedoIcon className={classes.rightPanelSvg} />
-        </IconButton>
-      </Tooltip>
+        <Tooltip title="Redo" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onRedo}
+            disabled={redoStack?.length === 0}
+          >
+            <RedoIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+        </>)}
 
       {openPreviewDialog && (
         <PreviewDialog
