@@ -424,9 +424,7 @@ const FindAndReplace = (props) => {
                         : "black",
                     }}
                   >
-                    {taskType.includes("TRANSCRIPTION")
-                      ? el.text
-                      : el.target_text}
+                    {el[subtitleDataKey]}
                   </Box>
                 ))}
             </Grid>
@@ -439,77 +437,3 @@ const FindAndReplace = (props) => {
 };
 
 export default FindAndReplace;
-
-
-// const onReplaceClick = () => {
-//   const currentSubtitleSource = [...previewdata];
-//   const updatedSubtitleData = [];
-
-//   currentSubtitleSource.forEach((ele, index) => {
-//     if (foundIndices[currentFound] === index) {
-//       let textToReplace;
-//       const lowerCaseFindValue = findValue.trim().toLowerCase();
-//       const lowerCaseReplaceValue = replaceValue.trim();
-//       const lowerCaseText = ele[subtitleDataKey].toLowerCase();
-
-//       if (replaceFullWord) {
-//         if (transliterationLanguage === "en") {
-//           const regex = new RegExp(`\\b${lowerCaseFindValue}\\b`, "g");
-//           textToReplace = lowerCaseText.replace(regex, lowerCaseReplaceValue);
-//           console.log(textToReplace);
-//         } else {
-//           textToReplace = lowerCaseText
-//             .split(lowerCaseFindValue)
-//             .join(lowerCaseReplaceValue);
-//         }
-//       } else {
-//         const regex = new RegExp(lowerCaseFindValue, "g");
-//         textToReplace = lowerCaseText.replace(regex, lowerCaseReplaceValue);
-//       }
-
-//       ele[subtitleDataKey] = textToReplace;
-//     }
-
-//     updatedSubtitleData.push(ele);
-//   });
-
-//   setPreviewdata(updatedSubtitleData);
-//   onReplacementDone(updatedSubtitleData);
-//   // handleCloseModel();
-// };
-// const onReplaceAllClick = () => {
-//   const currentSubtitleSource = [...previewdata];
-//   const updatedSubtitleData = [];
-
-//   currentSubtitleSource.forEach((ele, index) => {
-//     if (foundIndices?.includes(index)) {
-//       let textToReplace;
-//       const lowerCaseFindValue = findValue.trim().toLowerCase();
-//       const lowerCaseReplaceValue = replaceValue.trim();
-//       const lowerCaseText = ele[subtitleDataKey].toLowerCase();
-
-//       if (replaceFullWord) {
-//         if (transliterationLanguage === "en") {
-//           const regex = new RegExp(`\\b${lowerCaseFindValue}\\b`, "g");
-//           textToReplace = lowerCaseText.replace(regex, lowerCaseReplaceValue);
-//         } else {
-//           textToReplace = lowerCaseText
-//             .split(lowerCaseFindValue)
-//             .join(lowerCaseReplaceValue);
-//         }
-//       } else {
-//         const regex = new RegExp(lowerCaseFindValue, "g");
-//         textToReplace = lowerCaseText.replace(regex, lowerCaseReplaceValue);
-//       }
-
-//       ele[subtitleDataKey] = textToReplace;
-//     }
-//     updatedSubtitleData.push(ele);
-//   });
-
-//   setSubtitlesData(updatedSubtitleData);
-//   onReplacementDone(updatedSubtitleData);
-//   // handleCloseModel();
-// };
-//   console.log(subtitleDataKey,previewdata);
-

@@ -372,10 +372,6 @@ const SettingsButtonComponent = ({
           taskData?.task_type?.includes("TRANSLATION") ? "target_text" : "text"
         }
         taskType={taskData?.task_type}
-        currentSubs={currentSubs}
-        videoId={taskData?.video}
-        targetLanguage={taskData?.target_language}
-
       />
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
