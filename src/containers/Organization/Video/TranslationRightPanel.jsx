@@ -51,6 +51,7 @@ import {
   setSubtitles,
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
 const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
@@ -628,6 +629,12 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     dispatch(APITransport(apiObj));
   };
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex, limit]);
+
   return (
     <>
       <ShortcutKeys shortcuts={shortcuts} />
@@ -663,13 +670,14 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             handleReGenerateTranslation={handleReGenerateTranslation}
             showPopOver={showPopOver}
             onSplitClick={onSplitClick}
+            expandTimestamp={expandTimestamp}
           />
         </Grid>
 
         <Box
           className={classes.subTitleContainer}
           id={"subtitleContainerTranslation"}
-          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}
+          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}
         >
           {sourceText?.map((item, index) => {
             return (

@@ -60,6 +60,7 @@ import {
   setSubtitles,
 } from "redux/actions";
 import { failTranscriptionInfoColumns } from "config";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
 const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
@@ -365,6 +366,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex]);
+
   const changeTranscriptHandler = (event, index) => {
     const {
       target: { value },
@@ -637,10 +644,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
             onDelete={onDelete}
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
+            expandTimestamp={expandTimestamp}
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box

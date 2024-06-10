@@ -270,7 +270,7 @@ const VideoLanding = () => {
       <PanelGroup direction="horizontal" className={classes.parentGrid}>
         <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
-            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(93.5vh)" }}
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(92.5vh)" }}
             className={classes.videoBox}
           >
             <VideoName
