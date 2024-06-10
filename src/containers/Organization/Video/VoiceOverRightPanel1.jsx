@@ -998,7 +998,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             previous={previous}
             next={next}
             onClick={onNavigationClick}
-            jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            // jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            jumpTo={taskData?.task_type?.includes("VOICEOVER")?[...Array(totalPages).keys()].map((_, index) => index + 1).filter((p)=>p%5==1):[...Array(totalPages).keys()].map((_, index) => index + 1)}
             durationError={durationError}
             completedCount={completedCount}
             current={currentPage}

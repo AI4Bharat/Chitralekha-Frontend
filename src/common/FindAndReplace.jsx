@@ -18,6 +18,7 @@ import {
   Tooltip,
   IconButton,
   Switch,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRight from "@mui/icons-material/ChevronRight";
@@ -25,11 +26,15 @@ import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import C from "redux/constants";
 import { setSubtitles } from "redux/actions";
+import { useTheme, useMediaQuery } from '@mui/material';
+import Loader from "./Spinner";
 
 const FindAndReplace = (props) => {
   const classes = ProjectStyle();
+  const theme = useTheme();
 
   const dispatch = useDispatch();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const { subtitleDataKey, taskType } = { ...props };
 
@@ -44,9 +49,14 @@ const FindAndReplace = (props) => {
   const [currentFound, setCurrentFound] = useState();
   const [replaceFullWord, setReplaceFullWord] = useState(true);
   const [transliterate, setTransliterate] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [reloading, resetLoading] = useState(false);
+  const [reallloading, reallsetLoading] = useState(false);
+  const [findloading, findsetLoading] = useState(false);
 
   const onReplacementDone = (updatedSource) => {
-    dispatch(setSubtitles(updatedSource, C.SUBTITLES));
+    dispatch(setSubtitles(updatedSource, C.SUBTITLES))
+
   };
   const transliterationLanguage = !taskType?.includes("TRANSCRIPTION")
     ? transliterationLang?.target_language
@@ -71,6 +81,7 @@ const FindAndReplace = (props) => {
   };
 
   const onFindClick = () => {
+    findsetLoading(true);
     const textToFind = findValue.toLowerCase().trim();
     const indexListInDataOfTextOccurence = [];
     subtitlesData.forEach((item, index) => {
@@ -84,7 +95,21 @@ const FindAndReplace = (props) => {
     if (indexListInDataOfTextOccurence?.length > 0) {
       setCurrentFound(0);
     }
+    setTimeout(() => {
+      findsetLoading(false);
+      // setShowLoading(false);
+    }, 500);
+
   };
+  useEffect(() => {
+    if (foundIndices.length > 0 && currentFound === 0) {
+      const scrollableElement = document.getElementById("subtitle_scroll_view");
+      scrollableElement
+        ?.querySelector(`#sub_${foundIndices[0]}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [currentFound, foundIndices]);
+  
 
   const previousOccurenceClick = () => {
     setCurrentFound(currentFound - 1);
@@ -103,6 +128,8 @@ const FindAndReplace = (props) => {
   };
 
   const onReplaceClick = () => {
+    resetLoading(true);
+
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
 
@@ -113,7 +140,7 @@ const FindAndReplace = (props) => {
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
               replaceValue.trim()
             );
           } else {
@@ -137,9 +164,15 @@ const FindAndReplace = (props) => {
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
+    setTimeout(() => {
+      resetLoading(false);
+      // setShowLoading(false);
+    }, 500);
   };
 
   const onReplaceAllClick = () => {
+    reallsetLoading(true);
+
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
 
@@ -150,7 +183,7 @@ const FindAndReplace = (props) => {
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
               replaceValue.trim()
             );
           } else {
@@ -173,8 +206,11 @@ const FindAndReplace = (props) => {
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
+    setTimeout(() => {
+      reallsetLoading(false);
+      // setShowLoading(false);
+    }, 500);
   };
-
   return (
     <>
       <Tooltip title="Find/Replace" placement="bottom">
@@ -206,9 +242,9 @@ const FindAndReplace = (props) => {
 
         <DialogContent
           sx={{
-            overflow: "hidden",
+            overflowY: subtitlesData && subtitlesData[subtitleDataKey] == undefined ? "Hidden" : "auto",
             position: "unset",
-            overscrollBehavior: "none",
+            // overscrollBehavior: "none",
           }}
         >
           <Grid container flexDirection={"flex"} justifyContent="space-around">
@@ -283,8 +319,8 @@ const FindAndReplace = (props) => {
                   onClick={onFindClick}
                   style={{ width: "auto" }}
                 >
-                  Find
-                </Button>
+                  {findloading ? <CircularProgress size={24} color="inherit"/> : "Find"}
+                  </Button>
                 {foundIndices?.length > 0 && (
                   <Button
                     variant="contained"
@@ -331,7 +367,8 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceClick}
                   style={{ width: "auto" }}
                 >
-                  Replace
+                  {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace"}
+                   {/* Replace */}
                 </Button>
                 <Button
                   variant="contained"
@@ -340,23 +377,35 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceAllClick}
                   style={{ width: "auto" }}
                 >
-                  Replace All
+                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace All"}
+                 {/* Replace All */}
                 </Button>
               </Grid>
             </Grid>
 
             <Grid
               item
+              xs={12}
               md={7}
               width={"100%"}
               textAlign={"-webkit-center"}
               height={window.innerHeight * 0.7}
-              sx={{ overflowY: "scroll" }}
+              sx={{ overflowY: "auto" }}
               paddingBottom={5}
               id={"subtitle_scroll_view"}
+              order={isSmallScreen ? 1 : 0}
             >
-              {subtitlesData?.map((el, i) => {
-                return (
+          {(!subtitlesData) && (
+                <div style={{
+                  position: 'relative',
+                  top: '50%',
+                  zIndex: 1,
+                  
+                }}>
+                  <Loader />
+                </div>
+              )} {!loading && 
+                subtitlesData?.map((el, i) => (
                   <Box
                     key={i}
                     id={`sub_${i}`}
@@ -381,10 +430,10 @@ const FindAndReplace = (props) => {
                   >
                     {el[subtitleDataKey]}
                   </Box>
-                );
-              })}
+                ))}
             </Grid>
           </Grid>
+
         </DialogContent>
       </Dialog>
     </>

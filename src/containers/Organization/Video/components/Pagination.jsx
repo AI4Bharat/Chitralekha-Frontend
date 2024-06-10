@@ -81,7 +81,8 @@ const Pagination = ({
 
       <Box display="flex" justifyContent="center" alignItems="center">
         <Typography variant="body2" margin="0 5px 0 0">
-          Jump to page:
+        {taskData?.task_type?.includes("VOICEOVER")?
+          "Jump to Card:":"Jump to Page:"}
         </Typography>
 
         <Select
