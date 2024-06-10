@@ -384,7 +384,7 @@ const SettingsButtonComponent = ({
 
       <FindAndReplace
         subtitleDataKey={
-          taskData?.task_type?.includes("TRANSLATION") ? "target_text" : "text"
+          taskData?.task_type?.includes("TRANSLATION") ? taskData?.task_type?.includes("VOICEOVER") ? "text" : "target_text" : "text"
         }
         taskType={taskData?.task_type}
       />
