@@ -62,7 +62,6 @@ import {
 import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
 import { onExpandTimeline } from "utils/subtitleUtils";
-import AudioPlayer from "./audioPanel";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
   const { taskId } = useParams();
@@ -690,7 +689,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
           />
         </Grid>
 
-        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}>
+        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
           {sourceText?.map((item, index) => {
             return (
               <div
@@ -817,8 +816,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               : {}
                           }
                         >
-                          <AudioPlayer src={data[index]} />
-                          {/* <audio
+                          <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
                             controls
@@ -835,7 +833,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               // width: index === 2 ? "91%" : "",
                               // margin: index === 2 ? "0 auto 25px auto" : "",
                             }}
-                          /> */}
+                          />
                         </div>
                         <div
                           style={{
