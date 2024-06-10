@@ -56,10 +56,10 @@ const Time = styled.div`
   font-size: 14px;
 `;
 
-const VolumeControl = styled.input`
-  width: 100px;
-  margin-left: 20px;
-`;
+// const VolumeControl = styled.input`
+//   width: 100px;
+//   margin-left: 20px;
+// `;
 
 const Audio = styled.audio`
   display: none;
@@ -72,7 +72,7 @@ const AudioPlayer = ({ src }) => {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('0:00');
   const [totalTime, setTotalTime] = useState('0:00');
-  const [volume, setVolume] = useState(1);
+  // const [volume, setVolume] = useState(1);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -134,11 +134,11 @@ const AudioPlayer = ({ src }) => {
     setProgress(percent * 100);
   };
 
-  const handleVolumeChange = (e) => {
-    const player = playerRef.current;
-    player.volume = e.target.value;
-    setVolume(e.target.value);
-  };
+  // const handleVolumeChange = (e) => {
+  //   const player = playerRef.current;
+  //   player.volume = e.target.value;
+  //   setVolume(e.target.value);
+  // };
 
   useEffect(() => {
     const player = playerRef.current;

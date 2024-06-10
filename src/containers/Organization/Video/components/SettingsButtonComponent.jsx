@@ -195,7 +195,6 @@ const SettingsButtonComponent = ({
             </IconButton>
           </Tooltip>
 
-        {!taskData?.task_type?.includes("VOICEOVER") && (
           <Tooltip title="Split Subtitle" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
@@ -208,7 +207,6 @@ const SettingsButtonComponent = ({
               <SplitscreenIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
-        )}
 
         <Tooltip title="Expand Timestamp" placement="bottom">
           <IconButton
@@ -226,9 +224,9 @@ const SettingsButtonComponent = ({
           </IconButton>
         </Tooltip>
 
-        {taskData?.task_type?.includes("TRANSLATION") && !taskData?.task_type?.includes("VOICEOVER") && (
+        {taskData?.task_type?.includes("TRANSLATION") && (
             <>
-            <Tooltip title="Regenerate Translation" placement="bottom">
+            <Tooltip title={taskData?.task_type?.includes("VOICEOVER") ? "Regenerate Translation For All Segments" : "Regenerate Translation"} placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
               onClick={() => handleReGenerateTranslation(currentIndex)}
