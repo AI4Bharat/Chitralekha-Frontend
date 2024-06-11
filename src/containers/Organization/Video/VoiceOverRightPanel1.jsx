@@ -337,7 +337,22 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     dispatch(APITransport(payloadObj));
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayloadAPI(value);
   };
 
@@ -664,26 +679,26 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
   }, [currentIndex, limit]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const arr = [...sourceText];
-      let fetchAudio = false;
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const arr = [...sourceText];
+  //     let fetchAudio = false;
 
-      arr.forEach((element) => {
-        if(element.audio.audioContent === ""){
-          element.text_changed = true;  
-          fetchAudio = true;
-          console.log(element.start_time);
-        }
-      });
+  //     arr.forEach((element) => {
+  //       if(element.audio.audioContent === ""){
+  //         element.text_changed = true;  
+  //         fetchAudio = true;
+  //         console.log(element.start_time);
+  //       }
+  //     });
   
-      if(fetchAudio){
-        dispatch(setSubtitles(arr, C.SUBTITLES));
-        saveTranscriptHandler(false, true);
-      }
+  //     if(fetchAudio){
+  //       dispatch(setSubtitles(arr, C.SUBTITLES));
+  //       saveTranscriptHandler(false, true);
+  //     }
 
-    }, 60000);
-  }, [currentOffset, sourceText]);
+  //   }, 60000);
+  // }, [currentOffset, sourceText]);
 
   return (
     <>
