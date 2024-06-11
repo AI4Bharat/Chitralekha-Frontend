@@ -197,7 +197,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   //     ?.scrollIntoView(true, { block: "start" });
   // }, [currentIndex]);
 
-  const getPayload = (offset = currentOffset, lim = limit) => {
+  // if(subtitles)
+  //   {
+  //     console.log('all_sub',subtitles)
+  //   }
+  const getPayload = (offset = currentOffset, lim) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
