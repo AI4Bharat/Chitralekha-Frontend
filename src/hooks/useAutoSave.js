@@ -20,12 +20,12 @@ export const useAutoSave = () => {
       //   return;
       // }
 
-      if(taskDetails?.task_type.includes("TRANSLATION_VOICEOVER")){
-        if(subs.length > 0){
-          subs.forEach(element => {
-            element.text_changed = false;
-          });
-      }}
+      // if(taskDetails?.task_type.includes("TRANSLATION_VOICEOVER")){
+      //   if(subs.length > 0){
+      //     subs.forEach(element => {
+      //       element.text_changed = false;
+      //     });
+      // }}
 
       const reqBody = {
         task_id: taskId,
