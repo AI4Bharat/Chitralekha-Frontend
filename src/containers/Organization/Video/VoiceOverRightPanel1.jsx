@@ -123,6 +123,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const limit = useSelector((state) => state.commonReducer.limit);
   const [currentOffset, setCurrentOffset] = useState(1);
   const [apiInProgress, setApiInProgress] = useState(false);
+  const [fetchInProgress, setFetchInProgress] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
   const [showPopOver, setShowPopOver] = useState(false);
   const [redoStack, setRedoStack] = useState([]);
@@ -162,6 +163,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             dispatch(setSubtitlesForCheck(newSub));
             dispatch(setSubtitles(sub, C.SUBTITLES));
             dispatch(setTotalSentences(data?.sentences_count));
+            setFetchInProgress(false);
           }
 
           // getPayloadAPI(currentPage);
@@ -288,6 +290,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     dispatch(setSubtitles(arr, C.SUBTITLES));
     if(type === "audio" || type === "retranslate"){
       saveTranscriptHandler(false, true);
+      setFetchInProgress(true);
     }
     // saveTranscriptHandler(false, false);
   };
@@ -539,7 +542,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     textarea.selectionEnd = start + text.length;
     textarea.focus();
 
-    const sub = onSubtitleChange(textarea.value, index, 0);
+    const sub = onSubtitleChange(textarea.value, index, 3);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // saveTranscriptHandler(true, true, sub);
   };
@@ -774,6 +777,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                       style={{ width: "100%" }}
                     >
                       <textarea
+                        readOnly={fetchInProgress ? true: false}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           }`}
@@ -823,12 +827,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     </Tooltip>
                     <div>
                     <TimeBoxes
+                      readOnly={fetchInProgress ? true: false}
                       handleTimeChange={handleTimeChange}
                       time={item.start_time}
                       index={index}
                       type={"startTime"}
                     />
                     <TimeBoxes
+                      readOnly={fetchInProgress ? true: false}
                       handleTimeChange={handleTimeChange}
                       time={item.end_time}
                       index={index}
@@ -930,6 +936,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
+                            readOnly={fetchInProgress ? true: false}
                             className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                               } ${taskData?.source_type === "Original Source" &&
                               classes.w95
@@ -966,6 +973,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                   ) : (
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
+                        readOnly={fetchInProgress ? true: false}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           } ${taskData?.source_type === "Original Source" &&
