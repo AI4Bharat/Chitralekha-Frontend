@@ -35,7 +35,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoopIcon from "@mui/icons-material/Loop";
 import ExpandIcon from "@mui/icons-material/Expand";
-import LyricsIcon from "@mui/icons-material/Lyrics";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 const anchorOrigin = {
   vertical: "top",
@@ -77,6 +77,7 @@ const SettingsButtonComponent = ({
   subtitles,
   handleReGenerateTranslation,
   expandTimestamp,
+  handleGetUpdatedAudioForAll,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -242,6 +243,20 @@ const SettingsButtonComponent = ({
               <LoopIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
+          {taskData?.task_type?.includes("VOICEOVER") && taskData?.source_type === "Machine Generated" &&
+            <Tooltip title="Get Updated Audio For All Segments" placement="bottom">
+              <IconButton
+                className={classes.rightPanelBtnGrp}
+                onClick={() => handleGetUpdatedAudioForAll()}
+                sx={{
+                  "&.Mui-disabled": { backgroundColor: "lightgray" },
+                }}
+                disabled={apiInProgress}
+              >
+                <TaskAltIcon className={classes.rightPanelSvg} />
+              </IconButton>
+            </Tooltip>
+          }
           </>
         )}
         <Divider orientation="vertical" className={classes.rightPanelDivider} />

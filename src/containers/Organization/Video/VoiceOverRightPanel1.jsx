@@ -280,6 +280,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
       if(index === "retranslate" && type === "retranslate"){
         element.retranslate = true;  
       }
+      if(index === "audio" && type === "audio"){
+        element.text_changed = true;  
+      }
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
@@ -334,7 +337,22 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     dispatch(APITransport(payloadObj));
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
     getPayloadAPI(value);
   };
 
@@ -654,16 +672,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     // saveTranscriptHandler(false, true, sub);
 
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
-
-  // const onGetMissingAudios = useCallback(() => {
-  //   const sub = copySubs(subtitles);
-  //   sub.forEach((ele, i) => {
-  //     if(ele.audio.audioContent === ""){
-  //       changeTranscriptHandler(null, i, "audio");
-  //       return;
-  //     }
-  //   })
-  // }, []);
   
   const expandTimestamp = useCallback(() => {
     const sub = onExpandTimeline(currentIndex, true);
@@ -672,12 +680,25 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   }, [currentIndex, limit]);
 
   // useEffect(() => {
-  //   if(typeof(subtitles) === "object"){
-  //     if(subtitles.length > 0){
-  //       onGetMissingAudios();
+  //   setTimeout(() => {
+  //     const arr = [...sourceText];
+  //     let fetchAudio = false;
+
+  //     arr.forEach((element) => {
+  //       if(element.audio.audioContent === ""){
+  //         element.text_changed = true;  
+  //         fetchAudio = true;
+  //         console.log(element.start_time);
+  //       }
+  //     });
+  
+  //     if(fetchAudio){
+  //       dispatch(setSubtitles(arr, C.SUBTITLES));
+  //       saveTranscriptHandler(false, true);
   //     }
-  //   }
-  // }, [apiInProgress]);
+
+  //   }, 60000);
+  // }, [currentOffset, sourceText]);
 
   return (
     <>
@@ -713,6 +734,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             showPopOver={showPopOver}
             expandTimestamp={expandTimestamp}
             handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
+            handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
           />
         </Grid>
 
