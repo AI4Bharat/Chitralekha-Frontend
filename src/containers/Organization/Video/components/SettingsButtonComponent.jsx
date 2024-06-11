@@ -426,6 +426,8 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
+      {!taskData?.task_type?.includes("VOICEOVER") && (
+      <>
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
         <Tooltip title="Undo" placement="bottom">
@@ -447,6 +449,7 @@ const SettingsButtonComponent = ({
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
+        </>)}
 
       {openPreviewDialog && (
         <PreviewDialog
