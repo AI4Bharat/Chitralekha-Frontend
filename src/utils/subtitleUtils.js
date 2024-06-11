@@ -505,9 +505,9 @@ export const getSubtitleRange = () => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   if (subtitles) {
-    console.log("subtitles")
-    console.log(subtitles)
-    console.log(subtitles.length)
+    // console.log("subtitles")
+    // console.log(subtitles)
+    // console.log(subtitles.length)
     if (subtitles.length === 5) {
       return `${subtitles[0]?.id} - ${subtitles[4]?.id}`;
     } else if (subtitles.length === 4) {
