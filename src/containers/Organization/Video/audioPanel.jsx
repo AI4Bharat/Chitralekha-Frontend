@@ -143,6 +143,10 @@ const AudioPlayer = ({ src }) => {
     }
     if(src===""){
       setDisabled(true);
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime('0:00');
+      setTotalTime('0:00');
     }else{
       setDisabled(false);
     }
