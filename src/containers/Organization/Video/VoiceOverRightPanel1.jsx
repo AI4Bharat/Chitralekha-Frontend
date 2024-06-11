@@ -248,9 +248,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
     subtitles?.forEach((item, index) => {
       if (item.audio && item.audio.hasOwnProperty("audioContent")) {
-        const blobUrl = base64toBlob(item.audio.audioContent);
-        item.blobUrl = blobUrl;
-        updatedArray[index] = blobUrl;
+        if(item.audio.audioContent === ""){
+          updatedArray[index] = "";
+        }else{
+          const blobUrl = base64toBlob(item.audio.audioContent);
+          item.blobUrl = blobUrl;
+          updatedArray[index] = blobUrl;
+        }
       }
     });
 
@@ -839,7 +843,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               : {}
                           }
                         >
-                          <AudioPlayer src={item.audio.audioContent === "" && data[index]} />
+                          <AudioPlayer src={data[index] !== "" && data[index]} />
                           {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
