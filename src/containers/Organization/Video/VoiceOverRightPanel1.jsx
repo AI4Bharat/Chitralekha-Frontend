@@ -61,7 +61,7 @@ import {
 } from "redux/actions";
 import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
-import { onExpandTimeline } from "utils/subtitleUtils";
+import { copySubs, onExpandTimeline } from "utils/subtitleUtils";
 import AudioPlayer from "./audioPanel";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
@@ -272,6 +272,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
         }else{
         element.transcription_text = text;
         }
+      }
+      if(index === "retranslate" && type === "retranslate"){
+        element.retranslate = true;  
       }
     });
 
@@ -647,12 +650,30 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     // saveTranscriptHandler(false, true, sub);
 
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
+  // const onGetMissingAudios = useCallback(() => {
+  //   const sub = copySubs(subtitles);
+  //   sub.forEach((ele, i) => {
+  //     if(ele.audio.audioContent === ""){
+  //       changeTranscriptHandler(null, i, "audio");
+  //       return;
+  //     }
+  //   })
+  // }, []);
   
   const expandTimestamp = useCallback(() => {
     const sub = onExpandTimeline(currentIndex, true);
     dispatch(setSubtitles(sub, C.SUBTITLES));
 
   }, [currentIndex, limit]);
+
+  // useEffect(() => {
+  //   if(typeof(subtitles) === "object"){
+  //     if(subtitles.length > 0){
+  //       onGetMissingAudios();
+  //     }
+  //   }
+  // }, [apiInProgress]);
 
   return (
     <>
@@ -687,6 +708,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
             expandTimestamp={expandTimestamp}
+            handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
           />
         </Grid>
 

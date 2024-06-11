@@ -179,8 +179,6 @@ const SettingsButtonComponent = ({
         </>
       )}
 
-      {!taskData?.task_type?.includes("VOICEOVER") && (
-        <>
         <Tooltip title="Merge Next" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
@@ -209,7 +207,6 @@ const SettingsButtonComponent = ({
               <SplitscreenIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
-        </>)}
 
         <Tooltip title="Expand Timestamp" placement="bottom">
           <IconButton
@@ -227,9 +224,9 @@ const SettingsButtonComponent = ({
           </IconButton>
         </Tooltip>
 
-        {taskData?.task_type?.includes("TRANSLATION") && !taskData?.task_type?.includes("VOICEOVER") && (
+        {taskData?.task_type?.includes("TRANSLATION") && (
             <>
-            <Tooltip title="Regenerate Translation" placement="bottom">
+            <Tooltip title={taskData?.task_type?.includes("VOICEOVER") ? "Regenerate Translation For All Segments" : "Regenerate Translation"} placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
               onClick={() => handleReGenerateTranslation(currentIndex)}
@@ -432,8 +429,6 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
-      {!taskData?.task_type?.includes("VOICEOVER") && (
-      <>
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
         <Tooltip title="Undo" placement="bottom">
@@ -455,7 +450,6 @@ const SettingsButtonComponent = ({
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
-        </>)}
 
       {openPreviewDialog && (
         <PreviewDialog
