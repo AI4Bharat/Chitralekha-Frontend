@@ -336,7 +336,9 @@ export const onSubtitleChange = (text, index, id) => {
     if (index === i) {
       if (id === 1) {
         element.target_text = text;
-      } else {
+      } else if (id === 3) {
+        element.transcription_text = text;
+      } else{
         element.text = text;
       }
     }
