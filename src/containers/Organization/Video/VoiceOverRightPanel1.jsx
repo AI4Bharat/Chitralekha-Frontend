@@ -843,8 +843,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               : {}
                           }
                         >
-                          {/* <AudioPlayer src={data[index] !== "" && data[index]} /> */}
-                          <audio
+                          <AudioPlayer src={data[index]} />
+                          {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
                             controls
@@ -861,7 +861,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               // width: index === 2 ? "91%" : "",
                               // margin: index === 2 ? "0 auto 25px auto" : "",
                             }}
-                          />
+                          /> */}
                         </div>
                         <div
                           style={{

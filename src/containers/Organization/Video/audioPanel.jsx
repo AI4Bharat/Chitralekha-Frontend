@@ -91,14 +91,6 @@ const AudioPlayer = ({ src }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if(totalTime === "0:00"){
-      setDisabled(true);
-    }else{
-      setDisabled(false);
-    }
-  }, [totalTime]);
-
   const togglePlay = () => {
     const player = playerRef.current;
     if (player.paused) {
@@ -148,6 +140,11 @@ const AudioPlayer = ({ src }) => {
       setProgress(0);
       setCurrentTime('0:00');
       player.load();
+    }
+    if(src===""){
+      setDisabled(true);
+    }else{
+      setDisabled(false);
     }
   }, [src]);
 
