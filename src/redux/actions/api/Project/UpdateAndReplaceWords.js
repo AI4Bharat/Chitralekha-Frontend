@@ -18,7 +18,7 @@ export default class UpdateAndReplaceWordsAPI extends API {
           : ENDPOINTS.translation;
         this.endpoint = `${super.apiEndPointAuto()}${
           this.payloadEndpoint
-        }replace_all_words/?task_id=${id}&word_to_replace=${word_to_replace}&replace_word=${replace_word}&replace_full_word=${replace_full_word}&transliteration_language=${transliteration_language}`;
+        }replace_all_words`;
       }
 
     
@@ -33,7 +33,15 @@ export default class UpdateAndReplaceWordsAPI extends API {
         return this.endpoint;
       }
     
-      getBody() {}
+      getBody() {
+        return{
+          "task_id": this.id,
+          "word_to_replace": this.word_to_replace,
+          "replace_word": this.replace_word,
+          "replace_full_word": this.replace_full_word,
+          "transliteration_language": this.transliteration_language
+        };
+      }
     
       getHeaders() {
         this.headers = {

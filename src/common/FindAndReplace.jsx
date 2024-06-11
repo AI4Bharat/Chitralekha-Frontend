@@ -93,7 +93,12 @@ const FindAndReplace = (props) => {
   const [previewdata, setPreviewdata] = useState([]);
 
   const fetchPreviewData = useCallback(async () => {
-    setLoading(true)
+    if(taskType.includes("TRANSLATION_VOICEOVER")){
+      setLoading(true);
+      setPreviewdata(sourceData);
+      setLoading(false);
+    }else{
+    setLoading(true);
     const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetLanguage);
     try {
       const res = await fetch(taskObj.apiEndPoint(), {
@@ -112,9 +117,8 @@ const FindAndReplace = (props) => {
           message: "Something went wrong!!",
           variant: "error",
         })
-      );
-    }
-  }, [ dispatch,videoId, taskType, targetLanguage]);
+        );
+    }}}, [ dispatch,videoId, taskType, targetLanguage, sourceData]);
 
   useEffect(() => {
     if (showFindReplaceModel) {
@@ -134,7 +138,7 @@ const FindAndReplace = (props) => {
     )
     dispatch(APITransport(payloadObj))
     // do a full page reload
-    window.location.reload();
+    // window.location.reload();
   }
 
  
