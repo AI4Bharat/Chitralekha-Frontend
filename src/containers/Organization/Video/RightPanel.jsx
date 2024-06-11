@@ -660,7 +660,8 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
                 id={`sub_${index}`}
                 style={{
                   padding: "0",
-                  borderBottom: "1px solid lightgray",
+                  margin: "2px",
+                  // borderBottom: "1px solid lightgray",
                   backgroundColor: "white",
                   display: "flex"
                 }}
