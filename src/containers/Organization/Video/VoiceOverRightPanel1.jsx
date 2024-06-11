@@ -839,7 +839,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               : {}
                           }
                         >
-                          <AudioPlayer src={data[index]} />
+                          <AudioPlayer src={item.audio.audioContent === "" && data[index]} />
                           {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
