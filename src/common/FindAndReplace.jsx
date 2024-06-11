@@ -99,6 +99,8 @@ const FindAndReplace = (props) => {
       transliterationLang.src_language
     )
     dispatch(APITransport(payloadObj))
+    // do a full page reload
+    window.location.reload();
   }
 
  
