@@ -746,7 +746,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                 className={isDisabled(index) ? classes.disabledCard : ""}
                 style={{
                   padding: "5px 0",
-                  borderBottom: "1px solid grey",
+                  // margin: "2px",
+                  // borderBottom: "1px solid grey",
                   backgroundColor: "white"
                 }}
                 id={`container-${index}`}
@@ -1047,7 +1048,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             next={next}
             onClick={onNavigationClick}
             // jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
-            jumpTo={taskData?.task_type?.includes("VOICEOVER")?[...Array(totalPages).keys()].map((_, index) => index + 1).filter((p)=>p%5==1):[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            jumpTo={taskData?.task_type?.includes("VOICEOVER")?[...Array(totalPages).keys()].map((_, index) => index + 1).filter((p)=>p%15==1):[...Array(totalPages).keys()].map((_, index) => index + 1)}
             durationError={durationError}
             completedCount={completedCount}
             current={currentPage}
