@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback } from "react";
 import { IndicTransliterate } from "indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import MenuItem from '@mui/material/MenuItem';
 import { configs, endpoints } from "config";
 
+import { FetchpreviewTaskAPI, setSnackBar, setSubtitles } from "redux/actions";
+import Loader from "./Spinner";
 //Styles
 import { ProjectStyle } from "styles";
 
@@ -26,14 +28,13 @@ import ChevronRight from "@mui/icons-material/ChevronRight";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import C from "redux/constants";
-import { APITransport, setSubtitles } from "redux/actions";
+import { APITransport } from "redux/actions";
 import Menu from '@mui/material/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { styled } from '@mui/material/styles';
 import { useParams } from "react-router-dom";
 
 import { useTheme, useMediaQuery } from '@mui/material';
-import Loader from "./Spinner";
 import UpdateAndReplaceWordsAPI from "redux/actions/api/Project/UpdateAndReplaceWords";
 
 const FindAndReplace = (props) => {
@@ -43,7 +44,7 @@ const FindAndReplace = (props) => {
   const dispatch = useDispatch();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const { subtitleDataKey, taskType } = { ...props };
+  const { subtitleDataKey, taskType ,currentSubs, videoId,targetLanguage } = { ...props };
 
   const transliterationLang = useSelector((state) => state.getTaskDetails.data);
   const sourceData = useSelector((state) => state.commonReducer.subtitles);
@@ -89,6 +90,39 @@ const FindAndReplace = (props) => {
     setShowFindReplaceModel(true);
   };
 
+  const [previewdata, setPreviewdata] = useState([]);
+
+  const fetchPreviewData = useCallback(async () => {
+    setLoading(true)
+    const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetLanguage);
+    try {
+      const res = await fetch(taskObj.apiEndPoint(), {
+        method: "GET",
+        headers: taskObj.getHeaders().headers,
+      });
+
+      const response = await res.json();
+        setPreviewdata(response.data.payload);
+        setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }
+  }, [ dispatch,videoId, taskType, targetLanguage]);
+
+  useEffect(() => {
+    if (showFindReplaceModel) {
+      fetchPreviewData();
+    }
+  }, [fetchPreviewData, showFindReplaceModel]);
+
+
   const SaveReplacedWords= ()=>{    
     const payloadObj = new UpdateAndReplaceWordsAPI(
       taskId,
@@ -108,8 +142,8 @@ const FindAndReplace = (props) => {
     findsetLoading(true);
     const textToFind = findValue.toLowerCase().trim();
     const indexListInDataOfTextOccurence = [];
-    subtitlesData.forEach((item, index) => {
-      if (item[subtitleDataKey].toLowerCase().includes(textToFind)) {
+    previewdata?.forEach((item, index) => {
+      if (item[subtitleDataKey]?.toLowerCase()?.includes(textToFind)) {
         indexListInDataOfTextOccurence.push(index);
       }
     });
@@ -154,7 +188,7 @@ const FindAndReplace = (props) => {
   const onReplaceClick = () => {
     resetLoading(true);
 
-    const currentSubtitleSource = [...subtitlesData];
+    const currentSubtitleSource = [...previewdata];
     const updatedSubtitleData = [];
 
     currentSubtitleSource.forEach((ele, index) => {
@@ -197,7 +231,7 @@ const FindAndReplace = (props) => {
   const onReplaceAllClick = () => {
     reallsetLoading(true);
 
-    const currentSubtitleSource = [...subtitlesData];
+    const currentSubtitleSource = [...previewdata];
     const updatedSubtitleData = [];
 
     currentSubtitleSource.forEach((ele, index) => {
@@ -543,8 +577,17 @@ const FindAndReplace = (props) => {
                 }}>
                   <Loader />
                 </div>
-              )} {!loading && 
-                subtitlesData?.map((el, i) => (
+              )} {loading ? (
+                <div style={{
+                  position: 'relative',
+                  top: '50%',
+                  zIndex: 1,
+
+                }}>
+                  <Loader />
+                </div>
+              ) : (
+                previewdata?.map((el, i) => (
                   <Box
                     key={i}
                     id={`sub_${i}`}
@@ -569,7 +612,8 @@ const FindAndReplace = (props) => {
                   >
                     {el[subtitleDataKey]}
                   </Box>
-                ))}
+                ))
+              )}
             </Grid>
           </Grid>
 
