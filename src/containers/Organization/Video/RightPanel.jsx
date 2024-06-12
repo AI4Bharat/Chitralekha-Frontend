@@ -197,6 +197,13 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   //     ?.scrollIntoView(true, { block: "start" });
   // }, [currentIndex]);
 
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subTitleContainer");
+    subtitleScrollEle
+      .querySelector(`#sub_0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
+
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
