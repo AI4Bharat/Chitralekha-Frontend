@@ -6,16 +6,11 @@ import {
   IconButton,
   DialogTitle,
   Typography,
-  CircularProgress,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState,useRef} from "react";
+import React, { useCallback, useEffect, useState} from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import FullscreenIcon from "@mui/icons-material/Fullscreen";
-import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import { FetchpreviewTaskAPI, setSnackBar } from "redux/actions";
 import { useDispatch } from "react-redux";
-import Loader from "./Spinner";
-import TimeBoxes from "./TimeBoxes";
 
 const PreviewDialog = ({
   openPreviewDialog,
@@ -26,16 +21,12 @@ const PreviewDialog = ({
   targetLanguage,
 }) => {
   const dispatch = useDispatch();
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const [previewdata, setPreviewdata] = useState([]);
   const [selectedSubtitleIndex,setSelectedSubtitleIndex] = useState();
-  const [loading, setLoading] = useState(false);
 
-  const dialogRef = useRef(null);
 
   const fetchPreviewData = useCallback(async () => {
-    setLoading(true)
     const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetLanguage);
     try {
       const res = await fetch(taskObj.apiEndPoint(), {
@@ -44,10 +35,8 @@ const PreviewDialog = ({
       });
 
       const response = await res.json();
-        setPreviewdata(response.data.payload);
-        setLoading(false)
+      setPreviewdata(response.data.payload);
     } catch (error) {
-      setLoading(false)
       dispatch(
         setSnackBar({
           open: true,
@@ -56,30 +45,26 @@ const PreviewDialog = ({
         })
       );
     }
-  }, [ dispatch,videoId, taskType, targetLanguage]);
+  }, [dispatch, videoId, taskType, targetLanguage]);
 
   useEffect(() => {
-    if (openPreviewDialog) {
-      fetchPreviewData();
-    }
-  }, [fetchPreviewData, openPreviewDialog]);
+    fetchPreviewData();
+  }, [fetchPreviewData]);
 
  
   useEffect(() => {
     if (
       openPreviewDialog &&
-      selectedSubtitleIndex !== null &&
-      !loading
+      selectedSubtitleIndex !== null
     ) {
-      // setTimeout(() => {
-        const subtitleId = `sub-${selectedSubtitleIndex}`;
-        const subtitleElement = document.getElementById(subtitleId);
-        if (subtitleElement) {
-          subtitleElement.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      // }, 5000); 
+      const subtitleId = `sub-${selectedSubtitleIndex}`;
+      const subtitleElement = document.getElementById(subtitleId);
+      if (subtitleElement) {
+        subtitleElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
-  }, [openPreviewDialog, selectedSubtitleIndex,loading]);
+  }, [openPreviewDialog, selectedSubtitleIndex]);
+
 
   useEffect(() => {
     if (currentSubs) {
@@ -88,91 +73,19 @@ const PreviewDialog = ({
       );
       setSelectedSubtitleIndex(selectedIndex);
     }
-  }, [currentSubs, previewdata,loading,isFullscreen]);
+  }, [currentSubs, previewdata]);
 
-  const handleFullscreenToggle = () => {
-    const elem = dialogRef.current;
-    if (!isFullscreen) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.mozRequestFullScreen) {
-        /* Firefox */
-        elem.mozRequestFullScreen();
-      } else if (elem.webkitRequestFullscreen) {
-        /* Chrome, Safari and Opera */
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        /* IE/Edge */
-        elem.msRequestFullscreen();
-      }
-      setIsFullscreen(true);
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        /* Firefox */
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        /* Chrome, Safari and Opera */
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        /* IE/Edge */
-        document.msExitFullscreen();
-      }
-      setIsFullscreen(false);
-    }
-  };
-
- 
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        setIsFullscreen(false);
-      }
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('msfullscreenchange', handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('msfullscreenchange', handleFullscreenChange);
-    };
-  }, []);
 
   return (
     <Dialog
       open={openPreviewDialog}
       onClose={handleClose}
-      ref={dialogRef}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
-      PaperProps={{ 
-        style: { 
-          borderRadius: "10px", 
-          width: isFullscreen ? '100%' : 'auto',
-          height: isFullscreen ? '100%' : 'auto',
-          margin: 0,
-          maxWidth: isFullscreen ? '100%' : '600px',
-        } 
-      }}
-      fullScreen={isFullscreen}
-
+      PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4" display="flex" alignItems={"center"}>
-        <Typography variant="h4" flexGrow={1}>Subtitles</Typography>{" "}
-        <IconButton
-          aria-label="fullscreen"
-          onClick={handleFullscreenToggle}
-          sx={{ marginLeft: "auto" }}
-        >
-         {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </IconButton>
+        <Typography variant="h4">Subtitles</Typography>{" "}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -182,19 +95,7 @@ const PreviewDialog = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent  sx={{ height: "410px", zIndex:"4" }}>
-        {loading ? (
-           <div style={{
-            position: 'absolute',
-            top: '50%', 
-            left: '50%', 
-            transform: 'translate(-50%, -50%)', 
-            zIndex: 1, 
-          }}>
-            <CircularProgress />
-            </div>
-        ) : (
-
+      <DialogContent sx={{ height: "410px" }}>
         <DialogContentText id="alert-dialog-description">
           {previewdata.map((el, i) => {
             const isCurrentSub =
@@ -202,21 +103,9 @@ const PreviewDialog = ({
               el.target_text === currentSubs?.target_text;
 
             return (
-              <Box key={`sub-${i}`}  display="flex" alignItems="center" 
-              >
-              <Box key={`sub-${i}`} display="flex" flexDirection="column" alignItems="center"
-              sx={{
-                border: "1px solid #000000",
-                  borderRadius: 2,
-                  cursor: "pointer",
-                  padding: 2,
-                  mr:2
-
-              }}>
-              <TimeBoxes time={el.start_time} type={"startTime"} /> {/* Display start time */}
-              <TimeBoxes time={el.end_time} type={"endTime"} /> {/* Display end time */}
-              </Box>
               <Box
+                key={`sub-${i}`}
+                id={`sub-${i}`}
                 textAlign={"start"}
                 sx={{
                   mb: 2,
@@ -224,21 +113,15 @@ const PreviewDialog = ({
                   border: "1px solid #000000",
                   borderRadius: 2,
                   width: "90%",
-                  cursor: "pointer",
-                  backgroundColor: isCurrentSub ? "#e0e0e0" : "transparent",
-                  maxHeight:"50px",
-                  overflow:"auto"
+                  cursor:"pointer",
+                  backgroundColor: isCurrentSub ? '#e0e0e0' : 'transparent',
                 }}
               >
-                {taskType.includes("TRANSCRIPTION")
-                  ? el.text
-                  : el.target_text}
+                {taskType.includes("TRANSCRIPTION") ? el.text : el.target_text}
               </Box>
-            </Box>
-          );
-        })}
-    </DialogContentText>
-        )}
+            );
+          })}
+        </DialogContentText>
       </DialogContent>
     </Dialog>
   );
