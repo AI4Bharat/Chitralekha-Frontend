@@ -87,6 +87,7 @@ import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskT
 import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
 import ReopenTaskAPI from "./api/Project/ReopenTask";
 import CreateBulkProjectsAPI from "./api/Project/CreateBulkProjects";
+import UpdateAndReplaceWordsAPI from "./api/Project/UpdateAndReplaceWords";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -300,4 +301,5 @@ export {
   CreateMemberAPI,
   UpdateOnboardingFormAPI,
   FetchOnboardingListAPI,
+  UpdateAndReplaceWordsAPI
 };
