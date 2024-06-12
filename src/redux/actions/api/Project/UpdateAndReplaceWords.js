@@ -18,7 +18,7 @@ export default class UpdateAndReplaceWordsAPI extends API {
           : ENDPOINTS.translation;
         this.endpoint = `${super.apiEndPointAuto()}${
           this.payloadEndpoint
-        }replace_all_words`;
+        }replace_all_words/`;
       }
 
     
