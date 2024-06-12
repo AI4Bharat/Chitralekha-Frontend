@@ -134,6 +134,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -179,6 +180,10 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
         if(apiType === "CREATE_GLOSSARY"){
           setOpenGlossaryDialog(false);
+        }
+
+        if(apiType === "GET_TRANSCRIPT_PAYLOAD"){
+          setLoader(false);
         }
 
       } else {
@@ -356,6 +361,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayloadAPI(value);
   };
 
@@ -713,6 +719,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
