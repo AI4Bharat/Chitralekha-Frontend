@@ -289,6 +289,13 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   //     ?.scrollIntoView(true, { block: "start" });
   // }, [currentIndex]);
 
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+    subtitleScrollEle
+      .querySelector(`#sub_0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
+
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
 

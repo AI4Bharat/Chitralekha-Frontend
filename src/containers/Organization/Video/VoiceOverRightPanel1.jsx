@@ -468,6 +468,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   //     ?.querySelector(`#container-1`),
   // ]);
 
+
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+    subtitleScrollEle
+      .querySelector(`#container-0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
+
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
     dispatch(APITransport(apiObj));
