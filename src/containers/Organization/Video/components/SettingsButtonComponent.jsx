@@ -180,38 +180,34 @@ const SettingsButtonComponent = ({
         </>
       )}
 
-    {!taskData?.task_type?.includes("VOICEOVER") && (
-      <>
         <Tooltip title="Merge Next" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
-              sx={{
-                "&.Mui-disabled": { backgroundColor: "lightgray" },
-              }}
-              style={{
-                transform: "rotate(180deg)"
-              }}
-              onClick={() => onMergeClick(currentIndex)}
-            >
-              <MergeIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+            style={{
+              transform: "rotate(180deg)"
+            }}
+            onClick={() => onMergeClick(currentIndex)}
+          >
+            <MergeIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
 
-          <Tooltip title="Split Subtitle" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              onClick={onSplitClick}
-              disabled={!showPopOver}
-              sx={{
-                "&.Mui-disabled": { backgroundColor: "lightgray" },
-              }}
-            >
-              <SplitscreenIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-        </>
-      )}
+        <Tooltip title="Split Subtitle" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onSplitClick}
+            disabled={!showPopOver}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+          >
+            <SplitscreenIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
 
         <Tooltip title="Expand Timestamp" placement="bottom">
           <IconButton
