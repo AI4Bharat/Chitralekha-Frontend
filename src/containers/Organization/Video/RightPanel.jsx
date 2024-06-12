@@ -31,6 +31,7 @@ import { VideoLandingStyle } from "styles";
 import {
   Box,
   CardContent,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -119,6 +120,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -147,6 +149,10 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
             setTableDialogColumn(failTranscriptionInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
+            break;
+
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
             break;
 
           default:
@@ -549,6 +555,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -615,6 +622,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
