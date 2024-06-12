@@ -155,7 +155,6 @@ import FetchVoiceoverChartAPI from "./api/Intro/FetchVoiceoverChart";
 import FetchTranslationChartAPI from "./api/Intro/FetchTranslationChart";
 
 import APITransport from "./apitransport/apitransport";
-import APITransportUTS from "./apitransport/apitransportUts";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
 import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
 import OnBoardingAPI from "./api/User/OnBoarding";
@@ -267,7 +266,6 @@ export {
   setRangeStart,
   setRangeEnd,
   APITransport,
-  APITransportUTS,
   FetchVoiceoverExportTypesAPI,
   FetchSupportedBulkTaskTypeAPI,
   setSnackBar,
