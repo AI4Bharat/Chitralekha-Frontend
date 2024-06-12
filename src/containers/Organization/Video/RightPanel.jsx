@@ -663,7 +663,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box
