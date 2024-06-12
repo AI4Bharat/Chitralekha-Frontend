@@ -222,9 +222,13 @@ const FindAndReplace = (props) => {
               replaceValue.trim()
             );
           } else {
-            textToReplace = ele[subtitleDataKey]
-              .split(findValue.trim())
-              .join(replaceValue.trim());
+            // textToReplace = ele[subtitleDataKey]
+            //   .split(findValue.trim())
+            //   .join(replaceValue.trim());
+            textToReplace = ele[subtitleDataKey].replace(
+              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
+              replaceValue.trim()
+            );
           }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
@@ -263,11 +267,15 @@ const FindAndReplace = (props) => {
             textToReplace = ele[subtitleDataKey].replace(
               new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
               replaceValue.trim()
-            );
+            );  
           } else {
-            textToReplace = ele[subtitleDataKey]
-              .split(findValue.trim())
-              .join(replaceValue.trim());
+            // textToReplace = ele[subtitleDataKey]
+            //   .split(findValue.trim())
+            //   .join(replaceValue.trim());
+            textToReplace = ele[subtitleDataKey].replace(
+              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
+              replaceValue.trim()
+            );
           }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
@@ -333,9 +341,13 @@ const FindAndReplace = (props) => {
             replaceValue.trim()
           );
         } else {
-          textToReplace = ele[subtitleDataKey]
-            .split(findValue.trim())
-            .join(replaceValue.trim());
+          // textToReplace = ele[subtitleDataKey]
+          //   .split(findValue.trim())
+          //   .join(replaceValue.trim());
+          textToReplace = ele[subtitleDataKey].replace(
+            new RegExp(`\\b${findValue.trim()}\\b`, "g"),
+            replaceValue.trim()
+          );
         }
       } else {
         textToReplace = ele[subtitleDataKey].replace(
