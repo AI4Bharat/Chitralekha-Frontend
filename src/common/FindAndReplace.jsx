@@ -81,6 +81,7 @@ const FindAndReplace = (props) => {
     setFoundIndices([]);
     setCurrentFound();
   };
+  const apiStatus = useSelector((state) => state.apiStatus);
 
   const handleCloseModel = () => {
     setShowFindReplaceModel(false);
@@ -126,8 +127,21 @@ const FindAndReplace = (props) => {
     }
   }, [fetchPreviewData, showFindReplaceModel]);
 
+  useEffect(() => {
+    const { progress, success, apiType, data } = apiStatus;
+    if (!progress) {
+      if (success) {
+        switch (apiType) {
+          case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
+            window.location.reload();
+          }
+        }
+      }
+      // eslint-disable-next-line
+    }, [apiStatus]);
 
-  const SaveReplacedWords= ()=>{    
+
+  const SaveReplacedWords= ()=>{   
     const payloadObj = new UpdateAndReplaceWordsAPI(
       taskId,
       transliterationLang.task_type,
@@ -138,9 +152,9 @@ const FindAndReplace = (props) => {
     )
     dispatch(APITransport(payloadObj))
     // do a full page reload
-    setTimeout(()=>{
-      window.location.reload();
-    },4000)
+    // setTimeout(()=>{
+    //   window.location.reload();
+    // },4000)
   }
 
  

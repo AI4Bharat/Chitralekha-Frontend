@@ -5,7 +5,7 @@ import C from "../../../constants";
 export default class UpdateAndReplaceWordsAPI extends API {
     constructor(id, taskType, word_to_replace, replace_word, replace_full_word, transliteration_language,timeout=2000) {
         super("POST", timeout, false);
-        this.type = C.GET_TRANSCRIPT_PAYLOAD;
+        this.type = C.FIND_AND_REPLACE_FOR_FULL_PAYLOAD;
         this.id = id;
         this.word_to_replace = word_to_replace;
         this.replace_word = replace_word;
