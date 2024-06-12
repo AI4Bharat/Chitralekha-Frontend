@@ -138,7 +138,9 @@ const FindAndReplace = (props) => {
     )
     dispatch(APITransport(payloadObj))
     // do a full page reload
-    // window.location.reload();
+    setTimeout(()=>{
+      window.location.reload();
+    },4000)
   }
 
  
