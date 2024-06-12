@@ -29,7 +29,6 @@ import { VideoLandingStyle } from "styles";
 
 //Components
 import {
-  Backdrop,
   Box,
   CardContent,
   CircularProgress,
