@@ -1110,7 +1110,12 @@ const OrgLevelTaskList = () => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
 
-    const body = {
+    const body = data.description==""?{
+      task_ids: currentSelectedTasks.map((item) => item.id),
+      user: data.user.id,
+      eta: data.date,
+      priority: data.priority,
+    }:{
       task_ids: currentSelectedTasks.map((item) => item.id),
       user: data.user.id,
       description: data.description,
