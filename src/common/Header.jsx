@@ -129,6 +129,21 @@ const Header = () => {
       },
     },
     {
+      name: "Bookmarked Segment",
+      onClick: () => {
+        handleCloseUserMenu();
+        let endpoint = "";
+        if(userData?.user_history?.task_type.includes("TRANSCRIPTION")){
+          endpoint = "transcript";  
+        }else if(userData?.user_history?.task_type.includes("VOICEOVER")){
+          endpoint = "voiceover";  
+        }else{
+          endpoint = "translate";
+        }
+        navigate(`/task/${userData?.user_history?.task_id}/${endpoint}/${userData?.user_history?.offset}/${userData?.user_history?.segment}`);
+      },
+    },
+    {
       name: "Logout",
       onClick: () => {
         handleCloseUserMenu();

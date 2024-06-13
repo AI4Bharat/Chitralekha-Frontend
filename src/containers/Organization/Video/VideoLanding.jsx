@@ -61,7 +61,7 @@ import PlayArrow from "@mui/icons-material/PlayArrow";
 import { Pause } from "@mui/icons-material";
 
 const VideoLanding = () => {
-  const { taskId } = useParams();
+  const { taskId, offset, segment } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
 
@@ -138,7 +138,8 @@ const VideoLanding = () => {
       (async () => {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
-          taskDetails.task_type
+          taskDetails.task_type,
+          offset !== undefined ? offset : 1
         );
         dispatch(APITransport(payloadObj));
       })();
@@ -349,6 +350,7 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
             // <VoiceOverRightPanel currentIndex={currentIndex}
@@ -357,6 +359,7 @@ const VideoLanding = () => {
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           ) : (
             <TranslationRightPanel
@@ -364,6 +367,7 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           )}
           {fullscreen && 

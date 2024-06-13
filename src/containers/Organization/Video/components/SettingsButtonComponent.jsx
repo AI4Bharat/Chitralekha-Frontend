@@ -36,6 +36,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoopIcon from "@mui/icons-material/Loop";
 import ExpandIcon from "@mui/icons-material/Expand";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import BookmarkIcon from '@mui/icons-material/BookmarkBorderOutlined';
 
 const anchorOrigin = {
   vertical: "top",
@@ -78,6 +79,7 @@ const SettingsButtonComponent = ({
   handleReGenerateTranslation,
   expandTimestamp,
   handleGetUpdatedAudioForAll,
+  bookmarkSegment,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -255,6 +257,21 @@ const SettingsButtonComponent = ({
           }
           </>
         )}
+
+        <Tooltip title="Bookmark Segment" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={bookmarkSegment}
+            disabled={currentIndex===-1 || apiInProgress}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+          >
+            <BookmarkIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+
+
         <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
       <Tooltip title="Incorrect Subtitles Info" placement="bottom">

@@ -51,9 +51,9 @@ import {
   setSubtitles,
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
-import { onExpandTimeline } from "utils/subtitleUtils";
+import { bookmarkSegment, onExpandTimeline } from "utils/subtitleUtils";
 
-const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
+const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -81,6 +81,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
@@ -170,6 +171,21 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       setCurrentOffset(currentPage);
     }
   }, [currentPage]);
+
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+        if(segment!==undefined){
+          setTimeout(() => {          
+            const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+            subtitleScrollEle
+              .querySelector(`#sub_${segment}`)
+              ?.scrollIntoView(true, { block: "start" });
+            subtitleScrollEle.querySelector(`#sub_${segment} textarea`).click();
+          }, 2000);
+      }
+    }
+  }, [videoDetails]);
 
   const handleContextMenu = (event) => {
     event.preventDefault();
@@ -308,12 +324,14 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const saveTranscriptHandler = async (
     isFinal,
     isRegenerate = false,
-    subs = sourceText
-  ) => {
+    subs = sourceText,
+    bookmark = false,
+    ) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
+      ...(bookmark && {bookmark: currentIndex}),
       payload: {
         payload: subs,
       },
@@ -671,6 +689,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             showPopOver={showPopOver}
             onSplitClick={onSplitClick}
             expandTimestamp={expandTimestamp}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
           />
         </Grid>
 
