@@ -129,7 +129,7 @@ const Header = () => {
       },
     },
     {
-      name: "Bookmarked Task",
+      name: "Bookmarked Segment",
       onClick: () => {
         handleCloseUserMenu();
         let endpoint = "";
