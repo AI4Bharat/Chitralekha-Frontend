@@ -1110,13 +1110,23 @@ const OrgLevelTaskList = () => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
 
-    const body = {
-      task_ids: currentSelectedTasks.map((item) => item.id),
-      user: data.user.id,
-      description: data.description,
-      eta: data.date,
-      priority: data.priority,
-    };
+    if (description == "") {
+      const body = {
+        task_ids: currentSelectedTasks.map((item) => item.id),
+        user: data.user.id,
+        eta: data.date,
+        priority: data.priority,
+      };
+    }
+    else {
+      const body = {
+        task_ids: currentSelectedTasks.map((item) => item.id),
+        user: data.user.id,
+        description: data.description,
+        eta: data.date,
+        priority: data.priority,
+      };
+    }
 
     let userObj;
     if (isBulk) {
