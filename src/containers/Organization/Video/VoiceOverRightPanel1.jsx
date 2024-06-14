@@ -64,7 +64,7 @@ import GlossaryDialog from "common/GlossaryDialog";
 import { copySubs, onExpandTimeline } from "utils/subtitleUtils";
 import AudioPlayer from "./audioPanel";
 
-const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
+const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -81,6 +81,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const subtitlesForCheck = useSelector(
     (state) => state.commonReducer.subtitlesForCheck
   );
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
@@ -212,6 +213,20 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   };
 
   useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+        if(segment!==undefined){
+          setTimeout(() => {          
+            const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+            subtitleScrollEle
+              .querySelector(`#container-${segment}`)
+              ?.scrollIntoView(true, { block: "start" });
+            subtitleScrollEle.querySelector(`#container-${segment} textarea`).click();
+          }, 2000);
+      }
+    }
+  }, [videoDetails]);
+
+  useEffect(() => {
     setAudioPlayer($audioRef.current);
     // eslint-disable-next-line
   }, [$audioRef.current]);
@@ -303,8 +318,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const saveTranscriptHandler = async (
     isFinal,
     isGetUpdatedAudio,
-    value = currentPage
-  ) => {
+    value = currentPage,
+    bookmark = false,
+    ) => {
     dispatch(
       setSnackBar({
         open: true,
@@ -319,10 +335,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
     const reqBody = {
       task_id: taskId,
+      ...(bookmark && {bookmark: currentIndex}),
+      offset: value,
       payload: {
         payload: sourceText,
       },
-      offset: value,
     };
 
     if (isFinal) {
@@ -753,6 +770,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             expandTimestamp={expandTimestamp}
             handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
             handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
           />
         </Grid>
 

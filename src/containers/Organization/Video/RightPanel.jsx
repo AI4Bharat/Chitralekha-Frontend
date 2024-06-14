@@ -63,7 +63,7 @@ import {
 import { failTranscriptionInfoColumns } from "config";
 import { onExpandTimeline } from "utils/subtitleUtils";
 
-const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
+const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -187,6 +187,15 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
       });
       setSpeakerIdList(speakerList);
       setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+      if(segment!==undefined){
+        setTimeout(() => {    
+          const subtitleScrollEle = document.getElementById("subTitleContainer");
+          subtitleScrollEle
+            .querySelector(`#sub_${segment}`)
+            ?.scrollIntoView(true, { block: "start" });      
+          subtitleScrollEle.querySelector(`#sub_${segment} textarea`).click();
+        }, 2000);
+      }
     }
   }, [videoDetails]);
 
@@ -428,12 +437,14 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   const saveTranscriptHandler = async (
     isFinal,
     isAutosave,
-    payload = subtitles
+    payload = subtitles,
+    bookmark = false,
   ) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
+      ...(bookmark && {bookmark: currentIndex}),
       payload: {
         payload: payload,
       },
@@ -660,6 +671,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
             expandTimestamp={expandTimestamp}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
           />
         </Grid>
 
