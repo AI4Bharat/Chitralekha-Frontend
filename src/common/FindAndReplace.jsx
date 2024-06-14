@@ -214,6 +214,7 @@ const FindAndReplace = (props) => {
     currentSubtitleSource.forEach((ele, index) => {
       if (foundIndices[currentFound] === index) {
         let textToReplace;
+
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
@@ -221,13 +222,13 @@ const FindAndReplace = (props) => {
               replaceValue.trim()
             );
           } else {
-            // textToReplace = ele[subtitleDataKey]
-            //   .split(findValue.trim())
-            //   .join(replaceValue.trim());
-            textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
-              replaceValue.trim()
-            );
+            textToReplace = ele[subtitleDataKey]
+              .split(findValue.trim())
+              .join(replaceValue.trim());
+            // textToReplace = ele[subtitleDataKey].replace(
+            //   new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
+            //   replaceValue.trim()
+            // );
           }
         } else {
           textToReplace = ele[subtitleDataKey].replace(
