@@ -29,6 +29,7 @@ import { VideoLandingStyle } from "styles";
 import {
   Box,
   CardContent,
+  CircularProgress,
   Grid,
   Menu,
   MenuItem,
@@ -107,6 +108,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [showPopOver, setShowPopOver] = useState(false);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -139,6 +141,10 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
           case "CREATE_GLOSSARY":
             setOpenGlossaryDialog(false);
+            break;
+
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
             break;
 
           default:
@@ -304,6 +310,13 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   //     .querySelector(`#sub_${currentIndex}`)
   //     ?.scrollIntoView(true, { block: "start" });
   // }, [currentIndex]);
+
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+    subtitleScrollEle
+      .querySelector(`#sub_0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
@@ -564,6 +577,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -655,6 +669,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -696,7 +711,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
         <Box
           className={classes.subTitleContainer}
           id={"subtitleContainerTranslation"}
-          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}
+          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}
         >
           {sourceText?.map((item, index) => {
             return (

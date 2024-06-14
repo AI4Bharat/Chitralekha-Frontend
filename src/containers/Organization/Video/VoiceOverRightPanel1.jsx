@@ -124,6 +124,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const limit = useSelector((state) => state.commonReducer.limit);
   const [currentOffset, setCurrentOffset] = useState(1);
   const [apiInProgress, setApiInProgress] = useState(false);
+  const [fetchInProgress, setFetchInProgress] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
   const [showPopOver, setShowPopOver] = useState(false);
   const [redoStack, setRedoStack] = useState([]);
@@ -134,6 +135,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -163,6 +165,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             dispatch(setSubtitlesForCheck(newSub));
             dispatch(setSubtitles(sub, C.SUBTITLES));
             dispatch(setTotalSentences(data?.sentences_count));
+            setFetchInProgress(false);
           }
 
           // getPayloadAPI(currentPage);
@@ -178,6 +181,10 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
         if(apiType === "CREATE_GLOSSARY"){
           setOpenGlossaryDialog(false);
+        }
+
+        if(apiType === "GET_TRANSCRIPT_PAYLOAD"){
+          setLoader(false);
         }
 
       } else {
@@ -303,6 +310,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     dispatch(setSubtitles(arr, C.SUBTITLES));
     if(type === "audio" || type === "retranslate"){
       saveTranscriptHandler(false, true);
+      setFetchInProgress(true);
     }
     // saveTranscriptHandler(false, false);
   };
@@ -370,6 +378,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayloadAPI(value);
   };
 
@@ -482,6 +491,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   //     ?.querySelector(`#container-1`),
   // ]);
 
+
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+    subtitleScrollEle
+      .querySelector(`#container-0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
+
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
     dispatch(APITransport(apiObj));
@@ -556,7 +573,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     textarea.selectionEnd = start + text.length;
     textarea.focus();
 
-    const sub = onSubtitleChange(textarea.value, index, 0);
+    const sub = onSubtitleChange(textarea.value, index, 3);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // saveTranscriptHandler(true, true, sub);
   };
@@ -719,6 +736,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -756,7 +774,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
           />
         </Grid>
 
-        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}>
+        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
           {sourceText?.map((item, index) => {
             return (
               <div
@@ -792,6 +810,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       style={{ width: "100%" }}
                     >
                       <textarea
+                        readOnly={fetchInProgress ? true: false}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           }`}
@@ -841,12 +860,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     </Tooltip>
                     <div>
                     <TimeBoxes
+                      readOnly={fetchInProgress ? true: false}
                       handleTimeChange={handleTimeChange}
                       time={item.start_time}
                       index={index}
                       type={"startTime"}
                     />
                     <TimeBoxes
+                      readOnly={fetchInProgress ? true: false}
                       handleTimeChange={handleTimeChange}
                       time={item.end_time}
                       index={index}
@@ -948,6 +969,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
+                            readOnly={fetchInProgress ? true: false}
                             className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                               } ${taskData?.source_type === "Original Source" &&
                               classes.w95
@@ -984,6 +1006,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   ) : (
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
+                        readOnly={fetchInProgress ? true: false}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           } ${taskData?.source_type === "Original Source" &&

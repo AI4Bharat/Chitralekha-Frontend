@@ -31,6 +31,7 @@ import { VideoLandingStyle } from "styles";
 import {
   Box,
   CardContent,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -119,6 +120,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -147,6 +149,10 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
             setTableDialogColumn(failTranscriptionInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
+            break;
+
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
             break;
 
           default:
@@ -199,11 +205,21 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
     }
   }, [currentPage]);
 
-  // if(subtitles)
-  //   {
-  //     console.log('all_sub',subtitles)
-  //   }
-  const getPayload = (offset = currentOffset, lim) => {
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subTitleContainer");
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
+
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subTitleContainer");
+    subtitleScrollEle
+      .querySelector(`#sub_0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
+
+  const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,
       taskData.task_type,
@@ -550,6 +566,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -616,6 +633,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -657,7 +675,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh)"}}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box
