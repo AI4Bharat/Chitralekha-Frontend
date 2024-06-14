@@ -408,13 +408,13 @@ const FindAndReplace = (props) => {
           <Grid container flexDirection={"flex"} justifyContent="space-around">
             <Grid item md={4} sx={{ margin: 2 }}>
               <Box className={classes.matchTypeSwitch}>
-                <Typography variant="body2">Partial Word Replace</Typography>
+                {/* <Typography variant="body2">Partial Word Replace</Typography>
                 <Switch
                   checked={replaceFullWord}
                   onChange={(event) => setReplaceFullWord(event.target.checked)}
                   inputProps={{ "aria-label": "controlled" }}
                 />
-                <Typography variant="body2">Full Word Replace</Typography>
+                <Typography variant="body2">Full Word Replace</Typography> */}
               </Box>
               <Box className={classes.matchTypeSwitch}>
                 <Typography variant="body2">Transliteration: OFF</Typography>
