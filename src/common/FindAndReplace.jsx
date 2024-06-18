@@ -133,7 +133,7 @@ const FindAndReplace = (props) => {
       if (success) {
         switch (apiType) {
           case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
-            window.location.reload();
+            setShowFindReplaceModel(false);
           }
         }
       }
