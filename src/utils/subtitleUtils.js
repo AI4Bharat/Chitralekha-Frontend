@@ -241,6 +241,7 @@ export const onSplit = (
       index,
       0,
       newSub({
+        id: targetTextBlock.id,
         start_time: middleTime
           ? subtitles[currentIndex].start_time
           : timings[0].start,
