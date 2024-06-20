@@ -61,7 +61,6 @@ const FindAndReplace = (props) => {
   const [transliterate, setTransliterate] = useState(true);
   const [loading, setLoading] = useState(false);
   const [reloading, resetLoading] = useState(false);
-  const [reallloading, reallsetLoading] = useState(false);
   const [findloading, findsetLoading] = useState(false);
   const {taskId} = useParams();
   const onReplacementDone = (updatedSource) => {
@@ -133,7 +132,14 @@ const FindAndReplace = (props) => {
       if (success) {
         switch (apiType) {
           case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
+            resetLoading(false);
             setShowFindReplaceModel(false);
+          }
+        }
+      else {
+        switch (apiType) {
+          case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
+            resetLoading(false);
           }
         }
       }
@@ -253,7 +259,7 @@ const FindAndReplace = (props) => {
   };
 
   const onReplaceAllClick = () => {
-    reallsetLoading(true);
+    resetLoading(true);
 
     const currentSubtitleSource = [...previewdata];
     const updatedSubtitleData = [];
@@ -293,7 +299,7 @@ const FindAndReplace = (props) => {
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
     setTimeout(() => {
-      reallsetLoading(false);
+      resetLoading(false);
       // setShowLoading(false);
     }, 500);
   };
@@ -328,6 +334,8 @@ const FindAndReplace = (props) => {
     setAnchorEl(event.currentTarget);
   };
   const onReplaceInAllPages = () => {
+    resetLoading(true);
+
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
   
@@ -538,7 +546,7 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceAllClick}
                   style={{ width: "auto" }}
                 >
-                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace on this page"}
+                {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace on this page"}
                 </Button>
 
                 <Button
@@ -549,7 +557,7 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceInAllPages}
                   style={{ width: "auto" }}
                 >
-                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace on all pages"}
+                {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace on all pages"}
                 </Button>
 
                 {/* <Button
