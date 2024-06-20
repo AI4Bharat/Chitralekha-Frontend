@@ -513,12 +513,13 @@ const FindAndReplace = (props) => {
 
               <Grid
                 display={"flex"}
-                flexDirection={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
+                flexDirection={"column"}
+                justifyContent={"center"}
+                gap={"8px"}
+                // alignItems={"center"}
                 paddingY={3}
               >
-                {/* <Button
+                <Button
                   variant="contained"
                   key={0}
                   className={classes.findBtn}
@@ -527,8 +528,8 @@ const FindAndReplace = (props) => {
                   style={{ width: "auto" }}
                 >
                   {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace"}
-                   {/* Replace */}
-                {/* </Button>
+                </Button>
+
                 <Button
                   variant="contained"
                   key={1}
@@ -537,12 +538,10 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceAllClick}
                   style={{ width: "auto" }}
                 >
-                  Replace on this page
-                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace All"}
-                 {/* Replace All */}
-              
+                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace on this page"}
+                </Button>
 
-                {/* <Button
+                <Button
                   variant="contained"
                   key={2}
                   className={classes.findBtn}
@@ -550,9 +549,10 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceInAllPages}
                   style={{ width: "auto" }}
                 >
-                  Replace on all pages
-                </Button>    */}
-                <Button
+                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace on all pages"}
+                </Button>
+
+                {/* <Button
                   sx={{ inlineSize: "max-content", p: 2, borderRadius: 3, ml: 2,width:"300px" }}
                   id="demo-customized-button"
                   variant="contained"
@@ -584,7 +584,8 @@ const FindAndReplace = (props) => {
                 <MenuItem onClick={onReplaceInAllPages} >
                   Replace on all pages
                 </MenuItem>
-              </StyledMenu>
+              </StyledMenu> */}
+
               </Grid>
             </Grid>
 
