@@ -61,7 +61,6 @@ const FindAndReplace = (props) => {
   const [transliterate, setTransliterate] = useState(true);
   const [loading, setLoading] = useState(false);
   const [reloading, resetLoading] = useState(false);
-  const [reallloading, reallsetLoading] = useState(false);
   const [findloading, findsetLoading] = useState(false);
   const {taskId} = useParams();
   const onReplacementDone = (updatedSource) => {
@@ -133,7 +132,14 @@ const FindAndReplace = (props) => {
       if (success) {
         switch (apiType) {
           case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
+            resetLoading(false);
             setShowFindReplaceModel(false);
+          }
+        }
+      else {
+        switch (apiType) {
+          case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
+            resetLoading(false);
           }
         }
       }
@@ -253,7 +259,7 @@ const FindAndReplace = (props) => {
   };
 
   const onReplaceAllClick = () => {
-    reallsetLoading(true);
+    resetLoading(true);
 
     const currentSubtitleSource = [...previewdata];
     const updatedSubtitleData = [];
@@ -293,7 +299,7 @@ const FindAndReplace = (props) => {
     onReplacementDone(updatedSubtitleData);
     // handleCloseModel();
     setTimeout(() => {
-      reallsetLoading(false);
+      resetLoading(false);
       // setShowLoading(false);
     }, 500);
   };
@@ -328,6 +334,8 @@ const FindAndReplace = (props) => {
     setAnchorEl(event.currentTarget);
   };
   const onReplaceInAllPages = () => {
+    resetLoading(true);
+
     const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
   
@@ -513,12 +521,13 @@ const FindAndReplace = (props) => {
 
               <Grid
                 display={"flex"}
-                flexDirection={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
+                flexDirection={"column"}
+                justifyContent={"center"}
+                gap={"8px"}
+                // alignItems={"center"}
                 paddingY={3}
               >
-                {/* <Button
+                <Button
                   variant="contained"
                   key={0}
                   className={classes.findBtn}
@@ -527,8 +536,8 @@ const FindAndReplace = (props) => {
                   style={{ width: "auto" }}
                 >
                   {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace"}
-                   {/* Replace */}
-                {/* </Button>
+                </Button>
+
                 <Button
                   variant="contained"
                   key={1}
@@ -537,12 +546,10 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceAllClick}
                   style={{ width: "auto" }}
                 >
-                  Replace on this page
-                {reallloading ? <CircularProgress size={24} color="inherit"/> : "Replace All"}
-                 {/* Replace All */}
-              
+                {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace on this page"}
+                </Button>
 
-                {/* <Button
+                <Button
                   variant="contained"
                   key={2}
                   className={classes.findBtn}
@@ -550,9 +557,10 @@ const FindAndReplace = (props) => {
                   onClick={onReplaceInAllPages}
                   style={{ width: "auto" }}
                 >
-                  Replace on all pages
-                </Button>    */}
-                <Button
+                {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace on all pages"}
+                </Button>
+
+                {/* <Button
                   sx={{ inlineSize: "max-content", p: 2, borderRadius: 3, ml: 2,width:"300px" }}
                   id="demo-customized-button"
                   variant="contained"
@@ -584,7 +592,8 @@ const FindAndReplace = (props) => {
                 <MenuItem onClick={onReplaceInAllPages} >
                   Replace on all pages
                 </MenuItem>
-              </StyledMenu>
+              </StyledMenu> */}
+
               </Grid>
             </Grid>
 
