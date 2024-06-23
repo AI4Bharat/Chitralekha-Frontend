@@ -1,7 +1,6 @@
-import React, { useEffect, useState,useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { IndicTransliterate } from "indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
-import MenuItem from '@mui/material/MenuItem';
 import { configs, endpoints } from "config";
 
 import { FetchpreviewTaskAPI, setSnackBar, setSubtitles } from "redux/actions";
@@ -29,9 +28,6 @@ import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import C from "redux/constants";
 import { APITransport } from "redux/actions";
-import Menu from '@mui/material/Menu';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { styled } from '@mui/material/styles';
 import { useParams } from "react-router-dom";
 
 import { useTheme, useMediaQuery } from '@mui/material';
@@ -56,10 +52,8 @@ const FindAndReplace = (props) => {
   const [foundIndices, setFoundIndices] = useState([]);
   const [currentFound, setCurrentFound] = useState();
   const [replaceFullWord, setReplaceFullWord] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const [transliterate, setTransliterate] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [reloading, resetLoading] = useState(false);
   const [findloading, findsetLoading] = useState(false);
   const {taskId} = useParams();
@@ -90,42 +84,6 @@ const FindAndReplace = (props) => {
     setShowFindReplaceModel(true);
   };
 
-  const [previewdata, setPreviewdata] = useState([]);
-
-  const fetchPreviewData = useCallback(async () => {
-    if(taskType.includes("TRANSLATION_VOICEOVER")){
-      setLoading(true);
-      setPreviewdata(sourceData);
-      setLoading(false);
-    }else{
-    setLoading(true);
-    const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetLanguage);
-    try {
-      const res = await fetch(taskObj.apiEndPoint(), {
-        method: "GET",
-        headers: taskObj.getHeaders().headers,
-      });
-
-      const response = await res.json();
-        setPreviewdata(response.data.payload);
-        setLoading(false)
-    } catch (error) {
-      setLoading(false)
-      dispatch(
-        setSnackBar({
-          open: true,
-          message: "Something went wrong!!",
-          variant: "error",
-        })
-        );
-    }}}, [ dispatch,videoId, taskType, targetLanguage, sourceData]);
-
-  useEffect(() => {
-    if (showFindReplaceModel) {
-      fetchPreviewData();
-    }
-  }, [fetchPreviewData, showFindReplaceModel]);
-
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
     if (!progress) {
@@ -147,7 +105,7 @@ const FindAndReplace = (props) => {
     }, [apiStatus]);
 
 
-  const SaveReplacedWords= ()=>{   
+  const replaceTextForAllPagesCall= ()=>{   
     const payloadObj = new UpdateAndReplaceWordsAPI(
       taskId,
       transliterationLang.task_type,
@@ -157,10 +115,6 @@ const FindAndReplace = (props) => {
       transliterationLang.src_language
     )
     dispatch(APITransport(payloadObj))
-    // do a full page reload
-    // setTimeout(()=>{
-    //   window.location.reload();
-    // },4000)
   }
 
  
@@ -168,7 +122,7 @@ const FindAndReplace = (props) => {
     findsetLoading(true);
     const textToFind = findValue.toLowerCase().trim();
     const indexListInDataOfTextOccurence = [];
-    previewdata?.forEach((item, index) => {
+    subtitlesData?.forEach((item, index) => {
       if (item[subtitleDataKey]?.toLowerCase()?.includes(textToFind)) {
         indexListInDataOfTextOccurence.push(index);
       }
@@ -185,14 +139,6 @@ const FindAndReplace = (props) => {
     }, 500);
 
   };
-  useEffect(() => {
-    if (foundIndices.length > 0 && currentFound === 0) {
-      const scrollableElement = document.getElementById("subtitle_scroll_view");
-      scrollableElement
-        ?.querySelector(`#sub_${foundIndices[0]}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [currentFound, foundIndices]);
   
 
   const previousOccurenceClick = () => {
@@ -214,7 +160,7 @@ const FindAndReplace = (props) => {
   const onReplaceClick = () => {
     resetLoading(true);
 
-    const currentSubtitleSource = [...previewdata];
+    const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
 
     currentSubtitleSource.forEach((ele, index) => {
@@ -224,7 +170,7 @@ const FindAndReplace = (props) => {
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
+              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
               replaceValue.trim()
             );
           } else {
@@ -261,7 +207,7 @@ const FindAndReplace = (props) => {
   const onReplaceAllClick = () => {
     resetLoading(true);
 
-    const currentSubtitleSource = [...previewdata];
+    const currentSubtitleSource = [...subtitlesData];
     const updatedSubtitleData = [];
 
     currentSubtitleSource.forEach((ele, index) => {
@@ -271,7 +217,7 @@ const FindAndReplace = (props) => {
         if (replaceFullWord) {
           if (transliterationLanguage === "en") {
             textToReplace = ele[subtitleDataKey].replace(
-              new RegExp(`\\b${findValue.trim()}\\b`, "gi"),
+              new RegExp(`\\b${findValue.trim()}\\b`, "g"),
               replaceValue.trim()
             );  
           } else {
@@ -303,36 +249,7 @@ const FindAndReplace = (props) => {
       // setShowLoading(false);
     }, 500);
   };
-  const open = Boolean(anchorEl);
   
-    const StyledMenu = styled((props) => (
-      <Menu
-        elevation={3}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        {...props}
-      />
-    ))(({ theme }) => ({
-      '& .MuiPaper-root': {
-        borderRadius: 6,
-        marginTop: theme.spacing(1),
-        minWidth: 100,
-
-
-      },
-    }));
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
   const onReplaceInAllPages = () => {
     resetLoading(true);
 
@@ -367,14 +284,10 @@ const FindAndReplace = (props) => {
       ele[subtitleDataKey] = textToReplace;
       updatedSubtitleData.push(ele);
     });
-    SaveReplacedWords();
+    replaceTextForAllPagesCall();
     setSubtitlesData(updatedSubtitleData);
     onReplacementDone(updatedSubtitleData);
   };
- 
-  // useEffect(()=>{
-  //   SaveReplacedWords()
-  // },[onReplaceInAllPages])
 
   return (
     <>
@@ -559,41 +472,6 @@ const FindAndReplace = (props) => {
                 >
                 {reloading ? <CircularProgress size={24} color="inherit"/> : "Replace on all pages"}
                 </Button>
-
-                {/* <Button
-                  sx={{ inlineSize: "max-content", p: 2, borderRadius: 3, ml: 2,width:"300px" }}
-                  id="demo-customized-button"
-                  variant="contained"
-                  disabled={!replaceValue}
-                  onClick={handleClick}
-                  endIcon={<KeyboardArrowDownIcon />}
-                >
-                  Replace Word
-                </Button>
-                <StyledMenu
-                  sytle={{ width: "20px" }}
-                  id="demo-customized-menu"
-                  MenuListProps={{
-                    'aria-labelledby': 'demo-customized-button',
-                  }}
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-
-                >
-                <MenuItem  disabled={!replaceValue}
-                  onClick={onReplaceClick}>
-                  Replace
-                </MenuItem>
-                <MenuItem  disabled={!replaceValue}
-                  onClick={onReplaceAllClick}>
-                  Replace on this page
-                </MenuItem>
-                <MenuItem onClick={onReplaceInAllPages} >
-                  Replace on all pages
-                </MenuItem>
-              </StyledMenu> */}
-
               </Grid>
             </Grid>
 
@@ -609,26 +487,8 @@ const FindAndReplace = (props) => {
               id={"subtitle_scroll_view"}
               order={isSmallScreen ? 1 : 0}
             >
-          {(!subtitlesData) && (
-                <div style={{
-                  position: 'relative',
-                  top: '50%',
-                  zIndex: 1,
-                  
-                }}>
-                  <Loader />
-                </div>
-              )} {loading ? (
-                <div style={{
-                  position: 'relative',
-                  top: '50%',
-                  zIndex: 1,
-
-                }}>
-                  <Loader />
-                </div>
-              ) : (
-                previewdata?.map((el, i) => (
+              {subtitlesData?subtitlesData?.map((el, i) => {
+                return (
                   <Box
                     key={i}
                     id={`sub_${i}`}
@@ -653,7 +513,16 @@ const FindAndReplace = (props) => {
                   >
                     {el[subtitleDataKey]}
                   </Box>
-                ))
+                );
+              }):
+              (<div style={{
+                position: 'relative',
+                top: '50%',
+                zIndex: 1,
+                
+              }}>
+                <Loader />
+              </div>
               )}
             </Grid>
           </Grid>
