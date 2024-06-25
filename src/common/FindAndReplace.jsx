@@ -56,6 +56,8 @@ const FindAndReplace = (props) => {
   const [transliterate, setTransliterate] = useState(true);
   const [reloading, resetLoading] = useState(false);
   const [findloading, findsetLoading] = useState(false);
+  const [findClicked, setFindClicked] = useState(false)
+
   const {taskId} = useParams();
   const onReplacementDone = (updatedSource) => {
     dispatch(setSubtitles(updatedSource, C.SUBTITLES))
@@ -120,6 +122,7 @@ const FindAndReplace = (props) => {
  
   const onFindClick = () => {
     findsetLoading(true);
+    setFindClicked(true);
     const textToFind = findValue.toLowerCase().trim();
     const indexListInDataOfTextOccurence = [];
     subtitlesData?.forEach((item, index) => {
@@ -351,7 +354,10 @@ const FindAndReplace = (props) => {
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                 lang={transliterationLanguage}
                 value={findValue}
-                onChangeText={(text) => setFindValue(text)}
+                onChangeText={(text) => {
+                  setFindValue(text)
+                  setFindClicked(false)
+                }}
                 enabled={transliterate && transliterationLanguage !== "en"}
                 className={classes.findReplaceTextbox}
                 renderComponent={(props) => (
@@ -417,7 +423,7 @@ const FindAndReplace = (props) => {
                 lang={transliterationLanguage}
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}
-                disabled={!(foundIndices?.length > 0)}
+                disabled={!findClicked}
                 enabled={transliterate && transliterationLanguage !== "en"}
                 className={classes.findReplaceTextbox}
                 renderComponent={(props) => (
@@ -444,7 +450,7 @@ const FindAndReplace = (props) => {
                   variant="contained"
                   key={0}
                   className={classes.findBtn}
-                  disabled={!replaceValue}
+                  disabled={!replaceValue || !(foundIndices?.length > 0)}
                   onClick={onReplaceClick}
                   style={{ width: "auto" }}
                 >
@@ -455,7 +461,7 @@ const FindAndReplace = (props) => {
                   variant="contained"
                   key={1}
                   className={classes.findBtn}
-                  disabled={!replaceValue}
+                  disabled={!replaceValue || !(foundIndices?.length > 0)}
                   onClick={onReplaceAllClick}
                   style={{ width: "auto" }}
                 >
