@@ -454,7 +454,7 @@ const SettingsButtonComponent = ({
       <Tooltip title="Complete" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          disabled={getDisbled("complete")}
+          disabled={getDisbled("complete") || apiInProgress}
           onClick={() => setOpenConfirmDialog(true)}
         >
           <VerifiedIcon className={classes.rightPanelSvg} />
