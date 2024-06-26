@@ -93,6 +93,8 @@ const FindAndReplace = (props) => {
         switch (apiType) {
           case "FIND_AND_REPLACE_FOR_FULL_PAYLOAD":
             resetLoading(false);
+            setFoundIndices([])
+            setReplaceValue("")
             setShowFindReplaceModel(false);
           }
         }
@@ -107,14 +109,14 @@ const FindAndReplace = (props) => {
     }, [apiStatus]);
 
 
-  const replaceTextForAllPagesCall= ()=>{   
+  const replaceTextForAllPagesCall= ()=>{
     const payloadObj = new UpdateAndReplaceWordsAPI(
       taskId,
       transliterationLang.task_type,
-      findValue,
-      replaceValue,
+      findValue.trim(),
+      replaceValue.trim(),
       replaceFullWord,
-      transliterationLang.src_language
+      transliterationLanguage
     )
     dispatch(APITransport(payloadObj))
   }
