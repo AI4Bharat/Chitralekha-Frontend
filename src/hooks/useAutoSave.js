@@ -27,19 +27,21 @@ export const useAutoSave = () => {
       //   return;
       // }
 
-      // if(taskDetails?.task_type.includes("TRANSLATION_VOICEOVER")){
-      //   if(subs.length > 0){
-      //     subs.forEach(element => {
-      //       element.text_changed = false;
-      //     });
-      // }}
+      let copySubs = [...subs];
+
+      if(taskDetails?.task_type.includes("TRANSLATION_VOICEOVER")){
+        if(copySubs.length > 0){
+          copySubs.forEach(element => {
+            element.audio = "";
+          });
+      }}
 
       const reqBody = {
         task_id: taskId,
         offset: currentPage,
         limit: limit,
         payload: {
-          payload: subs,
+          payload: copySubs,
         },
       };
 
