@@ -20,7 +20,7 @@ export const useAutoSave = () => {
       //   return;
       // }
 
-      let copySubs = [...subs];
+      let copySubs = JSON.parse(JSON.stringify(subs));
 
       if(taskDetails?.task_type.includes("TRANSLATION_VOICEOVER")){
         if(copySubs.length > 0){
