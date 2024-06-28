@@ -333,13 +333,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     //   SaveTranscriptAPI.isSaveInProgress(true);
     // }
 
-    const sub = JSON.parse(JSON.stringify(sourceText));
+    const subs = JSON.parse(JSON.stringify(sourceText));
     const reqBody = {
       task_id: taskId,
       ...(bookmark && {bookmark: currentIndex}),
       offset: value,
       payload: {
-        payload: sub,
+        payload: subs,
       },
     };
 
