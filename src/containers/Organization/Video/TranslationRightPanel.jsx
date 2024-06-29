@@ -35,7 +35,7 @@ import {
   MenuItem,
   useMediaQuery,
 } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -801,6 +801,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
                   {enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.target_language}
                       value={item.target_text}
                       onChangeText={(text) => {
