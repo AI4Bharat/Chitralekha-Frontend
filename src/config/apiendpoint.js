@@ -39,7 +39,7 @@ const endpoints = {
   task: "/task/",
 
   //Transliteration
-  transliteration: "/api/generic/transliteration",
+  transliteration: "/api/generic/transliteration/",
 
   //Glossary
   glossary: "/glossary/",
