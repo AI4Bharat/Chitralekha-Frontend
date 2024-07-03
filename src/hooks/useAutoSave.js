@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { APITransport, SaveTranscriptAPI } from "redux/actions";
@@ -15,12 +14,17 @@ export const useAutoSave = () => {
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
   const [apiInProgress, setApiInProgress] = useState(false);
-
+  const apiInProgressRef = useRef(apiInProgress);
+  
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
     setApiInProgress(progress);
   }, [apiStatus]);
 
+  useEffect(() => {
+    apiInProgressRef.current = apiInProgress;
+  }, [apiInProgress]);
+  
   useEffect(() => {
     const handleAutosave = () => {
       // if (SaveTranscriptAPI.shouldSkipAutoSave) {
@@ -45,7 +49,7 @@ export const useAutoSave = () => {
         },
       };
 
-      if(!apiInProgress){
+      if (!apiInProgressRef.current) {
         const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
         dispatch(APITransport(obj));
       }
@@ -70,5 +74,5 @@ export const useAutoSave = () => {
     };
 
     // eslint-disable-next-line
-  }, [subs, apiInProgress]);
+  }, [subs]);
 };
