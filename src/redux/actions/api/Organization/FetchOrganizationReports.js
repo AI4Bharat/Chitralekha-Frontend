@@ -1,9 +1,19 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
+import moment from "moment";
 
 export default class FetchOrganizationReportsAPI extends API {
-  constructor(id, endPoint, limit, offset, task_type = "", timeout = 2000) {
+  constructor(
+    id,
+    endPoint,
+    limit,
+    offset,
+    taskStartDate = moment().format("YYYY-MM-DD"),
+    taskEndDate = moment().format("YYYY-MM-DD"),
+    task_type = "",
+    timeout = 2000
+  ) {
     super("GET", timeout, false);
     this.type = C.GET_ORGANIZATION_REPORTS;
     this.endpoint =
@@ -13,7 +23,7 @@ export default class FetchOrganizationReportsAPI extends API {
           }${id}/${endPoint}/?limit=${limit}&offset=${offset}&task_type=${task_type}`
         : `${super.apiEndPointAuto()}${
             ENDPOINTS.organization
-          }${id}/${endPoint}/?limit=${limit}&offset=${offset}`;
+          }${id}/${endPoint}/?limit=${limit}&offset=${offset}&taskStartDate=${taskStartDate}&taskEndDate=${taskEndDate}`;
   }
 
   processResponse(res) {
