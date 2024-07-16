@@ -36,6 +36,7 @@ import {
 //Themes
 import { ProjectStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
+import { Download } from "@mui/icons-material";
 
 const OrganizationReport = () => {
   const { id } = useParams();
@@ -108,6 +109,26 @@ const OrganizationReport = () => {
       temp[0].downloadEndPoint
     );
     dispatch(APITransport(apiObj));
+  };
+
+  const handleDownloadReportCsv = () => {
+    var header = '';
+    columns.forEach((item) => {
+      header += item.label + ","
+    })
+    var data = tableData.map((item) => {
+      var row = item;
+      return row.join(",");
+    }).join("\n");
+    const blob = new Blob([header.slice(0,-1)+'\n'+data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reports.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -281,6 +302,7 @@ const OrganizationReport = () => {
           </Tooltip>
         </Button>
         {reportsLevel && (
+          <>
           <Button
             style={{ minWidth: "25px" }}
             onClick={() => handleDownloadReport()}
@@ -289,6 +311,15 @@ const OrganizationReport = () => {
               <MailIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
             </Tooltip>
           </Button>
+           <Button
+           style={{ minWidth: "25px" }}
+           onClick={() => handleDownloadReportCsv()}
+         >
+           <Tooltip title={"Download CSV"}>
+             <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+           </Tooltip>
+         </Button>
+         </>
         )}
       </>
     );
