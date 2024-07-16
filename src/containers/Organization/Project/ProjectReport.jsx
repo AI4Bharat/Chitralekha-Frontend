@@ -32,6 +32,7 @@ import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
 import constants from "redux/constants";
+import { Download } from "@mui/icons-material";
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -86,6 +87,26 @@ const ProjectReport = () => {
   const handleDownloadReport = async () => {
     const apiObj = new DownloadProjectReportsAPI(projectId, reportsLevel);
     dispatch(APITransport(apiObj));
+  };
+
+  const handleDownloadReportCsv = () => {
+    var header = '';
+    columns.forEach((item) => {
+      header += item.label + ","
+    })
+    var data = tableData.map((item) => {
+      var row = item;
+      return row.join(",");
+    }).join("\n");
+    const blob = new Blob([header.slice(0,-1)+'\n'+data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reports.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -192,7 +213,7 @@ const ProjectReport = () => {
           </Tooltip>
         </Button>
         {reportsLevel && (
-          <Button
+          <><Button
             style={{ minWidth: "25px" }}
             onClick={() => handleDownloadReport()}
           >
@@ -200,6 +221,15 @@ const ProjectReport = () => {
               <MailIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
             </Tooltip>
           </Button>
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+          </>
         )}
       </>
     );
