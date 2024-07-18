@@ -20,22 +20,29 @@ import {
   Grid,
   Tooltip,
   Button,
+  TextField,
+  Badge
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import MailIcon from "@mui/icons-material/Mail";
-import { ColumnSelector } from "common";
+import { ColumnSelector, FilterList } from "common";
 
 //APIs
 import {
   APITransport,
   FetchOrganizationReportsAPI,
   DownloadOrganizationReportsAPI,
+  updateOrgSelectedFilter,
 } from "redux/actions";
 
 //Themes
 import { ProjectStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
+import { Download } from "@mui/icons-material";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { DatePicker } from "@mui/x-date-pickers";
+import moment from "moment";
 
 const OrganizationReport = () => {
   const { id } = useParams();
@@ -49,17 +56,22 @@ const OrganizationReport = () => {
   const [options, setOptions] = useState();
   const [tableData, setTableData] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEle, setAnchorEle] = useState(null);
   const [originalTableData, setOriginalTableData] = useState([]);
   const [showUserReportProjectColumn, setShowUserReportProjectColumn] = useState(true);
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
-
+  const [taskStartDate, setTaskStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [taskEndDate, setTaskEndDate] = useState(moment().format("YYYY-MM-DD"));
   const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const { reports: reportData, total_count } = useSelector(
     (state) => state.getOrganizationReports?.data
+  );
+  const orgSelectedFilters = useSelector(
+    (state) => state.orgTaskFilters.orgSelectedFilters
   );
   const SearchProject = useSelector((state) => state.searchList.data);
 
@@ -68,7 +80,7 @@ const OrganizationReport = () => {
     setlanguageLevelStats("");
     setOffset(0);
     setShowUserReportProjectColumn(true);
-    if (event.target.value === "Project Language") return;
+    if (event.target.value === "Project Language" || event.target.value === "Task") return;
     const temp = reportLevels.filter(
       (item) => item.reportLevel === event.target.value
     );
@@ -81,6 +93,40 @@ const OrganizationReport = () => {
     );
     dispatch(APITransport(apiObj));
   };
+
+  const handleTaskReportSubmit = () => {
+    const filter = {
+      task_type: orgSelectedFilters?.taskType,
+      status: orgSelectedFilters?.status,
+      src_language: orgSelectedFilters?.srcLanguage,
+      target_language: orgSelectedFilters?.tgtLanguage,
+    };
+    const temp = reportLevels.filter(
+      (item) => item.reportLevel === reportsLevel
+    );
+    const filterRequest = Object.entries(filter).reduce((acc, [key, value]) => {
+      if (value.length > 0) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    const apiObj = new FetchOrganizationReportsAPI(
+      id,
+      temp[0].endPoint,
+      limit,
+      offset + 1,
+      "",
+      filterRequest,
+      taskStartDate,
+      taskEndDate
+    );
+    dispatch(APITransport(apiObj));
+  }
+
+  useEffect(() => {
+    if(reportLevels !== undefined && reportsLevel === "Task")
+    {handleTaskReportSubmit();}
+  }, [orgSelectedFilters]);
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
@@ -108,6 +154,26 @@ const OrganizationReport = () => {
       temp[0].downloadEndPoint
     );
     dispatch(APITransport(apiObj));
+  };
+
+  const handleDownloadReportCsv = () => {
+    var header = '';
+    columns.forEach((item) => {
+      header += item.label + ","
+    })
+    var data = tableData.map((item) => {
+      var row = item;
+      return row.join(",");
+    }).join("\n");
+    const blob = new Blob([header.slice(0,-1)+'\n'+data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reports_"+Date.now()+".csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -270,6 +336,10 @@ const OrganizationReport = () => {
   };
 
   const renderToolBar = () => {
+    const arrayLengths = Object.values(orgSelectedFilters).map(
+      (arr) => arr.length
+    );
+    const sumOfLengths = arrayLengths.reduce((acc, length) => acc + length, 0);
     return (
       <>
         <Button
@@ -290,6 +360,27 @@ const OrganizationReport = () => {
             </Tooltip>
           </Button>
         )}
+        {reportsLevel && tableData?.length > 0 && (
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+        )}
+        {reportsLevel === "Task" &&
+         <Button
+           style={{ minWidth: "25px" }}
+           onClick={(event) => setAnchorEle(event.currentTarget)}
+         >
+           <Tooltip title={"Filter Table"}>
+             <Badge color="primary" badgeContent={sumOfLengths}>
+               <FilterListIcon sx={{ color: "#515A5A" }} />
+             </Badge>
+           </Tooltip>
+         </Button>}
       </>
     );
   };
@@ -323,7 +414,7 @@ const OrganizationReport = () => {
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus]);
+  }, [apiStatus, tableData]);
 
   return (
     <>
@@ -351,30 +442,74 @@ const OrganizationReport = () => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          {reportsLevel.includes("Language") && (
-            <FormControl fullWidth>
-              <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
-                Select Task Type
-              </InputLabel>
+        {reportsLevel.includes("Language") && (
+           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <FormControl fullWidth>
+                 <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
+                   Select Task Type
+                 </InputLabel>
 
-              <Select
-                labelId="SelectTaskTypeLabel"
-                id="demo-simple-select"
-                label="Select Task Type"
-                value={languageLevelsStats}
-                onChange={handleChangelanguageLevelStats}
-                sx={{ textAlign: "start" }}
-              >
-                {languagelevelStats.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
-                    {item.lable}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </Grid>
+                 <Select
+                   labelId="SelectTaskTypeLabel"
+                   id="demo-simple-select"
+                   label="Select Task Type"
+                   value={languageLevelsStats}
+                   onChange={handleChangelanguageLevelStats}
+                   sx={{ textAlign: "start" }}
+                 >
+                   {languagelevelStats.map((item, index) => (
+                     <MenuItem key={index} value={item.value}>
+                       {item.lable}
+                     </MenuItem>
+                   ))}
+                 </Select>
+               </FormControl> 
+           </Grid>
+         )}
+         {reportsLevel.includes("Task") && (
+           <>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="Start Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskStartDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskStartDate(formatedDate)
+                 }
+                 }
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="End Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskEndDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskEndDate(formatedDate)
+                 }}
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <Button
+                 variant="contained"
+                 onClick={()=>{handleTaskReportSubmit()}}
+                 autoFocus
+                 sx={{ borderRadius: "8px" }}
+               >
+               {/* <Button onClick={()=>{handleTaskReportSubmit()}}> */}
+                 submit
+               </Button>
+             </Grid>
+           </>
+         )}
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
@@ -394,6 +529,17 @@ const OrganizationReport = () => {
           columns={columns}
           showUserReportProjectColumn={showUserReportProjectColumn}
           handleColumnSelection={handleColumnSelection}
+        />
+      )}
+
+      {Boolean(anchorEle) && (
+        <FilterList
+          id={"filterList"}
+          open={Boolean(anchorEle)}
+          anchorEl={anchorEle}
+          handleClose={() => setAnchorEle(null)}
+          updateFilters={updateOrgSelectedFilter}
+          currentFilters={orgSelectedFilters}
         />
       )}
     </>
