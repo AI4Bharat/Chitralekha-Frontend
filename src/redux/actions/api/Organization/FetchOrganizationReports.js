@@ -9,9 +9,9 @@ export default class FetchOrganizationReportsAPI extends API {
     endPoint,
     limit,
     offset,
+    task_type = "",
     taskStartDate = moment().format("YYYY-MM-DD"),
     taskEndDate = moment().format("YYYY-MM-DD"),
-    task_type = "",
     timeout = 2000
   ) {
     super("GET", timeout, false);
