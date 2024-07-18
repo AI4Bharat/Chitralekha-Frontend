@@ -21,23 +21,26 @@ import {
   Tooltip,
   Button,
   TextField,
+  Badge,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import MailIcon from "@mui/icons-material/Mail";
-import { ColumnSelector } from "common";
+import { ColumnSelector, FilterList } from "common";
 
 //APIs
 import {
   APITransport,
   FetchOrganizationReportsAPI,
   DownloadOrganizationReportsAPI,
+  updateOrgSelectedFilter,
 } from "redux/actions";
 
 //Themes
 import { ProjectStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
 import { Download } from "@mui/icons-material";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
 
@@ -53,6 +56,7 @@ const OrganizationReport = () => {
   const [options, setOptions] = useState();
   const [tableData, setTableData] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEle, setAnchorEle] = useState(null);
   const [originalTableData, setOriginalTableData] = useState([]);
   const [showUserReportProjectColumn, setShowUserReportProjectColumn] = useState(true);
 
@@ -66,6 +70,9 @@ const OrganizationReport = () => {
   const apiStatus = useSelector((state) => state.apiStatus);
   const { reports: reportData, total_count } = useSelector(
     (state) => state.getOrganizationReports?.data
+  );
+  const orgSelectedFilters = useSelector(
+    (state) => state.orgTaskFilters.orgSelectedFilters
   );
   const SearchProject = useSelector((state) => state.searchList.data);
 
@@ -89,21 +96,38 @@ const OrganizationReport = () => {
   };
 
   const handleTaskReportSubmit = () => {
+    const filter = {
+      task_type: orgSelectedFilters?.taskType,
+      status: orgSelectedFilters?.status,
+      src_language: orgSelectedFilters?.srcLanguage,
+      target_language: orgSelectedFilters?.tgtLanguage,
+    };
     const temp = reportLevels.filter(
       (item) => item.reportLevel === reportsLevel
     );
-    console.log(typeof(taskStartDate))
+    const filterRequest = Object.entries(filter).reduce((acc, [key, value]) => {
+      if (value.length > 0) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
       limit,
       offset + 1,
       "",
+      filterRequest,
       taskStartDate,
       taskEndDate
     );
     dispatch(APITransport(apiObj));
   }
+
+  useEffect(() => {
+    if(reportLevels !== undefined && reportsLevel === "Task")
+    {handleTaskReportSubmit();}
+  }, [orgSelectedFilters]);
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
@@ -313,6 +337,11 @@ const OrganizationReport = () => {
   };
 
   const renderToolBar = () => {
+    const arrayLengths = Object.values(orgSelectedFilters).map(
+      (arr) => arr.length
+    );
+    const sumOfLengths = arrayLengths.reduce((acc, length) => acc + length, 0);
+
     return (
       <>
         <Button
@@ -343,6 +372,17 @@ const OrganizationReport = () => {
            </Tooltip>
          </Button>
         )}
+        {reportsLevel === "Task" &&
+        <Button
+          style={{ minWidth: "25px" }}
+          onClick={(event) => setAnchorEle(event.currentTarget)}
+        >
+          <Tooltip title={"Filter Table"}>
+            <Badge color="primary" badgeContent={sumOfLengths}>
+              <FilterListIcon sx={{ color: "#515A5A" }} />
+            </Badge>
+          </Tooltip>
+        </Button>}
       </>
     );
   };
@@ -491,6 +531,17 @@ const OrganizationReport = () => {
           columns={columns}
           showUserReportProjectColumn={showUserReportProjectColumn}
           handleColumnSelection={handleColumnSelection}
+        />
+      )}
+
+      {Boolean(anchorEle) && (
+        <FilterList
+          id={"filterList"}
+          open={Boolean(anchorEle)}
+          anchorEl={anchorEle}
+          handleClose={() => setAnchorEle(null)}
+          updateFilters={updateOrgSelectedFilter}
+          currentFilters={orgSelectedFilters}
         />
       )}
     </>

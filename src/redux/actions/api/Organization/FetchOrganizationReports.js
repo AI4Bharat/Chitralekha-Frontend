@@ -10,11 +10,15 @@ export default class FetchOrganizationReportsAPI extends API {
     limit,
     offset,
     task_type = "",
+    filter,
     taskStartDate = moment().format("YYYY-MM-DD"),
     taskEndDate = moment().format("YYYY-MM-DD"),
     timeout = 2000
   ) {
     super("GET", timeout, false);
+    const params = new URLSearchParams();
+    params.append("filter", JSON.stringify(filter));
+
     this.type = C.GET_ORGANIZATION_REPORTS;
     this.endpoint =
       endPoint === "get_report_languages"
@@ -23,7 +27,7 @@ export default class FetchOrganizationReportsAPI extends API {
           }${id}/${endPoint}/?limit=${limit}&offset=${offset}&task_type=${task_type}`
         : `${super.apiEndPointAuto()}${
             ENDPOINTS.organization
-          }${id}/${endPoint}/?limit=${limit}&offset=${offset}&taskStartDate=${taskStartDate}&taskEndDate=${taskEndDate}`;
+          }${id}/${endPoint}/?limit=${limit}&offset=${offset}&taskStartDate=${taskStartDate}&taskEndDate=${taskEndDate}`+`&${params.toString()}`;
   }
 
   processResponse(res) {
