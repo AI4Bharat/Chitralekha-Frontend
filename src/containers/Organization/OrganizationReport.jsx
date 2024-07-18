@@ -98,6 +98,7 @@ const OrganizationReport = () => {
       temp[0].endPoint,
       limit,
       offset + 1,
+      "",
       taskStartDate,
       taskEndDate
     );
