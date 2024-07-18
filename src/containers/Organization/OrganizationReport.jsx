@@ -145,7 +145,7 @@ const OrganizationReport = () => {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "reports.csv");
+    link.setAttribute("download", "reports_"+Date.now()+".csv");
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -323,7 +323,6 @@ const OrganizationReport = () => {
           </Tooltip>
         </Button>
         {reportsLevel && (
-          <>
           <Button
             style={{ minWidth: "25px" }}
             onClick={() => handleDownloadReport()}
@@ -332,6 +331,8 @@ const OrganizationReport = () => {
               <MailIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
             </Tooltip>
           </Button>
+        )}
+        {reportsLevel && tableData?.length > 0 && (
            <Button
            style={{ minWidth: "25px" }}
            onClick={() => handleDownloadReportCsv()}
@@ -340,7 +341,6 @@ const OrganizationReport = () => {
              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
            </Tooltip>
          </Button>
-         </>
         )}
       </>
     );
@@ -375,7 +375,7 @@ const OrganizationReport = () => {
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus]);
+  }, [apiStatus, tableData]);
 
   return (
     <>

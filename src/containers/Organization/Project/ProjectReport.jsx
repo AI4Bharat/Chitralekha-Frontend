@@ -102,7 +102,7 @@ const ProjectReport = () => {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "reports.csv");
+    link.setAttribute("download", "reports_"+Date.now()+".csv");
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -213,7 +213,7 @@ const ProjectReport = () => {
           </Tooltip>
         </Button>
         {reportsLevel && (
-          <><Button
+          <Button
             style={{ minWidth: "25px" }}
             onClick={() => handleDownloadReport()}
           >
@@ -221,6 +221,8 @@ const ProjectReport = () => {
               <MailIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
             </Tooltip>
           </Button>
+        )}
+        {reportsLevel && tableData?.length > 0 && (
           <Button
             style={{ minWidth: "25px" }}
             onClick={() => handleDownloadReportCsv()}
@@ -229,7 +231,6 @@ const ProjectReport = () => {
               <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
             </Tooltip>
           </Button>
-          </>
         )}
       </>
     );
@@ -263,7 +264,7 @@ const ProjectReport = () => {
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus.progress]);
+  }, [apiStatus.progress, tableData]);
 
   const handleColumnSelection = (e) => {
     const selectedColumns = [...columns];
