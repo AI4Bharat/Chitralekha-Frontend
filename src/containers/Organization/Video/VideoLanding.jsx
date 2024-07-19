@@ -59,6 +59,7 @@ import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import PlayArrow from "@mui/icons-material/PlayArrow";
 import { Pause } from "@mui/icons-material";
+import ParaphraseRightPanel from "./ParaphraseRightPanel";
 
 const VideoLanding = () => {
   const { taskId, offset, segment } = useParams();
@@ -345,6 +346,15 @@ const VideoLanding = () => {
         <PanelResizeHandle />
         <Panel defaultSize={75} minSize={50} id="right-panel" style={{backgroundColor:"white", paddingTop: fullscreen?"4%":"0"}}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
+            taskDetails?.status === "PARAPHRASE" ?
+            <ParaphraseRightPanel
+              currentIndex={currentIndex}
+              currentSubs={currentSubs}
+              setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
+              segment={segment}
+            />
+            :
             <RightPanel
               currentIndex={currentIndex}
               currentSubs={currentSubs}

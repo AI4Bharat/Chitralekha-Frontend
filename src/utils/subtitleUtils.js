@@ -85,7 +85,7 @@ export const timeChange = (value, index, type, time) => {
   return copySub;
 };
 
-export const addSubtitleBox = (index) => {
+export const addSubtitleBox = (index, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
@@ -103,14 +103,14 @@ export const addSubtitleBox = (index) => {
           : DT.d2t(duration + 0.5),
       text: "",
       speaker_id: "",
-      target_text: "",
+      ...(paraphrase ? {paraphrased_text: ""} : {target_text: ""})
     })
   );
 
   return copySub;
 };
 
-export const onMerge = (index, votr=false) => {
+export const onMerge = (index, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const existingsourceData = [...subtitles];
@@ -146,9 +146,11 @@ export const onMerge = (index, votr=false) => {
       text: `${existingsourceData[index].text} ${
         existingsourceData[index + 1].text
       }`,
-      target_text: `${existingsourceData[index].target_text} ${
+      ...(paraphrase ? {paraphrased_text: `${existingsourceData[index].paraphrased_text} ${
+        existingsourceData[index + 1].paraphrased_text
+      }`} : {target_text: `${existingsourceData[index].target_text} ${
         existingsourceData[index + 1].target_text
-      }`,
+      }`}),
       speaker_id: "",
     })
   );
@@ -173,6 +175,7 @@ export const onSplit = (
   targetSelectionStart = null,
   translateSplit = false,
   votr=false,
+  paraphrase=false,
 ) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
@@ -198,6 +201,13 @@ export const onSplit = (
       targetText2 = translateSplit ? " " : targetSelectionStart
         ? targetTextBlock.text.slice(targetSelectionStart).trim()
         : null;
+    }else if(paraphrase === true){
+      targetText1 = targetSelectionStart
+        ? targetTextBlock.paraphrased_text.slice(0, targetSelectionStart).trim()
+        : targetTextBlock.paraphrased_text;
+      targetText2 = targetSelectionStart
+        ? targetTextBlock.paraphrased_text.slice(targetSelectionStart).trim()
+        : "";
     }else{
       targetText1 = translateSplit ? targetTextBlock.target_text : targetSelectionStart
         ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
@@ -282,8 +292,8 @@ export const onSplit = (
           : timings[0].start,
         end_time: middleTime ?? timings[0].end,
         text: text1,
-        ...((translateSplit || targetSelectionStart) && { target_text: targetText1 }),
         speaker_id: "",
+        ...(paraphrase ? {paraphrased_text: targetText1} : ((translateSplit || targetSelectionStart) && { target_text: targetText1 })),
       })
     );
 
@@ -297,8 +307,8 @@ export const onSplit = (
             ? subtitles[currentIndex].end_time
             : timings[1].end,
         text: text2,
-        ...((translateSplit || targetSelectionStart) && { target_text: targetText2 }),
         speaker_id: "",
+        ...(paraphrase ? {paraphrased_text: targetText2} : ((translateSplit || targetSelectionStart) && { target_text: targetText2 })),
       })
     );
     }
@@ -423,7 +433,7 @@ export const placementMenu = [
   { label: "Bottom", mode: "bottom" },
 ];
 
-export const onUndoAction = (lastAction, votr=false) => {
+export const onUndoAction = (lastAction, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const { type, index, selectionStart, targetSelectionStart, timings, data } =
@@ -432,12 +442,11 @@ export const onUndoAction = (lastAction, votr=false) => {
   switch (type) {
     case "merge":
       return (
-        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr) ||
-        subtitles
+        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr, paraphrase)
       );
 
     case "split":
-      return onMerge(index, votr) || subtitles;
+      return onMerge(index, votr, paraphrase);
 
     case "delete":
       const copySub = copySubs();
@@ -452,18 +461,18 @@ export const onUndoAction = (lastAction, votr=false) => {
   }
 };
 
-export const onRedoAction = (lastAction, votr=false) => {
+export const onRedoAction = (lastAction, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const { type, index, selectionStart, targetSelectionStart, timings } =
     lastAction;
 
   switch (type) {
     case "merge":
-      return onMerge(index, votr) || subtitles;
+      return onMerge(index, votr, paraphrase) || subtitles;
 
     case "split":
       return (
-        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr) ||
+        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr, paraphrase) ||
         subtitles
       );
 
@@ -543,12 +552,16 @@ export const getSelectionStart = (index, votr=false) => {
   }
 };
 
-export const getTargetSelectionStart = (index, votr=false) => {
+export const getTargetSelectionStart = (index, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
   if(votr){
     return subtitles[index].text.length;
   }else{
-    return subtitles[index].target_text.length;
+    if(paraphrase){
+      return subtitles[index].paraphrased_text.length;
+    }else{
+      return subtitles[index].target_text.length;
+    }
   }
 };
 
@@ -624,6 +637,13 @@ export const reGenerateTranslation = (index) => {
   const copySub = [...subtitles];
   copySub[index].retranslate = true;
 
+  return copySub;
+};
+
+export const paraphrase = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  copySub[index].paraphrase = true;
   return copySub;
 };
 
