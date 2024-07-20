@@ -227,6 +227,21 @@ const SettingsButtonComponent = ({
           </IconButton>
         </Tooltip>
 
+      {taskData?.task_type?.includes("TRANSCRIPTION") && taskData?.status === "PARAPHRASE" && (
+        <Tooltip title="Paraphrase Segment" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => handleReGenerateTranslation(currentIndex)}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+            disabled={apiInProgress}
+          >
+            <LoopIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      )}
+
         {taskData?.task_type?.includes("TRANSLATION") && (
             <>
             <Tooltip title={taskData?.task_type?.includes("VOICEOVER") ? "Regenerate Translation For All Segments" : "Regenerate Translation"} placement="bottom">

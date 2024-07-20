@@ -6,6 +6,7 @@ export const taskStatus = [
   { value: "COMPLETE", label: "Complete" },
   { value: "FAILED", label: "Failed" },
   { value: "REOPEN", label: "Reopen" },
+  { value: "PARAPHRASE", label: "Paraphrase" },
 ];
 
 export const taskTypes = [
