@@ -32,6 +32,8 @@ import {
   Menu,
   MenuItem,
   useMediaQuery,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import { IndicTransliterate } from "indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
@@ -51,6 +53,7 @@ import {
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
 import { bookmarkSegment, onExpandTimeline, paraphrase } from "utils/subtitleUtils";
+import LoopIcon from "@mui/icons-material/Loop";
 
 const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
@@ -107,9 +110,11 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [showPopOver, setShowPopOver] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
+    setApiInProgress(progress);
 
     if (!progress) {
       if (success) {
@@ -795,6 +800,18 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                       index={index}
                       type={"endTime"}
                     />
+                    {currentIndex === index && 
+                      <Tooltip title="Paraphrase Segment" placement="bottom">
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          onClick={() => handleReGenerateTranslation(index)}
+                          style={{ marginTop: "10px"}}
+                          disabled={apiInProgress}
+                        >
+                          <LoopIcon className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                    }
                   </div>
 
                   {enableTransliteration ? (
