@@ -228,10 +228,10 @@ const SettingsButtonComponent = ({
         </Tooltip>
 
       {taskData?.task_type?.includes("TRANSCRIPTION") && taskData?.status === "PARAPHRASE" && (
-        <Tooltip title="Paraphrase Segment" placement="bottom">
+        <Tooltip title="Paraphrase All Segments" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
-            onClick={() => handleReGenerateTranslation(currentIndex)}
+            onClick={() => handleReGenerateTranslation("paraphrase")}
             sx={{
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}

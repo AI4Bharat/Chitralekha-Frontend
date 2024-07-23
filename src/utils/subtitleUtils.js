@@ -643,7 +643,13 @@ export const reGenerateTranslation = (index) => {
 export const paraphrase = (index) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = [...subtitles];
-  copySub[index].paraphrase = true;
+  if(index === "paraphrase"){
+    copySub.forEach((element) => {
+      element.paraphrase = true;
+    })
+  }else{
+    copySub[index].paraphrase = true;
+  }
   return copySub;
 };
 
