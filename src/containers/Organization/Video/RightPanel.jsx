@@ -719,7 +719,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
-                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {
