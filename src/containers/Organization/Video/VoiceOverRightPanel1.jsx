@@ -950,6 +950,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   {taskData?.target_language !== "en" &&
                     enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.target_language}
                       value={item.text}
                       onChangeText={(text) => {

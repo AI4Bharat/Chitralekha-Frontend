@@ -801,6 +801,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
                   {enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.target_language}
                       value={item.target_text}
                       onChangeText={(text) => {
