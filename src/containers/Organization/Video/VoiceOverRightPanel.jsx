@@ -22,7 +22,7 @@ import { Box, CardContent, Grid, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import ButtonComponent from "./components/ButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
 import {
@@ -49,6 +49,7 @@ import {
   setTotalSentences,
   setSnackBar,
 } from "redux/actions";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
 const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const { taskId } = useParams();
@@ -503,6 +504,12 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
     },
   ];
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndexToSplitTextBlock, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndexToSplitTextBlock, limit]);
+
   return (
     <>
       <ShortcutKeys shortcuts={shortcuts} />
@@ -527,6 +534,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
             setOpenConfirmDialog={setOpenConfirmDialog}
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
+            expandTimestamp={expandTimestamp}
           />
         </Grid>
 

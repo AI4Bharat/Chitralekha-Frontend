@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef, memo } from "react";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import subscript from "config/subscript";
@@ -31,6 +31,7 @@ import { VideoLandingStyle } from "styles";
 import {
   Box,
   CardContent,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -60,8 +61,9 @@ import {
   setSubtitles,
 } from "redux/actions";
 import { failTranscriptionInfoColumns } from "config";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
-const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
+const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
@@ -118,6 +120,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -146,6 +149,10 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
             setTableDialogColumn(failTranscriptionInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
+            break;
+
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
             break;
 
           default:
@@ -180,6 +187,15 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
       });
       setSpeakerIdList(speakerList);
       setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+      if(segment!==undefined){
+        setTimeout(() => {    
+          const subtitleScrollEle = document.getElementById("subTitleContainer");
+          subtitleScrollEle
+            .querySelector(`#sub_${segment}`)
+            ?.scrollIntoView(true, { block: "start" });      
+          subtitleScrollEle.querySelector(`#sub_${segment} textarea`).click();
+        }, 2000);
+      }
     }
   }, [videoDetails]);
 
@@ -195,6 +211,13 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   //     .querySelector(`#sub_${currentIndex}`)
   //     ?.scrollIntoView(true, { block: "start" });
   // }, [currentIndex]);
+
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subTitleContainer");
+    subtitleScrollEle
+      .querySelector(`#sub_0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -365,6 +388,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex]);
+
   const changeTranscriptHandler = (event, index) => {
     const {
       target: { value },
@@ -408,12 +437,14 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
   const saveTranscriptHandler = async (
     isFinal,
     isAutosave,
-    payload = subtitles
+    payload = subtitles,
+    bookmark = false,
   ) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
+      ...(bookmark && {bookmark: currentIndex}),
       payload: {
         payload: payload,
       },
@@ -535,6 +566,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -601,6 +633,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -637,10 +670,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
             onDelete={onDelete}
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
+            expandTimestamp={expandTimestamp}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box
@@ -648,7 +683,8 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline })
                 id={`sub_${index}`}
                 style={{
                   padding: "0",
-                  borderBottom: "1px solid lightgray",
+                  margin: "2px",
+                  // borderBottom: "1px solid lightgray",
                   backgroundColor: "white",
                   display: "flex"
                 }}

@@ -158,8 +158,8 @@ const OrgLevelTaskList = () => {
   const [searchAnchor, setSearchAnchor] = useState(null);
 
   const [exportTypes, setExportTypes] = useState({
-    transcription: "srt",
-    translation: "srt",
+    transcription: ["srt"],
+    translation: ["srt"],
     voiceover: "mp3",
     speakerInfo: "false",
     bgMusic: "false",
@@ -418,10 +418,12 @@ const OrgLevelTaskList = () => {
   const handleTranscriptExport = async () => {
     const { id: taskId } = currentTaskDetails;
     const { transcription, speakerInfo } = exportTypes;
+    console.log(transcription)
 
+    transcription.map(async (transcript)=>{
     const apiObj = new exportTranscriptionAPI(
       taskId,
-      transcription,
+      transcript,
       speakerInfo
     );
     handleDialogClose("exportDialog");
@@ -435,7 +437,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, transcription, "transcription");
+        exportFile(resp, currentTaskDetails, transcript, "transcription");
       } else {
         const resp = await res.json();
 
@@ -455,14 +457,16 @@ const OrgLevelTaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const handleTranslationExport = async () => {
     const { id: taskId } = currentTaskDetails;
     const { translation, speakerInfo } = exportTypes;
+    console.log(translation)
 
-    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
+    translation.map(async (translate)=>{
+    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
@@ -474,7 +478,7 @@ const OrgLevelTaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, translation, "translation");
+        exportFile(resp, currentTaskDetails, translate, "translation");
       } else {
         const resp = await res.json();
 
@@ -494,7 +498,7 @@ const OrgLevelTaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
@@ -1106,7 +1110,12 @@ const OrgLevelTaskList = () => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
 
-    const body = {
+    const body = data.description==""?{
+      task_ids: currentSelectedTasks.map((item) => item.id),
+      user: data.user.id,
+      eta: data.date,
+      priority: data.priority,
+    }:{
       task_ids: currentSelectedTasks.map((item) => item.id),
       user: data.user.id,
       description: data.description,
@@ -1129,7 +1138,8 @@ const OrgLevelTaskList = () => {
     handleDialogClose("exportDialog");
     const { translation } = exportTypes;
 
-    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
+    translation.map(async (translate)=>{
+    const apiObj = new BulkTaskExportAPI(translate, selectedBulkTaskid);
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
         method: "GET",
@@ -1158,7 +1168,7 @@ const OrgLevelTaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const handleBulkVoiceoverTaskDownload = async () => {
@@ -1178,6 +1188,25 @@ const OrgLevelTaskList = () => {
       [name]: value,
     }));
   };
+
+  const handleExportCheckboxChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    console.log(name,value)
+    let new_val=exportTypes[name]
+    console.log(new_val)
+    if (new_val.includes(value)){
+      new_val = new_val.filter(item => item !== value)
+    } else{
+      new_val.push(value)
+    }
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: new_val,
+    }));
+  }
 
   const handleExportSubmitClick = () => {
     if (isBulkTaskDownload) {
@@ -1262,6 +1291,7 @@ const OrgLevelTaskList = () => {
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
+          handleExportCheckboxChange={handleExportCheckboxChange}
           isBulkTaskDownload={isBulkTaskDownload}
           currentSelectedTasks={currentSelectedTasks}
         />

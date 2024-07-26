@@ -61,6 +61,7 @@ const VideoList = ({ data, removeVideo }) => {
   const [videoIdForDowload, setVideoIdForDowload] = useState("");
   const [videoName, setVideoName] = useState("");
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [viewListColumns, setViewListColumns] = useState([]);
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -110,6 +111,15 @@ const VideoList = ({ data, removeVideo }) => {
 
     // eslint-disable-next-line
   }, [apiStatus]);
+
+  useEffect(() => {
+    const data = localStorage.getItem("videoColDisplayFilter");
+    if(data){
+      setViewListColumns(JSON.parse(data));
+    }else{
+      setViewListColumns(videoListColumns);
+    }
+  }, []);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -280,6 +290,29 @@ const VideoList = ({ data, removeVideo }) => {
     );
   };
 
+  function toggleDisplayExclude(label) {
+    return viewListColumns.map(column => {
+      if (column.name === label) {
+        if (column.options && column.options.display === "exclude") {
+          const { display, ...restOptions } = column.options;
+          return {
+            ...column,
+            options: restOptions,
+          };
+        } else {
+          return {
+            ...column,
+            options: {
+              ...column.options,
+              display: "exclude",
+            },
+          };
+        }
+      }
+      return column;
+    });
+  }
+
   const options = {
     textLabels: {
       body: {
@@ -319,6 +352,9 @@ const VideoList = ({ data, removeVideo }) => {
         <VideoStatusTable headers={expandableTableHeader} status={rowData[4]} />
       );
     },
+    onViewColumnsChange: (changedColumn) => {
+      localStorage.setItem("videoColDisplayFilter", JSON.stringify(toggleDisplayExclude(changedColumn)));
+    },
   };
 
   return (
@@ -326,7 +362,7 @@ const VideoList = ({ data, removeVideo }) => {
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={result}
-          columns={getColumns(videoListColumns)}
+          columns={getColumns(viewListColumns)}
           options={options}
         />
       </ThemeProvider>

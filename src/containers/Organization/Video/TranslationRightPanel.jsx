@@ -29,12 +29,13 @@ import { VideoLandingStyle } from "styles";
 import {
   Box,
   CardContent,
+  CircularProgress,
   Grid,
   Menu,
   MenuItem,
   useMediaQuery,
 } from "@mui/material";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -51,8 +52,9 @@ import {
   setSubtitles,
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
+import { bookmarkSegment, onExpandTimeline } from "utils/subtitleUtils";
 
-const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline }) => {
+const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -80,6 +82,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
@@ -105,6 +108,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [showPopOver, setShowPopOver] = useState(false);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -139,6 +143,10 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             setOpenGlossaryDialog(false);
             break;
 
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
+            break;
+
           default:
             break;
         }
@@ -169,6 +177,21 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       setCurrentOffset(currentPage);
     }
   }, [currentPage]);
+
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+        if(segment!==undefined){
+          setTimeout(() => {          
+            const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+            subtitleScrollEle
+              .querySelector(`#sub_${segment}`)
+              ?.scrollIntoView(true, { block: "start" });
+            subtitleScrollEle.querySelector(`#sub_${segment} textarea`).click();
+          }, 2000);
+      }
+    }
+  }, [videoDetails]);
 
   const handleContextMenu = (event) => {
     event.preventDefault();
@@ -288,6 +311,13 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   //     ?.scrollIntoView(true, { block: "start" });
   // }, [currentIndex]);
 
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+    subtitleScrollEle
+      .querySelector(`#sub_0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
+
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
 
@@ -307,12 +337,14 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const saveTranscriptHandler = async (
     isFinal,
     isRegenerate = false,
-    subs = sourceText
-  ) => {
+    subs = sourceText,
+    bookmark = false,
+    ) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
+      ...(bookmark && {bookmark: currentIndex}),
       payload: {
         payload: subs,
       },
@@ -545,6 +577,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
   const onNavigationClick = (value) => {
     handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -628,8 +661,15 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     dispatch(APITransport(apiObj));
   };
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex, limit]);
+
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -663,13 +703,15 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             handleReGenerateTranslation={handleReGenerateTranslation}
             showPopOver={showPopOver}
             onSplitClick={onSplitClick}
+            expandTimestamp={expandTimestamp}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
           />
         </Grid>
 
         <Box
           className={classes.subTitleContainer}
           id={"subtitleContainerTranslation"}
-          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}
+          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}
         >
           {sourceText?.map((item, index) => {
             return (
@@ -678,7 +720,8 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                 id={`sub_${index}`}
                 style={{
                   padding: "0",
-                  borderBottom: "1px solid lightgray",
+                  margin:"2px",
+                  // borderBottom: "1px solid lightgray",
                   backgroundColor: "white",
                   display: "flex"
                 }}

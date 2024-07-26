@@ -305,6 +305,28 @@ export const onSplit = (
   return copySub;
 };
 
+export const onExpandTimeline = (id, vo=false) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
+  const copySub = [...subtitles];
+
+  if(id === 0 && copySub.length > 1){
+    copySub[id].start_time = DT.d2t(0);
+    copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
+  }else if(id+1 === copySub.length){
+    copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
+  }else{
+    copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
+    copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
+  }
+
+  if(vo===true){
+    copySub[id].time_difference = (DT.t2d(copySub[id].end_time) - DT.t2d(copySub[id].start_time)).toFixed(3);
+  }
+
+  return copySub;
+};
+
 export const onSubtitleChange = (text, index, id) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
@@ -314,7 +336,9 @@ export const onSubtitleChange = (text, index, id) => {
     if (index === i) {
       if (id === 1) {
         element.target_text = text;
-      } else {
+      } else if (id === 3) {
+        element.transcription_text = text;
+      } else{
         element.text = text;
       }
     }
@@ -483,10 +507,8 @@ export const getSubtitleRange = () => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   if (subtitles) {
-    if (subtitles.length === 3) {
-      return `${subtitles[0]?.id} - ${subtitles[2]?.id}`;
-    } else if (subtitles.length === 2) {
-      return `${subtitles[0]?.id} - ${subtitles[1]?.id}`;
+    if (subtitles.length) {
+      return `${subtitles[0]?.id} - ${subtitles[subtitles.length-1]?.id}`;
     } else {
       return `${subtitles[0]?.id} - ${subtitles[0]?.id}`;
     }

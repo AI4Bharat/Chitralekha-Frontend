@@ -141,6 +141,13 @@ const RootRouter = () => {
         />
 
         <Route
+          path="/task/:taskId/transcript/:offset/:segment"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
           path="/task/:taskId/translate"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true} />
@@ -148,7 +155,21 @@ const RootRouter = () => {
         />
 
         <Route
+          path="/task/:taskId/translate/:offset/:segment"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
           path="/task/:taskId/voiceover"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
+          path="/task/:taskId/voiceover/:offset/:segment"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true} />
           )}

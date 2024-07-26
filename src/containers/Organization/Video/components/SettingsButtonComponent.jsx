@@ -34,7 +34,9 @@ import MergeIcon from "@mui/icons-material/Merge";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoopIcon from "@mui/icons-material/Loop";
-import LyricsIcon from "@mui/icons-material/Lyrics";
+import ExpandIcon from "@mui/icons-material/Expand";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import BookmarkIcon from '@mui/icons-material/BookmarkBorderOutlined';
 
 const anchorOrigin = {
   vertical: "top",
@@ -75,8 +77,9 @@ const SettingsButtonComponent = ({
   addNewSubtitleBox,
   subtitles,
   handleReGenerateTranslation,
-  textChangeBtn,
-  speedChangeBtn,
+  expandTimestamp,
+  handleGetUpdatedAudioForAll,
+  bookmarkSegment,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -180,54 +183,100 @@ const SettingsButtonComponent = ({
       )}
 
       {!taskData?.task_type?.includes("VOICEOVER") && (
-        <>
+      <>
         <Tooltip title="Merge Next" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+            style={{
+              transform: "rotate(180deg)"
+            }}
+            onClick={() => onMergeClick(currentIndex)}
+          >
+            <MergeIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Split Subtitle" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={onSplitClick}
+            disabled={!showPopOver}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+          >
+            <SplitscreenIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      </>)
+      }
+
+        <Tooltip title="Expand Timestamp" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={expandTimestamp}
+            disabled={currentIndex===-1}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+            style={{
+              transform: "rotate(90deg)"
+            }}
+          >
+            <ExpandIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+
+        {taskData?.task_type?.includes("TRANSLATION") && (
+            <>
+            <Tooltip title={taskData?.task_type?.includes("VOICEOVER") ? "Regenerate Translation For All Segments" : "Regenerate Translation"} placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
+              onClick={() => handleReGenerateTranslation(currentIndex)}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
-              style={{
-                transform: "rotate(180deg)"
-              }}
-              onClick={() => onMergeClick(currentIndex)}
+              disabled={apiInProgress}
             >
-              <MergeIcon className={classes.rightPanelSvg} />
+              <LoopIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
-
-          <Tooltip title="Split Subtitle" placement="bottom">
-            <IconButton
-              className={classes.rightPanelBtnGrp}
-              onClick={onSplitClick}
-              disabled={!showPopOver}
-              sx={{
-                "&.Mui-disabled": { backgroundColor: "lightgray" },
-              }}
-            >
-              <SplitscreenIcon className={classes.rightPanelSvg} />
-            </IconButton>
-          </Tooltip>
-        </>)}
-
-          {taskData?.task_type?.includes("TRANSLATION") && !taskData?.task_type?.includes("VOICEOVER") && (
-             <>
-             <Tooltip title="Regenerate Translation" placement="bottom">
+          {taskData?.task_type?.includes("VOICEOVER") && taskData?.source_type === "Machine Generated" &&
+            <Tooltip title="Get Updated Audio For All Segments" placement="bottom">
               <IconButton
                 className={classes.rightPanelBtnGrp}
-                onClick={() => handleReGenerateTranslation(currentIndex)}
+                onClick={() => handleGetUpdatedAudioForAll()}
                 sx={{
                   "&.Mui-disabled": { backgroundColor: "lightgray" },
                 }}
                 disabled={apiInProgress}
               >
-                <LoopIcon className={classes.rightPanelSvg} />
+                <TaskAltIcon className={classes.rightPanelSvg} />
               </IconButton>
             </Tooltip>
-            </>
-          )}
-          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+          }
+          </>
+        )}
+
+        <Tooltip title="Bookmark Segment" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={bookmarkSegment}
+            disabled={currentIndex===-1 || apiInProgress}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+          >
+            <BookmarkIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+
+
+        <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
       <Tooltip title="Incorrect Subtitles Info" placement="bottom">
         <IconButton
@@ -369,9 +418,12 @@ const SettingsButtonComponent = ({
 
       <FindAndReplace
         subtitleDataKey={
-          taskData?.task_type?.includes("TRANSLATION") ? "target_text" : "text"
+          taskData?.task_type?.includes("TRANSLATION") ? taskData?.task_type?.includes("VOICEOVER") ? "text" : "target_text" : "text"
         }
         taskType={taskData?.task_type}
+        currentSubs={currentSubs}
+        videoId={taskData?.video}
+        targetLanguage={taskData?.target_language}
       />
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
@@ -413,8 +465,6 @@ const SettingsButtonComponent = ({
         </IconButton>
       </Tooltip>
 
-      {!taskData?.task_type?.includes("VOICEOVER") && (
-      <>
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
         <Tooltip title="Undo" placement="bottom">
@@ -436,7 +486,6 @@ const SettingsButtonComponent = ({
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
-        </>)}
 
       {openPreviewDialog && (
         <PreviewDialog

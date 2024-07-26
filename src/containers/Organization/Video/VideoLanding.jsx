@@ -61,7 +61,7 @@ import PlayArrow from "@mui/icons-material/PlayArrow";
 import { Pause } from "@mui/icons-material";
 
 const VideoLanding = () => {
-  const { taskId } = useParams();
+  const { taskId, offset, segment } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
 
@@ -138,7 +138,8 @@ const VideoLanding = () => {
       (async () => {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
-          taskDetails.task_type
+          taskDetails.task_type,
+          offset !== undefined ? offset : 1
         );
         dispatch(APITransport(payloadObj));
       })();
@@ -270,7 +271,7 @@ const VideoLanding = () => {
       <PanelGroup direction="horizontal" className={classes.parentGrid}>
         <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
-            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(93.5vh)" }}
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(92.5vh - 60px)" }}
             className={classes.videoBox}
           >
             <VideoName
@@ -349,6 +350,7 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
             // <VoiceOverRightPanel currentIndex={currentIndex}
@@ -357,6 +359,7 @@ const VideoLanding = () => {
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           ) : (
             <TranslationRightPanel
@@ -364,6 +367,7 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           )}
           {fullscreen && 

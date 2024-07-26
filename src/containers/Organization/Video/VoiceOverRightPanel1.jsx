@@ -27,10 +27,10 @@ import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, CircularProgress, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
 import {
@@ -57,9 +57,14 @@ import {
   FetchTaskFailInfoAPI,
   setTotalSentences,
   setSnackBar,
+  CreateGlossaryAPI,
 } from "redux/actions";
+import { MenuItem } from "react-contextmenu";
+import GlossaryDialog from "common/GlossaryDialog";
+import { copySubs, onExpandTimeline } from "utils/subtitleUtils";
+import AudioPlayer from "./audioPanel";
 
-const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) => {
+const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -76,6 +81,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const subtitlesForCheck = useSelector(
     (state) => state.commonReducer.subtitlesForCheck
   );
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const totalPages = useSelector((state) => state.commonReducer.totalPages);
   const currentPage = useSelector((state) => state.commonReducer.currentPage);
   const next = useSelector((state) => state.commonReducer.nextPage);
@@ -118,9 +124,18 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const limit = useSelector((state) => state.commonReducer.limit);
   const [currentOffset, setCurrentOffset] = useState(1);
   const [apiInProgress, setApiInProgress] = useState(false);
+  const [fetchInProgress, setFetchInProgress] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
   const [showPopOver, setShowPopOver] = useState(false);
   const [redoStack, setRedoStack] = useState([]);
+  const [contextMenu, setContextMenu] = React.useState(null);
+  const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
+  const [selectedWord, setSelectedWord] = useState("");
+  const loggedInUserData = useSelector(
+    (state) => state.getLoggedInUserDetails.data
+  );
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -150,6 +165,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             dispatch(setSubtitlesForCheck(newSub));
             dispatch(setSubtitles(sub, C.SUBTITLES));
             dispatch(setTotalSentences(data?.sentences_count));
+            setFetchInProgress(false);
           }
 
           // getPayloadAPI(currentPage);
@@ -162,6 +178,15 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
           setTableDialogMessage(data.message);
           setTableDialogResponse(data.data);
         }
+
+        if(apiType === "CREATE_GLOSSARY"){
+          setOpenGlossaryDialog(false);
+        }
+
+        if(apiType === "GET_TRANSCRIPT_PAYLOAD"){
+          setLoader(false);
+        }
+
       } else {
         if (apiType === "SAVE_TRANSCRIPT") {
           setOpenConfirmDialog(false);
@@ -186,6 +211,20 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
     return false;
   };
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+        if(segment!==undefined){
+          setTimeout(() => {          
+            const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+            subtitleScrollEle
+              .querySelector(`#container-${segment}`)
+              ?.scrollIntoView(true, { block: "start" });
+            subtitleScrollEle.querySelector(`#container-${segment} textarea`).click();
+          }, 2000);
+      }
+    }
+  }, [videoDetails]);
 
   useEffect(() => {
     setAudioPlayer($audioRef.current);
@@ -231,9 +270,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
     subtitles?.forEach((item, index) => {
       if (item.audio && item.audio.hasOwnProperty("audioContent")) {
-        const blobUrl = base64toBlob(item.audio.audioContent);
-        item.blobUrl = blobUrl;
-        updatedArray[index] = blobUrl;
+        if(item.audio.audioContent === ""){
+          updatedArray[index] = "";
+        }else{
+          const blobUrl = base64toBlob(item.audio.audioContent);
+          item.blobUrl = blobUrl;
+          updatedArray[index] = blobUrl;
+        }
       }
     });
 
@@ -256,11 +299,18 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
         element.transcription_text = text;
         }
       }
+      if(index === "retranslate" && type === "retranslate"){
+        element.retranslate = true;  
+      }
+      if(index === "audio" && type === "audio"){
+        element.text_changed = true;  
+      }
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
     if(type === "audio" || type === "retranslate"){
       saveTranscriptHandler(false, true);
+      setFetchInProgress(true);
     }
     // saveTranscriptHandler(false, false);
   };
@@ -268,8 +318,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   const saveTranscriptHandler = async (
     isFinal,
     isGetUpdatedAudio,
-    value = currentPage
-  ) => {
+    value = currentPage,
+    bookmark = false,
+    ) => {
     dispatch(
       setSnackBar({
         open: true,
@@ -284,10 +335,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
 
     const reqBody = {
       task_id: taskId,
+      ...(bookmark && {bookmark: currentIndex}),
+      offset: value,
       payload: {
         payload: sourceText,
       },
-      offset: value,
     };
 
     if (isFinal) {
@@ -310,7 +362,23 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     dispatch(APITransport(payloadObj));
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
+    setLoader(true);
     getPayloadAPI(value);
   };
 
@@ -343,6 +411,37 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
       temp[index] = false;
     }
     setDurationError(temp);
+  };
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+
+    const selectedText = window.getSelection().toString();
+    setSelectedWord(selectedText);
+
+    if (selectedText !== "") {
+      setContextMenu(
+        contextMenu === null
+          ? {
+              mouseX: event.clientX + 2,
+              mouseY: event.clientY - 6,
+            }
+          : null
+      );
+    }
+  };
+
+  const handleContextMenuClick = (dialogTitle) => {
+    setContextMenu(null);
+    setOpenGlossaryDialog(true);
+    setGlossaryDialogTitle(dialogTitle);
+  };
+
+  const createGlossary = (sentences) => {
+    const userId = loggedInUserData.id;
+
+    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    dispatch(APITransport(apiObj));
   };
 
   const handleFileUpload = (event, index) => {
@@ -391,6 +490,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
   //     .getElementById("subtitleContainerVO")
   //     ?.querySelector(`#container-1`),
   // ]);
+
+
+  useEffect(() => {
+    const subtitleScrollEle = document.getElementById("subtitleContainerVO");
+    subtitleScrollEle
+      .querySelector(`#container-0`)
+      ?.scrollIntoView(true, { block: "start" });
+  }, [currentOffset]);
 
   const handleInfoButtonClick = async () => {
     const apiObj = new FetchTaskFailInfoAPI(taskId, taskData?.task_type);
@@ -466,7 +573,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     textarea.selectionEnd = start + text.length;
     textarea.focus();
 
-    const sub = onSubtitleChange(textarea.value, index, 0);
+    const sub = onSubtitleChange(textarea.value, index, 3);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // saveTranscriptHandler(true, true, sub);
   };
@@ -599,9 +706,37 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
     // saveTranscriptHandler(false, true, sub);
 
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+  
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex, limit]);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const arr = [...sourceText];
+  //     let fetchAudio = false;
+
+  //     arr.forEach((element) => {
+  //       if(element.audio.audioContent === ""){
+  //         element.text_changed = true;  
+  //         fetchAudio = true;
+  //         console.log(element.start_time);
+  //       }
+  //     });
+  
+  //     if(fetchAudio){
+  //       dispatch(setSubtitles(arr, C.SUBTITLES));
+  //       saveTranscriptHandler(false, true);
+  //     }
+
+  //   }, 60000);
+  // }, [currentOffset, sourceText]);
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -632,10 +767,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             onMergeClick={onMergeClick}
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
+            expandTimestamp={expandTimestamp}
+            handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
+            handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
           />
         </Grid>
 
-        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(85vh)"}}>
+        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
           {sourceText?.map((item, index) => {
             return (
               <div
@@ -643,7 +782,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                 className={isDisabled(index) ? classes.disabledCard : ""}
                 style={{
                   padding: "5px 0",
-                  borderBottom: "1px solid grey",
+                  // margin: "2px",
+                  // borderBottom: "1px solid grey",
                   backgroundColor: "white"
                 }}
                 id={`container-${index}`}
@@ -663,12 +803,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     }
                   }}
                 >
-                  {item.transcription_text &&
+                  {item.transcription_text.length>-1 &&
                     <div
                       className={classes.relative}
+                      onContextMenu={handleContextMenu}
                       style={{ width: "100%" }}
                     >
                       <textarea
+                        readOnly={fetchInProgress ? true: false}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           }`}
@@ -718,12 +860,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     </Tooltip>
                     <div>
                     <TimeBoxes
+                      readOnly={fetchInProgress ? true: false}
                       handleTimeChange={handleTimeChange}
                       time={item.start_time}
                       index={index}
                       type={"startTime"}
                     />
                     <TimeBoxes
+                      readOnly={fetchInProgress ? true: false}
                       handleTimeChange={handleTimeChange}
                       time={item.end_time}
                       index={index}
@@ -761,7 +905,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               : {}
                           }
                         >
-                          <audio
+                          <AudioPlayer src={data[index]} />
+                          {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
                             controls
@@ -778,7 +923,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                               // width: index === 2 ? "91%" : "",
                               // margin: index === 2 ? "0 auto 25px auto" : "",
                             }}
-                          />
+                          /> */}
                         </div>
                         <div
                           style={{
@@ -824,6 +969,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
+                            readOnly={fetchInProgress ? true: false}
                             className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                               } ${taskData?.source_type === "Original Source" &&
                               classes.w95
@@ -860,6 +1006,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                   ) : (
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
+                        readOnly={fetchInProgress ? true: false}
                         rows={item.transcription_text ? 4 : 6}
                         className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
                           } ${taskData?.source_type === "Original Source" &&
@@ -901,6 +1048,27 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
                     </div>
                   )}
                 </CardContent>
+                <Menu
+                  open={contextMenu !== null}
+                  onClose={() => setContextMenu(null)}
+                  anchorReference="anchorPosition"
+                  anchorPosition={
+                    contextMenu !== null
+                      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                      : undefined
+                  }
+                >
+                  <MenuItem
+                    onClick={() => handleContextMenuClick("Add Glossary")}
+                  >
+                    Add Glossary
+                  </MenuItem>
+                  {/* <MenuItem
+                    onClick={() => handleContextMenuClick("Suggest Glossary")}
+                  >
+                    Suggest Glossary
+                  </MenuItem> */}
+                </Menu>
               </div>
             );
           })}
@@ -920,7 +1088,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             previous={previous}
             next={next}
             onClick={onNavigationClick}
-            jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            // jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            jumpTo={taskData?.task_type?.includes("VOICEOVER")?[...Array(totalPages).keys()].map((_, index) => index + 1).filter((p)=>p%15==1):[...Array(totalPages).keys()].map((_, index) => index + 1)}
             durationError={durationError}
             completedCount={completedCount}
             current={currentPage}
@@ -954,6 +1123,19 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline }) =
             message={tableDialogMessage}
             response={tableDialogResponse}
             columns={tableDialogColumn}
+          />
+        )}
+
+        {openGlossaryDialog && (
+          <GlossaryDialog
+            openDialog={openGlossaryDialog}
+            handleClose={() => setOpenGlossaryDialog(false)}
+            submit={(sentences) => createGlossary(sentences)}
+            selectedWord={selectedWord}
+            title={glossaryDialogTitle}
+            srcLang={taskData?.src_language}
+            tgtLang={taskData?.target_language}
+            disableFields={true}
           />
         )}
       </Box>
