@@ -19,7 +19,7 @@ jobs:
                   npm install --legacy-peer-deps
                   npm run build
               env:
-                  REACT_APP_APIGW_BASE_URL: ${{ vars.REACT_APP_APIGW_BASE_URL }}
+                  REACT_APP_APIGW_BASE_URL: ${{ vars.DEV__REACT_APP_APIGW_BASE_URL }}
                   CI: false
 
             - name: Deploy 🚀
