@@ -38,7 +38,6 @@ import {
   setSnackBar,
   UpdateUserRoleAPI,
   FetchUserRolesAPI,
-  ResendUserInviteAPI,
 } from "redux/actions";
 
 const EditProfile = () => {
@@ -216,12 +215,6 @@ const EditProfile = () => {
         variant: "success",
       })
     );
-  };
-
-  const handleReinvite = () => {
-    let apiObj;
-    apiObj = new ResendUserInviteAPI([userData.email]);
-    dispatch(APITransport(apiObj));
   };
 
   const handleSubmit = () => {
@@ -459,20 +452,8 @@ const EditProfile = () => {
             direction="row"
             justifyContent="flex-end"
             alignItems="center"
-            gap={4}
             sx={{ my: 5, px: "9.75%" }}
           >
-            {userData.has_accepted_invite === false &&
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => handleReinvite()}
-              sx={{ borderRadius: "8px", width: "180px" }}
-              className={classes.editProfileBtn}
-            >
-              Reinvite
-            </Button>
-            }
             <Button
               variant="contained"
               color="primary"
