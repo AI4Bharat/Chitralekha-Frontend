@@ -69,7 +69,7 @@ const ExportDialog = ({
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4" display="flex" alignItems={"center"}>
-        <Typography variant="h4">Export Subtitles</Typography>{" "}
+        <Typography variant="h4">Export Voiceover</Typography>{" "}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -172,7 +172,7 @@ const ExportDialog = ({
         ) : (
           <></>
         )}
-
+{/* 
         {currentTaskType?.includes("VOICEOVER") && !isBulkTaskDownload && (
           <>
             <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
@@ -196,7 +196,7 @@ const ExportDialog = ({
               </FormControl>
             </DialogActions>
           </>
-        )}
+        )} */}
 
         <DialogActions>
           <Button
