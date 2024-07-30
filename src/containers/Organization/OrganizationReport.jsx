@@ -34,6 +34,7 @@ import {
   FetchOrganizationReportsAPI,
   DownloadOrganizationReportsAPI,
   updateOrgSelectedFilter,
+  FetchSupportedLanguagesAPI,
 } from "redux/actions";
 
 //Themes
@@ -127,6 +128,14 @@ const OrganizationReport = () => {
     if(reportLevels !== undefined && reportsLevel === "Task")
     {handleTaskReportSubmit();}
   }, [orgSelectedFilters]);
+
+  useEffect(() => {
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+  }, [])
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
