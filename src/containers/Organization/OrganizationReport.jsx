@@ -34,6 +34,7 @@ import {
   FetchOrganizationReportsAPI,
   DownloadOrganizationReportsAPI,
   updateOrgSelectedFilter,
+  FetchSupportedLanguagesAPI,
 } from "redux/actions";
 
 //Themes
@@ -128,6 +129,14 @@ const OrganizationReport = () => {
     if(reportLevels !== undefined && reportsLevel === "Task")
     {handleTaskReportSubmit();}
   }, [orgSelectedFilters]);
+
+  useEffect(() => {
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+  }, [])
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
@@ -363,26 +372,26 @@ const OrganizationReport = () => {
           </Button>
         )}
         {reportsLevel && tableData?.length > 0 && (
-           <Button
-           style={{ minWidth: "25px" }}
-           onClick={() => handleDownloadReportCsv()}
-         >
-           <Tooltip title={"Download CSV"}>
-             <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
-           </Tooltip>
-         </Button>
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
         )}
         {reportsLevel === "Task" &&
-        <Button
-          style={{ minWidth: "25px" }}
-          onClick={(event) => setAnchorEle(event.currentTarget)}
-        >
-          <Tooltip title={"Filter Table"}>
-            <Badge color="primary" badgeContent={sumOfLengths}>
-              <FilterListIcon sx={{ color: "#515A5A" }} />
-            </Badge>
-          </Tooltip>
-        </Button>}
+         <Button
+           style={{ minWidth: "25px" }}
+           onClick={(event) => setAnchorEle(event.currentTarget)}
+         >
+           <Tooltip title={"Filter Table"}>
+             <Badge color="primary" badgeContent={sumOfLengths}>
+               <FilterListIcon sx={{ color: "#515A5A" }} />
+             </Badge>
+           </Tooltip>
+         </Button>}
       </>
     );
   };
@@ -445,73 +454,73 @@ const OrganizationReport = () => {
         </Grid>
 
         {reportsLevel.includes("Language") && (
-          <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <FormControl fullWidth>
-                <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
-                  Select Task Type
-                </InputLabel>
+           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <FormControl fullWidth>
+                 <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
+                   Select Task Type
+                 </InputLabel>
 
-                <Select
-                  labelId="SelectTaskTypeLabel"
-                  id="demo-simple-select"
-                  label="Select Task Type"
-                  value={languageLevelsStats}
-                  onChange={handleChangelanguageLevelStats}
-                  sx={{ textAlign: "start" }}
-                >
-                  {languagelevelStats.map((item, index) => (
-                    <MenuItem key={index} value={item.value}>
-                      {item.lable}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl> 
-          </Grid>
-        )}
-        {reportsLevel.includes("Task") && (
-          <>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
-              <DatePicker
-                label="Start Date"
-                inputFormat="DD/MM/YYYY"
-                value={taskStartDate}
-                onChange={(newValue) => {
-                  let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
-                  console.log(formatedDate)
-                  setTaskStartDate(formatedDate)
-                }
-                }
-                renderInput={(params) => <TextField {...params} />}
-                className={classes.datePicker}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
-              <DatePicker
-                label="End Date"
-                inputFormat="DD/MM/YYYY"
-                value={taskEndDate}
-                onChange={(newValue) => {
-                  let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
-                  console.log(formatedDate)
-                  setTaskEndDate(formatedDate)
-                }}
-                renderInput={(params) => <TextField {...params} />}
-                className={classes.datePicker}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <Button
-                variant="contained"
-                onClick={()=>{handleTaskReportSubmit()}}
-                autoFocus
-                sx={{ borderRadius: "8px" }}
-              >
-              {/* <Button onClick={()=>{handleTaskReportSubmit()}}> */}
-                submit
-              </Button>
-            </Grid>
-          </>
-        )}
+                 <Select
+                   labelId="SelectTaskTypeLabel"
+                   id="demo-simple-select"
+                   label="Select Task Type"
+                   value={languageLevelsStats}
+                   onChange={handleChangelanguageLevelStats}
+                   sx={{ textAlign: "start" }}
+                 >
+                   {languagelevelStats.map((item, index) => (
+                     <MenuItem key={index} value={item.value}>
+                       {item.lable}
+                     </MenuItem>
+                   ))}
+                 </Select>
+               </FormControl> 
+           </Grid>
+         )}
+         {reportsLevel.includes("Task") && (
+           <>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="Start Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskStartDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskStartDate(formatedDate)
+                 }
+                 }
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="End Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskEndDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskEndDate(formatedDate)
+                 }}
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <Button
+                 variant="contained"
+                 onClick={()=>{handleTaskReportSubmit()}}
+                 autoFocus
+                 sx={{ borderRadius: "8px" }}
+               >
+               {/* <Button onClick={()=>{handleTaskReportSubmit()}}> */}
+                 submit
+               </Button>
+             </Grid>
+           </>
+         )}
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
