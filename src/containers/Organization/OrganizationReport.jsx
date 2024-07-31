@@ -78,6 +78,7 @@ const OrganizationReport = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
+    setTableData([]);
     setReportsLevel(event.target.value);
     setlanguageLevelStats("");
     setOffset(0);
@@ -224,7 +225,7 @@ const OrganizationReport = () => {
     createReportColumns(rawData);
 
     // eslint-disable-next-line
-  }, [reportData, languageLevelsStats, reportsLevel]);
+  }, [reportData, languageLevelsStats]);
 
   const createReportColumns = (rawData) => {
     let tempColumns = [];
