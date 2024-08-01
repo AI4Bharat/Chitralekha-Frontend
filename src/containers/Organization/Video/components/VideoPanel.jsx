@@ -55,6 +55,17 @@ const VideoPanel = memo(
 
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
+        { videoDetails !== undefined && (videoDetails?.direct_video_url?.includes("youtube.com") ? 
+        <iframe 
+          className={classes.videoPlayer}
+          style={{
+            height: "30%",
+            marginTop:"auto",
+            marginBottom:"auto",
+          }}
+          src={videoDetails.direct_video_url}>
+        </iframe>
+        :
         <video
           // onClick={onClick}
           src={
@@ -75,6 +86,7 @@ const VideoPanel = memo(
           controls={true}
           controlsList="nodownload"
         />
+      )}
       </div>
     );
   },
