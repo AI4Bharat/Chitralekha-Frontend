@@ -833,7 +833,7 @@ const TaskList = () => {
         break;
 
       case "Reopen":
-        const reopenObj = new ReopenTaskAPI(id);
+        const reopenObj = new ReopenTaskAPI(id, false, task_type);
         dispatch(APITransport(reopenObj));
         setReOpenTaskId(id);
         break;
