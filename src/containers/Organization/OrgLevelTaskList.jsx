@@ -711,7 +711,7 @@ const OrgLevelTaskList = () => {
         break;
 
       case "Reopen":
-        const apiObj = new ReopenTaskAPI(id);
+        const apiObj = new ReopenTaskAPI(id, false, task_type);
         dispatch(APITransport(apiObj));
         break;
 
