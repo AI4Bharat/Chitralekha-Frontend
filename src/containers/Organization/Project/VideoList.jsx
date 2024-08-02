@@ -68,14 +68,24 @@ const VideoList = ({ data, removeVideo }) => {
   const translationExportTypes = useSelector(
     (state) => state.getTranslationExportTypes.data.export_types
   );
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -171,7 +181,7 @@ const VideoList = ({ data, removeVideo }) => {
           </Tooltip>
 
           {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-            userData?.id === orgOwnerId) && (
+          isUserOrgOwner) && (
             <Tooltip title="Create Task">
               <IconButton
                 onClick={() => {
@@ -186,7 +196,7 @@ const VideoList = ({ data, removeVideo }) => {
           )}
 
           {(projectInfo.managers?.some((item) => item.id === userData.id) ||
-            userData?.id === orgOwnerId) && (
+            isUserOrgOwner) && (
             <Tooltip title="Delete">
               <IconButton onClick={() => handleDeleteVideo(item.id)}>
                 <DeleteIcon color="error" />

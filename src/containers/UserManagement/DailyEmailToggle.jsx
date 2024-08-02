@@ -18,15 +18,26 @@ const DailyEmailToggle = () => {
 
   const [dailyEmail, setDailyEmail] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
+  
   useEffect(() => {
     if (loggedInUser.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
         enable_mail,
       } = loggedInUser;
 
-      setOrgOwnerId(organization_owner.id);
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
+
+        if (ownerIds.includes(loggedInUser.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }      
       setDailyEmail(enable_mail);
     }
   }, [loggedInUser]);
@@ -59,7 +70,7 @@ const DailyEmailToggle = () => {
             !(
               loggedInUser.id === +id ||
               loggedInUser.role === "ADMIN" ||
-              loggedInUser.id === orgOwnerId
+              isUserOrgOwner
             )
           }
         />

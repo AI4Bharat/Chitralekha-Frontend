@@ -84,14 +84,24 @@ const EditProject = () => {
   const [taskDescription, setTaskDescription] = useState("");
   const [integrateVideo, setIntegrateVideo] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -323,7 +333,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) || isUserOrgOwner
                   )
                 }
               />
@@ -344,7 +354,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner
                     )
                   }
                   renderValue={(selected) => {
@@ -392,7 +402,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner
                     )
                   }
                 >
@@ -423,7 +433,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) ||isUserOrgOwner
                     )
                   }
                 >
@@ -454,7 +464,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner
                     )
                   }
                 >
@@ -481,7 +491,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner
                     )
                   }
                   MenuProps={MenuProps}
@@ -568,7 +578,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) ||isUserOrgOwner
                   )
                 }
                 renderInput={(params) => <TextField {...params} />}
@@ -593,7 +603,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner
                     )
                   }
                   renderValue={(selected) => {
@@ -618,7 +628,7 @@ const EditProject = () => {
             {(projectDetails?.managers?.some(
               (item) => item.id === userData.id
             ) ||
-              userData?.id === orgOwnerId) && (
+              isUserOrgOwner) && (
               <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Button
                   fullWidth
@@ -659,7 +669,7 @@ const EditProject = () => {
                       !(
                         projectDetails?.managers?.some(
                           (item) => item.id === userData.id
-                        ) || userData?.id === orgOwnerId
+                        ) || isUserOrgOwner
                       )
                     }
                   />
@@ -682,7 +692,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) || isUserOrgOwner
                   )
                 }
               />
@@ -703,7 +713,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) || isUserOrgOwner
                   )
                 }
               />
