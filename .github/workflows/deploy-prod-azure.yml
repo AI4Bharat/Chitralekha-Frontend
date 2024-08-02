@@ -1,18 +1,18 @@
-name: Dev Environment - Build and Release React App
+name: Prod Environment - Build and Release React App
 
 on:
   push:
-    branches: [develop2]
+    branches: [master]
 
 env: 
   CI: false
   NODE_OPTIONS: "--max_old_space_size=4096"
-  REACT_APP_APIGW_BASE_URL: ${{ vars.DEV__REACT_APP_APIGW_BASE_URL }}
-  AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.DEV__AZURE_STORAGE_ACCOUNT_NAME }}
-  AZURE_STORAGEKEY: ${{ secrets.DEV__AZURE_STORAGEKEY }}
-  AZURE_CDN_PROFILE: ${{ vars.DEV__AZURE_CDN_PROFILE }}
-  AZURE_ENDPOINT_NAME: ${{ vars.DEV__AZURE_ENDPOINT_NAME }}
-  AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+  REACT_APP_APIGW_BASE_URL: ${{ vars.PROD__REACT_APP_APIGW_BASE_URL }}
+  AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.PROD__AZURE_STORAGE_ACCOUNT_NAME }}
+  AZURE_STORAGEKEY: ${{ secrets.PROD__AZURE_STORAGEKEY }}
+  AZURE_CDN_PROFILE: ${{ vars.PROD__AZURE_CDN_PROFILE }}
+  AZURE_ENDPOINT_NAME: ${{ vars.PROD__AZURE_ENDPOINT_NAME }}
+  AZURE_RESOURCE_GROUP: ${{ vars.PROD__AZURE_RESOURCE_GROUP }}
 
 jobs:
   cicd:
@@ -35,7 +35,7 @@ jobs:
     - name: Azure login
       uses: azure/login@v1
       with:
-          creds: ${{ secrets.AZURE_CREDS }}
+          creds: ${{ secrets.PROD_AZURE_CREDS }}
     
     - name: Upload to blob storage
       uses: azure/CLI@v1

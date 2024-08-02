@@ -97,6 +97,7 @@ import {
   updateSortOptions,
 } from "redux/actions";
 import moment from "moment";
+import DeleteTaskDialog from "common/DeleteTaskDialog";
 
 const OrgLevelTaskList = () => {
   const userOrgId = getLocalStorageData("userData").organization.id;
@@ -137,6 +138,8 @@ const OrgLevelTaskList = () => {
     speakerInfoDialog: false,
     tableDialog: false,
     taskType: "",
+    deleteTaskDialog: false,
+    id: "",
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -533,6 +536,7 @@ const OrgLevelTaskList = () => {
 
     const apiObj = new DeleteTaskAPI(id, flag);
     dispatch(APITransport(apiObj));
+    handleDialogClose("deleteTaskDialog");
   };
 
   const handlePreviewTask = async (id, taskType, targetlanguage) => {
@@ -698,7 +702,7 @@ const OrgLevelTaskList = () => {
         break;
 
       case "Delete":
-        handleDeleteTask(id, false);
+        handleDialogOpen("deleteTaskDialog", "", id);
         break;
 
       case "Info":
@@ -707,7 +711,7 @@ const OrgLevelTaskList = () => {
         break;
 
       case "Reopen":
-        const apiObj = new ReopenTaskAPI(id);
+        const apiObj = new ReopenTaskAPI(id, false, task_type);
         dispatch(APITransport(apiObj));
         break;
 
@@ -1110,7 +1114,12 @@ const OrgLevelTaskList = () => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
 
-    const body = {
+    const body = data.description==""?{
+      task_ids: currentSelectedTasks.map((item) => item.id),
+      user: data.user.id,
+      eta: data.date,
+      priority: data.priority,
+    }:{
       task_ids: currentSelectedTasks.map((item) => item.id),
       user: data.user.id,
       description: data.description,
@@ -1243,11 +1252,12 @@ const OrgLevelTaskList = () => {
     }));
   };
 
-  const handleDialogOpen = (key, taskType="") => {
+  const handleDialogOpen = (key, taskType="", id="") => {
     setOpenDialogs((prevState) => ({
       ...prevState,
       [key]: true,
       taskType: taskType,
+      id: id,
     }));
   };
 
@@ -1289,6 +1299,14 @@ const OrgLevelTaskList = () => {
           handleExportCheckboxChange={handleExportCheckboxChange}
           isBulkTaskDownload={isBulkTaskDownload}
           currentSelectedTasks={currentSelectedTasks}
+        />
+      )}
+
+      {openDialogs.deleteTaskDialog && (
+        <DeleteTaskDialog
+          openDialog={openDialogs.deleteTaskDialog}
+          handleClose={() => handleDialogClose("deleteTaskDialog")}
+          submit={() => handleDeleteTask(openDialogs.id, false)}
         />
       )}
 

@@ -87,6 +87,7 @@ import FetchSupportedBulkTaskTypeAPI from "./api/Project/FetchSupportedBulkTaskT
 import FetchTaskFailInfoAPI from "./api/Project/FetchTaskFailInfo";
 import ReopenTaskAPI from "./api/Project/ReopenTask";
 import CreateBulkProjectsAPI from "./api/Project/CreateBulkProjects";
+import UpdateAndReplaceWordsAPI from "./api/Project/UpdateAndReplaceWords";
 
 //User APIs
 import ChangePasswordAPI from "./api/User/ChangePassword";
@@ -112,6 +113,7 @@ import CreateGlossaryAPI from "./api/User/CreateGlossary";
 import UpdateTipsAPI from "./api/User/UpdateTips";
 import DeleteGlossaryAPI from "./api/User/DeleteGlossary";
 import UploadGlossaryAPI from "./api/User/UploadGlossary";
+import ResendUserInviteAPI from "./api/User/ResendUserInvite";
 
 //Commom Actions
 import {
@@ -154,6 +156,7 @@ import FetchVoiceoverChartAPI from "./api/Intro/FetchVoiceoverChart";
 import FetchTranslationChartAPI from "./api/Intro/FetchTranslationChart";
 
 import APITransport from "./apitransport/apitransport";
+import APITransportUTS from "./apitransport/apitransportUts";
 import UnSubscribeNewletterFromEmailAPI from "./api/User/UnSubscribeNewletterFromEmail";
 import RegenerateResponseAPI from "./api/Project/RegenerateResponse";
 import OnBoardingAPI from "./api/User/OnBoarding";
@@ -265,6 +268,7 @@ export {
   setRangeStart,
   setRangeEnd,
   APITransport,
+  APITransportUTS,
   FetchVoiceoverExportTypesAPI,
   FetchSupportedBulkTaskTypeAPI,
   setSnackBar,
@@ -300,4 +304,6 @@ export {
   CreateMemberAPI,
   UpdateOnboardingFormAPI,
   FetchOnboardingListAPI,
+  UpdateAndReplaceWordsAPI,
+  ResendUserInviteAPI,
 };

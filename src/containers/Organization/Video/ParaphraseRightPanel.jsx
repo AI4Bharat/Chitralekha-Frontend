@@ -1,4 +1,3 @@
-// TranslationRightPanel
 import React, { memo, useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
@@ -17,7 +16,6 @@ import {
   getItemForDelete,
   getSelectionStart,
   getTargetSelectionStart,
-  reGenerateTranslation,
   onSplit,
 } from "utils";
 
@@ -34,8 +32,10 @@ import {
   Menu,
   MenuItem,
   useMediaQuery,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -52,9 +52,10 @@ import {
   setSubtitles,
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
-import { bookmarkSegment, onExpandTimeline } from "utils/subtitleUtils";
+import { bookmarkSegment, onExpandTimeline, paraphrase } from "utils/subtitleUtils";
+import LoopIcon from "@mui/icons-material/Loop";
 
-const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
+const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -109,9 +110,11 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [showPopOver, setShowPopOver] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
+    setApiInProgress(progress);
 
     if (!progress) {
       if (success) {
@@ -260,7 +263,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const onMergeClick = useCallback(
     (index) => {
       const selectionStart = getSelectionStart(index);
-      const targetSelectionStart = getTargetSelectionStart(index);
+      const targetSelectionStart = getTargetSelectionStart(index, false, true);
 
       setUndoStack((prevState) => [
         ...prevState,
@@ -273,7 +276,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       ]);
       setRedoStack([]);
 
-      const sub = onMerge(index);
+      const sub = onMerge(index, false, true);
       dispatch(setSubtitles(sub, C.SUBTITLES));
     },
     // eslint-disable-next-line
@@ -291,7 +294,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     ]);
     setRedoStack([]);
 
-    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, true);
+    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, false, false, true);
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // saveTranscriptHandler(false, true, sub);
 
@@ -324,7 +327,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     arr.forEach((element, i) => {
       if (index === i) {
         if (type === "transaltion") {
-          element.target_text = text;
+          element.paraphrased_text = text;
         } else {
           element.text = text;
         }
@@ -500,7 +503,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
   const addNewSubtitleBox = useCallback(
     (index) => {
-      const sub = addSubtitleBox(index);
+      const sub = addSubtitleBox(index, true);
 
       dispatch(setSubtitles(sub, C.SUBTITLES));
 
@@ -523,7 +526,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       const lastAction = undoStack[undoStack.length - 1];
 
       // modifing subtitles based on last action
-      const sub = onUndoAction(lastAction);
+      const sub = onUndoAction(lastAction, false, true);
       dispatch(setSubtitles(sub, C.SUBTITLES));
 
       //removing the last action from undo and putting in redo stack
@@ -539,7 +542,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       const lastAction = redoStack[redoStack.length - 1];
 
       // modifing subtitles based on last action
-      const sub = onRedoAction(lastAction);
+      const sub = onRedoAction(lastAction, false, true);
       dispatch(setSubtitles(sub, C.SUBTITLES));
 
       //removing the last action from redo and putting in undo stack
@@ -556,8 +559,8 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   };
 
   const targetLength = (index) => {
-    if (sourceText[index]?.target_text?.trim() !== "")
-      return sourceText[index]?.target_text?.trim().split(" ").length;
+    if (sourceText[index]?.paraphrased_text?.trim() !== "")
+      return sourceText[index]?.paraphrased_text?.trim().split(" ").length;
     return 0;
   };
 
@@ -585,7 +588,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     (index) => {
       const regenerate = true;
 
-      const sub = reGenerateTranslation(index);
+      const sub = paraphrase(index);
       dispatch(setSubtitles(sub, C.SUBTITLES));
 
       saveTranscriptHandler(false, regenerate, sub);
@@ -804,13 +807,25 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                       index={index}
                       type={"endTime"}
                     />
+                    {currentIndex === index && 
+                      <Tooltip title="Paraphrase Segment" placement="bottom">
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          onClick={() => handleReGenerateTranslation(index)}
+                          style={{ marginTop: "10px"}}
+                          disabled={apiInProgress}
+                        >
+                          <LoopIcon className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                    }
                   </div>
 
                   {enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       lang={taskData?.target_language}
-                      value={item.target_text}
+                      value={item.paraphrased_text}
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index, "transaltion");
                       }}
@@ -882,7 +897,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                             "transaltion"
                           );
                         }}
-                        value={item.target_text}
+                        value={item.paraphrased_text}
                         onBlur={() => {
                           setTimeout(() => {
                             setShowPopOver(false);
@@ -960,7 +975,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             openDialog={openConfirmDialog}
             handleClose={() => setOpenConfirmDialog(false)}
             submit={() => saveTranscriptHandler(true)}
-            message={"Do you want to submit the translation?"}
+            message={"Do you want to submit the transcription?"}
             loading={apiStatus.loading}
           />
         )}
@@ -992,4 +1007,4 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   );
 };
 
-export default memo(TranslationRightPanel);
+export default memo(ParaphraseRightPanel);

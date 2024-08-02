@@ -59,9 +59,10 @@ import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import PlayArrow from "@mui/icons-material/PlayArrow";
 import { Pause } from "@mui/icons-material";
+import ParaphraseRightPanel from "./ParaphraseRightPanel";
 
 const VideoLanding = () => {
-  const { taskId } = useParams();
+  const { taskId, offset, segment } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
 
@@ -138,7 +139,8 @@ const VideoLanding = () => {
       (async () => {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
-          taskDetails.task_type
+          taskDetails.task_type,
+          offset !== undefined ? offset : 1
         );
         dispatch(APITransport(payloadObj));
       })();
@@ -239,16 +241,16 @@ const VideoLanding = () => {
   };
 
   const renderLoader = () => {
-    if (videoDetails.length <= 0) {
-      return (
-        <Backdrop className={classes.backDrop} open={true}>
-          <CircularProgress color="inherit" size="50px" />
-          <Typography sx={{ mt: 3 }}>
-            Please wait while your request is being processed
-          </Typography>
-        </Backdrop>
-      );
-    }
+    // if (videoDetails.length <= 0) {
+    //   return (
+    //     <Backdrop className={classes.backDrop} open={true}>
+    //       <CircularProgress color="inherit" size="50px" />
+    //       <Typography sx={{ mt: 3 }}>
+    //         Please wait while your request is being processed
+    //       </Typography>
+    //     </Backdrop>
+    //   );
+    // }
   };
 
   useEffect(() => {
@@ -270,7 +272,7 @@ const VideoLanding = () => {
       <PanelGroup direction="horizontal" className={classes.parentGrid}>
         <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
-            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(93.5vh)" }}
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(92.5vh - 60px)" }}
             className={classes.videoBox}
           >
             <VideoName
@@ -289,6 +291,8 @@ const VideoLanding = () => {
             <VideoPanel
               setCurrentTime={setCurrentTime}
               setPlaying={setPlaying}
+              currentTime={currentTime}
+              playing={playing}
             />
 
             {currentSubs && showSubtitles && (
@@ -344,11 +348,21 @@ const VideoLanding = () => {
         <PanelResizeHandle />
         <Panel defaultSize={75} minSize={50} id="right-panel" style={{backgroundColor:"white", paddingTop: fullscreen?"4%":"0"}}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
+            taskDetails?.status === "PARAPHRASE" ?
+            <ParaphraseRightPanel
+              currentIndex={currentIndex}
+              currentSubs={currentSubs}
+              setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
+              segment={segment}
+            />
+            :
             <RightPanel
               currentIndex={currentIndex}
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
             // <VoiceOverRightPanel currentIndex={currentIndex}
@@ -357,6 +371,7 @@ const VideoLanding = () => {
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           ) : (
             <TranslationRightPanel
@@ -364,12 +379,13 @@ const VideoLanding = () => {
               currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
               showTimeline={showTimeline}
+              segment={segment}
             />
           )}
           {fullscreen && 
           <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
-          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.play()}}/>
-          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.pause()}}/>
+          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.playVideo() : player.play()}}/>
+          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.pauseVideo() : player.pause()}}/>
           </div>}
           <Box>
             <Button

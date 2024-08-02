@@ -82,7 +82,7 @@ const CreateBulkProjects = () => {
 
   const handleNumProjectsChange = (e) => {
     const newNumProjects = parseInt(e.target.value, 10) || 1;
-    const clampedNumProjects = Math.min(Math.max(newNumProjects, 1), 20);
+    const clampedNumProjects = Math.min(Math.max(newNumProjects, 1), 50);
 
     setNumberOfProjects(clampedNumProjects);
 
@@ -191,7 +191,7 @@ const CreateBulkProjects = () => {
                       sx={{
                         visibility: `${
                           index + 1 === numberOfProjects &&
-                          numberOfProjects < 20
+                          numberOfProjects < 50
                             ? "visible"
                             : "hidden"
                         }`,
