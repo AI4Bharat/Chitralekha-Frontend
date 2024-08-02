@@ -71,6 +71,7 @@ const MyOrganization = () => {
   const [orgOwnerId, setOrgOwnerId] = useState("");
   const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
     useState(false);
+    const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -135,10 +136,19 @@ const MyOrganization = () => {
 
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
-
-      setOrgOwnerId(organization_owner.id);
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
+  
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
     // eslint-disable-next-line
   }, [userData]);
@@ -195,11 +205,11 @@ const MyOrganization = () => {
               <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {userData?.id === orgOwnerId && (
+            {isUserOrgOwner&& (
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {userData?.id === orgOwnerId && (
+            {isUserOrgOwner && (
               <Tab
                 label={"Settings"}
                 sx={{ fontSize: 16, fontWeight: "700" }}
@@ -220,7 +230,7 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <Box display={"flex"} width={"100%"}>
-              {userData?.id === orgOwnerId && (
+              {isUserOrgOwner && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
@@ -292,7 +302,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {userData?.id === orgOwnerId && (
+            {isUserOrgOwner && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
