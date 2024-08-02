@@ -249,10 +249,10 @@ const EditProfile = () => {
   const getDisabledOption = (name) => {
     const { id: userId, role } = loggedInUserData;
     
-  if (userId === +id ||  loggedInUserData?.role=="ORG_OWNER"||  loggedInUserData?.role=="ADMIN") {
-    if (role === "ADMIN" || role === "ORG_OWNER") {
+  if (userId === +id ||  loggedInUserData?.role=="ORG_OWNER") {
+    if ( role === "ORG_OWNER") {
       return false; 
-    } else if ( role === "PROJECT_MANAGER") {
+    } else if (role === "ADMIN" || role === "PROJECT_MANAGER") {
       return name === "org" || name === "availability";
     } else {
       return name === "role" || name === "org" || name === "availability";
@@ -368,7 +368,7 @@ const EditProfile = () => {
   const onSubmitClick = () => {
     const { id: userId, role } = loggedInUserData;
 
-    if (userId === +id || loggedInUserData?.role ==="ORG_OWNER" || loggedInUserData?.role ==="ADMIN") {
+    if (userId === +id || loggedInUserData?.role ==="ORG_OWNER" ) {
       if (
         role === "ADMIN" ||
         userId === orgOwnerId ||
