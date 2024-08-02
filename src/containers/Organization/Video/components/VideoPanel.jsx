@@ -22,6 +22,7 @@ const VideoPanel = memo(
     const $video = createRef();
 
     const [poster, setPoster] = useState("play.png");
+    const [ytdlpError, setYtdlpError] = useState(false);
 
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -62,7 +63,7 @@ const VideoPanel = memo(
 
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
-        { videoDetails.length === 0 && taskData?.video_url?.includes("youtube") ?
+        { ((videoDetails.length === 0 && taskData?.video_url?.includes("youtube")) || ytdlpError === true) ?
         <ReactPlayerYT
           onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
           ref={$video}
@@ -89,7 +90,8 @@ const VideoPanel = memo(
           className={classes.videoPlayer}
           controls={true}
           controlsList="nodownload"
-          onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
+          onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer())); console.log($video.current.getInternalPlayer());}}
+          onError={() => {setYtdlpError(true);}}
         />
       }
       </div>
