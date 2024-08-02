@@ -710,9 +710,16 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                   aria-describedby={"suggestionList"}
                   onClick={() => {
                     if (player) {
-                      player.pause();
-                      if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
-                        player.currentTime = item.startTime + 0.001;
+                      if( typeof player.pauseVideo === 'function' ){
+                        player.pauseVideo();
+                        if (player.getDuration() >= item.startTime && (player.getCurrentTime() < item.startTime || player.getCurrentTime() > item.endTime)) {
+                          player.seekTo(item.startTime + 0.001);
+                        }
+                      }else{
+                        player.pause();
+                        if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
+                          player.currentTime = item.startTime + 0.001;
+                        }
                       }
                     }
                   }}

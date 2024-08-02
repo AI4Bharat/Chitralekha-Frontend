@@ -241,16 +241,16 @@ const VideoLanding = () => {
   };
 
   const renderLoader = () => {
-    if (videoDetails.length <= 0) {
-      return (
-        <Backdrop className={classes.backDrop} open={true}>
-          <CircularProgress color="inherit" size="50px" />
-          <Typography sx={{ mt: 3 }}>
-            Please wait while your request is being processed
-          </Typography>
-        </Backdrop>
-      );
-    }
+    // if (videoDetails.length <= 0) {
+    //   return (
+    //     <Backdrop className={classes.backDrop} open={true}>
+    //       <CircularProgress color="inherit" size="50px" />
+    //       <Typography sx={{ mt: 3 }}>
+    //         Please wait while your request is being processed
+    //       </Typography>
+    //     </Backdrop>
+    //   );
+    // }
   };
 
   useEffect(() => {
@@ -291,6 +291,8 @@ const VideoLanding = () => {
             <VideoPanel
               setCurrentTime={setCurrentTime}
               setPlaying={setPlaying}
+              currentTime={currentTime}
+              playing={playing}
             />
 
             {currentSubs && showSubtitles && (
@@ -382,8 +384,8 @@ const VideoLanding = () => {
           )}
           {fullscreen && 
           <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
-          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.play()}}/>
-          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.pause()}}/>
+          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.playVideo() : player.play()}}/>
+          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.pauseVideo() : player.pause()}}/>
           </div>}
           <Box>
             <Button
