@@ -65,7 +65,7 @@ export default React.memo(
       (event) => {
         if (taskDetails.task_type.includes("VOICEOVER")){return}
         if (isDroging) {
-          if (playing) player.pause();
+          if (playing) typeof player.pauseVideo === 'function' ? player.pauseVideo() : player.pause();
           setDrogEndTime(getEventTime(event));
         }
       },
