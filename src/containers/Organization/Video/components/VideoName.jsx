@@ -20,6 +20,8 @@ const VideoName = ({
   setShowSubtitles,
   showTimeline,
   setShowTimeline,
+  useYtdlp,
+  setUseYtdlp,
 }) => {
   const classes = VideoLandingStyle();
 
@@ -69,6 +71,8 @@ const VideoName = ({
         setShowSubtitles={setShowSubtitles}
         showTimeline={showTimeline}
         setShowTimeline={setShowTimeline}
+        useYtdlp={useYtdlp}
+        setUseYtdlp={setUseYtdlp}
       />
     </Box>
   );

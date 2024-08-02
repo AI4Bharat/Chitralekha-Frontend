@@ -74,6 +74,7 @@ const VideoLanding = () => {
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
   const [subtitlePlacement, setSubtitlePlacement] = useState("bottom");
+  const [useYtdlp, setUseYtdlp] = useState(true);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -285,11 +286,15 @@ const VideoLanding = () => {
               setShowSubtitles={setShowSubtitles}
               showTimeline={showTimeline}
               setShowTimeline={setShowTimeline}
+              useYtdlp={useYtdlp}
+              setUseYtdlp={setUseYtdlp}
             />
 
             <VideoPanel
               setCurrentTime={setCurrentTime}
               setPlaying={setPlaying}
+              useYtdlp={useYtdlp}
+              setUseYtdlp={setUseYtdlp}
             />
 
             {currentSubs && showSubtitles && (
