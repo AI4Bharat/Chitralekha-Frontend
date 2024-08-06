@@ -248,6 +248,7 @@ const ProjectReport = () => {
       rowsPerPage: limit,
       count: total_count,
       customToolbar: renderToolBar,
+      rowsPerPageOptions: [10, 25, 50, 100, 1000],
       onTableChange: (action, tableState) => {
         switch (action) {
           case "changePage":
