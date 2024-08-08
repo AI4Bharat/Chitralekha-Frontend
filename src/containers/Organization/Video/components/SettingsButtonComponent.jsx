@@ -106,6 +106,14 @@ const SettingsButtonComponent = ({
   }, [apiStatus]);
 
   const getDisbled = (flag) => {
+    
+    
+     if ( 
+     taskData?.source_type === "Manually Created"
+) {
+      return false;
+    }
+
     if (!transcriptPayload?.payload?.payload?.length) {
       return true;
     }
@@ -115,10 +123,14 @@ const SettingsButtonComponent = ({
       transcriptPayload?.source_type !== "MACHINE_GENERATED"
     ) {
       if (durationError?.some((item) => item === true)) {
+        console.log("2");
+        
         return true;
       }
 
       if (flag && completedCount !== totalSentences) {
+        console.log("3");
+        
         return true;
       }
     }
@@ -128,6 +140,8 @@ const SettingsButtonComponent = ({
       transcriptPayload?.source_type === "MACHINE_GENERATED"
     ) {
       if (!transcriptPayload?.payload?.payload.length) {
+        console.log("4");
+        
         return true;
       }
     }
