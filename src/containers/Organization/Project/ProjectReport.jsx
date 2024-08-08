@@ -29,6 +29,7 @@ import {
   Button,
 } from "@mui/material";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import { Download } from "@mui/icons-material";
 import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
 import constants from "redux/constants";
@@ -86,6 +87,26 @@ const ProjectReport = () => {
   const handleDownloadReport = async () => {
     const apiObj = new DownloadProjectReportsAPI(projectId, reportsLevel);
     dispatch(APITransport(apiObj));
+  };
+
+  const handleDownloadReportCsv = () => {
+    var header = '';
+    columns.forEach((item) => {
+      header += item.label + ","
+    })
+    var data = tableData.map((item) => {
+      var row = item;
+      return row.join(",");
+    }).join("\n");
+    const blob = new Blob([header.slice(0,-1)+'\n'+data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reports_"+Date.now()+".csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -201,6 +222,16 @@ const ProjectReport = () => {
             </Tooltip>
           </Button>
         )}
+        {reportsLevel && tableData?.length > 0 && (
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+        )}
       </>
     );
   };
@@ -217,6 +248,7 @@ const ProjectReport = () => {
       rowsPerPage: limit,
       count: total_count,
       customToolbar: renderToolBar,
+      rowsPerPageOptions: [10, 25, 50, 100, 1000],
       onTableChange: (action, tableState) => {
         switch (action) {
           case "changePage":
@@ -233,7 +265,7 @@ const ProjectReport = () => {
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus.progress]);
+  }, [apiStatus.progress, tableData]);
 
   const handleColumnSelection = (e) => {
     const selectedColumns = [...columns];

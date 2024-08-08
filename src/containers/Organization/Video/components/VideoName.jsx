@@ -20,6 +20,8 @@ const VideoName = ({
   setShowSubtitles,
   showTimeline,
   setShowTimeline,
+  useYtdlp,
+  setUseYtdlp,
 }) => {
   const classes = VideoLandingStyle();
 
@@ -29,19 +31,20 @@ const VideoName = ({
     (state) => state.commonReducer.fullscreenVideo
   );
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
+  const player = useSelector((state) => state.commonReducer.player);
 
   return (
     <Box
       className={classes.videoNameBox}
       style={fullscreenVideo ? { width: "60%", margin: "auto" } : { border:"solid", borderColor: "#F5F5F5", borderWidth: "1px"}}
     >
-      <Tooltip title={videoDetails?.video?.name} placement="bottom">
+      <Tooltip title={videoDetails?.video?.name ? videoDetails?.video?.name : player?.playerInfo?.videoData?.title && player?.playerInfo?.videoData?.title} placement="bottom">
         <Typography
           variant="h6"
           className={classes.videoName}
           style={fullscreenVideo ? { color: "white" } : {}}
         >
-          {videoDetails?.video?.name}
+          {videoDetails?.video?.name ? videoDetails?.video?.name : player?.playerInfo?.videoData?.title && player?.playerInfo?.videoData?.title}
         </Typography>
       </Tooltip>
 
@@ -68,6 +71,8 @@ const VideoName = ({
         setShowSubtitles={setShowSubtitles}
         showTimeline={showTimeline}
         setShowTimeline={setShowTimeline}
+        useYtdlp={useYtdlp}
+        setUseYtdlp={setUseYtdlp}
       />
     </Box>
   );

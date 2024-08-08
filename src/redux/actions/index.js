@@ -113,6 +113,7 @@ import CreateGlossaryAPI from "./api/User/CreateGlossary";
 import UpdateTipsAPI from "./api/User/UpdateTips";
 import DeleteGlossaryAPI from "./api/User/DeleteGlossary";
 import UploadGlossaryAPI from "./api/User/UploadGlossary";
+import ResendUserInviteAPI from "./api/User/ResendUserInvite";
 
 //Commom Actions
 import {
@@ -301,5 +302,6 @@ export {
   CreateMemberAPI,
   UpdateOnboardingFormAPI,
   FetchOnboardingListAPI,
-  UpdateAndReplaceWordsAPI
+  UpdateAndReplaceWordsAPI,
+  ResendUserInviteAPI,
 };

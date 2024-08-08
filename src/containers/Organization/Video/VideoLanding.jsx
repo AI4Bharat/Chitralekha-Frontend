@@ -74,6 +74,7 @@ const VideoLanding = () => {
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
   const [subtitlePlacement, setSubtitlePlacement] = useState("bottom");
+  const [useYtdlp, setUseYtdlp] = useState(true);
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -240,16 +241,16 @@ const VideoLanding = () => {
   };
 
   const renderLoader = () => {
-    if (videoDetails.length <= 0) {
-      return (
-        <Backdrop className={classes.backDrop} open={true}>
-          <CircularProgress color="inherit" size="50px" />
-          <Typography sx={{ mt: 3 }}>
-            Please wait while your request is being processed
-          </Typography>
-        </Backdrop>
-      );
-    }
+    // if (videoDetails.length <= 0) {
+    //   return (
+    //     <Backdrop className={classes.backDrop} open={true}>
+    //       <CircularProgress color="inherit" size="50px" />
+    //       <Typography sx={{ mt: 3 }}>
+    //         Please wait while your request is being processed
+    //       </Typography>
+    //     </Backdrop>
+    //   );
+    // }
   };
 
   useEffect(() => {
@@ -285,11 +286,15 @@ const VideoLanding = () => {
               setShowSubtitles={setShowSubtitles}
               showTimeline={showTimeline}
               setShowTimeline={setShowTimeline}
+              useYtdlp={useYtdlp}
+              setUseYtdlp={setUseYtdlp}
             />
 
             <VideoPanel
               setCurrentTime={setCurrentTime}
               setPlaying={setPlaying}
+              useYtdlp={useYtdlp}
+              setUseYtdlp={setUseYtdlp}
             />
 
             {currentSubs && showSubtitles && (
@@ -372,8 +377,8 @@ const VideoLanding = () => {
           )}
           {fullscreen && 
           <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
-          <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.play()}}/>
-          <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {player.pause()}}/>
+            <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.playVideo() : player.play()}}/>
+            <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.pauseVideo() : player.pause()}}/>
           </div>}
           <Box>
             <Button
