@@ -106,6 +106,11 @@ const SettingsButtonComponent = ({
   }, [apiStatus]);
 
   const getDisbled = (flag) => {
+
+    if (taskData?.source_type === "Manually Created") {
+      return false;
+    }
+  
     if (!transcriptPayload?.payload?.payload?.length) {
       return true;
     }
