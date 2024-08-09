@@ -104,7 +104,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState([]);
+  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState(false);
   const [speakerIdList, setSpeakerIdList] = useState([]);
   const [currentSelectedIndex, setCurrentSelectedIndex] = useState(0);
   const [tagSuggestionsAnchorEl, setTagSuggestionsAnchorEl] = useState(null);
@@ -186,7 +186,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
         return speaker;
       });
       setSpeakerIdList(speakerList);
-      setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+      setShowSpeakerIdDropdown(false);
       if(segment!==undefined){
         setTimeout(() => {    
           const subtitleScrollEle = document.getElementById("subTitleContainer");
