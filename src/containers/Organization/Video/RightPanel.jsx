@@ -463,12 +463,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
-      const sub = timeChange(value, index, type, time);
+      const sub = timeChange(value, index, type, time, player);
       dispatch(setSubtitles(sub, C.SUBTITLES));
       // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [limit, currentOffset, player]
   );
 
   const onDelete = useCallback(
