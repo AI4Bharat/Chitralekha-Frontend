@@ -60,7 +60,7 @@ export const getKeyCode = (event) => {
   }
 };
 
-export const timeChange = (value, index, type, time) => {
+export const timeChange = (value, index, type, time, player) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = [...subtitles];
 
@@ -70,7 +70,8 @@ export const timeChange = (value, index, type, time) => {
       time,
       copySub[index].start_time,
       index,
-      type
+      type,
+      player,
     );
   } else {
     copySub[index].end_time = getUpdatedTime(
@@ -78,7 +79,8 @@ export const timeChange = (value, index, type, time) => {
       time,
       copySub[index].end_time,
       index,
-      type
+      type,
+      player,
     );
   }
 
