@@ -163,7 +163,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Add Subtitle Box" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex === -1}
+              disabled={currentIndex === -1 && taskData?.source_type !== "Manually Created"}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
