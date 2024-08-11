@@ -98,7 +98,7 @@ export const addSubtitleBox = (index) => {
       0,
       newSub({
         start_time: DT.d2t(0),
-        end_time: DT.d2t(0),
+        end_time: DT.d2t(5),
         text: "",
         speaker_id: "",
         target_text: "",
