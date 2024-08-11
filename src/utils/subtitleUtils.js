@@ -92,6 +92,21 @@ export const addSubtitleBox = (index) => {
 
   const copySub = [...subtitles];
 
+  if(index === -1){
+    copySub.splice(
+      0,
+      0,
+      newSub({
+        start_time: DT.d2t(0),
+        end_time: DT.d2t(0),
+        text: "",
+        speaker_id: "",
+        target_text: "",
+      })
+    );
+  
+    return copySub;
+  }else{
   const duration = DT.t2d(copySub[index].end_time);
 
   copySub.splice(
@@ -110,6 +125,7 @@ export const addSubtitleBox = (index) => {
   );
 
   return copySub;
+  }
 };
 
 export const onMerge = (index, votr=false) => {
