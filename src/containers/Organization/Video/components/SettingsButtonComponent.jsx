@@ -106,6 +106,7 @@ const SettingsButtonComponent = ({
   }, [apiStatus]);
 
   const getDisbled = (flag) => {
+ 
     if (!transcriptPayload?.payload?.payload?.length) {
       return true;
     }
@@ -115,10 +116,12 @@ const SettingsButtonComponent = ({
       transcriptPayload?.source_type !== "MACHINE_GENERATED"
     ) {
       if (durationError?.some((item) => item === true)) {
+        
         return true;
       }
 
       if (flag && completedCount !== totalSentences) {
+        
         return true;
       }
     }
@@ -128,6 +131,7 @@ const SettingsButtonComponent = ({
       transcriptPayload?.source_type === "MACHINE_GENERATED"
     ) {
       if (!transcriptPayload?.payload?.payload.length) {
+        
         return true;
       }
     }
