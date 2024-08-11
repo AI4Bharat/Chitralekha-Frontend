@@ -21,7 +21,8 @@ import {
   Tooltip,
   Button,
   TextField,
-  Badge
+  Badge,
+  CircularProgress
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
@@ -63,6 +64,7 @@ const OrganizationReport = () => {
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [loading, setLoading] = useState(false);
   const [taskStartDate, setTaskStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [taskEndDate, setTaskEndDate] = useState(moment().format("YYYY-MM-DD"));
   const openSelector = Boolean(anchorEl);
@@ -77,6 +79,7 @@ const OrganizationReport = () => {
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
+    setTableData([]);
     setReportsLevel(event.target.value);
     setlanguageLevelStats("");
     setOffset(0);
@@ -111,6 +114,7 @@ const OrganizationReport = () => {
       }
       return acc;
     }, {});
+    setLoading(true);
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
@@ -144,6 +148,7 @@ const OrganizationReport = () => {
       (item) => item.reportLevel === reportsLevel
     );
 
+    setLoading(true);
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
@@ -191,6 +196,7 @@ const OrganizationReport = () => {
       const temp = reportLevels.filter(
         (item) => item.reportLevel === reportsLevel
       );
+      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         temp[0].endPoint,
@@ -201,6 +207,7 @@ const OrganizationReport = () => {
       dispatch(APITransport(apiObj));
     } else {
       const endPoint = "get_aggregated_report_users";
+      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         endPoint,
@@ -214,16 +221,43 @@ const OrganizationReport = () => {
 
   useEffect(() => {
     setOffset(0);
+    if (reportsLevel === "") return;
+    if (showUserReportProjectColumn) {
+      const temp = reportLevels.filter(
+        (item) => item.reportLevel === reportsLevel
+      );
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        temp[0].endPoint,
+        limit,
+        1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
+    } else {
+      const endPoint = "get_aggregated_report_users";
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        endPoint,
+        limit,
+        1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
+    }
   }, [limit]);
 
   useEffect(() => {
+    setLoading(false);
     let rawData = [];
     rawData = reportData;
     createTableData(rawData);
     createReportColumns(rawData);
 
     // eslint-disable-next-line
-  }, [reportData, languageLevelsStats, reportsLevel]);
+  }, [reportData, languageLevelsStats]);
 
   const createReportColumns = (rawData) => {
     let tempColumns = [];
@@ -523,12 +557,15 @@ const OrganizationReport = () => {
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable
-          title=""
-          data={tableData}
-          columns={columns}
-          options={options}
-        />
+        <div style={{filter: loading && "blur(1px)", pointerEvents: loading && "none"}}>
+          <MUIDataTable
+            title=""
+            data={tableData}
+            columns={columns}
+            options={options}
+          />
+        </div>
+        { loading && <CircularProgress style={{marginTop:16, position:"absolute", top:"50%", bottom: "50%"}} size={40}/>}
       </ThemeProvider>
 
       {openSelector && (
