@@ -44,7 +44,7 @@ const VideoName = ({
           className={classes.videoName}
           style={fullscreenVideo ? { color: "white" } : {}}
         >
-          {videoDetails?.video?.name ? videoDetails?.video?.name : player?.playerInfo?.videoData?.title && player?.playerInfo?.videoData?.title}
+          {videoDetails?.video?.name && videoDetails?.direct_video_url !== "" ? videoDetails?.video?.name : player?.playerInfo?.videoData?.title && player?.playerInfo?.videoData?.title}
         </Typography>
       </Tooltip>
 
