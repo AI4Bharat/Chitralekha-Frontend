@@ -59,6 +59,12 @@ const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
       }
     }, [$video]);
 
+    useEffect(() => {
+      if(videoDetails?.direct_video_url === ""){
+        setUseYtdlp(false);
+      }
+    }, [videoDetails?.direct_video_url])
+
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
         { ((videoDetails.length === 0 && taskData?.video_url?.includes("youtube")) || useYtdlp === false) ?
