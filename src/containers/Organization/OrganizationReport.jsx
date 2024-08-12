@@ -221,7 +221,7 @@ const OrganizationReport = () => {
 
   useEffect(() => {
     setOffset(0);
-    if (reportsLevel === "") return;
+    if (reportsLevel === "" || reportsLevel === "Task") return;
     if (showUserReportProjectColumn) {
       const temp = reportLevels.filter(
         (item) => item.reportLevel === reportsLevel
@@ -441,14 +441,19 @@ const OrganizationReport = () => {
       rowsPerPage: limit,
       count: total_count,
       customToolbar: renderToolBar,
-      rowsPerPageOptions: [10, 25, 50, 100, 1000],
+      rowsPerPageOptions: [10, 25, 50, 100, "All"],
       onTableChange: (action, tableState) => {
         switch (action) {
           case "changePage":
             setOffset(tableState.page);
             break;
           case "changeRowsPerPage":
-            setLimit(tableState.rowsPerPage);
+            if (tableState.rowsPerPage == "All"){
+              setLimit(total_count)
+            }
+            else{
+              setLimit(tableState.rowsPerPage);
+            }
             break;
           default:
         }
