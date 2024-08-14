@@ -564,11 +564,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
-      const sub = timeChange(value, index, type, time);
+      const sub = timeChange(value, index, type, time, player);
       dispatch(setSubtitles(sub, C.SUBTITLES));
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [limit, currentOffset, player]
   );
 
   const replaceSelectedText = (text, index) => {

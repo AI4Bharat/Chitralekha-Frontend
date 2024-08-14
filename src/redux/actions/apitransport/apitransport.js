@@ -91,6 +91,7 @@ const error = (err, api, dispatch) => {
     api.processNextErrorStep();
   }
 
+  if(api.type !== "GET_VIDEO_DETAILS"){
   dispatch(
     setSnackBar({
       open: true,
@@ -98,6 +99,7 @@ const error = (err, api, dispatch) => {
       variant: "error",
     })
   );
+  }
 
   if (status === 401 && api.type !== "GET_USER_ACCESS_TOKEN") {
     window.location.replace("/#/login");

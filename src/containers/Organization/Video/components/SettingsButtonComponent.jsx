@@ -106,7 +106,11 @@ const SettingsButtonComponent = ({
   }, [apiStatus]);
 
   const getDisbled = (flag) => {
- 
+
+    if (taskData?.source_type === "Manually Created") {
+      return false;
+    }
+
     if (!transcriptPayload?.payload?.payload?.length) {
       return true;
     }
@@ -162,7 +166,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Add Subtitle Box" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex === -1}
+              disabled={currentIndex === -1 && taskData?.source_type !== "Manually Created"}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}

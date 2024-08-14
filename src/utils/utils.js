@@ -250,9 +250,9 @@ export const getMilliseconds = (timeInString) => {
   return 0;
 };
 
-export const getUpdatedTime = (value, type, time, index, startEnd) => {
+export const getUpdatedTime = (value, type, time, index, startEnd, player) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  const videoDuration = store.getState().getVideoDetails.data.video.duration;
+  const videoDuration = typeof player.getDuration === 'function' ? DT.d2t(player.getDuration()) : store.getState().getVideoDetails.data.video.duration;
 
   let newValue = "";
 
