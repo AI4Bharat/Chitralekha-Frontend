@@ -15,8 +15,7 @@ import { VideoLandingStyle } from "styles";
 //APIs
 import { setPlayer } from "redux/actions";
 
-const VideoPanel = memo(
-  ({ setCurrentTime, setPlaying, currentTime, playing }) => {
+const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
     const $video = createRef();
@@ -46,7 +45,7 @@ const VideoPanel = memo(
         });
       })();
       // eslint-disable-next-line
-    }, [player, currentTime, playing]);
+    }, [player, setCurrentTime, setPlaying]);
 
     const onClick = useCallback(() => {
       if ($video.current) {
@@ -60,9 +59,16 @@ const VideoPanel = memo(
       }
     }, [$video]);
 
+    useEffect(() => {
+      if(videoDetails?.direct_video_url === ""){
+        setUseYtdlp(false);
+      }
+    }, [videoDetails?.direct_video_url])
+
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
-        { videoDetails.length === 0 && taskData?.video_url?.includes("youtube") ?
+        { ((videoDetails.length === 0 && taskData?.video_url?.includes("youtube")) || useYtdlp === false) ?
+
         <ReactPlayerYT
           onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
           ref={$video}
@@ -90,12 +96,11 @@ const VideoPanel = memo(
           controls={true}
           controlsList="nodownload"
           onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
+          onError={() => {setUseYtdlp(false);}}
         />
       }
       </div>
     );
-  },
-  () => true
-);
+  };
 
 export default VideoPanel;
