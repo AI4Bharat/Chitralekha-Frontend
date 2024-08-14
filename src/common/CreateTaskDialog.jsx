@@ -62,7 +62,7 @@ const CreateTaskDialog = ({
     (state) => state.getSupportedLanguages.voiceoverLanguage
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
-
+const[langLabel,setlabel] =useState("")
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
@@ -72,7 +72,6 @@ const CreateTaskDialog = ({
   const [allowedTaskType, setAllowedTaskType] = useState("");
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
   const [showLimitWarning, setShowLimitWarning] = useState(false);
-
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
@@ -147,8 +146,13 @@ const CreateTaskDialog = ({
     const {
       target: { value },
     } = event;
-
+    const selectedLanguage = translationLanguage.find(
+      (lang) => lang.value === event.target.value
+    ) || voiceoverLanguage.find(
+      (lang) => lang.value === event.target.value
+    );
     setLanguage(value);
+    setlabel(selectedLanguage.label)
 
     if (isBulk) {
       const obj = new FetchProjectMembersAPI(projectId, taskType, "", value);
@@ -367,12 +371,14 @@ const CreateTaskDialog = ({
                 inputProps={{ "aria-label": "Without label" }}
                 disabled={isAssignUserDropdownDisabled()}
               >
-                {projectMembers.map((item, index) => (
+                {projectMembers
+                .filter((member) => member.languages.includes(langLabel))
+                .map((item, index) => (
                   <MenuItem key={index} value={item}>
                     {`${item.first_name} ${item.last_name} (${item.email})`}
                   </MenuItem>
                 ))}
-              </Select>
+            </Select>
             </FormControl>
           </Box>
 

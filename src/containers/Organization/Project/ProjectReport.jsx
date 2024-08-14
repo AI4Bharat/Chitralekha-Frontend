@@ -33,6 +33,7 @@ import { Download } from "@mui/icons-material";
 import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
 import constants from "redux/constants";
+import { Download } from "@mui/icons-material";
 
 const ProjectReport = () => {
   const { projectId } = useParams();

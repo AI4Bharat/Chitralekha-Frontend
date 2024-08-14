@@ -23,6 +23,7 @@ import { DatasetStyle, TableStyles } from "styles";
 import GlossaryDialog from "common/GlossaryDialog";
 import UploadFileDialog from "common/UploadFileDialog";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Iso } from "@mui/icons-material";
 
 const MyGlossary = () => {
   const classes = DatasetStyle();
@@ -75,14 +76,24 @@ const MyGlossary = () => {
 
     // eslint-disable-next-line
   }, []);
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (loggedInUserData && loggedInUserData.id) {
-      const {
-        organization: { organization_owner },
-      } = loggedInUserData;
+     const {
+      organization: { organization_owners },
+    } = loggedInUserData;
 
-      setOrgOwnerId(organization_owner.id);
+    if (organization_owners && organization_owners.length > 0) {
+      const ownerIds = organization_owners.map(owner => owner.id);
+      setOrgOwnerId(ownerIds);
+
+      if (ownerIds.includes(loggedInUserData.id)) {
+        setIsUserOrgOwner(true);
+      } else {
+        setIsUserOrgOwner(false);
+      }
+    }
     }
   }, [loggedInUserData]);
 
@@ -180,7 +191,7 @@ const MyGlossary = () => {
           <Grid
             item
             md={
-              loggedInUserData.id === orgOwnerId ||
+              isUserOrgOwner ||
               loggedInUserData.role === "PROJECT_MANAGER"
                 ? 6
                 : 12
@@ -196,7 +207,7 @@ const MyGlossary = () => {
             </Button>
           </Grid>
 
-          {(loggedInUserData.id === orgOwnerId ||
+          {(isUserOrgOwner ||
             loggedInUserData.role === "PROJECT_MANAGER") && (
             <Grid item md={6} xs={12}>
               <Button
