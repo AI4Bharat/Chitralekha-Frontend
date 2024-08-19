@@ -22,6 +22,7 @@ import {
   Button,
   TextField,
   Badge,
+  CircularProgress
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
@@ -63,9 +64,9 @@ const OrganizationReport = () => {
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [loading, setLoading] = useState(false);
   const [taskStartDate, setTaskStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [taskEndDate, setTaskEndDate] = useState(moment().format("YYYY-MM-DD"));
-
   const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -113,6 +114,7 @@ const OrganizationReport = () => {
       }
       return acc;
     }, {});
+    setLoading(true);
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
@@ -146,6 +148,7 @@ const OrganizationReport = () => {
       (item) => item.reportLevel === reportsLevel
     );
 
+    setLoading(true);
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
@@ -193,6 +196,7 @@ const OrganizationReport = () => {
       const temp = reportLevels.filter(
         (item) => item.reportLevel === reportsLevel
       );
+      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         temp[0].endPoint,
@@ -203,6 +207,7 @@ const OrganizationReport = () => {
       dispatch(APITransport(apiObj));
     } else {
       const endPoint = "get_aggregated_report_users";
+      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         endPoint,
@@ -216,9 +221,36 @@ const OrganizationReport = () => {
 
   useEffect(() => {
     setOffset(0);
+    if (reportsLevel === "" || reportsLevel === "Task") return;
+    if (showUserReportProjectColumn) {
+      const temp = reportLevels.filter(
+        (item) => item.reportLevel === reportsLevel
+      );
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        temp[0].endPoint,
+        limit,
+        1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
+    } else {
+      const endPoint = "get_aggregated_report_users";
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        endPoint,
+        limit,
+        1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
+    }
   }, [limit]);
 
   useEffect(() => {
+    setLoading(false);
     let rawData = [];
     rawData = reportData;
     createTableData(rawData);
@@ -351,7 +383,6 @@ const OrganizationReport = () => {
       (arr) => arr.length
     );
     const sumOfLengths = arrayLengths.reduce((acc, length) => acc + length, 0);
-
     return (
       <>
         <Button
@@ -373,26 +404,26 @@ const OrganizationReport = () => {
           </Button>
         )}
         {reportsLevel && tableData?.length > 0 && (
-           <Button
-           style={{ minWidth: "25px" }}
-           onClick={() => handleDownloadReportCsv()}
-         >
-           <Tooltip title={"Download CSV"}>
-             <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
-           </Tooltip>
-         </Button>
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
         )}
         {reportsLevel === "Task" &&
-        <Button
-          style={{ minWidth: "25px" }}
-          onClick={(event) => setAnchorEle(event.currentTarget)}
-        >
-          <Tooltip title={"Filter Table"}>
-            <Badge color="primary" badgeContent={sumOfLengths}>
-              <FilterListIcon sx={{ color: "#515A5A" }} />
-            </Badge>
-          </Tooltip>
-        </Button>}
+         <Button
+           style={{ minWidth: "25px" }}
+           onClick={(event) => setAnchorEle(event.currentTarget)}
+         >
+           <Tooltip title={"Filter Table"}>
+             <Badge color="primary" badgeContent={sumOfLengths}>
+               <FilterListIcon sx={{ color: "#515A5A" }} />
+             </Badge>
+           </Tooltip>
+         </Button>}
       </>
     );
   };
@@ -410,13 +441,19 @@ const OrganizationReport = () => {
       rowsPerPage: limit,
       count: total_count,
       customToolbar: renderToolBar,
+      rowsPerPageOptions: [10, 25, 50, 100, "All"],
       onTableChange: (action, tableState) => {
         switch (action) {
           case "changePage":
             setOffset(tableState.page);
             break;
           case "changeRowsPerPage":
-            setLimit(tableState.rowsPerPage);
+            if (tableState.rowsPerPage == "All"){
+              setLimit(total_count)
+            }
+            else{
+              setLimit(tableState.rowsPerPage);
+            }
             break;
           default:
         }
@@ -455,82 +492,85 @@ const OrganizationReport = () => {
         </Grid>
 
         {reportsLevel.includes("Language") && (
-          <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <FormControl fullWidth>
-                <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
-                  Select Task Type
-                </InputLabel>
+           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <FormControl fullWidth>
+                 <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
+                   Select Task Type
+                 </InputLabel>
 
-                <Select
-                  labelId="SelectTaskTypeLabel"
-                  id="demo-simple-select"
-                  label="Select Task Type"
-                  value={languageLevelsStats}
-                  onChange={handleChangelanguageLevelStats}
-                  sx={{ textAlign: "start" }}
-                >
-                  {languagelevelStats.map((item, index) => (
-                    <MenuItem key={index} value={item.value}>
-                      {item.lable}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl> 
-          </Grid>
-        )}
-        {reportsLevel.includes("Task") && (
-          <>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
-              <DatePicker
-                label="Start Date"
-                inputFormat="DD/MM/YYYY"
-                value={taskStartDate}
-                onChange={(newValue) => {
-                  let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
-                  console.log(formatedDate)
-                  setTaskStartDate(formatedDate)
-                }
-                }
-                renderInput={(params) => <TextField {...params} />}
-                className={classes.datePicker}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
-              <DatePicker
-                label="End Date"
-                inputFormat="DD/MM/YYYY"
-                value={taskEndDate}
-                onChange={(newValue) => {
-                  let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
-                  console.log(formatedDate)
-                  setTaskEndDate(formatedDate)
-                }}
-                renderInput={(params) => <TextField {...params} />}
-                className={classes.datePicker}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-              <Button
-                variant="contained"
-                onClick={()=>{handleTaskReportSubmit()}}
-                autoFocus
-                sx={{ borderRadius: "8px" }}
-              >
-              {/* <Button onClick={()=>{handleTaskReportSubmit()}}> */}
-                submit
-              </Button>
-            </Grid>
-          </>
-        )}
+                 <Select
+                   labelId="SelectTaskTypeLabel"
+                   id="demo-simple-select"
+                   label="Select Task Type"
+                   value={languageLevelsStats}
+                   onChange={handleChangelanguageLevelStats}
+                   sx={{ textAlign: "start" }}
+                 >
+                   {languagelevelStats.map((item, index) => (
+                     <MenuItem key={index} value={item.value}>
+                       {item.lable}
+                     </MenuItem>
+                   ))}
+                 </Select>
+               </FormControl> 
+           </Grid>
+         )}
+         {reportsLevel.includes("Task") && (
+           <>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="Start Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskStartDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskStartDate(formatedDate)
+                 }
+                 }
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="End Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskEndDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskEndDate(formatedDate)
+                 }}
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <Button
+                 variant="contained"
+                 onClick={()=>{handleTaskReportSubmit()}}
+                 autoFocus
+                 sx={{ borderRadius: "8px" }}
+               >
+               {/* <Button onClick={()=>{handleTaskReportSubmit()}}> */}
+                 submit
+               </Button>
+             </Grid>
+           </>
+         )}
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable
-          title=""
-          data={tableData}
-          columns={columns}
-          options={options}
-        />
+        <div style={{filter: loading && "blur(1px)", pointerEvents: loading && "none"}}>
+          <MUIDataTable
+            title=""
+            data={tableData}
+            columns={columns}
+            options={options}
+          />
+        </div>
+        { loading && <CircularProgress style={{marginTop:16, position:"absolute", top:"50%", bottom: "50%"}} size={40}/>}
       </ThemeProvider>
 
       {openSelector && (

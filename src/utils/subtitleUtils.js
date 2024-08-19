@@ -60,7 +60,7 @@ export const getKeyCode = (event) => {
   }
 };
 
-export const timeChange = (value, index, type, time) => {
+export const timeChange = (value, index, type, time, player) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = [...subtitles];
 
@@ -70,7 +70,8 @@ export const timeChange = (value, index, type, time) => {
       time,
       copySub[index].start_time,
       index,
-      type
+      type,
+      player,
     );
   } else {
     copySub[index].end_time = getUpdatedTime(
@@ -78,7 +79,8 @@ export const timeChange = (value, index, type, time) => {
       time,
       copySub[index].end_time,
       index,
-      type
+      type,
+      player,
     );
   }
 
@@ -90,6 +92,21 @@ export const addSubtitleBox = (index, paraphrase=false) => {
 
   const copySub = [...subtitles];
 
+  if(index === -1){
+    copySub.splice(
+      0,
+      0,
+      newSub({
+        start_time: DT.d2t(0),
+        end_time: DT.d2t(5),
+        text: "",
+        speaker_id: "",
+        target_text: "",
+      })
+    );
+  
+    return copySub;
+  }else{
   const duration = DT.t2d(copySub[index].end_time);
 
   copySub.splice(
@@ -108,6 +125,7 @@ export const addSubtitleBox = (index, paraphrase=false) => {
   );
 
   return copySub;
+  }
 };
 
 export const onMerge = (index, votr=false, paraphrase=false) => {

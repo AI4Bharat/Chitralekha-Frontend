@@ -29,10 +29,11 @@ import {
   Button,
 } from "@mui/material";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import { Download } from "@mui/icons-material";
 import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
 import constants from "redux/constants";
-import { Download } from "@mui/icons-material";
+// import { Download } from "@mui/icons-material";
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -249,6 +250,7 @@ const ProjectReport = () => {
       rowsPerPage: limit,
       count: total_count,
       customToolbar: renderToolBar,
+      rowsPerPageOptions: [10, 25, 50, 100, 1000],
       onTableChange: (action, tableState) => {
         switch (action) {
           case "changePage":
