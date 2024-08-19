@@ -142,6 +142,7 @@ const SettingsButtonComponent = ({
 
     return false;
   };
+  
 
   const handleScript = () => {
     setAnchorElSettings(null);
