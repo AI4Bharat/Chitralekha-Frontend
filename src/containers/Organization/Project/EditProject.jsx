@@ -160,7 +160,7 @@ const EditProject = () => {
       setVoiceOverSourceType(projectInfo?.default_voiceover_type);
       setDate(projectInfo?.default_eta);
       setIntegrateVideo(projectInfo?.video_integration);
-      setParaphrase(projectInfo?.paraphrase_enabled);
+      setParaphrase(projectInfo?.paraphrasing_enabled);
     }
   }, [projectInfo]);
 
