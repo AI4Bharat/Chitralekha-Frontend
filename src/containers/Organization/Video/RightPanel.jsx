@@ -250,16 +250,16 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   }, [limit, currentOffset]);
 
   const onMouseUp = (e, blockIdx) => {
-    setTimeout(() => {
-      setCurrentIndex(blockIdx);
-    }, 100);
+  setTimeout(() => {
+    setCurrentIndex(blockIdx);
+  }, 100);
 
-    if (e && e.target) {
-      const { selectionStart, value } = e.target;
-      if (selectionStart !== undefined && value !== undefined) {
-        setShowPopOver(true);
-        setCurrentIndexToSplitTextBlock(blockIdx);
-        setSelectionStart(selectionStart);
+  if (e && e.target) {
+    const { selectionStart, value } = e.target;
+    if (selectionStart !== undefined && value !== undefined) {
+      setShowPopOver(true);
+      setCurrentIndexToSplitTextBlock(blockIdx);
+      setSelectionStart(selectionStart);
       }
     }
 
@@ -550,6 +550,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
     return 0;
   };
 
+
   const handleAutosave = () => {
     const reqBody = {
       task_id: taskId,
@@ -630,6 +631,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
       },
     },
   ];
+  
 
   return (
     <>
@@ -784,7 +786,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                         ref={(el) => (textboxes.current[index] = el)}
                         onBlur={() => {
                           setTimeout(() => {
-                            setShowPopOver(false);
+                            // setShowPopOver(false);
                           }, 200);
                         }}
                       />
