@@ -11,14 +11,17 @@ import { TableStyles } from "styles";
 //Components
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
-import DeleteIcon from "@mui/icons-material/Delete";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DeleteDialog } from "common";
 
 //APIs
 import {
   APITransport,
-  DeleteOrganizationAPI,
+  ArchiveOrganizationAPI,
+  UnarchiveOrganizationAPI,
   FetchOrganizationListAPI,
 } from "redux/actions";
 
@@ -30,20 +33,21 @@ const OrganizationList = () => {
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState("");
+  const [isArchived, setIsArchived] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
 
     if (!progress) {
       if (success) {
-        if (apiType === "DELETE_ORGANIZATION") {
+        if (apiType === "ARCHIVE_ORGANIZATION" || apiType === "UNARCHIVE_ORGANIZATION") {
           getOrgList();
         }
       }
 
-      setDeleteDialogOpen(false);
+      setDialogOpen(false);
     }
 
     // eslint-disable-next-line
@@ -59,6 +63,13 @@ const OrganizationList = () => {
     // eslint-disable-next-line
   }, []);
 
+  // const handleArchiveUnarchive = async () => {
+  //   const apiObj = isArchived
+  //     ? new UnarchiveOrganizationAPI(currentOrgId)
+  //     : new ArchiveOrganizationAPI(currentOrgId);
+  //   dispatch(APITransport(apiObj));
+  // };
+
   const columns = getColumns(adminOrgListColumns);
   columns.push({
     name: "Action",
@@ -71,8 +82,19 @@ const OrganizationList = () => {
         className: classes.cellHeaderProps,
       }),
       customBodyRender: (_value, tableMeta) => {
+        const archived = tableMeta.rowData[0];
         return (
           <Box sx={{ display: "flex" }}>
+            <Tooltip title="View">
+              <IconButton
+                onClick={() => {
+                  navigate(`/admin/view-organization/${tableMeta.rowData[0]}`);
+                }}
+              >
+                <VisibilityIcon color="action" />
+              </IconButton>
+            </Tooltip>
+
             <Tooltip title="Edit">
               <IconButton
                 onClick={() => {
@@ -83,14 +105,19 @@ const OrganizationList = () => {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Delete">
+            <Tooltip title={archived ? "Unarchive" : "Archive"}>
               <IconButton
                 onClick={() => {
-                  setDeleteDialogOpen(true);
+                  setDialogOpen(true);
                   setCurrentOrgId(tableMeta.rowData[0]);
+                  setIsArchived(archived);
                 }}
               >
-                <DeleteIcon color="error" />
+                {archived ? (
+                  <UnarchiveIcon color="error" />
+                ) : (
+                  <ArchiveIcon color="warning" />
+                )}
               </IconButton>
             </Tooltip>
           </Box>
@@ -98,11 +125,6 @@ const OrganizationList = () => {
       },
     },
   });
-
-  const handleDelete = async (currentOrgId) => {
-    const apiObj = new DeleteOrganizationAPI(currentOrgId);
-    dispatch(APITransport(apiObj));
-  };
 
   return (
     <>
@@ -114,13 +136,15 @@ const OrganizationList = () => {
         />
       </ThemeProvider>
 
-      {deleteDialogOpen && (
+      {dialogOpen && (
         <DeleteDialog
-          openDialog={deleteDialogOpen}
-          handleClose={() => setDeleteDialogOpen(false)}
-          submit={() => handleDelete(currentOrgId)}
-          message={`Are you sure, you want to delete this Organization? All the associated videos, tasks, will be deleted.`}
+          openDialog={dialogOpen}
+          handleClose={() => setDialogOpen(false)}
+          // submit={handleArchiveUnarchive}
+          message={`Are you sure you want to ${isArchived ? "unarchive" : "archive"} this organization?`}
           loading={apiStatus.loading}
+          confirmText={isArchived ? "Unarchive" : "Archive"}
+          closeText="Close"
         />
       )}
     </>
