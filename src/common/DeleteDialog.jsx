@@ -101,13 +101,13 @@ const DeleteDialog = ({
           Cancel
         </Button>
         <Button
-          color="error"
+          color="info"
           variant="contained"
           onClick={() => submit()}
           autoFocus
           sx={{ lineHeight: "1", borderRadius: "8px" }}
         >
-          Delete
+          confirm
           {loading && <Loader size={20} margin="0 0 0 5px" color="secondary" />}
         </Button>
       </DialogActions>

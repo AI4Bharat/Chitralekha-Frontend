@@ -155,10 +155,10 @@ const Header = () => {
   ];
 
   return (
-    <>
+    <Grid container direction="row" style={{ zIndex: 1 }}>
     <Box>
       {isMobile ? (
-        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
+        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} userData={userData} />
       ) : (
         <AppBar
           position="fixed"
@@ -204,7 +204,8 @@ const Header = () => {
                 columnGap={2}
                 rowGap={2}
               >
-                {userData?.role !== "ADMIN" && (<>
+  
+                (<>
                   <Typography variant="body1">
                     <NavLink
                       to={`/my-organization/${userData?.organization?.id}`}
@@ -229,7 +230,19 @@ const Header = () => {
                     Tasks
                   </NavLink>
                 </Typography>
-                </>)}
+                {userData?.role == "ADMIN" && <Typography variant="body1">
+                    <NavLink
+                      to={`/admin`}
+                      className={({ isActive }) =>
+                        isActive
+                          ? `${classes.highlightedMenu} organizations`
+                          : `${classes.headerMenu} organizations`
+                      }
+                    >
+                      Admin
+                    </NavLink>
+                  </Typography>}
+                </>)
                 {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"
@@ -389,7 +402,7 @@ const Header = () => {
     handleClose={() => handleClose()}
     setOpenHelpDialog= {setOpenHelpDialog}
     />}
-    </>
+    </Grid>
   );
 };
 export default Header;

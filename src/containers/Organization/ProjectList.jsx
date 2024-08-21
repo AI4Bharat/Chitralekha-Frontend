@@ -104,7 +104,7 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            {isUserOrgOwner&& (
+            {(isUserOrgOwner || userData?.role==="ADMIN") && (
               <Tooltip title="Delete">
                 <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
                   <DeleteIcon color="error" />
