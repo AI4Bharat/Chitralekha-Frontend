@@ -199,6 +199,25 @@ export const roles = [
     canAddMembers: true,
     canDeleteProject: true,
   },
+  {
+    label: "Admin",
+    value: "ADMIN",
+    permittedToDeleteVideoAudio: true,
+    permittedToCreateTask: true,
+    permittedToAddMembersInProject: true,
+    permittedToDeleteProject: true,
+    permittedToCreateVideoAudio: true,
+    taskAction: true,
+    orgSettingVisible: true,
+    projectSettingVisible: true,
+    showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
+    ProjectReport: true,
+    organizationReport: true,
+    canAddMembers: true,
+    canDeleteProject: true,
+  }
 ];
 
 export const availability = [

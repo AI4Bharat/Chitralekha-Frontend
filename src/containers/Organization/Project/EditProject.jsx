@@ -337,7 +337,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || isUserOrgOwner
+                    ) ||isUserOrgOwner || userData?.role==="ADMIN"
                   )
                 }
               />
@@ -358,7 +358,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || isUserOrgOwner
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                   renderValue={(selected) => {
@@ -406,7 +406,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || isUserOrgOwner
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                 >
@@ -437,7 +437,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) ||isUserOrgOwner
+                      ) ||isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                 >
@@ -468,7 +468,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || isUserOrgOwner
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                 >
@@ -512,7 +512,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || isUserOrgOwner
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                   MenuProps={MenuProps}
@@ -599,7 +599,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) ||isUserOrgOwner
+                    ) ||isUserOrgOwner  || userData?.role==="ADMIN"
                   )
                 }
                 renderInput={(params) => <TextField {...params} />}
@@ -624,7 +624,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || isUserOrgOwner
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                   renderValue={(selected) => {
@@ -690,7 +690,7 @@ const EditProject = () => {
                       !(
                         projectDetails?.managers?.some(
                           (item) => item.id === userData.id
-                        ) || isUserOrgOwner
+                        ) || isUserOrgOwner  || userData?.role==="ADMIN"
                       )
                     }
                   />
@@ -713,7 +713,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || isUserOrgOwner
+                    ) || isUserOrgOwner  || userData?.role==="ADMIN"
                   )
                 }
               />
@@ -734,7 +734,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || isUserOrgOwner
+                    ) || isUserOrgOwner  || userData?.role==="ADMIN"
                   )
                 }
               />

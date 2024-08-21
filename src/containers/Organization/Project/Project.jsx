@@ -472,7 +472,7 @@ const Project = () => {
             alignItems="center"
           >
             {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-              isUserOrgOwner) && (
+              isUserOrgOwner|| userData?.role==="ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}

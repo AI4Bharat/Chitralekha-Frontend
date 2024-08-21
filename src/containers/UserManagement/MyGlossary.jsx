@@ -190,8 +190,9 @@ const MyGlossary = () => {
         <Grid container direction="row" sx={{ my: 4 }}>
           <Grid
             item
-            md={
+            md={  
               isUserOrgOwner ||
+              loggedInUserData?.role==="ADMIN"||
               loggedInUserData.role === "PROJECT_MANAGER"
                 ? 6
                 : 12
@@ -207,7 +208,8 @@ const MyGlossary = () => {
             </Button>
           </Grid>
 
-          {(isUserOrgOwner ||
+          {(isUserOrgOwner || loggedInUserData?.role==="ADMIN"||
+
             loggedInUserData.role === "PROJECT_MANAGER") && (
             <Grid item md={6} xs={12}>
               <Button
