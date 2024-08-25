@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect,useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuProps } from "utils";
 
@@ -38,6 +38,7 @@ const AddOrganizationMember = ({
   isAdmin,
 }) => {
   const dispatch = useDispatch();
+  const [inputValue, setInputValue] = useState("");
 
   const userRoles = useSelector((state) => state.getUserRoles.data);
 
@@ -45,6 +46,31 @@ const AddOrganizationMember = ({
     const userObj = new FetchUserRolesAPI();
     dispatch(APITransport(userObj));
   };
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " " || event.key === ",") {
+      event.preventDefault();
+      if (inputValue.trim()) {
+        handleTextField((prev) => [...prev, inputValue.trim()]);
+        setInputValue("");
+      }
+    }
+  };
+  const save =(event)=>{
+    if (inputValue.trim()) {
+      handleTextField((prev) => [...prev, inputValue.trim()]);
+      setInputValue("");
+    }
+  }
+
+  const handleAddButtonClick = async() => {
+    save();
+    await(handleTextField)
+    setTimeout(() => {
+      addBtnClickHandler();
+      handleUserDialogClose();
+    }, 1000);
+  };
+
 
   useEffect(() => {
     getUserRolesList();
@@ -69,7 +95,10 @@ const AddOrganizationMember = ({
         <Typography variant="h4">{title}</Typography>
         <IconButton
           aria-label="close"
-          onClick={handleUserDialogClose}
+          onClick={()=>{
+            addBtnClickHandler()
+            handleUserDialogClose()
+          }}
           sx={{ marginLeft: "auto" }}
         >
           <CloseIcon />
@@ -82,10 +111,16 @@ const AddOrganizationMember = ({
           freeSolo
           id="add-members"
           value={textFieldValue}
-          onChange={(event) => {
-            event.target.value.trim().length &&
-              handleTextField((prev) => [...prev, event.target.value]);
+          onChange={(event, newValue, reason) => {
+             
+            console.log("hello",event,newValue,reason);
+            
           }}
+          inputValue={inputValue}
+          onInputChange={(event, newInputValue) => {
+            setInputValue(newInputValue);
+          }}
+          onKeyDown={handleKeyDown}
           options={[]}
           renderTags={(tagValue) => {
             return tagValue.map((option) => (
@@ -150,8 +185,7 @@ const AddOrganizationMember = ({
           variant="contained"
           sx={{ marginLeft: "10px", borderRadius: "8px" }}
           onClick={() => {
-            addBtnClickHandler();
-            handleUserDialogClose();
+            handleAddButtonClick()
           }}
           disabled={textFieldLabel || selectFieldValue ? false : true}
         >
