@@ -55,21 +55,21 @@ const AddOrganizationMember = ({
       }
     }
   };
-  const save =(event)=>{
-    if (inputValue.trim()) {
-      handleTextField((prev) => [...prev, inputValue.trim()]);
-      setInputValue("");
-    }
-  }
+  // const save =(event)=>{
+  //   if (inputValue.trim()) {
+  //     handleTextField((prev) => [...prev, inputValue.trim()]);
+  //     setInputValue("");
+  //   }
+  // }
 
-  const handleAddButtonClick = async() => {
-    save();
-    await(handleTextField)
-    setTimeout(() => {
-      addBtnClickHandler();
-      handleUserDialogClose();
-    }, 1000);
-  };
+  // const handleAddButtonClick = async() => {
+  //   save();
+  //   await(handleTextField)
+  //   setTimeout(() => {
+  //     addBtnClickHandler();
+  //     handleUserDialogClose();
+  //   }, 1000);
+  // };
 
 
   useEffect(() => {
@@ -112,7 +112,6 @@ const AddOrganizationMember = ({
           id="add-members"
           value={textFieldValue}
           onChange={(event, newValue, reason) => {
-             
             console.log("hello",event,newValue,reason);
             
           }}
