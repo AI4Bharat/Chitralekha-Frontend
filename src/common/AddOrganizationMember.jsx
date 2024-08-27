@@ -184,7 +184,8 @@ const AddOrganizationMember = ({
           variant="contained"
           sx={{ marginLeft: "10px", borderRadius: "8px" }}
           onClick={() => {
-            handleAddButtonClick()
+            addBtnClickHandler()
+            handleUserDialogClose()
           }}
           disabled={textFieldLabel || selectFieldValue ? false : true}
         >
