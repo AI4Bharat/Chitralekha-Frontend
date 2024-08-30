@@ -226,7 +226,7 @@ const Header = () => {
                         }
                          activeClassName={classes.highlightedMenu}
                       >
-                       Admin
+                       Admin1
                       </NavLink>
                    </Typography>
                )}
