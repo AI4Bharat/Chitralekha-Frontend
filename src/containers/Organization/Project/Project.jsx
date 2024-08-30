@@ -379,7 +379,11 @@ const Project = () => {
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {/* <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.canAddMembers && (
+              <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.ProjectReport && (
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />

@@ -14,6 +14,7 @@ import ComparisonTable from "./containers/Organization/Project/ComparisonTable";
 import VideoLanding from "./containers/Organization/Video/VideoLanding";
 import CreateNewOrg from "./containers/Admin/CreateNewOrg";
 import DashBoard from "./containers/Admin/Dashboard";
+import DashBoard1 from "containers/admin1/Dashboard1";
 import EditOrganizationDetails from "./containers/Admin/EditOrganizationDetails";
 import EditProject from "./containers/Organization/Project/EditProject";
 import SignUp from "./containers/UserManagement/signup";
@@ -178,6 +179,11 @@ const RootRouter = () => {
         <Route
           path="/admin"
           element={ProtectedRouteWrapper(<Layout component={<DashBoard />} />)}
+        />
+
+        <Route
+          path="/admin1"
+          element={ProtectedRouteWrapper(<Layout component={<DashBoard1 />} />)}
         />
 
         <Route

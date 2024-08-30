@@ -20,6 +20,7 @@
     "gapi-script": "^1.2.0",
     "indic-transliterate": "file:react-transliterate-chitralekha-ver-2.3.5.tgz",
     "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "moment": "^2.29.4",
     "mui-datatables": "^4.2.2",
     "react": "^18.2.0",
