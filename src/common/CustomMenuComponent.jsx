@@ -17,6 +17,12 @@ const CustomMenuComponent = ({
   contianer,
   subtitlePlacement,
   setSubtitlePlacement,
+  showSubtitles,
+  setShowSubtitles,
+  showTimeline,
+  setShowTimeline,
+  useYtdlp,
+  setUseYtdlp,
 }) => {
   const player = useSelector((state) => state.commonReducer.player);
 
@@ -79,6 +85,45 @@ const CustomMenuComponent = ({
             </div>
           </MenuItem>
         ))}
+        <MenuItem key="Show Subtitles">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Show Subtitles</span>
+              <input type="checkbox" checked={showSubtitles} onChange={() => {setShowSubtitles(!showSubtitles)}}/>
+            </div>
+          </MenuItem>
+          <MenuItem key="Show Timeline">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Show Timeline</span>
+              <input type="checkbox" checked={showTimeline} onChange={() => {setShowTimeline(!showTimeline)}}/>
+            </div>
+          </MenuItem>
+          <MenuItem key="Youtube Player">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <span>Youtube Player</span>
+              <input type="checkbox" checked={!useYtdlp} onChange={() => {setUseYtdlp(!useYtdlp)}}/>
+            </div>
+          </MenuItem>
       </Menu>
 
       <Menu

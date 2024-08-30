@@ -27,6 +27,7 @@ const ProjectList = ({ data, removeProjectList }) => {
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
@@ -34,16 +35,22 @@ const ProjectList = ({ data, removeProjectList }) => {
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
-
-      console.log(organization_owner,'organization_owner tetete');
-
-      setOrgOwnerId(organization_owner.id);
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
+  
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
     // eslint-disable-next-line
   }, [userData]);
-
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
 
@@ -97,7 +104,7 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            {userData?.id === orgOwnerId && (
+            {(isUserOrgOwner || userData?.role==="ADMIN") && (
               <Tooltip title="Delete">
                 <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
                   <DeleteIcon color="error" />

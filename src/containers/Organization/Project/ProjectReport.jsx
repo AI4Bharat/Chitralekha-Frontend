@@ -29,9 +29,11 @@ import {
   Button,
 } from "@mui/material";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import { Download } from "@mui/icons-material";
 import MailIcon from "@mui/icons-material/Mail";
 import { ColumnSelector } from "common";
 import constants from "redux/constants";
+// import { Download } from "@mui/icons-material";
 
 const ProjectReport = () => {
   const { projectId } = useParams();
@@ -45,29 +47,68 @@ const ProjectReport = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [options, setOptions] = useState();
 
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+
   const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const projectReportData = useSelector(
+  const { reports: projectReportData, total_count } = useSelector(
     (state) => state.getProjectReports?.data
   );
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
+    setTableData([]);
     setreportsLevel(event.target.value);
     setlanguageLevelStats("");
-
-    const apiObj = new FetchProjectReportsAPI(projectId, event.target.value);
+    setOffset(0);
+    if (event.target.value === "Language") return;
+    const apiObj = new FetchProjectReportsAPI(
+      projectId,
+      event.target.value,
+      limit,
+      offset + 1
+    );
     dispatch(APITransport(apiObj));
   };
 
   const handleChangelanguageLevelStats = (event) => {
     setlanguageLevelStats(event.target.value);
+    setOffset(0);
+    const apiObj = new FetchProjectReportsAPI(
+      projectId,
+      reportsLevel,
+      limit,
+      offset + 1,
+      event.target.value
+    );
+    dispatch(APITransport(apiObj));
   };
 
   const handleDownloadReport = async () => {
     const apiObj = new DownloadProjectReportsAPI(projectId, reportsLevel);
     dispatch(APITransport(apiObj));
+  };
+
+  const handleDownloadReportCsv = () => {
+    var header = '';
+    columns.forEach((item) => {
+      header += item.label + ","
+    })
+    var data = tableData.map((item) => {
+      var row = item;
+      return row.join(",");
+    }).join("\n");
+    const blob = new Blob([header.slice(0,-1)+'\n'+data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reports_"+Date.now()+".csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -78,32 +119,35 @@ const ProjectReport = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (reportsLevel === "") return;
+
+    const apiObj = new FetchProjectReportsAPI(
+      projectId,
+      reportsLevel,
+      limit,
+      offset + 1,
+      languageLevelsStats
+    );
+    dispatch(APITransport(apiObj));
+  }, [offset]);
+
+  useEffect(() => {
+    setOffset(0);
+  }, [limit]);
+
+  useEffect(() => {
     let rawData = [];
-
-    if (reportsLevel.includes("Language")) {
-      if (languageLevelsStats === "transcript_stats") {
-        rawData = projectReportData.transcript_stats;
-      } else if (languageLevelsStats === "translation_stats") {
-        rawData = projectReportData.translation_stats;
-      } else if (languageLevelsStats === "voiceover_stats") {
-        rawData = projectReportData.voiceover_stats;
-      } else {
-        rawData = [];
-      }
-    } else {
-      rawData = projectReportData;
-    }
-
+    rawData = projectReportData;
     createTableData(rawData);
     createReportColumns(rawData);
 
     // eslint-disable-next-line
-  }, [projectReportData, languageLevelsStats, reportsLevel]);
+  }, [projectReportData, languageLevelsStats]);
 
   const createReportColumns = (rawData) => {
     let tempColumns = [];
 
-    if (rawData.length > 0 && rawData[0]) {
+    if (rawData?.length > 0 && rawData[0]) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
@@ -180,6 +224,16 @@ const ProjectReport = () => {
             </Tooltip>
           </Button>
         )}
+        {reportsLevel && tableData?.length > 0 && (
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+        )}
       </>
     );
   };
@@ -191,13 +245,29 @@ const ProjectReport = () => {
       ...option,
       download: false,
       viewColumns: false,
+      serverSide: true,
+      page: offset,
+      rowsPerPage: limit,
+      count: total_count,
       customToolbar: renderToolBar,
+      rowsPerPageOptions: [10, 25, 50, 100, 1000],
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case "changePage":
+            setOffset(tableState.page);
+            break;
+          case "changeRowsPerPage":
+            setLimit(tableState.rowsPerPage);
+            break;
+          default:
+        }
+      },
     };
 
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus.progress]);
+  }, [apiStatus.progress, tableData]);
 
   const handleColumnSelection = (e) => {
     const selectedColumns = [...columns];

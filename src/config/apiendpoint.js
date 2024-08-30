@@ -19,6 +19,7 @@ const endpoints = {
   unSubscribeFromEmail: "/newsletter/unsubscribe",
   newsletter: "/newsletter/",
   preview: "/newsletter/preview/",
+  onboarding: "/onboarding/",
 
   //Video
   video: "/video/",
@@ -39,6 +40,12 @@ const endpoints = {
 
   //Task
   task: "/task/",
+
+  //Transliteration
+  transliteration: "/api/generic/transliteration/",
+
+  //Glossary
+  glossary: "/glossary/",
 };
 
 export default endpoints;

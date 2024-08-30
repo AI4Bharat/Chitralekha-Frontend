@@ -3,6 +3,8 @@ import { getDateTime, getUpdatedTime } from "./utils";
 import DT from "duration-time-conversion";
 import store from "../redux/store/store";
 import { noiseTags } from "config";
+import { specialOrgIds } from "config";
+import getLocalStorageData from "./getLocalStorageData";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -58,7 +60,7 @@ export const getKeyCode = (event) => {
   }
 };
 
-export const timeChange = (value, index, type, time) => {
+export const timeChange = (value, index, type, time, player) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const copySub = [...subtitles];
 
@@ -68,7 +70,8 @@ export const timeChange = (value, index, type, time) => {
       time,
       copySub[index].start_time,
       index,
-      type
+      type,
+      player,
     );
   } else {
     copySub[index].end_time = getUpdatedTime(
@@ -76,18 +79,34 @@ export const timeChange = (value, index, type, time) => {
       time,
       copySub[index].end_time,
       index,
-      type
+      type,
+      player,
     );
   }
 
   return copySub;
 };
 
-export const addSubtitleBox = (index) => {
+export const addSubtitleBox = (index, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 
+  if(index === -1){
+    copySub.splice(
+      0,
+      0,
+      newSub({
+        start_time: DT.d2t(0),
+        end_time: DT.d2t(5),
+        text: "",
+        speaker_id: "",
+        target_text: "",
+      })
+    );
+  
+    return copySub;
+  }else{
   const duration = DT.t2d(copySub[index].end_time);
 
   copySub.splice(
@@ -99,20 +118,42 @@ export const addSubtitleBox = (index) => {
         index < subtitles.length - 1
           ? copySub[index + 1].start_time
           : DT.d2t(duration + 0.5),
-      text: "SUB_TEXT",
+      text: "",
       speaker_id: "",
-      target_text: "SUB_TEXT",
+      ...(paraphrase ? {paraphrased_text: ""} : {target_text: ""})
     })
   );
 
   return copySub;
+  }
 };
 
-export const onMerge = (index) => {
+export const onMerge = (index, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const existingsourceData = [...subtitles];
 
+  if(votr){
+  existingsourceData.splice(
+    index,
+    2,
+    newSub({
+      id: existingsourceData[index].id,
+      start_time: existingsourceData[index].start_time,
+      end_time: existingsourceData[index + 1].end_time,
+      time_difference: (parseFloat(existingsourceData[index].time_difference) + parseFloat(existingsourceData[index+1].time_difference)).toFixed(3),
+      text: `${existingsourceData[index].text} ${
+        existingsourceData[index + 1].text
+      }`,
+      transcription_text: `${existingsourceData[index].transcription_text} ${
+        existingsourceData[index + 1].transcription_text
+      }`,
+      audio:existingsourceData[index].audio,
+      audio_speed: existingsourceData[index].audio_speed,
+      blobUrl: existingsourceData[index].blobUrl,
+    })
+  );
+  }else{
   existingsourceData.splice(
     index,
     2,
@@ -123,12 +164,15 @@ export const onMerge = (index) => {
       text: `${existingsourceData[index].text} ${
         existingsourceData[index + 1].text
       }`,
-      target_text: `${existingsourceData[index].target_text} ${
+      ...(paraphrase ? {paraphrased_text: `${existingsourceData[index].paraphrased_text} ${
+        existingsourceData[index + 1].paraphrased_text
+      }`} : {target_text: `${existingsourceData[index].target_text} ${
         existingsourceData[index + 1].target_text
-      }`,
+      }`}),
       speaker_id: "",
     })
   );
+  }
 
   return existingsourceData;
 };
@@ -146,7 +190,10 @@ export const onSplit = (
   currentIndex,
   selectionStart,
   timings = null,
-  targetSelectionStart = null
+  targetSelectionStart = null,
+  translateSplit = false,
+  votr=false,
+  paraphrase=false,
 ) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
@@ -155,80 +202,172 @@ export const onSplit = (
   const targetTextBlock = subtitles[currentIndex];
   const index = hasSub(subtitles[currentIndex], subtitles);
 
-  const text1 = targetTextBlock.text.slice(0, selectionStart).trim();
-  const text2 = targetTextBlock.text.slice(selectionStart).trim();
-  const targetText1 = targetSelectionStart
-    ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
-    : null;
-  const targetText2 = targetSelectionStart
-    ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
-    : null;
+  let text1, text2, targetText1, targetText2, splitDuration;
+  if(votr){
+    text1 = targetTextBlock.transcription_text.slice(0, selectionStart).trim();
+    text2 = targetTextBlock.transcription_text.slice(selectionStart).trim();
+  }else{
+    text1 = targetTextBlock.text.slice(0, selectionStart).trim();
+    text2 = targetTextBlock.text.slice(selectionStart).trim();  
+  }
+  
+  if(text1 && text2){
+    if(votr){
+      targetText1 = translateSplit ? targetTextBlock.text : targetSelectionStart
+      ? targetTextBlock.text.slice(0, targetSelectionStart).trim()
+      : null;
+      targetText2 = translateSplit ? " " : targetSelectionStart
+        ? targetTextBlock.text.slice(targetSelectionStart).trim()
+        : null;
+    }else if(paraphrase === true){
+      targetText1 = targetSelectionStart
+        ? targetTextBlock.paraphrased_text.slice(0, targetSelectionStart).trim()
+        : targetTextBlock.paraphrased_text;
+      targetText2 = targetSelectionStart
+        ? targetTextBlock.paraphrased_text.slice(targetSelectionStart).trim()
+        : "";
+    }else{
+      targetText1 = translateSplit ? targetTextBlock.target_text : targetSelectionStart
+        ? targetTextBlock.target_text.slice(0, targetSelectionStart).trim()
+        : null;
+      targetText2 = translateSplit ? " " : targetSelectionStart
+        ? targetTextBlock.target_text.slice(targetSelectionStart).trim()
+        : null;
+    }
 
-  if (
-    !text1 ||
-    !text2 ||
-    (targetSelectionStart && (!targetText1 || !targetText2))
-  )
-    return;
+    if (
+      !text1 ||
+      !text2 ||
+      (targetSelectionStart && (!targetText1 || !targetText2))
+    )
+      return subtitles;
 
-  copySub.splice(currentIndex, 1);
-  let middleTime = null;
+    copySub.splice(currentIndex, 1);
+    let middleTime = null;
 
-  if (!timings) {
-    const splitDuration = (
-      targetTextBlock.duration *
-      (selectionStart / targetTextBlock.text.length)
-    ).toFixed(3);
+    if (!timings) {
+      if(votr){
+        splitDuration = (
+          targetTextBlock.duration *
+          (selectionStart / targetTextBlock.transcription_text.length)
+        ).toFixed(3);
+      }else{
+        splitDuration = (
+          targetTextBlock.duration *
+          (selectionStart / targetTextBlock.text.length)
+        ).toFixed(3);
+      }
 
-    if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
-      return;
+      if (splitDuration < 0.2 || targetTextBlock.duration - splitDuration < 0.2)
+        return subtitles;
 
-    middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
+      middleTime = DT.d2t(targetTextBlock.startTime + parseFloat(splitDuration));
+    }
+
+    if(votr){
+    copySub.splice(
+      index,
+      0,
+      newSub({
+        id: targetTextBlock.id,
+        start_time: middleTime
+          ? subtitles[currentIndex].start_time
+          : timings[0].start,
+        end_time: middleTime ?? timings[0].end,
+        time_difference: (DT.t2d(middleTime)-DT.t2d(targetTextBlock.start_time)).toFixed(3),
+        text: targetText1,
+        transcription_text: text1,
+        audio:targetTextBlock.audio,
+        audio_speed: targetTextBlock.audio_speed,
+        blobUrl: targetTextBlock.blobUrl,
+      })
+    );
+
+    copySub.splice(
+      index + 1,
+      0,
+      newSub({
+        start_time: middleTime ?? timings[1].start ?? timings[0].end,
+        end_time:
+          middleTime || !timings[1].end
+            ? subtitles[currentIndex].end_time
+            : timings[1].end,
+        time_difference: (DT.t2d(targetTextBlock.end_time)-DT.t2d(middleTime)).toFixed(3),
+        text: targetText2,
+        transcription_text: text2,
+        audio:targetTextBlock.audio,
+        audio_speed: targetTextBlock.audio_speed,
+        blobUrl: targetTextBlock.blobUrl,
+      })
+    );
+    }else{
+    copySub.splice(
+      index,
+      0,
+      newSub({
+        start_time: middleTime
+          ? subtitles[currentIndex].start_time
+          : timings[0].start,
+        end_time: middleTime ?? timings[0].end,
+        text: text1,
+        speaker_id: "",
+        ...(paraphrase ? {paraphrased_text: targetText1} : ((translateSplit || targetSelectionStart) && { target_text: targetText1 })),
+      })
+    );
+
+    copySub.splice(
+      index + 1,
+      0,
+      newSub({
+        start_time: middleTime ?? timings[1].start ?? timings[0].end,
+        end_time:
+          middleTime || !timings[1].end
+            ? subtitles[currentIndex].end_time
+            : timings[1].end,
+        text: text2,
+        speaker_id: "",
+        ...(paraphrase ? {paraphrased_text: targetText2} : ((translateSplit || targetSelectionStart) && { target_text: targetText2 })),
+      })
+    );
+    }
+  }
+  return copySub;
+};
+
+export const onExpandTimeline = (id, vo=false) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+
+  const copySub = [...subtitles];
+
+  if(id === 0 && copySub.length > 1){
+    copySub[id].start_time = DT.d2t(0);
+    copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
+  }else if(id+1 === copySub.length){
+    copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
+  }else{
+    copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
+    copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
   }
 
-  copySub.splice(
-    index,
-    0,
-    newSub({
-      start_time: middleTime
-        ? subtitles[currentIndex].start_time
-        : timings[0].start,
-      end_time: middleTime ?? timings[0].end,
-      text: text1,
-      ...(targetSelectionStart && { target_text: targetText1 }),
-      speaker_id: "",
-    })
-  );
-
-  copySub.splice(
-    index + 1,
-    0,
-    newSub({
-      start_time: middleTime ?? timings[1].start ?? timings[0].end,
-      end_time:
-        middleTime || !timings[1].end
-          ? subtitles[currentIndex].end_time
-          : timings[1].end,
-      text: text2,
-      ...(targetSelectionStart && { target_text: targetText2 }),
-      speaker_id: "",
-    })
-  );
+  if(vo===true){
+    copySub[id].time_difference = (DT.t2d(copySub[id].end_time) - DT.t2d(copySub[id].start_time)).toFixed(3);
+  }
 
   return copySub;
 };
 
-export const onSubtitleChange = (text, index,id) => {
+export const onSubtitleChange = (text, index, id) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const copySub = [...subtitles];
 
   copySub.forEach((element, i) => {
     if (index === i) {
-      if(id==1){
+      if (id === 1) {
         element.target_text = text;
-      }
-      else{
+      } else if (id === 3) {
+        element.transcription_text = text;
+      } else{
         element.text = text;
       }
     }
@@ -236,8 +375,6 @@ export const onSubtitleChange = (text, index,id) => {
 
   return copySub;
 };
-
-
 
 export const fullscreenUtil = (element) => {
   let doc = window.document;
@@ -314,7 +451,7 @@ export const placementMenu = [
   { label: "Bottom", mode: "bottom" },
 ];
 
-export const onUndoAction = (lastAction) => {
+export const onUndoAction = (lastAction, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   const { type, index, selectionStart, targetSelectionStart, timings, data } =
@@ -323,12 +460,11 @@ export const onUndoAction = (lastAction) => {
   switch (type) {
     case "merge":
       return (
-        onSplit(index, selectionStart, timings, targetSelectionStart) ||
-        subtitles
+        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr, paraphrase)
       );
 
     case "split":
-      return onMerge(index) || subtitles;
+      return onMerge(index, votr, paraphrase);
 
     case "delete":
       const copySub = copySubs();
@@ -343,18 +479,18 @@ export const onUndoAction = (lastAction) => {
   }
 };
 
-export const onRedoAction = (lastAction) => {
+export const onRedoAction = (lastAction, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const { type, index, selectionStart, targetSelectionStart, timings } =
     lastAction;
 
   switch (type) {
     case "merge":
-      return onMerge(index) || subtitles;
+      return onMerge(index, votr, paraphrase) || subtitles;
 
     case "split":
       return (
-        onSplit(index, selectionStart, timings, targetSelectionStart) ||
+        onSplit(index, selectionStart, timings, targetSelectionStart, false, votr, paraphrase) ||
         subtitles
       );
 
@@ -399,10 +535,8 @@ export const getSubtitleRange = () => {
   const subtitles = store.getState().commonReducer.subtitles;
 
   if (subtitles) {
-    if (subtitles.length === 3) {
-      return `${subtitles[0]?.id} - ${subtitles[2]?.id}`;
-    } else if (subtitles.length === 2) {
-      return `${subtitles[0]?.id} - ${subtitles[1]?.id}`;
+    if (subtitles.length) {
+      return `${subtitles[0]?.id} - ${subtitles[subtitles.length-1]?.id}`;
     } else {
       return `${subtitles[0]?.id} - ${subtitles[0]?.id}`;
     }
@@ -427,14 +561,26 @@ export const isPlaying = (player) => {
   );
 };
 
-export const getSelectionStart = (index) => {
+export const getSelectionStart = (index, votr=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  return subtitles[index].text.length;
+  if(votr){
+    return subtitles[index].transcription_text.length;
+  }else{
+    return subtitles[index].text.length;
+  }
 };
 
-export const getTargetSelectionStart = (index) => {
+export const getTargetSelectionStart = (index, votr=false, paraphrase=false) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  return subtitles[index].target_text.length;
+  if(votr){
+    return subtitles[index].text.length;
+  }else{
+    if(paraphrase){
+      return subtitles[index].paraphrased_text.length;
+    }else{
+      return subtitles[index].target_text.length;
+    }
+  }
 };
 
 export const getTimings = (index) => {
@@ -512,21 +658,40 @@ export const reGenerateTranslation = (index) => {
   return copySub;
 };
 
-export const exportVoiceover = (url, taskDetails, exportTypes) => {
+export const paraphrase = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  const copySub = [...subtitles];
+  if(index === "paraphrase"){
+    copySub.forEach((element) => {
+      element.paraphrase = true;
+    })
+  }else{
+    copySub[index].paraphrase = true;
+  }
+  return copySub;
+};
+
+export const exportVoiceover = (data, taskDetails, exportTypes) => {
+  const userOrgId = getLocalStorageData("userData").organization.id;
+
   const { video_name: videoName, target_language: targetLanguage } =
     taskDetails;
 
   const { voiceover } = exportTypes;
 
-  if(url) {
+  if (data.azure_url) {
     const link = document.createElement("a");
-    link.href = url;
-  
-    link.setAttribute(
-      "download",
-      `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`
-    );
-  
+    link.href = data.azure_url;
+
+    let fileName = "";
+    if (specialOrgIds.includes(userOrgId)) {
+      fileName = data.video_name
+    } else {
+      fileName = `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`;
+    }
+
+    link.setAttribute("download", fileName);
+
     document.body.appendChild(link);
     link.click();
     link.parentNode.removeChild(link);
@@ -538,7 +703,9 @@ export const exportFile = (data, taskDetails, exportType, type) => {
     video: videoId,
     src_language: sourceLanguage,
     target_language: targetLanguage,
+    description,
   } = taskDetails;
+  const userOrgId = getLocalStorageData("userData").organization.id;
 
   let newBlob;
   if (exportType === "docx") {
@@ -564,10 +731,15 @@ export const exportFile = (data, taskDetails, exportType, type) => {
   const format = exportType === "docx-bilingual" ? "docx" : exportType;
   const language = type === "transcription" ? sourceLanguage : targetLanguage;
 
-  link.setAttribute(
-    "download",
-    `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`
-  );
+  let fileName = "";
+  if (specialOrgIds.includes(userOrgId) && description.length) {
+    fileName = `${description}.${format}`;
+  } else {
+    fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;
+  }
+
+  link.setAttribute("download", fileName);
+
   document.body.appendChild(link);
   link.click();
   link.parentNode.removeChild(link);

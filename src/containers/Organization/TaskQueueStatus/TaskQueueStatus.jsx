@@ -36,6 +36,10 @@ const TaskQueueStatus = () => {
               label={"Voice-Over"}
               className={classes.taskQueueStatusTabs}
             />
+            <Tab
+              label={"All-Tasks"}
+              className={classes.taskQueueStatusTabs}
+            />
             {/* <Tab
               label={"VoiceOver Integration Queue"}
               className={classes.taskQueueStatusTabs}
@@ -65,6 +69,14 @@ const TaskQueueStatus = () => {
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <QueueStatusTable queueType={"tts"} />
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={3}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <QueueStatusTable queueType={"all_tasks"} />
         </TabPanel>
 
         {/* <TabPanel

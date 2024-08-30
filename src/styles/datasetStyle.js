@@ -50,7 +50,7 @@ const DatasetStyle = makeStyles({
     borderBottom: "1px solid #00000029",
     paddingLeft: "18.5px",
     marginTop: "20px",
-    width: "750px",
+    width: "950px",
     maxHeight: "270px",
     overflow: "auto",
     "@media (max-width:550px)": {
@@ -290,6 +290,24 @@ const DatasetStyle = makeStyles({
   taskQueueStatusTabs: {
     fontSize: 16, 
     fontWeight: "700"
+  },
+
+  bulkProjectContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  newProjectWrapper: {
+    my: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  bulkProjectButton: {
+    borderRadius: "8px", 
+    margin: "0px 10px 0px 0px"
   },
 });
 

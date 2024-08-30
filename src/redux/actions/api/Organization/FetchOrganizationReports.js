@@ -1,14 +1,32 @@
 import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
+import moment from "moment";
 
 export default class FetchOrganizationReportsAPI extends API {
-  constructor(id, endPoint, timeout = 2000) {
+  constructor(
+    id,
+    endPoint,
+    limit,
+    offset,
+    task_type = "",
+    filter,
+    taskStartDate = moment().format("YYYY-MM-DD"),
+    taskEndDate = moment().format("YYYY-MM-DD"),
+    timeout = 2000
+  ) {
     super("GET", timeout, false);
+    const params = new URLSearchParams();
+    params.append("filter", JSON.stringify(filter));
     this.type = C.GET_ORGANIZATION_REPORTS;
-    this.endpoint = `${super.apiEndPointAuto()}${
-      ENDPOINTS.organization
-    }${id}/${endPoint}/`;
+    this.endpoint =
+      endPoint === "get_report_languages"
+        ? `${super.apiEndPointAuto()}${
+            ENDPOINTS.organization
+          }${id}/${endPoint}/?limit=${limit}&offset=${offset}&task_type=${task_type}`
+        : `${super.apiEndPointAuto()}${
+            ENDPOINTS.organization
+          }${id}/${endPoint}/?limit=${limit}&offset=${offset}&taskStartDate=${taskStartDate}&taskEndDate=${taskEndDate}`+`&${params.toString()}`;
   }
 
   processResponse(res) {

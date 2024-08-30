@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { VideoLandingStyle } from "styles";
 
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
@@ -18,6 +18,7 @@ const RecorderComponent = ({
   handleFileUpload,
   isDisabled,
   updateRecorderState,
+  setRecorderTime,
 }) => {
   const recorderControls = useAudioRecorder();
   const {
@@ -32,6 +33,10 @@ const RecorderComponent = ({
   const classes = VideoLandingStyle();
   const $audioFile = useRef(null);
   const timeRef = useRef(0);
+
+  useEffect(() => {
+    setRecorderTime(recordingTime);
+  }, [recordingTime]);
 
   if (recordingTime !== 0) {
     timeRef.current = recordingTime;

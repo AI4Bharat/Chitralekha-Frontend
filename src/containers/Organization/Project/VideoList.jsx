@@ -61,6 +61,7 @@ const VideoList = ({ data, removeVideo }) => {
   const [videoIdForDowload, setVideoIdForDowload] = useState("");
   const [videoName, setVideoName] = useState("");
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [viewListColumns, setViewListColumns] = useState([]);
 
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -68,14 +69,24 @@ const VideoList = ({ data, removeVideo }) => {
   const translationExportTypes = useSelector(
     (state) => state.getTranslationExportTypes.data.export_types
   );
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -110,6 +121,15 @@ const VideoList = ({ data, removeVideo }) => {
 
     // eslint-disable-next-line
   }, [apiStatus]);
+
+  useEffect(() => {
+    const data = localStorage.getItem("videoColDisplayFilter");
+    if(data){
+      setViewListColumns(JSON.parse(data));
+    }else{
+      setViewListColumns(videoListColumns);
+    }
+  }, []);
 
   const handleVideoDialog = (item) => {
     setOpen(true);
@@ -171,7 +191,7 @@ const VideoList = ({ data, removeVideo }) => {
           </Tooltip>
 
           {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-            userData?.id === orgOwnerId) && (
+          isUserOrgOwner || userData?.role==="ADMIN")&& (
             <Tooltip title="Create Task">
               <IconButton
                 onClick={() => {
@@ -186,7 +206,7 @@ const VideoList = ({ data, removeVideo }) => {
           )}
 
           {(projectInfo.managers?.some((item) => item.id === userData.id) ||
-            userData?.id === orgOwnerId) && (
+            isUserOrgOwner || userData?.role==="ADMIN") && (
             <Tooltip title="Delete">
               <IconButton onClick={() => handleDeleteVideo(item.id)}>
                 <DeleteIcon color="error" />
@@ -280,6 +300,29 @@ const VideoList = ({ data, removeVideo }) => {
     );
   };
 
+  function toggleDisplayExclude(label) {
+    return viewListColumns.map(column => {
+      if (column.name === label) {
+        if (column.options && column.options.display === "exclude") {
+          const { display, ...restOptions } = column.options;
+          return {
+            ...column,
+            options: restOptions,
+          };
+        } else {
+          return {
+            ...column,
+            options: {
+              ...column.options,
+              display: "exclude",
+            },
+          };
+        }
+      }
+      return column;
+    });
+  }
+
   const options = {
     textLabels: {
       body: {
@@ -319,6 +362,9 @@ const VideoList = ({ data, removeVideo }) => {
         <VideoStatusTable headers={expandableTableHeader} status={rowData[4]} />
       );
     },
+    onViewColumnsChange: (changedColumn) => {
+      localStorage.setItem("videoColDisplayFilter", JSON.stringify(toggleDisplayExclude(changedColumn)));
+    },
   };
 
   return (
@@ -326,7 +372,7 @@ const VideoList = ({ data, removeVideo }) => {
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={result}
-          columns={getColumns(videoListColumns)}
+          columns={getColumns(viewListColumns)}
           options={options}
         />
       </ThemeProvider>

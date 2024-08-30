@@ -121,13 +121,28 @@ const Header = () => {
         navigate(`/profile/${userData?.id}`);
       },
     },
-    // {
-    //   name: "Change Password",
-    //   onClick: () => {
-    //     handleCloseUserMenu();
-    //     navigate(`/profile/${userData?.id}/change-password`);
-    //   },
-    // },
+    {
+      name: "My Glossary",
+      onClick: () => {
+        handleCloseUserMenu();
+        navigate(`/profile/${userData?.id}/my-glossary`);
+      },
+    },
+    {
+      name: "Bookmarked Segment",
+      onClick: () => {
+        handleCloseUserMenu();
+        let endpoint = "";
+        if(userData?.user_history?.task_type.includes("TRANSCRIPTION")){
+          endpoint = "transcript";  
+        }else if(userData?.user_history?.task_type.includes("VOICEOVER")){
+          endpoint = "voiceover";  
+        }else{
+          endpoint = "translate";
+        }
+        navigate(`/task/${userData?.user_history?.task_id}/${endpoint}/${userData?.user_history?.offset}/${userData?.user_history?.segment}`);
+      },
+    },
     {
       name: "Logout",
       onClick: () => {
@@ -140,10 +155,10 @@ const Header = () => {
   ];
 
   return (
-    <>
+    <Grid container direction="row" style={{ zIndex: 1 }}>
     <Box>
       {isMobile ? (
-        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} />
+        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} userData={userData} />
       ) : (
         <AppBar
           position="fixed"
@@ -189,7 +204,8 @@ const Header = () => {
                 columnGap={2}
                 rowGap={2}
               >
-                {userData?.role !== "ADMIN" && (<>
+  
+                (<>
                   <Typography variant="body1">
                     <NavLink
                       to={`/my-organization/${userData?.organization?.id}`}
@@ -230,17 +246,37 @@ const Header = () => {
                       </NavLink>
                    </Typography>
                )}
+                {/* <Typography variant="body1">
+                  <NavLink
+                    to="/projects"
+                    className={({ isActive }) =>
+                      isActive
+                        ? `${classes.highlightedMenu} projects`
+                        : `${classes.headerMenu} projects`
+                    }
+                  >
+                    Projects
+                  </NavLink>
+                </Typography> */}
+                {/* <Typography variant="body1">
+                  <NavLink
+                    to="#"
+                    className={`${classes.headerMenu} workspace`}
+                  >
+                    Analytics
+                  </NavLink>
+                </Typography> */}
               </Grid>
 
               <Box className={classes.avatarBox}>
-                <IconButton
+                { userData?.role === "ADMIN" || userData?.role === "ORG_OWNER" || userData?.role === "PROJECT_MANAGER" ? <IconButton
                   onClick={() => navigate('/task-queue-status')}
                   className={`${classes.icon} help`}
                 >
-                  <Tooltip title="Task Queue Status">
+                  <Tooltip title="Task Queue Status">                    
                     <HourglassBottomIcon color="primary" className={classes.icon2}/>
                   </Tooltip>
-                </IconButton>
+                </IconButton> : "" }
 
                 <IconButton
                   onClick={handleOpenHelpMenu}
@@ -369,7 +405,7 @@ const Header = () => {
     handleClose={() => handleClose()}
     setOpenHelpDialog= {setOpenHelpDialog}
     />}
-    </>
+    </Grid>
   );
 };
 export default Header;

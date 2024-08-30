@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
 
 //Styles
@@ -32,7 +32,7 @@ const ButtonComponent = ({
 
   return (
     <>
-      {!taskData.task_type.includes("VOICEOVER") && lastItem && (
+      {taskData.task_type.includes("TRANSCRIPTION") && lastItem && (
         <Tooltip title="Merge Next" placement="bottom">
           <IconButton
             sx={{ transform: "rotate(180deg)" }}
@@ -44,7 +44,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {!taskData.task_type.includes("VOICEOVER") && (
+      {taskData.task_type.includes("TRANSCRIPTION") && (
         <Tooltip title="Delete" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
@@ -56,7 +56,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {!taskData.task_type.includes("VOICEOVER") && (
+      {taskData.task_type.includes("TRANSCRIPTION") && (
         <Tooltip title="Add Subtitle Box" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
@@ -67,7 +67,7 @@ const ButtonComponent = ({
         </Tooltip>
       )}
 
-      {taskData.task_type.includes("TRANSLATION") && (
+      {taskData.task_type.includes("TRANSLATION") && !taskData.task_type.includes("VOICEOVER") && (
         <Tooltip title="Regenerate Translation" placement="bottom">
           <IconButton
             className={classes.optionIconBtn}
@@ -80,11 +80,12 @@ const ButtonComponent = ({
 
       {taskData.task_type.includes("VOICEOVER") &&
         transcriptPayload.source_type === "MACHINE_GENERATED" &&
-        showChangeBtn && (
+        (
           <Tooltip title="Get Updated Audio" placement="bottom">
             <IconButton
               className={classes.optionIconBtn}
               onClick={() => saveTranscriptHandler(false, true)}
+              disabled={!showChangeBtn}
             >
               <TaskAltIcon className={classes.rightPanelSvg} />
             </IconButton>

@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useSelector } from "react-redux";
 //Components
 import {
   Button,
@@ -30,6 +30,13 @@ const AddProjectMembers = ({
   handleSelectField,
   managerNames,
 }) => {
+  const alreadyExistingUsers = useSelector((state)=>state.
+  getProjectMembers.data);
+  console.log(alreadyExistingUsers);
+  const acceptedManagers = managerNames.filter((manager) =>manager.has_accepted_invite === true &&
+      !alreadyExistingUsers.some((user) => user.id === manager.id)
+  );
+  console.log(acceptedManagers)
   const filterOptions = (options, state) => {
     const newOptions = options.filter((user) => {
       const { first_name, last_name, email } = user;
@@ -72,7 +79,7 @@ const AddProjectMembers = ({
           <Autocomplete
             multiple
             id="add-project-member"
-            options={managerNames}
+            options={acceptedManagers}
             value={selectFieldValue}
             onChange={(_event, newValue) => {
               handleSelectField(newValue);

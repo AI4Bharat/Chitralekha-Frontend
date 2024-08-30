@@ -17,10 +17,15 @@ const ColumnSelector = ({
   handleClose,
   columns,
   handleColumnSelection,
+  showUserReportProjectColumn,
 }) => {
   const classes = TableStyles();
 
   const getCheckedStatus = (currentColumn) => {
+    if (currentColumn.name === "project") {
+      return showUserReportProjectColumn;
+    }
+    
     if (currentColumn.options.display === "true") {
       return true;
     }

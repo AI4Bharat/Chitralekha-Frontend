@@ -1,5 +1,5 @@
 //My Organization
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
@@ -48,6 +48,7 @@ import {
   CreateVideoDialog,
   Loader,
 } from "common";
+import UploadFileDialog from "common/UploadFileDialog";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -70,7 +71,6 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const csvUpload = useRef();
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -102,6 +102,8 @@ const Project = () => {
   const [alertColumn, setAlertColumn] = useState("");
   const [orgOwnerId, setOrgOwnerId] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
+  const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
+    useState(false);
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -110,14 +112,24 @@ const Project = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -128,6 +140,10 @@ const Project = () => {
       if (success) {
         if (apiType === "ADD_PROJECT_MEMBERS") {
           getProjectMembers();
+        }
+
+        if (apiType === "UPLOAD_CSV") {
+          setOpenUploadBulkVideoDialog(false);
         }
 
         if (apiType === "CREATE_NEW_VIDEO") {
@@ -145,6 +161,7 @@ const Project = () => {
           setAlertMessage(data.message);
           setAlertData(data.response);
           setAlertColumn("csvAlertColumns");
+          setOpenUploadBulkVideoDialog(false);
         }
       }
     }
@@ -401,7 +418,7 @@ const Project = () => {
                   style={{ marginLeft: "10px" }}
                   className={classes.projectButton}
                   variant="contained"
-                  onClick={() => csvUpload.current.click()}
+                  onClick={() => setOpenUploadBulkVideoDialog(true)}
                 >
                   Bulk Video Upload
                   <Tooltip title="Download sample CSV">
@@ -409,7 +426,7 @@ const Project = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         window.location.assign(
-                          `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
+                          `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
                         );
                       }}
                       sx={{ color: "white" }}
@@ -417,16 +434,6 @@ const Project = () => {
                       <InfoOutlinedIcon />
                     </IconButton>
                   </Tooltip>
-                  <input
-                    type="file"
-                    style={{ display: "none" }}
-                    ref={csvUpload}
-                    accept=".csv"
-                    onChange={(event) => {
-                      handeFileUpload(event.target.files);
-                      event.target.value = null;
-                    }}
-                  />
                 </Button>
               </Box>
             )}
@@ -469,7 +476,7 @@ const Project = () => {
             alignItems="center"
           >
             {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-              userData?.id === orgOwnerId) && (
+              isUserOrgOwner|| userData?.role==="ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
@@ -545,6 +552,15 @@ const Project = () => {
           message={alertMessage}
           report={alertData}
           columns={alertColumn}
+        />
+      )}
+
+      {openUploadBulkVideoDialog && (
+        <UploadFileDialog
+          openDialog={openUploadBulkVideoDialog}
+          handleClose={() => setOpenUploadBulkVideoDialog(false)}
+          title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
         />
       )}
     </Grid>

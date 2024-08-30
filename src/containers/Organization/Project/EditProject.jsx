@@ -75,6 +75,7 @@ const EditProject = () => {
   const [transcriptSourceType, setTranscriptSourceType] = useState("");
   const [translationSourceType, setTranslationSourceType] = useState("");
   const [voiceOverSourceType, setVoiceOverSourceType] = useState("");
+  const [paraphrase, setParaphrase] = useState(false);
   const [defaultTask, setDefaultTask] = useState([]);
   const [date, setDate] = useState(moment().format());
   const [priority, setPriority] = useState({
@@ -84,14 +85,24 @@ const EditProject = () => {
   const [taskDescription, setTaskDescription] = useState("");
   const [integrateVideo, setIntegrateVideo] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -149,6 +160,7 @@ const EditProject = () => {
       setVoiceOverSourceType(projectInfo?.default_voiceover_type);
       setDate(projectInfo?.default_eta);
       setIntegrateVideo(projectInfo?.video_integration);
+      setParaphrase(projectInfo?.paraphrasing_enabled);
     }
   }, [projectInfo]);
 
@@ -175,6 +187,7 @@ const EditProject = () => {
       default_task_description: taskDescription,
       default_voiceover_type: voiceOverSourceType,
       video_integration: integrateVideo,
+      paraphrase_enabled: paraphrase,
     };
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
@@ -210,6 +223,7 @@ const EditProject = () => {
       default_eta: date,
       default_task_description: taskDescription,
       video_integration: integrateVideo,
+      paraphrase_enabled: paraphrase,
     };
 
     if (JSON.stringify(oldObj) === JSON.stringify(newObj)) {
@@ -323,7 +337,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) ||isUserOrgOwner || userData?.role==="ADMIN"
                   )
                 }
               />
@@ -344,7 +358,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                   renderValue={(selected) => {
@@ -392,7 +406,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                 >
@@ -423,7 +437,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) ||isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                 >
@@ -454,7 +468,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                 >
@@ -463,6 +477,23 @@ const EditProject = () => {
                       {item.label}
                     </MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+              <FormControl fullWidth>
+                <InputLabel>
+                  Paraphrasing Stage
+                </InputLabel>
+                <Select
+                  value={paraphrase}
+                  label="Paraphrasing Stage"
+                  MenuProps={MenuProps}
+                  onChange={(event) => setParaphrase(event.target.value)}
+                >
+                  <MenuItem key={1} value={false}>Disabled</MenuItem>
+                  <MenuItem key={2} value={true}>Enabled</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -481,7 +512,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                   MenuProps={MenuProps}
@@ -568,7 +599,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) ||isUserOrgOwner  || userData?.role==="ADMIN"
                   )
                 }
                 renderInput={(params) => <TextField {...params} />}
@@ -593,7 +624,7 @@ const EditProject = () => {
                     !(
                       projectDetails?.managers?.some(
                         (item) => item.id === userData.id
-                      ) || userData?.id === orgOwnerId
+                      ) || isUserOrgOwner  || userData?.role==="ADMIN"
                     )
                   }
                   renderValue={(selected) => {
@@ -618,7 +649,7 @@ const EditProject = () => {
             {(projectDetails?.managers?.some(
               (item) => item.id === userData.id
             ) ||
-              userData?.id === orgOwnerId) && (
+              isUserOrgOwner) && (
               <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Button
                   fullWidth
@@ -659,7 +690,7 @@ const EditProject = () => {
                       !(
                         projectDetails?.managers?.some(
                           (item) => item.id === userData.id
-                        ) || userData?.id === orgOwnerId
+                        ) || isUserOrgOwner  || userData?.role==="ADMIN"
                       )
                     }
                   />
@@ -682,7 +713,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) || isUserOrgOwner  || userData?.role==="ADMIN"
                   )
                 }
               />
@@ -703,7 +734,7 @@ const EditProject = () => {
                   !(
                     projectDetails?.managers?.some(
                       (item) => item.id === userData.id
-                    ) || userData?.id === orgOwnerId
+                    ) || isUserOrgOwner  || userData?.role==="ADMIN"
                   )
                 }
               />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-//Style
+//Styles
 import { headerStyle } from "styles";
 
 //Components
@@ -10,40 +10,47 @@ import {
   IconButton,
   List,
   ListItem,
-  Grid,
   AppBar,
   Divider,
   Avatar,
   Typography,
   Box,
+  Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
-function MobileNavbar({ UserMenu, SettingsMenu }) {
+function MobileNavbar({ UserMenu, SettingsMenu, userData }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const classes = headerStyle();
+  const navigate = useNavigate();
 
   const tabs = [
     {
       name: "Organizations",
       onClick: () => {
+        navigate(`/my-organization/${userData?.organization?.id}`);
         setOpenDrawer(false);
       },
     },
     {
-      name: "project",
+      name: "Tasks",
       onClick: () => {
+        navigate(`/task-list`);
         setOpenDrawer(false);
       },
     },
-    {
-      name: "workspace",
-      onClick: () => {
-        setOpenDrawer(false);
-      },
-    },
-  ];
-
+    userData?.role === "ADMIN"
+      ? {
+          name: "Admin",
+          onClick: () => {
+            navigate(`/admin`);
+            setOpenDrawer(false);
+          },
+        }
+      : null,
+  ].filter(Boolean);
   return (
     <>
       <Drawer
@@ -52,6 +59,7 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
         PaperProps={{
           style: {
             padding: "16px",
+            fontFamily:"Rowdies,cursive,Roboto,sans-serif"
           },
         }}
       >
@@ -62,51 +70,45 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
             justifyContent: "space-between",
             height: "100%",
             paddingBottom: "16px",
+            
           }}
         >
           <Box>
-            <NavLink
-              onClick={() => setOpenDrawer(false)}
+            <Box
               style={{
-                textDecoration: "none",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                columnGap: "16px",
+                paddingBottom: "16px",
               }}
             >
-              <Box
+              <Avatar
+                alt="user_profile_pic"
+                variant="contained"
+                className={classes.avatar}
+              >
+                {userData?.first_name?.charAt(0)}
+              </Avatar>
+              <Typography
+                variant="h2"
+                sx={{ p: 0, ml: 1 }}
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  columnGap: "16px",
-                  paddingBottom: "16px",
+                  color: "black",
                 }}
               >
-                <Avatar
-                  alt="user_profile_pic"
-                  variant="contained"
-                  className={classes.avatar}
-                >
-                  U
-                </Avatar>
-                <Typography
-                  variant="h2"
-                  sx={{ p: 0, ml: 1 }}
-                  style={{
-                    color: "black",
-                  }}
-                >
-                  User
-                </Typography>
-              </Box>
-            </NavLink>
+                {userData?.first_name} {userData?.last_name}
+              </Typography>
+            </Box>
             <Divider />
           </Box>
 
-          <Box >
+          <Box>
             <List>
               {tabs.map((tab, index) => (
-                <ListItem key={index} onClick={() => setOpenDrawer(false)}>
-                  <Typography variant="body1">
+                <ListItem key={index} onClick={tab.onClick}>
+                  <Typography variant="body1" align="right">
                     <NavLink
                       to=""
                       className={classes.headerMenu}
@@ -119,21 +121,57 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
               ))}
             </List>
           </Box>
-
-          <Box>
-            <Typography
+          <Typography
               variant="h6"
               align="center"
               style={{
                 fontSize: "1.1rem",
+                fontFamily:"Roboto, sans-serif",
+                fontWeight:"700"
               }}
             >
               App Settings
             </Typography>
             <Divider />
+
+          {userData?.role === "ADMIN" ||
+          userData?.role === "ORG_OWNER" ||
+          userData?.role === "PROJECT_MANAGER" ? (
+            <IconButton
+              onClick={() => {
+                navigate("/task-queue-status");
+                setOpenDrawer(false);
+              }}
+              className={`${classes.icon} help`}
+            >
+              <Tooltip title="Task Queue Status">
+                <HourglassBottomIcon color="primary" className={classes.icon2} />
+              </Tooltip>
+            </IconButton>
+          ) : (
+            ""
+          )}
+
+          <IconButton
+            onClick={() => {
+              // Assuming handleClickHelp is a function to open the help dialog
+              navigate("/help");
+              setOpenDrawer(false);
+            }}
+            className={`${classes.icon} help`}
+          >
+            <Tooltip title="Help">
+              <HelpOutlineIcon color="primary" className={classes.icon} />
+            </Tooltip>
+          </IconButton>
+
+          {/* <Box>
             <List>
               {SettingsMenu.map((setting, index) => (
-                <ListItem key={index} onClick={setting.onclick}>
+                <ListItem key={index} onClick={() => {
+                  setting.onClick();
+                  setOpenDrawer(false);
+                }}>
                   <Typography
                     variant="body1"
                     textAlign="center"
@@ -148,7 +186,7 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
                 </ListItem>
               ))}
             </List>
-          </Box>
+          </Box> */}
 
           <Box>
             <Typography
@@ -166,7 +204,7 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
                 <ListItem
                   key={index}
                   onClick={() => {
-                    setting.onclick();
+                    setting.onClick();
                     setOpenDrawer(false);
                   }}
                 >
@@ -177,6 +215,7 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
                       color: "black",
                       fontSize: "1rem",
                       fontWeight: "400",
+                      cursor:"pointer"
                     }}
                   >
                     {setting.name}
@@ -189,13 +228,12 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
       </Drawer>
 
       <AppBar style={{ backgroundColor: "#ffffff", padding: "8px 0" }}>
-        <Grid
-          container
-          direction="row"
-          justifyContent={"space-between"}
-          style={{
-            padding: "0 5%",
-          }}
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          padding="0 16px"
         >
           <Box display="flex" flexDirection="column" alignItems="center">
             <Box display="flex" alignItems="center">
@@ -205,22 +243,23 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
                 className={classes.headerLogo}
               />
               <Typography variant="h3" sx={{ color: "black", marginLeft: "10px" }}>
-                Chitralekha
+                Chitralekha               
               </Typography>
             </Box>
-            <Typography sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000", marginTop: "auto" }}>
+            <Typography
+              sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000" }}
+            >
               Powered by EkStep Foundation
             </Typography>
           </Box>
 
-          <Grid item>
-            <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
-              <MenuIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
+          <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
+            <MenuIcon />
+          </IconButton>
+        </Box>
       </AppBar>
     </>
   );
 }
+
 export default MobileNavbar;

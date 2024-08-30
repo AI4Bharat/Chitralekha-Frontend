@@ -13,6 +13,8 @@ export default class Sub {
     this.id = obj.id;
     this.audio_speed = obj.audio_speed;
     this.speaker_id = obj.speaker_id;
+    this.transcription_text = obj.transcription_text;
+    this.paraphrased_text = obj.paraphrased_text;
   }
 
   get check() {

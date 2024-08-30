@@ -56,16 +56,18 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
+import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
 
 // Config
-import { org_ids } from "config";
+import { specialOrgIds } from "config";
 
 //APIs
 import {
   APITransport,
+  BulkExportVoiceoverTasksAPI,
   BulkTaskExportAPI,
   CompareTranscriptionSource,
   ComparisionTableAPI,
@@ -80,8 +82,8 @@ import {
   FetchTranscriptExportTypesAPI,
   FetchTranslationExportTypesAPI,
   FetchVoiceoverExportTypesAPI,
-  FetchpreviewTaskAPI,
   GenerateTranslationOutputAPI,
+  RegenerateResponseAPI,
   ReopenTaskAPI,
   UploadToYoutubeAPI,
   clearComparisonTable,
@@ -96,9 +98,10 @@ import {
 } from "redux/actions";
 import constants from "redux/constants";
 import { updateCurrentSearchedColumn } from "redux/actions/taskFilters";
+import DeleteTaskDialog from "common/DeleteTaskDialog";
 
 const TaskList = () => {
-  const user_org_id = getLocalStorageData("userData").organization.id;
+  const userOrgId = getLocalStorageData("userData").organization.id;
   const [desc, setShowDesc] = useState(false);
   const [org_id, setId] = useState();
 
@@ -129,6 +132,8 @@ const TaskList = () => {
   const [currentSelectedTasks, setCurrentSelectedTasks] = useState([]);
   const [uploadTaskRowIndex, setUploadTaskRowIndex] = useState("");
 
+  const [taskColDisplayState, setTaskColDisplayState] = useState({});
+
   //Dialogs
   const [openDialogs, setOpenDialogs] = useState({
     exportDialog: false,
@@ -140,6 +145,9 @@ const TaskList = () => {
     speakerInfoDialog: false,
     tableDialog: false,
     TaskReopenDialog: false,
+    taskType: "",
+    deleteTaskDialog: false,
+    id: "",
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -156,9 +164,9 @@ const TaskList = () => {
   const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
 
   const [exportTypes, setExportTypes] = useState({
-    transcription: "srt",
-    translation: "srt",
-    voiceover: "mp4",
+    transcription: ["srt"],
+    translation: ["srt"],
+    voiceover: "mp3",
     speakerInfo: "false",
     bgMusic: "false",
   });
@@ -177,7 +185,6 @@ const TaskList = () => {
   );
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const apiStatus = useSelector((state) => state.apiStatus);
-  const previewData = useSelector((state) => state.getPreviewData?.data);
   const selectedFilters = useSelector(
     (state) => state.taskFilters.selectedFilters
   );
@@ -189,12 +196,46 @@ const TaskList = () => {
   );
 
   useEffect(() => {
+    const displayCols = {};
+    const displayColsLocalStorage = JSON.parse(
+      localStorage.getItem("taskColDisplayFilter")
+    );
+    const allCols = [
+      ...taskListColumns.map((ele) => ele.name),
+      "id",
+      "video_name",
+      "user",
+      "description",
+      "created_at",
+      "updated_at",
+      "Action",
+    ];
+    const defaultDisabledDisplayCols = [
+      "description",
+      "created_at",
+      "updated_at",
+      "video_name",
+    ];
+    allCols.forEach((ele) => {
+      if (displayColsLocalStorage && ele in displayColsLocalStorage) {
+        displayCols[ele] = displayColsLocalStorage[ele];
+      } else if (defaultDisabledDisplayCols.includes(ele)) {
+        displayCols[ele] = false;
+      } else {
+        displayCols[ele] = true;
+      }
+    });
+    setTaskColDisplayState(displayCols);
+    localStorage.setItem("taskColDisplayFilter", JSON.stringify(displayCols));
+  }, []);
+
+  useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
     if (!progress) {
       if (success) {
         switch (apiType) {
           case "EXPORT_VOICEOVER_TASK":
-            exportVoiceover(data.azure_url, currentTaskDetails, exportTypes);
+            exportVoiceover(data, currentTaskDetails, exportTypes);
             handleDialogClose("exportDialog");
             break;
 
@@ -270,6 +311,14 @@ const TaskList = () => {
           setTaskReopenMsg(data.message);
           setTaskReopenResponse(data.response);
         }
+
+        if (apiType === "GET_TASK_FAIL_INFO") {
+          dispatch(setSnackBar({ open: false }));
+          handleDialogOpen("tableDialog");
+          setTableDialogColumn([]);
+          setTableDialogMessage(data.message);
+          setTableDialogResponse(null);
+        }
       }
     }
 
@@ -285,6 +334,12 @@ const TaskList = () => {
       description: searchValue?.description,
       assignee: searchValue?.user,
     };
+
+    const taskDescriptionLocalStore=JSON.parse(localStorage.getItem('taskSearchFilters'))?.descriptionProjectLevel
+    if (!search["description"] && taskDescriptionLocalStore) {
+      search["description"] = taskDescriptionLocalStore
+      searchValue["description"]=taskDescriptionLocalStore
+    }
 
     const filter = {
       task_type: selectedFilters?.taskType,
@@ -316,6 +371,14 @@ const TaskList = () => {
       sortOptions
     );
     dispatch(APITransport(apiObj));
+  };
+
+  const updateLocalStorageDisplayCols = (changedColumn, action) => {
+    const data = JSON.parse(localStorage.getItem("taskColDisplayFilter"));
+    const showStatus = action === "add" ? true : false;
+    data[changedColumn] = showStatus;
+    setTaskColDisplayState(data)
+    localStorage.setItem("taskColDisplayFilter", JSON.stringify(data));
   };
 
   useEffect(() => {
@@ -373,6 +436,9 @@ const TaskList = () => {
       count: totalCount,
       jumpToPage: true,
       selectToolbarPlacement: "none",
+      onViewColumnsChange: (changedColumn, action) => {
+        updateLocalStorageDisplayCols(changedColumn, action);
+      },
       customToolbar: renderToolBar,
       onRowSelectionChange: (currentRow, allRow) => {
         handleRowClick(currentRow, allRow);
@@ -423,12 +489,20 @@ const TaskList = () => {
 
   const handleExportSubmitClick = () => {
     if (isBulkTaskDownload) {
-      handleBulkTaskDownload();
+      const tasks = currentSelectedTasks.map((item) => item.task_type);
+
+      if (tasks.every((item) => item === "VOICEOVER_EDIT")) {
+        handleBulkVoiceoverTaskDownload();
+      } else {
+        handleBulkTaskDownload();
+      }
     } else {
       const { task_type: taskType } = currentTaskDetails;
 
       if (taskType?.includes("TRANSCRIPTION")) {
         handleTranscriptExport();
+      } else if (openDialogs.taskType === "VO"){
+        exportVoiceoverTask();
       } else if (taskType?.includes("TRANSLATION")) {
         handleTranslationExport();
       } else {
@@ -440,10 +514,12 @@ const TaskList = () => {
   const handleTranscriptExport = async () => {
     const { id: taskId } = currentTaskDetails;
     const { transcription, speakerInfo } = exportTypes;
+    console.log(transcription)
 
+    transcription.map(async (transcript)=>{
     const apiObj = new exportTranscriptionAPI(
       taskId,
-      transcription,
+      transcript,
       speakerInfo
     );
     handleDialogClose("exportDialog");
@@ -457,7 +533,7 @@ const TaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, transcription, "transcription");
+        exportFile(resp, currentTaskDetails, transcript, "transcription");
       } else {
         const resp = await res.json();
 
@@ -477,14 +553,16 @@ const TaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const handleTranslationExport = async () => {
     const { id: taskId } = currentTaskDetails;
     const { translation, speakerInfo } = exportTypes;
+    console.log(translation)
 
-    const apiObj = new exportTranslationAPI(taskId, translation, speakerInfo);
+    translation.map(async (translate)=>{
+    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
     handleDialogClose("exportDialog");
 
     try {
@@ -496,7 +574,7 @@ const TaskList = () => {
       if (res.ok) {
         const resp = await res.blob();
 
-        exportFile(resp, currentTaskDetails, translation, "translation");
+        exportFile(resp, currentTaskDetails, translate, "translation");
       } else {
         const resp = await res.json();
 
@@ -516,7 +594,7 @@ const TaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
   };
 
   const handleExportRadioButtonChange = (event) => {
@@ -529,6 +607,24 @@ const TaskList = () => {
       [name]: value,
     }));
   };
+
+  const handleExportCheckboxChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    let new_val=exportTypes[name]
+    console.log(new_val)
+    if (new_val.includes(value)){
+      new_val = new_val.filter(item => item !== value)
+    } else{
+      new_val.push(value)
+    }
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: new_val,
+    }));
+  }
 
   const onTranslationTaskTypeSubmit = async (id, rsp_data) => {
     const payloadData = {
@@ -563,6 +659,7 @@ const TaskList = () => {
     const apiObj = new DeleteTaskAPI(id, flag);
     dispatch(APITransport(apiObj));
     handleDialogClose("deleteDialog");
+    handleDialogClose("deleteTaskDialog");
   };
 
   const handleTaskReopen = async () => {
@@ -573,11 +670,8 @@ const TaskList = () => {
     handleDialogClose("TaskReopenDialog");
   };
 
-  const handlePreviewTask = async (videoId, taskType, targetlanguage) => {
+  const handlePreviewTask = () => {
     handleDialogOpen("previewDialog");
-
-    const taskObj = new FetchpreviewTaskAPI(videoId, taskType, targetlanguage);
-    dispatch(APITransport(taskObj));
   };
 
   const generateTranslationCall = async (id, taskStatus) => {
@@ -680,7 +774,7 @@ const TaskList = () => {
     const { tableData: data, rowIndex } = tableMeta;
     const selectedTask = data[rowIndex];
 
-    const { id, task_type, status, video, target_language } = selectedTask;
+    const { id, task_type, status } = selectedTask;
     setCurrentTaskDetails(selectedTask);
 
     switch (action) {
@@ -704,10 +798,10 @@ const TaskList = () => {
       case "Edit":
         if (task_type.includes("TRANSCRIPTION")) {
           navigate(`/task/${id}/transcript`);
-        } else if (task_type.includes("TRANSLATION")) {
-          generateTranslationCall(id, status);
-        } else {
+        } else if (task_type.includes("VOICEOVER")) {
           navigate(`/task/${id}/voiceover`);
+        } else {
+          generateTranslationCall(id, status);
         }
         break;
 
@@ -720,12 +814,17 @@ const TaskList = () => {
         setIsBulkTaskDownload(false);
         break;
 
+      case "ExportVO":
+        handleDialogOpen("exportDialog", "VO");
+        setIsBulkTaskDownload(false);
+        break;
+
       case "Preview":
-        handlePreviewTask(video, task_type, target_language);
+        handlePreviewTask();
         break;
 
       case "Delete":
-        handleDeleteTask(id, false);
+        handleDialogOpen("deleteTaskDialog", "", id);
         break;
 
       case "Info":
@@ -734,9 +833,14 @@ const TaskList = () => {
         break;
 
       case "Reopen":
-        const reopenObj = new ReopenTaskAPI(id);
+        const reopenObj = new ReopenTaskAPI(id, false, task_type);
         dispatch(APITransport(reopenObj));
         setReOpenTaskId(id);
+        break;
+
+      case "Regenerate":
+        const obj = new RegenerateResponseAPI(id);
+        dispatch(APITransport(obj));
         break;
 
       default:
@@ -752,6 +856,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: taskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -768,6 +873,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: taskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         setCellHeaderProps: () => ({
@@ -784,6 +890,7 @@ const TaskList = () => {
         filter: false,
         sort: false,
         canBeSearch: true,
+        display: taskColDisplayState["user"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
@@ -811,12 +918,12 @@ const TaskList = () => {
         sort: false,
         canBeSearch: true,
         canBeSorted: true,
-        display: org_ids.includes(user_org_id)
+        display: specialOrgIds.includes(userOrgId)
           ? true
-          : columnDisplay.description,
+          : taskColDisplayState["description"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        customBodyRender: !org_ids.includes(user_org_id)
+        customBodyRender: !specialOrgIds.includes(userOrgId)
           ? renderTaskListColumnCell
           : (value, tableMeta) => {
               const { tableData: data, rowIndex } = tableMeta;
@@ -854,9 +961,9 @@ const TaskList = () => {
       label: "Created At",
       options: {
         filter: false,
-        display: columnDisplay.created_at,
         sort: false,
         canBeSorted: true,
+        display: taskColDisplayState["created_at"],
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -880,9 +987,9 @@ const TaskList = () => {
       label: "Updated At",
       options: {
         filter: false,
-        display: columnDisplay.updated_at,
         sort: false,
         canBeSorted: true,
+        display: taskColDisplayState["updated_at"],
         customHeadLabelRender: CustomTableHeader,
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
@@ -907,6 +1014,7 @@ const TaskList = () => {
       options: {
         filter: false,
         sort: false,
+        display: taskColDisplayState["Action"],
         align: "center",
         setCellHeaderProps: () => ({
           className: tableClasses.cellHeaderProps,
@@ -923,6 +1031,18 @@ const TaskList = () => {
                 alignItems: "center",
               }}
             >
+              {(selectedTask?.task_type === "TRANSLATION_VOICEOVER_EDIT" && selectedTask?.status === "COMPLETE") &&
+                <Tooltip key="Export Voiceover" title="Export Voiceover" >
+                  <IconButton
+                    onClick={() =>
+                      handleActionButtonClick(tableMeta, "ExportVO")
+                    }
+                    color="primary"
+                  >
+                    <AudiotrackOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              }
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -949,7 +1069,10 @@ const TaskList = () => {
       },
     };
 
-    const columns = [...getColumns(taskListColumns), actionColumn];
+    const columns = [
+      ...getColumns(taskListColumns, taskColDisplayState),
+      actionColumn,
+    ];
     columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
     columns.splice(3, 0, createdAtColumn);
@@ -993,7 +1116,8 @@ const TaskList = () => {
     handleDialogClose("exportDialog");
     const { translation } = exportTypes;
 
-    const apiObj = new BulkTaskExportAPI(translation, selectedBulkTaskid);
+    translation.map(async (translate)=>{
+    const apiObj = new BulkTaskExportAPI(translate, selectedBulkTaskid);
 
     try {
       const res = await fetch(apiObj.apiEndPoint(), {
@@ -1023,7 +1147,14 @@ const TaskList = () => {
           variant: "error",
         })
       );
-    }
+    }})
+  };
+
+  const handleBulkVoiceoverTaskDownload = async () => {
+    handleDialogClose("exportDialog");
+
+    const apiObj = new BulkExportVoiceoverTasksAPI(selectedBulkTaskid);
+    dispatch(APITransport(apiObj));
   };
 
   const handleToolbarButtonClick = (key) => {
@@ -1111,7 +1242,12 @@ const TaskList = () => {
     const { id: taskId } = currentTaskDetails;
     setLoading(true);
 
-    const body = {
+    const body = data.description==""?{
+      task_ids: currentSelectedTasks.map((item) => item.id),
+      user: data.user.id,
+      eta: data.date,
+      priority: data.priority,
+    }:{
       task_ids: currentSelectedTasks.map((item) => item.id),
       user: data.user.id,
       description: data.description,
@@ -1146,10 +1282,12 @@ const TaskList = () => {
     }));
   };
 
-  const handleDialogOpen = (key) => {
+  const handleDialogOpen = (key, taskType="", id="") => {
     setOpenDialogs((prevState) => ({
       ...prevState,
       [key]: true,
+      taskType: taskType,
+      id: id,
     }));
   };
 
@@ -1183,10 +1321,14 @@ const TaskList = () => {
         <ExportDialog
           open={openDialogs.exportDialog}
           handleClose={() => handleDialogClose("exportDialog")}
+          task_type={openDialogs.taskType}
           taskType={currentTaskDetails?.task_type}
           exportTypes={exportTypes}
           handleExportSubmitClick={handleExportSubmitClick}
           handleExportRadioButtonChange={handleExportRadioButtonChange}
+          handleExportCheckboxChange = {handleExportCheckboxChange}
+          isBulkTaskDownload={isBulkTaskDownload}
+          currentSelectedTasks={currentSelectedTasks}
         />
       )}
 
@@ -1198,6 +1340,14 @@ const TaskList = () => {
           loading={apiStatus.loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
+        />
+      )}
+
+      {openDialogs.deleteTaskDialog && (
+        <DeleteTaskDialog
+          openDialog={openDialogs.deleteTaskDialog}
+          handleClose={() => handleDialogClose("deleteTaskDialog")}
+          submit={() => handleDeleteTask(openDialogs.id, false)}
         />
       )}
 
@@ -1228,8 +1378,9 @@ const TaskList = () => {
         <PreviewDialog
           openPreviewDialog={openDialogs.previewDialog}
           handleClose={() => handleDialogClose("previewDialog")}
-          data={previewData}
-          task_type={currentTaskDetails?.task_type}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
         />
       )}
 
@@ -1302,6 +1453,7 @@ const TaskList = () => {
           message={tableDialogMessage}
           response={tableDialogResponse}
           columns={tableDialogColumn}
+          taskId={currentTaskDetails.id}
         />
       )}
     </>

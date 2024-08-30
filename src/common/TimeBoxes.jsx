@@ -1,30 +1,31 @@
 import React, { memo } from "react";
 import { ProjectStyle } from "styles";
-import { Box, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
-const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
+const TimeBoxes = ({ handleTimeChange, time, index, type, readOnly, player }) => {
   const classes = ProjectStyle();
 
   return (
-    <Box display="flex">
+    <div style={{display: "flex", margin:"0"}}>
       <TextField
         variant="standard"
         onChange={(event) =>
-          handleTimeChange(event.target.value, index, type, "hours")
+          handleTimeChange(event.target.value, index, type, "hours", player)
         }
         value={time.split(":")[0]}
         onFocus={(event) => event.target.select()}
         className={classes.timeInputBox}
+        InputProps={{ readOnly:readOnly }}
         style={{
-          paddingLeft: "10px",
-          marginLeft: type === "endTime" ? "auto" : "",
+          // paddingLeft: "10px",
+          // marginLeft: type === "endTime" ? "auto" : "",
         }}
       />
 
       <TextField
         variant="standard"
         value={":"}
-        style={{ width: "2%" }}
+        style={{ width: "1ch" }}
         className={classes.timeInputBox}
       />
 
@@ -33,16 +34,17 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         value={time.split(":")[1]}
         className={classes.timeInputBox}
         onFocus={(event) => event.target.select()}
-        InputProps={{ inputProps: { min: 0, max: 100 } }}
+        InputProps={{ inputProps: { min: 0, max: 100 }, readOnly:readOnly }}
         onChange={(event) =>
-          handleTimeChange(event.target.value, index, type, "minutes")
+          handleTimeChange(event.target.value, index, type, "minutes", player)
         }
       />
 
       <TextField
+        
         variant="standard"
         value={":"}
-        style={{ width: "2%" }}
+        style={{ width: "1ch" }}
         className={classes.timeInputBox}
       />
 
@@ -50,35 +52,36 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         variant="standard"
         value={time.split(":")[2].split(".")[0]}
         onFocus={(event) => event.target.select()}
-        InputProps={{ inputProps: { min: 0, max: 100 } }}
+        InputProps={{ inputProps: { min: 0, max: 100 }, readOnly:readOnly }}
         className={classes.timeInputBox}
         onChange={(event) =>
-          handleTimeChange(event.target.value, index, type, "seconds")
+          handleTimeChange(event.target.value, index, type, "seconds", player)
         }
-        style={{
+        // style={{
           
-        }}
+        // }}
       />
 
       <TextField
         variant="standard"
         value={"."}
-        style={{ width: "2%" }}
+        style={{ width: "1ch" }}
         className={classes.timeInputBox}
       />
 
       <TextField
         variant="standard"
         value={time.split(":")[2].split(".")[1]}
-        style={{ width: "20%", paddingRight: "10px" }}
+        style={{width: "3ch"}}
+        // style={{ width: "20%", paddingRight: "10px" }}
         onFocus={(event) => event.target.select()}
-        InputProps={{ inputProps: { min: 0, max: 999 } }}
+        InputProps={{ inputProps: { min: 0, max: 999 }, readOnly:readOnly }}
         className={classes.timeInputBox}
         onChange={(event) =>
-          handleTimeChange(event.target.value, index, type, "miliseconds")
+          handleTimeChange(event.target.value, index, type, "miliseconds", player)
         }
       />
-    </Box>
+    </div>
   );
 };
 

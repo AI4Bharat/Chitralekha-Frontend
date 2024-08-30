@@ -1,5 +1,5 @@
 //My Organization
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { roles } from "utils";
@@ -36,6 +36,7 @@ import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { AddOrganizationMember, AlertComponent, Loader } from "common";
+import UploadFileDialog from "common/UploadFileDialog";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -58,7 +59,6 @@ const MyOrganization = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const csvUpload = useRef();
 
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -69,6 +69,9 @@ const MyOrganization = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColumn, setAlertColumn] = useState([]);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
+    useState(false);
+    const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -83,6 +86,10 @@ const MyOrganization = () => {
 
     if (!progress) {
       if (success) {
+        if (apiType === "UPLOAD_CSV") {
+          setOpenUploadBulkVideoDialog(false);
+        }
+
         if (apiType === "GET_USERS_ROLES") {
           setNewMemberName([]);
           setNewMemberRole("");
@@ -95,6 +102,7 @@ const MyOrganization = () => {
           setAlertData(data.response);
           setAlertMessage(data.message);
           setAlertColumn("csvAlertColumns");
+          setOpenUploadBulkVideoDialog(false);
         }
       }
     }
@@ -128,12 +136,19 @@ const MyOrganization = () => {
 
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
-
-      console.log(organization_owner,'organization_owner tetete');
-
-      setOrgOwnerId(organization_owner.id);
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
+  
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
     // eslint-disable-next-line
   }, [userData]);
@@ -185,16 +200,16 @@ const MyOrganization = () => {
           >
             <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
 
-            {roles.filter((role) => role.value === userData?.role)[0]
+            { roles.filter((role) => role.value === userData?.role)[0]
               ?.canAddMembers && (
               <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {userData?.id === orgOwnerId && (
+            {(isUserOrgOwner|| userData?.role==="ADMIN") &&(
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {userData?.id === orgOwnerId && (
+            {(isUserOrgOwner || userData?.role==="ADMIN")&&(
               <Tab
                 label={"Settings"}
                 sx={{ fontSize: 16, fontWeight: "700" }}
@@ -215,7 +230,7 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <Box display={"flex"} width={"100%"}>
-              {userData?.id === orgOwnerId && (
+              {(isUserOrgOwner|| userData?.role==="ADMIN") && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
@@ -228,12 +243,23 @@ const MyOrganization = () => {
                     Add New Project
                   </Button>
 
+                  <Button
+                    style={{ marginRight: "10px" }}
+                    className={classes.projectButton}
+                    onClick={() =>
+                      navigate(`/my-organization/${id}/create-bulk-projects`)
+                    }
+                    variant="contained"
+                  >
+                    Create Bulk Projects from Template
+                  </Button>
+
                   {organizationDetails.enable_upload && (
                     <Button
                       style={{ marginLeft: "10px" }}
                       className={classes.projectButton}
                       variant="contained"
-                      onClick={() => csvUpload.current.click()}
+                      onClick={() => setOpenUploadBulkVideoDialog(true)}
                     >
                       Bulk Video Upload
                       <Tooltip title="Download sample CSV">
@@ -241,7 +267,7 @@ const MyOrganization = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             window.location.assign(
-                              `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
+                              `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
                             );
                           }}
                           sx={{ color: "white" }}
@@ -249,16 +275,6 @@ const MyOrganization = () => {
                           <InfoOutlinedIcon />
                         </IconButton>
                       </Tooltip>
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        ref={csvUpload}
-                        accept=".csv"
-                        onChange={(event) => {
-                          handeFileUpload(event.target.files);
-                          event.target.value = null;
-                        }}
-                      />
                     </Button>
                   )}
                 </Fragment>
@@ -286,7 +302,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {userData?.id === orgOwnerId && (
+            {(isUserOrgOwner|| userData?.role==="ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
@@ -348,6 +364,15 @@ const MyOrganization = () => {
           message={alertMessage}
           report={alertData}
           columns={alertColumn}
+        />
+      )}
+
+      {openUploadBulkVideoDialog && (
+        <UploadFileDialog
+          openDialog={openUploadBulkVideoDialog}
+          handleClose={() => setOpenUploadBulkVideoDialog(false)}
+          title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
         />
       )}
     </Grid>

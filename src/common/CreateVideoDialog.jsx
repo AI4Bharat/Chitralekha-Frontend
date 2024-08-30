@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuProps } from "utils";
 
@@ -38,7 +38,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import getLocalStorageData from "utils/getLocalStorageData";
 
 // Config
-import { org_ids } from "config";
+import { specialOrgIds } from "config";
 
 //Redux
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
@@ -63,7 +63,7 @@ const CreateVideoDialog = ({
   speakerType,
   setSpeakerType,
 }) => {
-  const user_org_id = getLocalStorageData("userData").organization.id;
+  const userOrgId = getLocalStorageData("userData").organization.id;
 
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -78,6 +78,14 @@ const CreateVideoDialog = ({
     (state) => state.getSupportedLanguages.transcriptionLanguage
   );
 
+  const videosInProject = useSelector((state)=>state.getProjectVideoList.data)
+  const [showPopup, setShowPopup] = useState(false);
+  useEffect(() => {
+    if (videosInProject.some((video) => video.url === videoLink)) {
+      setShowPopup(true);
+    }
+  }, [videoLink, videosInProject]);
+  
   const handleClear = () => {
     setLang("");
     setVideoLink("");
@@ -241,6 +249,55 @@ const CreateVideoDialog = ({
           onChange={(event) => setVideoLink(event.target.value)}
           sx={{ mt: 3 }}
         />
+        {showPopup && (
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        textAlign: 'center',
+        position: 'relative',
+        minWidth: '300px',
+      }}
+    >
+      <p>This video already exists in the project. Do you want to upload it again?</p>
+      <Button
+                  style={{ marginRight: "10px" }}
+                  // className={classes.projectButton}
+                  onClick={()=>setShowPopup(false)}
+                  variant="contained"
+                >
+                  Yes
+                </Button>
+
+                <Button
+                  style={{ marginRight: "10px" }}
+                  // className={classes.projectButton}
+                  onClick={()=>{setShowPopup(false)
+                    setVideoLink("")
+                  }}
+                  variant="contained"
+                >
+                  No
+                </Button>
+    </div>
+  </div>
+)}
+
 
         <FormControl fullWidth sx={{ mt: 3 }}>
           <InputLabel id="select-voice">Voice Selection</InputLabel>
@@ -391,7 +448,7 @@ const CreateVideoDialog = ({
 
         <TextField
           label="Description"
-          required={org_ids.includes(user_org_id) ? true : false}
+          required={specialOrgIds.includes(userOrgId) ? true : false}
           fullWidth
           multiline
           rows={3}
