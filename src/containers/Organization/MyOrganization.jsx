@@ -200,16 +200,16 @@ const MyOrganization = () => {
           >
             <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
 
-            {roles.filter((role) => role.value === userData?.role)[0]
+            { roles.filter((role) => role.value === userData?.role)[0]
               ?.canAddMembers && (
               <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {isUserOrgOwner&& (
+            {(isUserOrgOwner|| userData?.role==="ADMIN") &&(
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
 
-            {isUserOrgOwner && (
+            {(isUserOrgOwner || userData?.role==="ADMIN")&&(
               <Tab
                 label={"Settings"}
                 sx={{ fontSize: 16, fontWeight: "700" }}
@@ -230,7 +230,7 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <Box display={"flex"} width={"100%"}>
-              {isUserOrgOwner && (
+              {(isUserOrgOwner|| userData?.role==="ADMIN") && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
@@ -302,7 +302,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {isUserOrgOwner && (
+            {(isUserOrgOwner|| userData?.role==="ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}

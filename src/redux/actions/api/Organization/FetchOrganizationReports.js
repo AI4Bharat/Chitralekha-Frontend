@@ -18,7 +18,6 @@ export default class FetchOrganizationReportsAPI extends API {
     super("GET", timeout, false);
     const params = new URLSearchParams();
     params.append("filter", JSON.stringify(filter));
-
     this.type = C.GET_ORGANIZATION_REPORTS;
     this.endpoint =
       endPoint === "get_report_languages"

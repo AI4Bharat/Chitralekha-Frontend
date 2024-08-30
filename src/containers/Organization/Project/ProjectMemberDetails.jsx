@@ -125,7 +125,7 @@ const ProjectMemberDetails = () => {
             {(projectDetails?.managers?.some(
               (item) => item.id === userData.id
             ) ||
-              isUserOrgOwner) && (
+              isUserOrgOwner  || userData?.role==="ADMIN" )&& (
               <Tooltip title="Delete">
                 <IconButton
                   onClick={() => {

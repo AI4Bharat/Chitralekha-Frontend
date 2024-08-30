@@ -3,8 +3,8 @@ import { makeStyles } from "@mui/styles";
 const headerStyle = makeStyles({
   parentContainer: {
     // flexGrow : 1,
-    marginBottom: window.innerHeight * 0.13,
-    width: window.innerWidth * 0.98,
+    // marginBottom: window.innerHeight * 0.13,
+    // width: window.innerWidth * 0.98,
   },
   appBar: {
     // backgroundColor: "#ffffff",
@@ -12,25 +12,26 @@ const headerStyle = makeStyles({
     // marginBotto m : '5%'
   },
   toolbar: {
-    justifyContent: "space-between",
+    justifyContent : "space-between",
     maxWidth: "1272px",
     width: "100%",
     margin: "0 auto",
     display: "flex",
     alignItems: "center",
     // padding: "inherit !important",
-    padding: "0px !important",
+    padding:"0px !important",
     boxSizing: "border-box",
     minHeight: "54px",
-    fontFamily: '"Roboto" ,sans-serif',
+    fontFamily: 'sans-serif',
   },
   menu: {
-    maxWidth: "1272px",
-    width: "100%",
-    margin: "0 auto",
-    display: "flex",
-    alignItems: "center",
-    cursor: "pointer",
+        maxWidth: "1272px",
+        width: "100%",
+        margin: "0 auto",
+        display: "flex",
+        alignItems: "center",
+        cursor: "pointer",
+     
   },
   headerLogo: {
     height: "2rem",

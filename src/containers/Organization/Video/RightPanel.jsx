@@ -104,7 +104,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState([]);
+  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState(false);
   const [speakerIdList, setSpeakerIdList] = useState([]);
   const [currentSelectedIndex, setCurrentSelectedIndex] = useState(0);
   const [tagSuggestionsAnchorEl, setTagSuggestionsAnchorEl] = useState(null);
@@ -186,7 +186,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
         return speaker;
       });
       setSpeakerIdList(speakerList);
-      setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+      setShowSpeakerIdDropdown(false);
       if(segment!==undefined){
         setTimeout(() => {    
           const subtitleScrollEle = document.getElementById("subTitleContainer");
@@ -250,16 +250,16 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   }, [limit, currentOffset]);
 
   const onMouseUp = (e, blockIdx) => {
-    setTimeout(() => {
-      setCurrentIndex(blockIdx);
-    }, 100);
+  setTimeout(() => {
+    setCurrentIndex(blockIdx);
+  }, 100);
 
-    if (e && e.target) {
-      const { selectionStart, value } = e.target;
-      if (selectionStart !== undefined && value !== undefined) {
-        setShowPopOver(true);
-        setCurrentIndexToSplitTextBlock(blockIdx);
-        setSelectionStart(selectionStart);
+  if (e && e.target) {
+    const { selectionStart, value } = e.target;
+    if (selectionStart !== undefined && value !== undefined) {
+      setShowPopOver(true);
+      setCurrentIndexToSplitTextBlock(blockIdx);
+      setSelectionStart(selectionStart);
       }
     }
 
@@ -463,12 +463,12 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
-      const sub = timeChange(value, index, type, time);
+      const sub = timeChange(value, index, type, time, player);
       dispatch(setSubtitles(sub, C.SUBTITLES));
       // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [limit, currentOffset, player]
   );
 
   const onDelete = useCallback(
@@ -550,6 +550,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
     return 0;
   };
 
+
   const handleAutosave = () => {
     const reqBody = {
       task_id: taskId,
@@ -630,6 +631,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
       },
     },
   ];
+  
 
   return (
     <>
@@ -784,7 +786,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                         ref={(el) => (textboxes.current[index] = el)}
                         onBlur={() => {
                           setTimeout(() => {
-                            setShowPopOver(false);
+                            // setShowPopOver(false);
                           }, 200);
                         }}
                       />

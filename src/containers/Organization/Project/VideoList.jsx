@@ -191,7 +191,7 @@ const VideoList = ({ data, removeVideo }) => {
           </Tooltip>
 
           {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-          isUserOrgOwner) && (
+          isUserOrgOwner || userData?.role==="ADMIN")&& (
             <Tooltip title="Create Task">
               <IconButton
                 onClick={() => {
@@ -206,7 +206,7 @@ const VideoList = ({ data, removeVideo }) => {
           )}
 
           {(projectInfo.managers?.some((item) => item.id === userData.id) ||
-            isUserOrgOwner) && (
+            isUserOrgOwner || userData?.role==="ADMIN") && (
             <Tooltip title="Delete">
               <IconButton onClick={() => handleDeleteVideo(item.id)}>
                 <DeleteIcon color="error" />
