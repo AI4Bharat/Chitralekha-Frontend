@@ -215,26 +215,21 @@ const Header = () => {
                   </NavLink>
                 </Typography>
                 </>)}
-                {/* <Typography variant="body1">
-                  <NavLink
-                    to="/projects"
-                    className={({ isActive }) =>
-                      isActive
-                        ? `${classes.highlightedMenu} projects`
-                        : `${classes.headerMenu} projects`
-                    }
-                  >
-                    Projects
-                  </NavLink>
-                </Typography> */}
-                {/* <Typography variant="body1">
-                  <NavLink
-                    to="#"
-                    className={`${classes.headerMenu} workspace`}
-                  >
-                    Analytics
-                  </NavLink>
-                </Typography> */}
+                {userData?.role === "ORG_OWNER" && (
+
+                   <Typography variant="body1">
+                       <NavLink
+                        to="/admin1"
+                        className={({ isActive }) =>
+                         isActive ? 
+                          classes.highlightedMenu : classes.headerMenu
+                        }
+                         activeClassName={classes.highlightedMenu}
+                      >
+                       Admin
+                      </NavLink>
+                   </Typography>
+               )}
               </Grid>
 
               <Box className={classes.avatarBox}>
