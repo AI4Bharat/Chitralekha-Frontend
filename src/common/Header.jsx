@@ -230,22 +230,27 @@ const Header = () => {
                     Tasks
                   </NavLink>
                 </Typography>
-                </>)}
+                </>
                 {userData?.role === "ORG_OWNER" && (
 
                    <Typography variant="body1">
                        <NavLink
                         to="/admin1"
                         className={({ isActive }) =>
-                         isActive ? 
-                          classes.highlightedMenu : classes.headerMenu
-                        }
+                        isActive
+                        ? `${classes.highlightedMenu} admin1`
+                        : `${classes.headerMenu} admin1`
+                    }
+                        //  isActive 
+                        //   ? 
+                        //   classes.highlightedMenu : classes.headerMenu
+                        // }
                          activeClassName={classes.highlightedMenu}
                       >
-                       Admin1
+                       Admin
                       </NavLink>
                    </Typography>
-               )}
+               )})
                 {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"

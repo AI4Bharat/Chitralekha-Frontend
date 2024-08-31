@@ -1,94 +1,31 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Button, Tab, Tabs, Box, Typography, CircularProgress } from '@mui/material';
+// import { Grid, TextField, Button, Box, Typography, CircularProgress, } from '@mui/material';
+import { Grid, TextField, Button, Box, Typography, CircularProgress, Tabs, Tab } from '@mui/material';
 import { JSONTree } from 'react-json-tree';
-import GetAllTranscriptionsAPI from "redux/actions/api/Admin1/GetAllTranscriptions.js";
-import GetTranslationsAPI from "redux/actions/api/Admin1/GetAllTranslations.js"; // New API for translations
-import GetVoiceOversAPI from "redux/actions/api/Admin1/GetAllVoiceOvers.js"; // New API for voiceovers
-import GetVideoTaskDetailsAPI from "redux/actions/api/Admin1/GetVideoTaskDetails.js";
+import GetTaskDetailsAPI from "redux/actions/api/Admin1/GetTaskDetails.js";
 import { snakeToTitleCase } from '../../../src/utils/utils.js';
 
-function VideoTaskDetails() {
-    const [videoId, setVideoId] = useState('');
+function TaskDetails() {
+    const [taskId, setTaskId] = useState('');
     const [tabValue, setTabValue] = useState(0);
     const [taskDetails, setTaskDetails] = useState(null);
-    const [transcriptions, setTranscriptions] = useState(null); 
-    const [translations, setTranslations] = useState(null); 
-    const [voiceOvers, setVoiceOvers] = useState(null); 
     const [loading, setLoading] = useState(false);
 
-    const fetchVideoTaskDetails = async () => {
+    const fetchTaskDetails = async () => {
         setLoading(true);
         setTaskDetails(null);
-        setTranscriptions(null); 
-        setTranslations(null); 
-        setVoiceOvers(null); 
-
-        const apiObj = new GetVideoTaskDetailsAPI(videoId);
+        const apiObj = new GetTaskDetailsAPI(taskId);
         fetch(apiObj.apiEndPoint(), apiObj.getHeaders())
             .then(async (res) => {
                 if (res.status === 200) {
                     const data = await res.json();
-                    return data;
+                    setTaskDetails(data);
                 } else if (res.status === 404) {
-                    return { error: 'Task not found' };
+                    setTaskDetails({ error: 'Task not found' });
                 } else {
-                    return { error: 'Something went wrong' };
+                    setTaskDetails({ error: 'Something went wrong' });
                 }
-            })
-            .then(data => {
                 setLoading(false);
-                setTaskDetails(data);
-                fetchTranscriptions(); 
-                fetchTranslations(); 
-                fetchVoiceOvers(); 
-            });
-    };
-
-    const fetchTranscriptions = async () => {
-        const apiObj = new GetAllTranscriptionsAPI(videoId);
-        fetch(apiObj.apiEndPoint(), apiObj.getHeaders())
-            .then(async (res) => {
-                if (res.status === 200) {
-                    const data = await res.json();
-                    return data;
-                } else {
-                    return { error: 'Failed to fetch transcriptions' };
-                }
-            })
-            .then(data => {
-                setTranscriptions(data.transcripts); // Assuming the response has a 'transcripts' field
-            });
-    };
-
-    const fetchTranslations = async () => {
-        const apiObj = new GetTranslationsAPI(videoId);
-        fetch(apiObj.apiEndPoint(), apiObj.getHeaders())
-            .then(async (res) => {
-                if (res.status === 200) {
-                    const data = await res.json();
-                    return data;
-                } else {
-                    return { error: 'Failed to fetch translations' };
-                }
-            })
-            .then(data => {
-                setTranslations(data.translations); // Assuming the response has a 'translations' field
-            });
-    };
-
-    const fetchVoiceOvers = async () => {
-        const apiObj = new GetVoiceOversAPI(videoId);
-        fetch(apiObj.apiEndPoint(), apiObj.getHeaders())
-            .then(async (res) => {
-                if (res.status === 200) {
-                    const data = await res.json();
-                    return data;
-                } else {
-                    return { error: 'Failed to fetch voiceovers' };
-                }
-            })
-            .then(data => {
-                setVoiceOvers(data.voiceOvers); // Assuming the response has a 'voiceOvers' field
             });
     };
 
@@ -103,9 +40,9 @@ function VideoTaskDetails() {
             base06: '#f5f4f1',
             base07: '#f9f8f5',
             base08: '#f92672',
-            base09: '#fd971f',
+            base09: '#fd971f', //orange
             base0A: '#f4bf75',
-            base0B: '#a6e22e',
+            base0B: '#a6e22e', //green
             base0C: '#a1efe4',
             base0D: '#66d9ef',
             base0E: '#ae81ff',
@@ -162,14 +99,14 @@ function VideoTaskDetails() {
             <Grid item xs={12}>
                 <Box sx={{ display: 'flex', gap: '2em', alignItems: 'center' }}>
                     <TextField
-                        id="video-id"
-                        label="Video ID"
+                        id="task-id"
+                        label="Task ID"
                         variant="outlined"
-                        value={videoId}
-                        onChange={(event) => setVideoId(event.target.value)}
+                        value={taskId}
+                        onChange={(event) => setTaskId(event.target.value)}
                     />
-                    <Button variant="contained" onClick={fetchVideoTaskDetails}>
-                        Fetch Video Task Details
+                    <Button variant="contained" onClick={fetchTaskDetails}>
+                        Fetch Task Details
                     </Button>
                 </Box>
             </Grid>
@@ -181,14 +118,10 @@ function VideoTaskDetails() {
             {taskDetails && (
                 <>
                     <Grid item xs={12}>
-                        <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} aria-label="video-task-details-tabs">
+                        <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} aria-label="task-details-tabs">
                             <Tab label="Details" sx={{ fontSize: 17, fontWeight: '400', marginRight: '28px !important' }} />
-                            <Tab label="Transcriptions" sx={{ fontSize: 17, fontWeight: '400', marginRight: '28px !important' }} />
-                            <Tab label="Translations" sx={{ fontSize: 17, fontWeight: '400', marginRight: '28px !important' }} /> {/* New Tab */}
-                            <Tab label="VoiceOvers" sx={{ fontSize: 17, fontWeight: '400', marginRight: '28px !important' }} /> {/* New Tab */}
                         </Tabs>
                     </Grid>
-
                     <Grid item xs={12}>
                         <TabPanel value={tabValue} index={0}>
                             <JSONTree
@@ -200,48 +133,6 @@ function VideoTaskDetails() {
                                 theme={theme}
                             />
                         </TabPanel>
-                        <TabPanel value={tabValue} index={1}>
-                            {transcriptions ? (
-                                <JSONTree
-                                    data={transcriptions}
-                                    hideRoot={true}
-                                    invertTheme={true}
-                                    labelRenderer={([key]) => <strong>{typeof key === "string" ? snakeToTitleCase(key) : key}</strong>}
-                                    valueRenderer={(raw) => <span>{typeof raw === "string" && raw.match(/^"(.*)"$/) ? raw.slice(1, -1) : raw}</span>}
-                                    theme={theme}
-                                />
-                            ) : (
-                                <Typography>No transcriptions available.</Typography>
-                            )}
-                        </TabPanel>
-                        <TabPanel value={tabValue} index={2}>
-                            {translations ? (
-                                <JSONTree
-                                    data={translations}
-                                    hideRoot={true}
-                                    invertTheme={true}
-                                    labelRenderer={([key]) => <strong>{typeof key === "string" ? snakeToTitleCase(key) : key}</strong>}
-                                    valueRenderer={(raw) => <span>{typeof raw === "string" && raw.match(/^"(.*)"$/) ? raw.slice(1, -1) : raw}</span>}
-                                    theme={theme}
-                                />
-                            ) : (
-                                <Typography>No translations available.</Typography>
-                            )}
-                        </TabPanel>
-                        <TabPanel value={tabValue} index={3}>
-                            {voiceOvers ? (
-                                <JSONTree
-                                    data={voiceOvers}
-                                    hideRoot={true}
-                                    invertTheme={true}
-                                    labelRenderer={([key]) => <strong>{typeof key === "string" ? snakeToTitleCase(key) : key}</strong>}
-                                    valueRenderer={(raw) => <span>{typeof raw === "string" && raw.match(/^"(.*)"$/) ? raw.slice(1, -1) : raw}</span>}
-                                    theme={theme}
-                                />
-                            ) : (
-                                <Typography>No voiceovers available.</Typography>
-                            )}
-                        </TabPanel>
                     </Grid>
                 </>
             )}
@@ -249,4 +140,4 @@ function VideoTaskDetails() {
     );
 }
 
-export default VideoTaskDetails;
+export default TaskDetails;

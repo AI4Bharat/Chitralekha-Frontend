@@ -13,6 +13,8 @@ function VideoTaskDetails() {
     const [transcriptions, setTranscriptions] = useState(null);
     const [translations, setTranslations] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [loadingTranscriptions, setLoadingTranscriptions] = useState(false);
+    const [loadingTranslations, setLoadingTranslations] = useState(false);
 
     const fetchVideoTaskDetails = async () => {
         setLoading(true);
@@ -41,6 +43,7 @@ function VideoTaskDetails() {
     };
 
     const fetchTranscriptions = async () => {
+        setLoadingTranscriptions(true);
         const apiObj = new GetAllTranscriptionsAPI(videoId);
         fetch(apiObj.apiEndPoint(), apiObj.getHeaders())
             .then(async (res) => {
@@ -53,10 +56,12 @@ function VideoTaskDetails() {
             })
             .then(data => {
                 setTranscriptions(data.transcripts);
+                setLoadingTranscriptions(false);
             });
     };
 
     const fetchTranslations = async () => {
+        setLoadingTranslations(true);
         const apiObj = new GetAllTranslationsAPI(videoId);
         fetch(apiObj.apiEndPoint(), apiObj.getHeaders())
             .then(async (res) => {
@@ -69,6 +74,7 @@ function VideoTaskDetails() {
             })
             .then(data => {
                 setTranslations(data);
+                setLoadingTranslations(false);
             });
     };
 
@@ -180,7 +186,11 @@ function VideoTaskDetails() {
                             />
                         </TabPanel>
                         <TabPanel value={tabValue} index={1}>
-                            {transcriptions ? (
+                            {loadingTranscriptions ? (
+                                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 8 }}>
+                                    <CircularProgress color="primary" size={50} />
+                                </Grid>
+                            ) : transcriptions ? (
                                 <JSONTree
                                     data={transcriptions}
                                     hideRoot={true}
@@ -194,7 +204,11 @@ function VideoTaskDetails() {
                             )}
                         </TabPanel>
                         <TabPanel value={tabValue} index={2}>
-                            {translations ? (
+                            {loadingTranslations ? (
+                                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 8 }}>
+                                    <CircularProgress color="primary" size={50} />
+                                </Grid>
+                            ) : translations ? (
                                 <JSONTree
                                     data={translations}
                                     hideRoot={true}
