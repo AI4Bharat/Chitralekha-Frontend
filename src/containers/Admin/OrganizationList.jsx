@@ -86,7 +86,7 @@ const OrganizationList = () => {
       }),
       customBodyRender: (_value, tableMeta) => {
         const rowIndex = tableMeta.rowIndex;
-        const archived = orgList[rowIndex]?.archived || false; // Adjust based on your data structure
+        const archived = orgList[rowIndex]?.archived || false; 
      
         return (
           <Box sx={{ display: "flex" }}>
