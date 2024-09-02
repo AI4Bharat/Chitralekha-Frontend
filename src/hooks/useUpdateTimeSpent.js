@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { APITransport, UpdateTimeSpentPerTask } from "redux/actions";
+import { APITransportUTS, UpdateTimeSpentPerTask } from "redux/actions";
 
 export const useUpdateTimeSpent = (ref) => {
   const { taskId } = useParams();
@@ -12,7 +12,7 @@ export const useUpdateTimeSpent = (ref) => {
   useEffect(() => {
     const handleUpdateTimeSpent = (time = 60) => {
       const apiObj = new UpdateTimeSpentPerTask(taskId, time);
-      dispatch(APITransport(apiObj));
+      dispatch(APITransportUTS(apiObj));
     };
 
     timeSpentIntervalRef.current = setInterval(

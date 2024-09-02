@@ -12,14 +12,19 @@ import { TableStyles } from "styles";
 import { Box, IconButton, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DeleteDialog } from "common";
 
 //APIs
 import {
   APITransport,
-  DeleteOrganizationAPI,
+  ArchiveOrganizationAPI,
+  UnarchiveOrganizationAPI,
   FetchOrganizationListAPI,
+  DeleteOrganizationAPI,
 } from "redux/actions";
 
 const OrganizationList = () => {
@@ -30,20 +35,23 @@ const OrganizationList = () => {
   const orgList = useSelector((state) => state.getOrganizationList.data);
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState("");
+  const [isArchived, setIsArchived] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
 
     if (!progress) {
       if (success) {
-        if (apiType === "DELETE_ORGANIZATION") {
+        if (apiType === "ARCHIVE_ORGANIZATION" || apiType === "UNARCHIVE_ORGANIZATION") {
           getOrgList();
         }
       }
 
       setDeleteDialogOpen(false);
+
     }
 
     // eslint-disable-next-line
@@ -59,6 +67,12 @@ const OrganizationList = () => {
     // eslint-disable-next-line
   }, []);
 
+  const handleArchiveUnarchive = async () => {
+    setIsArchived(false)
+    setDialogOpen(false)
+  };
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+
   const columns = getColumns(adminOrgListColumns);
   columns.push({
     name: "Action",
@@ -71,19 +85,33 @@ const OrganizationList = () => {
         className: classes.cellHeaderProps,
       }),
       customBodyRender: (_value, tableMeta) => {
+        const rowIndex = tableMeta.rowIndex;
+        const archived = orgList[rowIndex]?.archived || false; 
+     
         return (
           <Box sx={{ display: "flex" }}>
+            <Tooltip title="View">
+              <IconButton
+                onClick={() => {
+                  navigate(`/my-organization/${orgList[rowIndex]?.id}`);
+                }}
+                // disabled={archived}
+              >
+                <VisibilityIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+
             <Tooltip title="Edit">
               <IconButton
                 onClick={() => {
-                  navigate(`/admin/edit-organization/${tableMeta.rowData[0]}`);
+                  navigate(`/admin/edit-organization/${orgList[rowIndex]?.id}`);
                 }}
+                // disabled={archived}
               >
                 <EditIcon color="primary" />
               </IconButton>
             </Tooltip>
-
-            <Tooltip title="Delete">
+            {/* <Tooltip title="Delete">
               <IconButton
                 onClick={() => {
                   setDeleteDialogOpen(true);
@@ -92,13 +120,28 @@ const OrganizationList = () => {
               >
                 <DeleteIcon color="error" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
+
+            {/* <Tooltip title={archived ? "Unarchive" : "Archive"}>
+              <IconButton
+                onClick={() => {
+                  setDialogOpen(true);
+                  setCurrentOrgId(orgList[rowIndex]?.id);
+                  setIsArchived(archived);
+                }}
+              >
+                {archived ? (
+                  <UnarchiveIcon color="error" />
+                ) : (
+                  <ArchiveIcon color="warning" />
+                )}
+              </IconButton>
+            </Tooltip> */}
           </Box>
         );
       },
     },
   });
-
   const handleDelete = async (currentOrgId) => {
     const apiObj = new DeleteOrganizationAPI(currentOrgId);
     dispatch(APITransport(apiObj));
@@ -114,17 +157,29 @@ const OrganizationList = () => {
         />
       </ThemeProvider>
 
-      {deleteDialogOpen && (
+      {deleteDialogOpen  && (
         <DeleteDialog
-          openDialog={deleteDialogOpen}
-          handleClose={() => setDeleteDialogOpen(false)}
-          submit={() => handleDelete(currentOrgId)}
-          message={`Are you sure, you want to delete this Organization? All the associated videos, tasks, will be deleted.`}
-          loading={apiStatus.loading}
+        openDialog={deleteDialogOpen}
+        handleClose={() => setDeleteDialogOpen(false)}
+        submit={() => handleDelete(currentOrgId)}
+        message={`Are you sure, you want to delete this Organization? All the associated videos, tasks, will be deleted.`}
+        loading={apiStatus.loading}
         />
+
       )}
     </>
   );
 };
 
 export default OrganizationList;
+
+
+{/* <DeleteDialog
+          openDialog={dialogOpen}
+          handleClose={() => setDialogOpen(false)}
+          submit={handleArchiveUnarchive}
+          message={`Are you sure you want to ${isArchived ? "unarchive" : "archive"} this organization?`}
+          loading={apiStatus.loading}
+          confirmText={isArchived ? "Unarchive" : "Archive"}
+          closeText="Close"
+        /> */}

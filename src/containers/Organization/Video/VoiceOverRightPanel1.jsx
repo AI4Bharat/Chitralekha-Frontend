@@ -260,15 +260,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   useEffect(() => {
     let updatedArray = [];
-
-    if (!!subtitles) {
-      const recorderArray = subtitles.map(() => "stop");
-      setRecordAudio(recorderArray);
-      setData(new Array(recorderArray.length));
-      updatedArray = subtitles.map(() => "");
-    }
+    let changed = false;
+    // if (!!subtitles) {
+    //   const recorderArray = subtitles.map(() => "stop");
+    //   setRecordAudio(recorderArray);
+    //   setData(new Array(recorderArray.length));
+    //   updatedArray = subtitles.map(() => "");
+    // }
 
     subtitles?.forEach((item, index) => {
+      if(!item.hasOwnProperty("blobUrl")){
       if (item.audio && item.audio.hasOwnProperty("audioContent")) {
         if(item.audio.audioContent === ""){
           updatedArray[index] = "";
@@ -278,10 +279,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
           updatedArray[index] = blobUrl;
         }
       }
+      changed = true;
+      }
     });
 
+    if(changed){
     setData(updatedArray);
     setSourceText(subtitles);
+    }
   }, [subtitles]);
 
   const changeTranscriptHandler = (text, index, type="translation") => {
@@ -333,17 +338,22 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     //   SaveTranscriptAPI.isSaveInProgress(true);
     // }
 
+    const subs = JSON.parse(JSON.stringify(sourceText));
     const reqBody = {
       task_id: taskId,
       ...(bookmark && {bookmark: currentIndex}),
       offset: value,
       payload: {
-        payload: sourceText,
+        payload: subs,
       },
     };
 
     if (isFinal) {
       reqBody.final = true;
+    }else{
+      reqBody.payload.payload.forEach(element => {
+        element.audio = "";
+      });
     }
 
     setComplete(isFinal);
@@ -937,7 +947,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                             color: "#000",
                             margin: "18px auto",
                             fontSize: "18px",
-                            display: recordAudio[index] === "stop" ? "none" : "",
+                            // display: recordAudio[index] === "stop" ? "none" : "",
+                            display: "none"
                           }}
                         >
                           <div>Recording Audio....</div>

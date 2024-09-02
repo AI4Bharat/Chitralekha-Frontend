@@ -110,7 +110,7 @@ const SettingsButtonComponent = ({
     if (taskData?.source_type === "Manually Created") {
       return false;
     }
-  
+
     if (!transcriptPayload?.payload?.payload?.length) {
       return true;
     }
@@ -120,10 +120,12 @@ const SettingsButtonComponent = ({
       transcriptPayload?.source_type !== "MACHINE_GENERATED"
     ) {
       if (durationError?.some((item) => item === true)) {
+        
         return true;
       }
 
       if (flag && completedCount !== totalSentences) {
+        
         return true;
       }
     }
@@ -133,12 +135,14 @@ const SettingsButtonComponent = ({
       transcriptPayload?.source_type === "MACHINE_GENERATED"
     ) {
       if (!transcriptPayload?.payload?.payload.length) {
+        
         return true;
       }
     }
 
     return false;
   };
+  
 
   const handleScript = () => {
     setAnchorElSettings(null);
@@ -235,6 +239,21 @@ const SettingsButtonComponent = ({
             <ExpandIcon className={classes.rightPanelSvg} />
           </IconButton>
         </Tooltip>
+
+      {taskData?.task_type?.includes("TRANSCRIPTION") && taskData?.status === "PARAPHRASE" && (
+        <Tooltip title="Paraphrase All Segments" placement="bottom">
+          <IconButton
+            className={classes.rightPanelBtnGrp}
+            onClick={() => handleReGenerateTranslation("paraphrase")}
+            sx={{
+              "&.Mui-disabled": { backgroundColor: "lightgray" },
+            }}
+            disabled={apiInProgress}
+          >
+            <LoopIcon className={classes.rightPanelSvg} />
+          </IconButton>
+        </Tooltip>
+      )}
 
         {taskData?.task_type?.includes("TRANSLATION") && (
             <>
@@ -463,7 +482,7 @@ const SettingsButtonComponent = ({
       <Tooltip title="Complete" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          disabled={getDisbled("complete")}
+          disabled={getDisbled("complete") || apiInProgress}
           onClick={() => setOpenConfirmDialog(true)}
         >
           <VerifiedIcon className={classes.rightPanelSvg} />

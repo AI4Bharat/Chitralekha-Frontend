@@ -98,6 +98,7 @@ import {
 } from "redux/actions";
 import constants from "redux/constants";
 import { updateCurrentSearchedColumn } from "redux/actions/taskFilters";
+import DeleteTaskDialog from "common/DeleteTaskDialog";
 
 const TaskList = () => {
   const userOrgId = getLocalStorageData("userData").organization.id;
@@ -145,6 +146,8 @@ const TaskList = () => {
     tableDialog: false,
     TaskReopenDialog: false,
     taskType: "",
+    deleteTaskDialog: false,
+    id: "",
   });
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
@@ -656,6 +659,7 @@ const TaskList = () => {
     const apiObj = new DeleteTaskAPI(id, flag);
     dispatch(APITransport(apiObj));
     handleDialogClose("deleteDialog");
+    handleDialogClose("deleteTaskDialog");
   };
 
   const handleTaskReopen = async () => {
@@ -820,7 +824,7 @@ const TaskList = () => {
         break;
 
       case "Delete":
-        handleDeleteTask(id, false);
+        handleDialogOpen("deleteTaskDialog", "", id);
         break;
 
       case "Info":
@@ -829,7 +833,7 @@ const TaskList = () => {
         break;
 
       case "Reopen":
-        const reopenObj = new ReopenTaskAPI(id);
+        const reopenObj = new ReopenTaskAPI(id, false, task_type);
         dispatch(APITransport(reopenObj));
         setReOpenTaskId(id);
         break;
@@ -1278,11 +1282,12 @@ const TaskList = () => {
     }));
   };
 
-  const handleDialogOpen = (key, taskType="") => {
+  const handleDialogOpen = (key, taskType="", id="") => {
     setOpenDialogs((prevState) => ({
       ...prevState,
       [key]: true,
       taskType: taskType,
+      id: id,
     }));
   };
 
@@ -1335,6 +1340,14 @@ const TaskList = () => {
           loading={apiStatus.loading}
           message={deleteMsg}
           deleteResponse={deleteResponse}
+        />
+      )}
+
+      {openDialogs.deleteTaskDialog && (
+        <DeleteTaskDialog
+          openDialog={openDialogs.deleteTaskDialog}
+          handleClose={() => handleDialogClose("deleteTaskDialog")}
+          submit={() => handleDeleteTask(openDialogs.id, false)}
         />
       )}
 

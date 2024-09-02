@@ -40,14 +40,24 @@ const ProjectMemberDetails = () => {
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const projectDetails = useSelector((state) => state.getProjectDetails.data);
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -115,7 +125,7 @@ const ProjectMemberDetails = () => {
             {(projectDetails?.managers?.some(
               (item) => item.id === userData.id
             ) ||
-              userData?.id === orgOwnerId) && (
+              isUserOrgOwner  || userData?.role==="ADMIN" )&& (
               <Tooltip title="Delete">
                 <IconButton
                   onClick={() => {

@@ -112,14 +112,24 @@ const Project = () => {
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
@@ -462,7 +472,7 @@ const Project = () => {
             alignItems="center"
           >
             {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-              userData?.id === orgOwnerId) && (
+              isUserOrgOwner|| userData?.role==="ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
