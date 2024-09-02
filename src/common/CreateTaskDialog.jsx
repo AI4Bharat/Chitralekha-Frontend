@@ -76,9 +76,6 @@ const[langLabel,setlabel] =useState("")
   const filteredMembers = projectMembers.filter((member) =>
     member.languages.includes(langLabel)
   );
-  const sourceLangMembers = projectMembers.filter((member) =>
-    member.languages.includes(videoDetails?.language_label)
-  );
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
@@ -92,8 +89,8 @@ const[langLabel,setlabel] =useState("")
     // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    console.log(filteredMembers.length,videoDetails)
-    if (!taskType.includes("TRANSCRIPTION")&&filteredMembers.length === 0) {
+    console.log(filteredMembers.length)
+    if (filteredMembers.length === 0) {
       setShowPopup(true);
     }
     else{
@@ -387,11 +384,7 @@ const[langLabel,setlabel] =useState("")
                 inputProps={{ "aria-label": "Without label" }}
                 disabled={isAssignUserDropdownDisabled()}
               >
-                {langLabel?filteredMembers.map((item, index) => (
-      <MenuItem key={index} value={item}>
-        {`${item.first_name} ${item.last_name} (${item.email})`}
-      </MenuItem>
-    )):sourceLangMembers.map((item, index) => (
+                {filteredMembers.map((item, index) => (
       <MenuItem key={index} value={item}>
         {`${item.first_name} ${item.last_name} (${item.email})`}
       </MenuItem>
