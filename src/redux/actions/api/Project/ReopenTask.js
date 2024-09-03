@@ -9,7 +9,7 @@ export default class ReopenTaskAPI extends API {
     this.delete_and_reopen=delete_voiceover_and_reopen;
     this.id = id;
 
-    this.endpoint = taskType.includes("VOICEOVER") ? `${super.apiEndPointAuto()}/voiceover/reopen_translation_voiceover_task` : 
+    this.endpoint = taskType.includes("VOICEOVER") ? `${super.apiEndPointAuto()}/voiceover/reopen_translation_voiceover_task/` : 
     `${super.apiEndPointAuto()}${
       ENDPOINTS.task
     }${id}/reopen_translation_task/?delete_voiceover_and_reopen=${delete_voiceover_and_reopen}`;
