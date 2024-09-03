@@ -162,6 +162,10 @@ export const adminMemberListColumns = [
 
 export const videoTaskListColumns = [
   {
+    name: "id",
+    label: "Task ID", 
+  },
+  {
     name: "task_type",
     label: "Task Type",
   },
