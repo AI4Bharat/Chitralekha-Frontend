@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import { roles } from "./utils";
 
 const UserMappedByRole = (roleValue) => {
-    // Find the role based on the provided roleValue
     const role = roles.find(role => role.value === roleValue);
 
     // Return a default Typography if the role is not found
@@ -10,7 +9,6 @@ const UserMappedByRole = (roleValue) => {
         return { id: null, name: "Unknown", element: <Typography variant="caption" sx={{p:1, backgroundColor:"grey", color:"white", borderRadius:2, fontWeight: 600 }}>Unknown</Typography> };
     }
 
-    // Map the role to a Typography element with specific styling
     const roleColors = {
         "TRANSCRIPT_EDITOR": "rgb(56, 158, 13, 0.2)",
         "TRANSCRIPT_REVIEWER": "rgb(142, 68, 173, 0.2)",
