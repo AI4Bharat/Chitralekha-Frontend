@@ -68,13 +68,18 @@ const[langLabel,setlabel] =useState("")
   const [user, setUser] = useState("");
   const [language, setLanguage] = useState("");
   const [priority, setPriority] = useState("");
+  const [membersToShow,setmembersToShow]=useState();
   const [date, setDate] = useState(moment().format());
   const [allowedTaskType, setAllowedTaskType] = useState("");
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
   const [showLimitWarning, setShowLimitWarning] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  
   const filteredMembers = projectMembers.filter((member) =>
     member.languages.includes(langLabel)
+  );
+  const sourceLangMembers = projectMembers.filter((member) =>
+    member.languages.includes(videoDetails?.language_label)
   );
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
@@ -89,14 +94,18 @@ const[langLabel,setlabel] =useState("")
     // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    console.log(filteredMembers.length)
-    if (filteredMembers.length === 0) {
+    console.log(filteredMembers,videoDetails,taskType,langLabel,sourceLangMembers,projectMembers)
+    if (!taskType.includes("TRANSCRIPTION")&&filteredMembers.length === 0) {
       setShowPopup(true);
     }
     else{
       setShowPopup(false)
     }
   }, [filteredMembers]);
+  useEffect(()=>{
+    setmembersToShow(taskType=="TRANSCRIPTION"  ? sourceLangMembers : filteredMembers);
+
+  },[langLabel,taskType])
 
   useEffect(() => {
     if (taskType.length && !taskType.includes("TRANSCRIPTION")) {
@@ -185,13 +194,13 @@ const[langLabel,setlabel] =useState("")
   const selectAllowedTaskHandler = (value) => {
     setAllowedTaskType(value);
 
-    const obj = new FetchProjectMembersAPI(
-      projectId,
-      value,
-      videoDetails.id,
-      language
-    );
-    dispatch(APITransport(obj));
+    // const obj = new FetchProjectMembersAPI(
+    //   projectId,
+    //   value,
+    //   videoDetails.id,
+    //   language
+    // );
+    // dispatch(APITransport(obj));
   };
 
   const disableBtn = () => {
@@ -384,7 +393,7 @@ const[langLabel,setlabel] =useState("")
                 inputProps={{ "aria-label": "Without label" }}
                 disabled={isAssignUserDropdownDisabled()}
               >
-                {filteredMembers.map((item, index) => (
+                {membersToShow?.map((item, index) => (
       <MenuItem key={index} value={item}>
         {`${item.first_name} ${item.last_name} (${item.email})`}
       </MenuItem>
