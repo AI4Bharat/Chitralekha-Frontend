@@ -301,13 +301,13 @@ const EditProject = () => {
               md={12}
               lg={12}
               xl={12}
-              style={{ display: "flex", justifyContent: "center" }}
+              style={{ display: "flex",justifyContent:"space-around"}}
             >
-              <Typography variant="h3" align="center" marginLeft={"auto"}>
+              <Typography variant="h3" align="center"  >
                 Project Settings
               </Typography>
 
-              <Button
+              {/* <Button
                 color="primary"
                 variant="contained"
                 onClick={() => handleSubmit()}
@@ -321,7 +321,7 @@ const EditProject = () => {
                 {apiStatus.loading && (
                   <Loader size={20} margin="0 0 0 10px" color="secondary" />
                 )}
-              </Button>
+              </Button> */}
             </Grid>
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>

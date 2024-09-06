@@ -179,6 +179,15 @@ export const videoTaskListColumns = [
     },
   },
   {
+    name: "eta",
+    label: "ETA",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+      },
+    },
+  },
+  {
     name: "created_at",
     label: "Created At",
     options: {
