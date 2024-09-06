@@ -821,10 +821,10 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                     }
                   </div>
 
-                  {enableTransliteration ? (
+                  {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
-                      lang={taskData?.target_language}
+                      lang={taskData?.src_language}
                       value={item.paraphrased_text}
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index, "transaltion");
