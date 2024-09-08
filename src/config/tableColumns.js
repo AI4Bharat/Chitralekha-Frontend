@@ -162,6 +162,10 @@ export const adminMemberListColumns = [
 
 export const videoTaskListColumns = [
   {
+    name:"id",
+    label:"Task Id"
+  },
+  {
     name: "task_type",
     label: "Task Type",
   },
@@ -171,6 +175,15 @@ export const videoTaskListColumns = [
     options: {
       customBodyRender: (value) => {
         return <Box>{`${value.first_name} ${value.last_name}`}</Box>;
+      },
+    },
+  },
+  {
+    name: "eta",
+    label: "ETA",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
       },
     },
   },

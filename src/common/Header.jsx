@@ -205,7 +205,7 @@ const Header = () => {
                 rowGap={2}
               >
   
-                (<>
+                <>
                   <Typography variant="body1">
                     <NavLink
                       to={`/my-organization/${userData?.organization?.id}`}
@@ -242,7 +242,7 @@ const Header = () => {
                       Admin
                     </NavLink>
                   </Typography>}
-                </>)
+                </>
                 {/* <Typography variant="body1">
                   <NavLink
                     to="/projects"
