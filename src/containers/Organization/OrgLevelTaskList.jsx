@@ -211,7 +211,7 @@ const OrgLevelTaskList = () => {
       "description",
       "created_at",
       "updated_at",
-      "video_name",
+      // "video_name",
     ];
     allCols.forEach((ele) => {
       if (displayColsLocalStorage && ele in displayColsLocalStorage) {
