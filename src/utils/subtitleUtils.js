@@ -186,6 +186,12 @@ export const onSubtitleDelete = (index) => {
   return copySub;
 };
 
+export const onCopyToParaphrasedSegment = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  subtitles[index].paraphrased_text = subtitles[index].text;
+  return subtitles;
+};
+
 export const onSplit = (
   currentIndex,
   selectionStart,

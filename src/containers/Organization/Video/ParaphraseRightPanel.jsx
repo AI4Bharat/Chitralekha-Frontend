@@ -52,8 +52,9 @@ import {
   setSubtitles,
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
-import { bookmarkSegment, onExpandTimeline, paraphrase } from "utils/subtitleUtils";
+import { bookmarkSegment, onCopyToParaphrasedSegment, onExpandTimeline, paraphrase } from "utils/subtitleUtils";
 import LoopIcon from "@mui/icons-material/Loop";
+import { ArrowForward } from "@mui/icons-material";
 
 const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
@@ -300,6 +301,11 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
 
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
+  const copyToParaphrasedText = useCallback((index) => {
+    const sub = onCopyToParaphrasedSegment(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, [limit, currentOffset]);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -808,6 +814,7 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                       type={"endTime"}
                     />
                     {currentIndex === index && 
+                      <div style={{display:"flex"}}>
                       <Tooltip title="Paraphrase Segment" placement="bottom">
                         <IconButton
                           className={classes.optionIconBtn}
@@ -818,6 +825,16 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                           <LoopIcon className={classes.rightPanelSvg} />
                         </IconButton>
                       </Tooltip>
+                      <Tooltip title="Copy to Paraphrased Segment" placement="bottom">
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          onClick={() => copyToParaphrasedText(index)}
+                          style={{ marginTop: "10px"}}
+                        >
+                          <ArrowForward className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                      </div>
                     }
                   </div>
 
