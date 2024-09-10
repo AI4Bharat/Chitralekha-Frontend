@@ -1,7 +1,6 @@
 import { Box, Tab, Tabs, Typography, Paper } from '@mui/material'
 import React from 'react'
 import { useState } from 'react'
-import UserDetail from "./UserDetails";
 import VideoTaskDetails from "./VideoTaskDetails";
 import TaskDetails from "./TaskDetails";
 
@@ -39,8 +38,6 @@ const DashBoard1 = () => {
                 <Tabs value={tabValue} onChange={handleTabChange} aria-label="admin-tabs">
                     <Tab label="Video Task Details" sx={{ fontSize: 17, fontWeight: '700', marginRight: '28px !important' }} />
                     <Tab label="Task Details" sx={{ fontSize: 17, fontWeight: '700', marginRight: '28px !important' }} />
-                    <Tab label=" User Details" sx={{ fontSize: 17, fontWeight: '700', marginRight: '28px !important' }} />
-                    
                 </Tabs>
             </Box>
             <Box sx={{ p: 1}}>
@@ -54,10 +51,6 @@ const DashBoard1 = () => {
                         <TaskDetails  />  
                     </Paper>
                 </TabPanel> 
-                <TabPanel value={tabValue} index={2}>
-                    <UserDetail />  
-                </TabPanel>
-                
             </Box>
         </>
        
