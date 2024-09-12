@@ -69,20 +69,19 @@ const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
         { ((videoDetails.length === 0 && taskData?.video_url?.includes("youtube")) || useYtdlp === false) ?
 
-        <ReactPlayerYT
+        // <iframe 
+        // src="https://drive.google.com/file/d/1gJs4jJvZos8aPfLmTvyB1BtqUDdfyEwl/preview"
+        // />
+        <iframe
           onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
           ref={$video}
-          url={taskData.video_url.replace("https://www.youtube.com/watch?v=", "https://www.youtube.com/embed/")}
+          src="https://drive.google.com/file/d/1gJs4jJvZos8aPfLmTvyB1BtqUDdfyEwl/preview"
           controls={true}
         />
         :
         <ReactPlayer
           // onClick={onClick}
-          url={
-            videoDetails?.video?.audio_only
-              ? videoDetails?.direct_audio_url
-              : videoDetails?.direct_video_url
-          }
+          url="https://drive.google.com/file/d/1gJs4jJvZos8aPfLmTvyB1BtqUDdfyEwl/preview"
           style={{
             width: videoDetails?.video?.audio_only ? "20%" : "",
             margin:
