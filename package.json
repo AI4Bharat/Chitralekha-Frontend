@@ -28,6 +28,7 @@
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",
     "react-joyride": "^2.5.3",
+    "react-json-tree": "^0.19.0",
     "react-material-ui-carousel": "^3.4.2",
     "react-mui-dropzone": "^4.0.7",
     "react-paginate": "^8.1.4",
