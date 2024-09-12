@@ -1,23 +1,26 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-//styles
+// Styles
 import { DatasetStyle } from "styles";
 
-//Components
-import { Box, Card, Grid, Tab, Tabs, Button } from "@mui/material";
+// Components
+import { Box, Card, Grid, Tab, Tabs, Button, Typography, Paper } from "@mui/material";
 import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
 import { AddNewMember, AddOrganizationMember } from "common";
 import AdminLevelReport from "./AdminLevelReport";
-
-//Apis
-import { APITransport, AddOrganizationMemberAPI } from "redux/actions";
 import NewsLetter from "./NewsLetterTemplate";
 import OnboardingRequests from "./OnboardingRequests";
+import VideoTaskDetails from "./VideoTaskDetails";
+import TaskDetails from "./TaskDetails";
 
-const TabPanel = (props) => {
+// APIs
+import { APITransport, AddOrganizationMemberAPI, FetchLoggedInUserDetailsAPI } from "redux/actions";
+
+// Tab Panel Component
+function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -31,17 +34,29 @@ const TabPanel = (props) => {
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
-};
+}
 
 const DashBoard = () => {
   const classes = DatasetStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [value, setValue] = useState(0);
+  // Fetch userData from Redux
+  const userData = useSelector((state) => state.getLoggedInUserDetails.data);
+
+  const [value, setValue] = useState(0); 
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [openMemberDialog, setOpenMemberDialog] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = () => {
+      const loggedInUserObj = new FetchLoggedInUserDetailsAPI();
+      dispatch(APITransport(loggedInUserObj));
+    };
+    fetchUserData();
+  }, [dispatch]);
 
   const addNewMemberHandler = async () => {
     const data = {
@@ -55,146 +70,137 @@ const DashBoard = () => {
     setNewMemberEmail("");
   };
 
+  const handleTabChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const adminTabs = [
+    { label: "Organizations", component: <OrganizationList /> },
+    { label: "Members", component: <MemberList /> },
+    { label: "Reports", component: <AdminLevelReport /> },
+    { label: "Newsletter", component: <NewsLetter /> },
+    { label: "Onboarding Requests", component: <OnboardingRequests /> },
+  ];
+
+  const orgOwnerTabs = [
+    { label: "Video Task Details", component: <VideoTaskDetails /> },
+    { label: "Task Details", component: <TaskDetails /> },
+  ];
+
+  const isAdmin = userData?.role === "ADMIN";
+  const isOrgOwner = userData?.role === "ORG_OWNER";
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
         <Box>
-          <Tabs
-            value={value}
-            onChange={(_event, newValue) => setValue(newValue)}
-            aria-label="basic tabs example"
-          >
-            <Tab
-              label={"Organizations"}
-              sx={{ fontSize: 16, fontWeight: "700" }}
-            />
-            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab
-              label={"Newsletter"}
-              sx={{ fontSize: 16, fontWeight: "700" }}
-            />
-            <Tab
-              label={"Onboarding Requests"}
-              sx={{ fontSize: 16, fontWeight: "700" }}
-            />
+          <Tabs value={value} 
+          onChange={handleTabChange} 
+          aria-label="basic tabs example">
+            {isAdmin &&
+              adminTabs.map((tab, index) => (
+                <Tab key={index} label={tab.label} sx={{ fontSize: 16, fontWeight: "700" }} />
+              ))}
+
+            {isOrgOwner &&
+              orgOwnerTabs.map((tab, index) => (
+                <Tab key={index} label={tab.label} sx={{ fontSize: 17, fontWeight: "700", marginRight: "28px" }} />
+              ))}
           </Tabs>
         </Box>
 
-        <TabPanel
-          value={value}
-          index={0}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <Grid container direction="row" sx={{ my: 4 }}>
-            <Grid item md={6} xs={12}>
-              <Button
-                style={{ marginRight: "10px", width: "100%" }}
-                variant="contained"
-                onClick={() => navigate(`/admin/create-new-org`)}
-              >
-                Add New Organization
-              </Button>
-            </Grid>
+        <Box sx={{ p: 1 }}>
+          {isAdmin && (
+            <>
+              <TabPanel value={value} index={0}>
+                <Grid container direction="row" sx={{ my: 4 }}>
+                  <Grid item md={6} xs={12}>
+                    <Button
+                      style={{ marginRight: "10px", width: "100%" }}
+                      variant="contained"
+                      onClick={() => navigate(`/admin/create-new-org`)}
+                    >
+                      Add New Organization
+                    </Button>
+                  </Grid>
 
-            <Grid item md={6} xs={12}>
-              <Button
-                style={{ marginLeft: "10px", width: "100%" }}
-                variant="contained"
-                onClick={() => setOpenMemberDialog(true)}
-              >
-                Create New Members
-              </Button>
-            </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Button
+                      style={{ marginLeft: "10px", width: "100%" }}
+                      variant="contained"
+                      onClick={() => setOpenMemberDialog(true)}
+                    >
+                      Create New Members
+                    </Button>
+                  </Grid>
 
-            <Grid item md={12} xs={12} style={{ width: "100%" }}>
-              <div
-                className={classes.workspaceTables}
-                style={{ width: "100%" }}
-              >
-                <OrganizationList />
-              </div>
-            </Grid>
-          </Grid>
-        </TabPanel>
+                  <Grid item md={12} xs={12} style={{ width: "100%" }}>
+                    <div className={classes.workspaceTables} style={{ width: "100%" }}>
+                      <OrganizationList />
+                    </div>
+                  </Grid>
+                </Grid>
+              </TabPanel>
 
-        <TabPanel
-          value={value}
-          index={1}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <Box
-            display={"flex"}
-            flexDirection="Column"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Button
-              className={classes.projectButton}
-              onClick={() => setAddUserDialog(true)}
-              variant="contained"
-            >
-              Add New Member
-            </Button>
+              <TabPanel value={value} index={1}>
+                <Box display={"flex"} flexDirection="column" justifyContent="center" alignItems="center">
+                  <Button className={classes.projectButton} onClick={() => setAddUserDialog(true)} variant="contained">
+                    Add New Member
+                  </Button>
 
-            <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <MemberList />
-            </div>
-          </Box>
-        </TabPanel>
+                  <div className={classes.workspaceTables} style={{ width: "100%" }}>
+                    <MemberList />
+                  </div>
+                </Box>
+              </TabPanel>
 
-        <TabPanel
-          value={value}
-          index={2}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <Box
-            display={"flex"}
-            flexDirection="Column"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <AdminLevelReport />
-            </div>
-          </Box>
-        </TabPanel>
+              <TabPanel value={value} index={2}>
+                <Box display={"flex"} flexDirection="column" justifyContent="center" alignItems="center">
+                  <div className={classes.workspaceTables} style={{ width: "100%" }}>
+                    <AdminLevelReport />
+                  </div>
+                </Box>
+              </TabPanel>
 
-        <TabPanel
-          value={value}
-          index={3}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <Box
-            display={"flex"}
-            flexDirection="Column"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <div className={classes.workspaceTables} style={{ width: "100%" }}>
-              <NewsLetter />
-            </div>
-          </Box>
-        </TabPanel>
+              <TabPanel value={value} index={3}>
+                <Box display={"flex"} flexDirection="column" justifyContent="center" alignItems="center">
+                  <div className={classes.workspaceTables} style={{ width: "100%" }}>
+                    <NewsLetter />
+                  </div>
+                </Box>
+              </TabPanel>
 
-        <TabPanel
-          value={value}
-          index={4}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <Grid container direction="row" sx={{ my: 4 }}>
-            <Grid item md={12} xs={12} style={{ width: "100%" }}>
-              <div
-                className={classes.workspaceTables}
-                style={{ width: "100%" }}
-              >
-                <OnboardingRequests />
-              </div>
-            </Grid>
-          </Grid>
-        </TabPanel>
+              <TabPanel value={value} index={4}>
+                <Grid container direction="row" sx={{ my: 4 }}>
+                  <Grid item md={12} xs={12} style={{ width: "100%" }}>
+                    <div className={classes.workspaceTables} style={{ width: "100%" }}>
+                      <OnboardingRequests />
+                    </div>
+                  </Grid>
+                </Grid>
+              </TabPanel>
+            </>
+          )}
+
+          {isOrgOwner && (
+            <>
+              <TabPanel value={value} index={0}>
+                <Paper variant="outlined" sx={{ borderRadius: "5px", backgroundColor: "ButtonHighlight", padding: "32px" }}>
+                  <VideoTaskDetails />
+                </Paper>
+              </TabPanel>
+
+              <TabPanel value={value} index={1}>
+                <Paper variant="outlined" sx={{ borderRadius: "5px", backgroundColor: "ButtonHighlight", padding: "32px" }}>
+                  <TaskDetails />
+                </Paper>
+              </TabPanel>
+            </>
+          )}
+        </Box>
       </Card>
 
+      {/* Dialogs */}
       {addUserDialog && (
         <AddOrganizationMember
           open={addUserDialog}
@@ -211,12 +217,7 @@ const DashBoard = () => {
         />
       )}
 
-      {openMemberDialog && (
-        <AddNewMember
-          open={openMemberDialog}
-          handleClose={() => setOpenMemberDialog(false)}
-        />
-      )}
+      {openMemberDialog && <AddNewMember open={openMemberDialog} handleClose={() => setOpenMemberDialog(false)} />}
     </Grid>
   );
 };
