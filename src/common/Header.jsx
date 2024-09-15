@@ -208,7 +208,7 @@ const Header = () => {
                 <>
                   <Typography variant="body1">
                     <NavLink
-                      to={`/my-organization/${userData?.organization?.id}`}
+                      to={`/my-organization/${localStorage.getItem("id")}`}
                       className={({ isActive }) =>
                         isActive
                           ? `${classes.highlightedMenu} organizations`
@@ -220,7 +220,7 @@ const Header = () => {
                   </Typography>
                   <Typography variant="body1">
                   <NavLink
-                    to={`/task-list`}
+                    to={`/task-list/${localStorage.getItem("id")?localStorage.getItem("id"):1}`}
                     className={({ isActive }) =>
                       isActive
                         ? `${classes.highlightedMenu} task-list`

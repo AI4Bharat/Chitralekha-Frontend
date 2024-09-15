@@ -30,14 +30,14 @@ function MobileNavbar({ UserMenu, SettingsMenu, userData }) {
     {
       name: "Organizations",
       onClick: () => {
-        navigate(`/my-organization/${userData?.organization?.id}`);
+        navigate(`/my-organization/${localStorage.getItem("id")}`);
         setOpenDrawer(false);
       },
     },
     {
       name: "Tasks",
       onClick: () => {
-        navigate(`/task-list`);
+        navigate(`/task-list/${localStorage.getItem("id")}`);
         setOpenDrawer(false);
       },
     },

@@ -74,8 +74,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const $audioRef = useRef([]);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
-  const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
-    ?.organization?.id;
+  const assignedOrgId = JSON.parse(localStorage.getItem("id"))
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
   const subtitlesForCheck = useSelector(

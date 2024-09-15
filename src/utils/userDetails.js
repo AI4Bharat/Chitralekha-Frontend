@@ -1,4 +1,4 @@
-import ganavi from "../assets/profileImages/Ganavi.png";
+// import ganavi from "../assets/profileImages/Ganavi.png";
 
 const teamDetails = [
   // {
