@@ -197,6 +197,15 @@ export const videoTaskListColumns = [
     },
   },
   {
+    name: "eta",
+    label: "ETA",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+      },
+    },
+  },
+  {
     name: "status",
     label: "Status",
   },
@@ -338,6 +347,20 @@ export const taskListColumns = [
       },
     },
   },
+  {
+    name: "eta",  
+    label: "ETA",  
+    options: {
+      customBodyRender: (value) => {
+        if (value) {
+          const formattedETA = new Date(value).toLocaleString();
+          return <Box>{formattedETA}</Box>;
+        }
+        return <Box>N/A</Box>;
+      },
+    },
+  },
+
   {
     name: "time_spent",
     label: "Time Spent",

@@ -230,7 +230,8 @@ const Header = () => {
                     Tasks
                   </NavLink>
                 </Typography>
-                {userData?.role == "ADMIN" && <Typography variant="body1">
+                {(userData?.role === "ADMIN" || userData?.role==="ORG_OWNER") && (
+                  <Typography variant="body1">
                     <NavLink
                       to={`/admin`}
                       className={({ isActive }) =>
@@ -241,7 +242,8 @@ const Header = () => {
                     >
                       Admin
                     </NavLink>
-                  </Typography>}
+                  </Typography>
+                )}
                 </>
                 {/* <Typography variant="body1">
                   <NavLink

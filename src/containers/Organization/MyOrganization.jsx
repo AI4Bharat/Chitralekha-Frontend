@@ -229,7 +229,7 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <Box display={"flex"} width={"100%"}>
-              {(isUserOrgOwner|| userData?.role==="ADMIN") && (
+              {(isUserOrgOwner|| userData?.role==="ADMIN" || userData?.role==="PROJECT_MANAGER") && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
