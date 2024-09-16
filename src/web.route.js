@@ -84,7 +84,7 @@ const RootRouter = () => {
           )}
         />
         <Route
-          path="/task-list"
+          path="/task-list/:id"
           element={ProtectedRouteWrapper(
             <Layout component={<OrgLevelTaskList />} />
           )}
