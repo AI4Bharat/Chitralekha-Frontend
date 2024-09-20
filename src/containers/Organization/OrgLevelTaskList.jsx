@@ -208,9 +208,11 @@ const OrgLevelTaskList = () => {
       "Action",
     ];
     const defaultDisabledDisplayCols = [
+      "eta",
       "description",
       "created_at",
       "updated_at",
+
       // "video_name",
     ];
     allCols.forEach((ele) => {
@@ -579,7 +581,7 @@ const OrgLevelTaskList = () => {
               <Badge
                 color="primary"
                 variant="dot"
-                invisible={!orgSearchValue[col.name].length}
+                invisible={!orgSearchValue[col.name]?.length}
               >
                 <SearchIcon id={col.name + "_btn"} />
               </Badge>
@@ -759,7 +761,24 @@ const OrgLevelTaskList = () => {
         customBodyRender: renderTaskListColumnCell,
       },
     };
-
+    const eta = {
+      name: "eta",
+      label: "ETA",
+      options: {
+        filter: false,
+        sort: false,
+        canBeSearch: false,
+        display: orgTaskColDisplayState["eta"],
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: (value) => {
+          return value ? moment(value).format("DD/MM/YYYY hh:mm A") : "-";
+        },
+      },
+    };
     const assigneeColumn = {
       name: "user",
       label: "Assignee",
@@ -952,11 +971,13 @@ const OrgLevelTaskList = () => {
     ];
     columns.splice(0, 1, id);
     columns.splice(2, 0, videoName);
-    columns.splice(3, 0, createdAtColumn);
-    columns.splice(4, 0, updatedAtColumn);
-    columns.splice(7, 0, assigneeColumn);
-    columns.splice(10, 0, descriptionColumn);
-
+    columns.splice(3, 0, eta);
+    columns.splice(4, 0, createdAtColumn);
+    columns.splice(5, 0, updatedAtColumn);
+    columns.splice(8, 0, assigneeColumn);
+    columns.splice(11, 0, descriptionColumn);
+   console.log(columns);
+   
     return columns;
   };
 
@@ -1260,6 +1281,7 @@ const OrgLevelTaskList = () => {
       id: id,
     }));
   };
+console.log(options);
 
   return (
     <>
