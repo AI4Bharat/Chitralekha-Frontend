@@ -53,7 +53,7 @@ function TaskDetails() {
 
         } catch (error) {
             setLoading(false);
-            console.error(error); // Log the error, but don't set it in the state
+            console.error(error); 
         }
     };
 
@@ -75,7 +75,7 @@ function TaskDetails() {
                 setTranscriptions(data.transcripts);
             }
         } catch (error) {
-            console.error(error); // Log the error, but don't set it in the state
+            console.error(error); 
         }
         setLoadingTranscriptions(false);
     };
@@ -98,7 +98,7 @@ function TaskDetails() {
                 setTranslations(data);
             }
         } catch (error) {
-            console.error(error); // Log the error, but don't set it in the state
+            console.error(error);
         }
         setLoadingTranslations(false);
     };
