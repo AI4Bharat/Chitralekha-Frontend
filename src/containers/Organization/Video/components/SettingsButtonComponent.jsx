@@ -37,6 +37,7 @@ import LoopIcon from "@mui/icons-material/Loop";
 import ExpandIcon from "@mui/icons-material/Expand";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import BookmarkIcon from '@mui/icons-material/BookmarkBorderOutlined';
+import DownloadIcon from "@mui/icons-material/DownloadOutlined";
 
 const anchorOrigin = {
   vertical: "top",
@@ -80,6 +81,7 @@ const SettingsButtonComponent = ({
   expandTimestamp,
   handleGetUpdatedAudioForAll,
   bookmarkSegment,
+  setOpenExportDialog,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -521,6 +523,22 @@ const SettingsButtonComponent = ({
           targetLanguage={taskData?.target_language}
         />
       )}
+
+      {taskData?.task_type?.includes("TRANSLATION_VOICEOVER") && 
+        <>
+          <Divider orientation="vertical" className={classes.rightPanelDivider} />
+
+          <Tooltip title="Export" placement="bottom">
+            <IconButton
+              className={classes.rightPanelBtnGrp}
+              onClick={() => {setOpenExportDialog(true)}}
+            >
+              <DownloadIcon className={classes.rightPanelSvg} />
+            </IconButton>
+          </Tooltip>
+
+        </>
+      }
     </>
   );
 };
