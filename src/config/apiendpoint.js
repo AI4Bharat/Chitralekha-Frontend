@@ -24,6 +24,7 @@ const endpoints = {
   //Video
   video: "/video/",
   getVideoTasks: '/video/list_tasks',
+  listVideosTasks:'/video/get_listings',
   transcript: "/transcript/",
   GetAllTranscriptions:"/transcript/retrieve_all_transcriptions/",
   GetAllTranslations:"/translation/retrieve_all_translations/",

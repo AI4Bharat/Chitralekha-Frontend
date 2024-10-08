@@ -53,8 +53,7 @@ function TaskDetails() {
 
         } catch (error) {
             setLoading(false);
-            setTaskDetails({ error: 'Network error' });
-            console.error(error);
+            console.error(error); // Log the error, but don't set it in the state
         }
     };
 
@@ -76,8 +75,7 @@ function TaskDetails() {
                 setTranscriptions(data.transcripts);
             }
         } catch (error) {
-            setTranscriptions({ error: 'Network error' });
-            console.error(error);
+            console.error(error); // Log the error, but don't set it in the state
         }
         setLoadingTranscriptions(false);
     };
@@ -100,8 +98,7 @@ function TaskDetails() {
                 setTranslations(data);
             }
         } catch (error) {
-            setTranslations({ error: 'Network error' });
-            console.error(error);
+            console.error(error); // Log the error, but don't set it in the state
         }
         setLoadingTranslations(false);
     };
