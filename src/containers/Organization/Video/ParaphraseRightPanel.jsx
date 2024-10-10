@@ -841,6 +841,7 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.src_language}
                       value={item.paraphrased_text}
                       onChangeText={(text) => {

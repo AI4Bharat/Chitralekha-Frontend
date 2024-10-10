@@ -354,6 +354,7 @@ const FindAndReplace = (props) => {
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                apiKey={`JWT ${localStorage.getItem("token")}`}
                 lang={transliterationLanguage}
                 value={findValue}
                 onChangeText={(text) => {
@@ -422,6 +423,7 @@ const FindAndReplace = (props) => {
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                apiKey={`JWT ${localStorage.getItem("token")}`}
                 lang={transliterationLanguage}
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}

@@ -1113,6 +1113,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.target_language}
                       value={item.text}
                       onChangeText={(text) => {
