@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { translate } from "config";
 
 //Styles
@@ -9,7 +9,7 @@ import { themeDefault } from "theme";
 
 
 //Components
-import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
+import { Box, Grid, ThemeProvider, Button } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -172,7 +172,7 @@ const Login = () => {
       <Box display="flex" flexDirection="column" width="100%">
         <Box marginLeft="auto" marginBottom="10px">
           <Link
-            onClick={() => navigate("/forgot-password")}
+            to="/forgot-password"
             style={{ cursor: "pointer" }}
           >
             Forgot Password?
