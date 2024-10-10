@@ -729,6 +729,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {
