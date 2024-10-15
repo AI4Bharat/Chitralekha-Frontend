@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { configs, endpoints } from "config";
 
