@@ -18,7 +18,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { ProjectStyle } from "styles";
 import { MenuProps } from "utils";
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
