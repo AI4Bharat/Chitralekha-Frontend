@@ -37,10 +37,6 @@ const TaskQueueStatus = () => {
               className={classes.taskQueueStatusTabs}
             />
             <Tab
-              label={"Translation Voice-Over"}
-              className={classes.taskQueueStatusTabs}
-            />
-            <Tab
               label={"All-Tasks"}
               className={classes.taskQueueStatusTabs}
             />
@@ -78,14 +74,6 @@ const TaskQueueStatus = () => {
         <TabPanel
           value={value}
           index={3}
-          style={{ textAlign: "center", maxWidth: "100%" }}
-        >
-          <QueueStatusTable queueType={"nmt_tts"} />
-        </TabPanel>
-
-        <TabPanel
-          value={value}
-          index={4}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <QueueStatusTable queueType={"all_tasks"} />
