@@ -481,16 +481,6 @@ const SettingsButtonComponent = ({
         </Tooltip>
       )}
 
-      <Tooltip title="Complete" placement="bottom">
-        <IconButton
-          className={classes.rightPanelBtnGrp}
-          disabled={getDisbled("complete") || apiInProgress}
-          onClick={() => setOpenConfirmDialog(true)}
-        >
-          <VerifiedIcon className={classes.rightPanelSvg} />
-        </IconButton>
-      </Tooltip>
-
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
 
         <Tooltip title="Undo" placement="bottom">
@@ -523,6 +513,19 @@ const SettingsButtonComponent = ({
           targetLanguage={taskData?.target_language}
         />
       )}
+
+      <Divider orientation="vertical" className={classes.rightPanelDivider} />
+      
+      <Tooltip title="Complete" placement="bottom">
+        <IconButton
+          className={classes.rightPanelBtnGrp}
+          disabled={getDisbled("complete") || apiInProgress}
+          onClick={() => setOpenConfirmDialog(true)}
+          style={{backgroundColor:"red"}}
+        >
+          <VerifiedIcon className={classes.rightPanelSvg}/>
+        </IconButton>
+      </Tooltip>
 
       {taskData?.task_type?.includes("TRANSLATION_VOICEOVER") && 
         <>

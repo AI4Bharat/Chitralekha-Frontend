@@ -55,11 +55,19 @@ export const useAutoSave = () => {
       }
     };
 
-    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    if(taskDetails?.task_type?.includes("TRANSLATION_VOICEOVER")){
+      saveIntervalRef.current = setInterval(handleAutosave, 5 * 60 * 1000);
+    }else{
+      saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    }
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        if(taskDetails?.task_type?.includes("TRANSLATION_VOICEOVER")){
+          saveIntervalRef.current = setInterval(handleAutosave, 5 * 60 * 1000);
+        }else{
+          saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        }
       } else {
         handleAutosave();
         clearInterval(saveIntervalRef.current);

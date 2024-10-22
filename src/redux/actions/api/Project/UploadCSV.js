@@ -3,7 +3,7 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class UploadCSVAPI extends API {
-  constructor(apiType = "project", id, csv, timeout = 2000) {
+  constructor(apiType = "project", id, csv, regenerate, timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.UPLOAD_CSV;
 
@@ -21,9 +21,13 @@ export default class UploadCSVAPI extends API {
             org_id: +this.id,
           };
 
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.video}${
-      apiType === "project" ? "upload_csv_data" : "upload_csv_org"
-    }`;
+    if(regenerate){
+      this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.voiceover}csv_bulk_regenerate`;
+    }else{
+      this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.video}${
+        apiType === "project" ? "upload_csv_data" : "upload_csv_org"
+      }`;
+    }
   }
 
   processResponse(res) {
