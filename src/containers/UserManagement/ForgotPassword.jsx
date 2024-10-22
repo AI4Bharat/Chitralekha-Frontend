@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 //Styles
 import { LoginStyle } from "styles";
 
 //Components
-import { Grid, Typography, Link, Button } from "@mui/material";
+import { Grid, Typography, Button } from "@mui/material";
 import AppInfo from "./AppInfo";
 import { OutlinedTextField } from "common";
 
@@ -74,7 +75,7 @@ const ForgotPassword = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} textAlign={"right"}>
           <Typography>
-            <Link href="/login"style={{ fontSize: "14px" }}>
+            <Link to="/login" style={{ fontSize: "14px" }}>
               Back to Login
             </Link>
           </Typography>
