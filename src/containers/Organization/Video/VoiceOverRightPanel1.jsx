@@ -988,7 +988,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                           );
                         }}
                       />
-                      <span
+                      {/* <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -1002,7 +1002,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                         }}
                       >
                         {sourceLength(index)}
-                      </span>
+                      </span> */}
                     </div>}
 
                   <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
@@ -1066,7 +1066,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                               : {}
                           }
                         >
-                          <AudioPlayer src={data[index]} />
+                          <AudioPlayer src={data[index]} fast={item?.fast_audio}/>
                           {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
@@ -1148,7 +1148,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                             disabled={isDisabled(index)}
                             {...props}
                           />
-                          <span
+                          {/* <span
                             className={classes.wordCount}
                             style={{
                               color:
@@ -1162,7 +1162,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                             }}
                           >
                             {targetLength(index)}
-                          </span>
+                          </span> */}
                         </div>
                       )}
                     />
@@ -1193,7 +1193,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                         }}
                         disabled={isDisabled(index)}
                       />
-                      <span
+                      {/* <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -1207,7 +1207,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                         }}
                       >
                         {targetLength(index)}
-                      </span>
+                      </span> */}
                     </div>
                   )}
                 </CardContent>
