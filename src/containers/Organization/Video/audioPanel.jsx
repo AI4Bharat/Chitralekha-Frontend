@@ -65,7 +65,7 @@ const Audio = styled.audio`
   display: none;
 `;
 
-const AudioPlayer = ({ src }) => {
+const AudioPlayer = ({ src, fast = false }) => {
   const playerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -153,7 +153,7 @@ const AudioPlayer = ({ src }) => {
   }, [src]);
 
   return (
-    <PlayerContainer style={{opacity:disabled&&"0.5", cursor:disabled&&"not-allowed"}}>
+    <PlayerContainer style={{opacity:disabled&&"0.5", cursor:disabled&&"not-allowed", border:fast&&"1px solid red"}}>
       <Controls>
         <PlayPauseButton onClick={!disabled&&togglePlay} style={{cursor:disabled&&"not-allowed"}}>
           {isPlaying ? (
