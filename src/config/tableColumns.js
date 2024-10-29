@@ -442,6 +442,10 @@ export const taskQueueStatusColumns = [
     name: "video_duration",
     label: "Video Duration",
   },
+  {
+    name: "status",
+    label: "Status",
+  },
 ];
 
 export const taskQueueStatusAdminColumns = [
