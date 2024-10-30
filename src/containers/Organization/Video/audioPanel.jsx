@@ -153,7 +153,7 @@ const AudioPlayer = ({ src, fast = false }) => {
   }, [src]);
 
   return (
-    <PlayerContainer style={{opacity:disabled&&"0.5", cursor:disabled&&"not-allowed", border:fast&&"1px solid red"}}>
+    <PlayerContainer style={{opacity:disabled&&"0.5", cursor:disabled&&"not-allowed", border:fast===0?"1px solid green":fast===1?"1px solid orange":fast===2&&"1px solid red"}}>
       <Controls>
         <PlayPauseButton onClick={!disabled&&togglePlay} style={{cursor:disabled&&"not-allowed"}}>
           {isPlaying ? (
