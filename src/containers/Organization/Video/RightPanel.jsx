@@ -762,9 +762,9 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
                           />
-                          {/* <span id="charNum" className={classes.wordCount}>
+                          <span id="charNum" className={classes.wordCount}>
                             {targetLength(index)} 
-                          </span> */}
+                          </span>
                         </div>
                       )}
                     />
@@ -791,9 +791,9 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                           }, 200);
                         }}
                       />
-                      {/* <span id="charNum" className={classes.wordCount}>
+                      <span id="charNum" className={classes.wordCount}>
                          {targetLength(index)} 
-                      </span> */}
+                      </span>
                     </div>
                   )}
                 </CardContent>
