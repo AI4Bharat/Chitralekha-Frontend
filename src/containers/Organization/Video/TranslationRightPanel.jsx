@@ -772,7 +772,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                           );
                         }}
                       />
-                      {/* <span
+                      <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -786,7 +786,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                         }}
                       >
                         {sourceLength(index)}
-                      </span> */}
+                      </span>
                     </div>
                   )}
 
@@ -844,7 +844,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                             }}
                             {...props}
                           />
-                          {/* <span
+                          <span
                             className={classes.wordCount}
                             style={{
                               color:
@@ -858,7 +858,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                         }}
                           >
                             {targetLength(index)}
-                          </span> */}
+                          </span>
                         </div>
                       )}
                     />
@@ -890,7 +890,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                           }, 200);
                         }}
                       />
-                      {/* <span
+                      <span
                         className={classes.wordCount}
                         style={{
                           color:
@@ -904,7 +904,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                         }}
                       >
                         {targetLength(index)}
-                      </span> */}
+                      </span>
                     </div>
                   )}
                 </CardContent>
