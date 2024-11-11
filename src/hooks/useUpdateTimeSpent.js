@@ -11,7 +11,7 @@ export const useUpdateTimeSpent = (ref) => {
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
 
   useEffect(() => {
-    const handleUpdateTimeSpent = (time = 60) => {
+    const handleUpdateTimeSpent = (time = taskDetails?.task_type?.includes("VOICEOVER") ? 5 * 60 : 60) => {
       const apiObj = new UpdateTimeSpentPerTask(taskId, time);
       dispatch(APITransportUTS(apiObj));
     };
