@@ -60,7 +60,6 @@ const Login = () => {
           dispatch(
             setSnackBar({ open: true, message: data.detail, variant: "error" })
           );
-          // console.log(data.detail);
         }
       }
     }
