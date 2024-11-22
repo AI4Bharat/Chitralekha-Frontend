@@ -20,7 +20,7 @@ const apiStatusAsync = (payload) => {
 
 const success = (res, api, dispatch) => {
   const { data, status } = res;
-
+  
   api.processResponse(data);
 
   const payload = {
@@ -65,15 +65,15 @@ const error = (err, api, dispatch) => {
       status,
     },
   } = err;
-
+  
   const {
     error: {
       message: { http },
     },
   } = strings;
 
-  let errorMsg = message ?? http[status];
-
+  let errorMsg = message ?? http[status]; 
+  
   const payload = {
     progress: false,
     loading: false,
