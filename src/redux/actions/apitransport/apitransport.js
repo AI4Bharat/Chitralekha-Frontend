@@ -72,7 +72,7 @@ const error = (err, api, dispatch) => {
     },
   } = strings;
 
-  let errorMsg = message ?? http[status]; 
+  let errorMsg = message ?? http[status];
 
   const payload = {
     progress: false,
