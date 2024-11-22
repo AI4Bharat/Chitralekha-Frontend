@@ -84,7 +84,7 @@ const Login = () => {
 
   const getLoggedInUserData = () => {
     const loggedInUserObj = new FetchLoggedInUserDetailsAPI();
-    dispatch(APITransport(loggedInUserObj)); 
+    dispatch(APITransport(loggedInUserObj));
   };
 
   useEffect(() => {
