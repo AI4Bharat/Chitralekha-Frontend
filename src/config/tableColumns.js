@@ -339,6 +339,19 @@ export const taskListColumns = [
     },
   },
   {
+    name: "eta",  
+    label: "ETA",  
+    options: {
+      customBodyRender: (value) => {
+        if (value) {
+          const formattedETA = new Date(value).toLocaleString();
+          return <Box>{formattedETA}</Box>;
+        }
+        return <Box>N/A</Box>;
+      },
+    },
+  },
+  {
     name: "time_spent",
     label: "Time Spent",
     options: {
