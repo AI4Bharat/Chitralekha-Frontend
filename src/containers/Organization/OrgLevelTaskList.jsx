@@ -206,6 +206,7 @@ const OrgLevelTaskList = () => {
       "created_at",
       "updated_at",
       "Action",
+      "eta"
     ];
     const defaultDisabledDisplayCols = [
       "description",
@@ -579,7 +580,7 @@ const OrgLevelTaskList = () => {
               <Badge
                 color="primary"
                 variant="dot"
-                invisible={!orgSearchValue[col.name].length}
+                invisible={!orgSearchValue[col.name]?.length}
               >
                 <SearchIcon id={col.name + "_btn"} />
               </Badge>
@@ -759,6 +760,36 @@ const OrgLevelTaskList = () => {
         customBodyRender: renderTaskListColumnCell,
       },
     };
+    const ETA = {
+      name: "eta",
+      label: "ETA",
+      options: {
+        filter: false,
+        sort: false,
+        canBeSearch: false,
+        display: orgTaskColDisplayState["eta"],
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        setCellHeaderProps: () => ({
+          className: tableClasses.cellHeaderProps,
+        }),
+        customBodyRender: (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+
+          return (
+            <Box
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+          {value ? moment(value).format("DD/MM/YYYY HH:mm:ss") : "-"}
+          </Box>
+          );
+        },
+      },
+    };
+
 
     const assigneeColumn = {
       name: "user",
@@ -954,6 +985,7 @@ const OrgLevelTaskList = () => {
     columns.splice(2, 0, videoName);
     columns.splice(3, 0, createdAtColumn);
     columns.splice(4, 0, updatedAtColumn);
+    columns.splice(5, 0, ETA);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);
 
