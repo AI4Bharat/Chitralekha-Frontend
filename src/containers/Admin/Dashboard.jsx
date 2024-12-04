@@ -14,6 +14,7 @@ import AdminLevelReport from "./AdminLevelReport";
 import NewsLetter from "./NewsLetterTemplate";
 import OnboardingRequests from "./OnboardingRequests";
 import VideoTaskDetails from "./VideoTaskDetails";
+import VideoDetails from "./VideoDetails"; 
 import TaskDetails from "./TaskDetails";
 
 // APIs
@@ -83,6 +84,7 @@ const DashBoard = () => {
   ];
 
   const orgOwnerTabs = [
+    { label: "Video Details", component: <VideoDetails /> },
     { label: "Video Task Details", component: <VideoTaskDetails /> },
     { label: "Task Details", component: <TaskDetails /> },
   ];
@@ -94,9 +96,7 @@ const DashBoard = () => {
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
         <Box>
-          <Tabs value={value} 
-          onChange={handleTabChange} 
-          aria-label="basic tabs example">
+          <Tabs value={value} onChange={handleTabChange} aria-label="basic tabs example">
             {isAdmin &&
               adminTabs.map((tab, index) => (
                 <Tab key={index} label={tab.label} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -186,11 +186,17 @@ const DashBoard = () => {
             <>
               <TabPanel value={value} index={0}>
                 <Paper variant="outlined" sx={{ borderRadius: "5px", backgroundColor: "ButtonHighlight", padding: "32px" }}>
-                  <VideoTaskDetails />
+                  <VideoDetails />
                 </Paper>
               </TabPanel>
 
               <TabPanel value={value} index={1}>
+                <Paper variant="outlined" sx={{ borderRadius: "5px", backgroundColor: "ButtonHighlight", padding: "32px" }}>
+                  <VideoTaskDetails />
+                </Paper>
+              </TabPanel>
+
+              <TabPanel value={value} index={2}>
                 <Paper variant="outlined" sx={{ borderRadius: "5px", backgroundColor: "ButtonHighlight", padding: "32px" }}>
                   <TaskDetails />
                 </Paper>
