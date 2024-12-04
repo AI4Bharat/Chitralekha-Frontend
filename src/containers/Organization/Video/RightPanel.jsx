@@ -73,8 +73,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
 
   const [selection, setselection] = useState(false);
   const taskData = useSelector((state) => state.getTaskDetails.data);
-  const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
-    ?.organization?.id;
+  const assignedOrgId = JSON.parse(localStorage.getItem("id"))
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
   const totalPages = useSelector((state) => state.commonReducer.totalPages);

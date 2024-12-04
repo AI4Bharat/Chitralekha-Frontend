@@ -63,8 +63,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const textboxes = useRef([]);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
-  const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
-    ?.organization?.id;
+  const assignedOrgId = JSON.parse(localStorage.getItem("id"));
   const subtitles = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
   const totalPages = useSelector((state) => state.commonReducer.totalPages);

@@ -156,7 +156,6 @@ const OrgLevelTaskList = () => {
   const [bulkSubtitleAlert, setBulkSubtitleAlert] = useState(false);
   const [bulkSubtitleAlertData, setBulkSubtitleAlertData] = useState({});
 
-  //Server Side Pagination States
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchAnchor, setSearchAnchor] = useState(null);
@@ -176,7 +175,6 @@ const OrgLevelTaskList = () => {
 
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  //Fiters and Search
   const orgSelectedFilters = useSelector(
     (state) => state.orgTaskFilters.orgSelectedFilters
   );
@@ -353,7 +351,7 @@ const OrgLevelTaskList = () => {
     }, {});
 
     const apiObj = new FetchPaginatedOrgTaskListAPI(
-      orgId,
+      localStorage.getItem("id"),
       offset + 1,
       limit,
       searchRequest,

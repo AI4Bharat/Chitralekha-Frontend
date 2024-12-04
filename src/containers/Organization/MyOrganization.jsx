@@ -17,8 +17,6 @@ import {
 
 //Styles
 import { DatasetStyle } from "styles";
-
-//Components
 import {
   Box,
   Card,
@@ -76,6 +74,7 @@ const MyOrganization = () => {
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
   );
+  localStorage.setItem("id",id)
   const projectList = useSelector((state) => state.getProjectList.data);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const usersList = useSelector((state) => state.getOrganizatioUsers.data);
