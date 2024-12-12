@@ -960,7 +960,7 @@ const OrgLevelTaskList = () => {
                   </IconButton>
                 </Tooltip>
               }
-                                          {((selectedTask?.task_type == "TRANSLATION_VOICEOVER_EDIT"|| selectedTask?.task_type == "TRANSCRIPTION_EDIT" || selectedTask?.task_type == "TRANSLATION_EDIT" )&& selectedTask?.status === "COMPLETE") &&
+              {((selectedTask?.task_type == "TRANSLATION_VOICEOVER_EDIT"|| selectedTask?.task_type == "TRANSCRIPTION_EDIT" || selectedTask?.task_type == "TRANSLATION_EDIT" )&& selectedTask?.status === "COMPLETE" && (userData.role=="PROJECT_MANAGER" || userData.role=="ORG_OWNER"||userData.role=="ADMIN")) &&
                 <Tooltip key="Compare Edits" title="Compare Edits" >
                   <IconButton
                     onClick={() =>

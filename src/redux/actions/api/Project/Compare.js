@@ -7,7 +7,7 @@ export default class Compare extends API {
     super("GET", timeout, false);
     this.type = C.CREATE_BULK_PROJECTS;
     this.videoid = videoid;
-    this.endpoint = `${super.apiEndPointAuto()}/translation/retrieve_all_translations/?video_id=${videoid}`
+    this.endpoint = `${super.apiEndPointAuto()}/transcript/retrieve_all_transcriptions/?video_id=${videoid}`
   }
 
   processResponse(res) {

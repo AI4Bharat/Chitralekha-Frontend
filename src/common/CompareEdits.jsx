@@ -20,7 +20,7 @@ import TimeBoxes from "./TimeBoxes";
 import DiffViewer,{DiffMethod} from "react-diff-viewer";
 import { diffWords } from "diff";
 import Compare from "redux/actions/api/Project/Compare";
-import Comparetrans from "redux/actions/api/Project/Compare";
+import Comparetrans from "redux/actions/api/Project/CompareTrans";
 
 const CompareEdits = ({
   openPreviewDialog,
@@ -65,9 +65,13 @@ const CompareEdits = ({
   const fetchPreviewData = useCallback(async () => {
     setLoading(true)
     if(taskType=="TRANSCRIPTION_EDIT"){
+      console.log("hhh");
+      
       var taskObj = new Compare(videoId);
 
     }else{
+      console.log("hhh");
+
       var taskObj = new Comparetrans(videoId);
     }
     try {
