@@ -64,13 +64,13 @@ const CompareEdits = ({
 
   const fetchPreviewData = useCallback(async () => {
     setLoading(true)
+    console.log(targetLanguage);
+    
     if(taskType=="TRANSCRIPTION_EDIT"){
-      console.log("hhh");
       
       var taskObj = new Compare(videoId);
 
     }else{
-      console.log("hhh");
 
       var taskObj = new Comparetrans(videoId);
     }
@@ -108,16 +108,16 @@ const CompareEdits = ({
         if (data) {
           const editComplete = [];
           const selectSource = [];
-          console.log(data);
           
           data.forEach((translate) => {
-            if (translate.status === "TRANSLATION_EDIT_COMPLETE") {
+
+            if (translate.status === "TRANSLATION_EDIT_COMPLETE" && targetLanguage == translate.target_language) {
               editComplete.push(
                 ...translate.data.payload.map((item) => item.target_text)
               );
-            } else if (translate.status === "TRANSLATION_SELECT_SOURCE") {
+            } else if (translate.status === "TRANSLATION_SELECT_SOURCE" && targetLanguage== translate.target_language) {
               selectSource.push(
-                ...translate.data.payload.map((item) => item.target_text)
+                ...translate.data.payload.map((item) => item.target_text )
               );
             }
           });
