@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {
   exportFile,
   exportVoiceover,
@@ -58,7 +57,6 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
-import CompareEdits from "common/CompareEdits";
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
@@ -143,7 +141,6 @@ const TaskList = () => {
     viewTaskDialog: false,
     previewDialog: false,
     editTaskDialog: false,
-    CompareEdits:false,
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
@@ -231,9 +228,6 @@ const TaskList = () => {
     setTaskColDisplayState(displayCols);
     localStorage.setItem("taskColDisplayFilter", JSON.stringify(displayCols));
   }, []);
-  const handleCompareEdits = () => {
-    handleDialogOpen("CompareEdits");
-  };
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -828,11 +822,7 @@ const TaskList = () => {
       case "Preview":
         handlePreviewTask();
         break;
-        case "CompareEdits":
-          handleCompareEdits();
-          break;
-  
-  
+
       case "Delete":
         handleDialogOpen("deleteTaskDialog", "", id);
         break;
@@ -1053,19 +1043,6 @@ const TaskList = () => {
                   </IconButton>
                 </Tooltip>
               }
-                            {((selectedTask?.task_type == "TRANSLATION_VOICEOVER_EDIT"|| selectedTask?.task_type == "TRANSCRIPTION_EDIT" || selectedTask?.task_type == "TRANSLATION_EDIT" )&& selectedTask?.status === "COMPLETE") &&
-                <Tooltip key="Compare Edits" title="Compare Edits" >
-                  <IconButton
-                    onClick={() =>
-                      handleActionButtonClick(tableMeta, "CompareEdits")
-                    }
-                    color="primary"
-                  >
-                    <CompareArrowsIcon />
-                  </IconButton>
-                </Tooltip>
-              }
-
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -1406,16 +1383,6 @@ const TaskList = () => {
           targetLanguage={currentTaskDetails?.target_language}
         />
       )}
-{openDialogs.CompareEdits && (
-        <CompareEdits
-          openPreviewDialog={openDialogs.CompareEdits}
-          handleClose={() => handleDialogClose("CompareEdits")}
-          taskType={currentTaskDetails?.task_type}
-          videoId={currentTaskDetails?.video}
-          targetLanguage={currentTaskDetails?.target_language}
-        />
-      )}
-
 
       {Boolean(anchorEl) && (
         <FilterList
