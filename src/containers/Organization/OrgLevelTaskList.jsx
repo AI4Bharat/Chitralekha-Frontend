@@ -18,7 +18,7 @@ import {
   toolBarActions,
 } from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
-
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 //Themes
 import { DatasetStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
@@ -98,6 +98,7 @@ import {
 } from "redux/actions";
 import moment from "moment";
 import DeleteTaskDialog from "common/DeleteTaskDialog";
+import CompareEdits from "common/CompareEdits";
 
 const OrgLevelTaskList = () => {
   const userOrgId = getLocalStorageData("userData").organization.id;
@@ -134,6 +135,7 @@ const OrgLevelTaskList = () => {
     viewTaskDialog: false,
     previewDialog: false,
     editTaskDialog: false,
+    CompareEdits:false,
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
@@ -191,6 +193,9 @@ const OrgLevelTaskList = () => {
   const currentOrgSearchedColumn = useSelector(
     (state) => state.orgTaskFilters.currentOrgSearchedColumn
   );
+  const handleCompareEdits = () => {
+    handleDialogOpen("CompareEdits");
+  };
 
   useEffect(() => {
     const displayCols = {};
@@ -701,6 +706,11 @@ const OrgLevelTaskList = () => {
       case "Preview":
         handlePreviewTask();
         break;
+        
+        case "CompareEdits":
+          handleCompareEdits();
+          break;
+
 
       case "Delete":
         handleDialogOpen("deleteTaskDialog", "", id);
@@ -951,6 +961,19 @@ const OrgLevelTaskList = () => {
                   </IconButton>
                 </Tooltip>
               }
+              {((selectedTask?.task_type == "TRANSLATION_VOICEOVER_EDIT"|| selectedTask?.task_type == "TRANSCRIPTION_EDIT" || selectedTask?.task_type == "TRANSLATION_EDIT" )&& selectedTask?.status === "COMPLETE" && (userData.role=="PROJECT_MANAGER" || userData.role=="ORG_OWNER"||userData.role=="ADMIN")) &&
+                <Tooltip key="Compare Edits" title="Compare Edits" >
+                  <IconButton
+                    onClick={() =>
+                      handleActionButtonClick(tableMeta, "CompareEdits")
+                    }
+                    color="primary"
+                  >
+                    <CompareArrowsIcon />
+                  </IconButton>
+                </Tooltip>
+              }
+
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -1374,7 +1397,15 @@ const OrgLevelTaskList = () => {
           targetLanguage={currentTaskDetails?.target_language}
         />
       )}
-
+{openDialogs.CompareEdits && (
+        <CompareEdits
+          openPreviewDialog={openDialogs.CompareEdits}
+          handleClose={() => handleDialogClose("CompareEdits")}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
+        />
+      )}
       {Boolean(anchorEl) && (
         <FilterList
           id={"filterList"}
