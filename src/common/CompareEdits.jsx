@@ -131,13 +131,6 @@ const CompareEdits = ({
         setLoading(false)
     } catch (error) {
       setLoading(false)
-      dispatch(
-        setSnackBar({
-          open: true,
-          message: "Something went wrong!!",
-          variant: "error",
-        })
-      );
     }
   }, [ dispatch,videoId]);
 
@@ -283,7 +276,7 @@ const CompareEdits = ({
       <DialogContent  sx={{ height: "410px", zIndex:"4" }}>
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="diffMethod" style={{ marginRight: '10px' }}>
-          Select Diff Method:
+          Select Comparison Method:
         </label>
         <select
           id="diffMethod"
