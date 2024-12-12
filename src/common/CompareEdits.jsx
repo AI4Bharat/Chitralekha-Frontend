@@ -91,7 +91,7 @@ const CompareEdits = ({
           data.transcripts.forEach((transcript) => {
             if (transcript.status === "TRANSCRIPTION_EDIT_COMPLETE") {
               editComplete.push(
-                ...transcript.data.payload.map((item) => item.text)
+                ...transcript.data.payload.map((item) => item.verbatim_text)
               );
             } else if (transcript.status === "TRANSCRIPTION_SELECT_SOURCE") {
               selectSource.push(
