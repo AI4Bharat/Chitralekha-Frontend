@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import {
   exportFile,
   exportVoiceover,
@@ -23,7 +22,6 @@ import { renderTaskListColumnCell } from "config/tableColumns";
 //Themes
 import { DatasetStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
-import CompareEdits from "common/CompareEdits";
 
 //Components
 import {
@@ -136,7 +134,6 @@ const OrgLevelTaskList = () => {
     viewTaskDialog: false,
     previewDialog: false,
     editTaskDialog: false,
-    CompareEdits:false,
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
@@ -177,9 +174,7 @@ const OrgLevelTaskList = () => {
   const orgId = userData?.organization?.id;
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const handleCompareEdits = () => {
-    handleDialogOpen("CompareEdits");
-  };
+
   //Fiters and Search
   const orgSelectedFilters = useSelector(
     (state) => state.orgTaskFilters.orgSelectedFilters
@@ -706,10 +701,6 @@ const OrgLevelTaskList = () => {
       case "Preview":
         handlePreviewTask();
         break;
-        case "CompareEdits":
-          handleCompareEdits();
-          break;
-  
 
       case "Delete":
         handleDialogOpen("deleteTaskDialog", "", id);
@@ -1384,15 +1375,6 @@ const OrgLevelTaskList = () => {
           loading={loading}
           isBulk={isBulk}
           projectId={currentTaskDetails?.project}
-        />
-      )}
-{openDialogs.CompareEdits && (
-        <CompareEdits
-          openPreviewDialog={openDialogs.CompareEdits}
-          handleClose={() => handleDialogClose("CompareEdits")}
-          taskType={currentTaskDetails?.task_type}
-          videoId={currentTaskDetails?.video}
-          targetLanguage={currentTaskDetails?.target_language}
         />
       )}
 
