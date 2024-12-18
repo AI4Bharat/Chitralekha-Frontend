@@ -704,7 +704,7 @@ export const exportVoiceover = (data, taskDetails, exportTypes) => {
   }
 };
 
-export const exportFile = (data, taskDetails, exportType, type) => {
+export const exportFile = (data, taskDetails, exportType, type, filename) => {
   const {
     video: videoId,
     src_language: sourceLanguage,
@@ -740,7 +740,9 @@ export const exportFile = (data, taskDetails, exportType, type) => {
   let fileName = "";
   if (specialOrgIds.includes(userOrgId) && description.length) {
     fileName = `${description}.${format}`;
-  } else {
+  }else if(filename.length){
+    fileName = `${filename}.${format}`;
+  }else {
     fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;
   }
 
