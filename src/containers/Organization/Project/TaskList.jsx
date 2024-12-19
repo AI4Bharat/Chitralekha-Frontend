@@ -534,8 +534,8 @@ const TaskList = () => {
 
       if (res.ok) {
         const resp = await res.blob();
-        const filename = res.headers.get('content-type');
-        exportFile(resp, currentTaskDetails, transcript, "transcription", filename);
+
+        exportFile(resp, currentTaskDetails, transcript, "transcription");
       } else {
         const resp = await res.json();
 
@@ -575,8 +575,8 @@ const TaskList = () => {
 
       if (res.ok) {
         const resp = await res.blob();
-        const filename = res.headers.get('content-type');
-        exportFile(resp, currentTaskDetails, translate, "translation", filename);
+
+        exportFile(resp, currentTaskDetails, translate, "translation");
       } else {
         const resp = await res.json();
 
