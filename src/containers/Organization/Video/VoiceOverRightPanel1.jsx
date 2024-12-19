@@ -789,8 +789,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
       if (res.ok) {
         const resp = await res.blob();
-
-        exportFile(resp, taskData, transcript, "transcription");
+        const filename = res.headers.get('content-type');
+        exportFile(resp, taskData, transcript, "transcription", filename);
       } else {
         const resp = await res.json();
 
@@ -828,8 +828,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
       if (res.ok) {
         const resp = await res.blob();
-
-        exportFile(resp, taskData, translate, "translation");
+        const filename = res.headers.get('content-type');
+        exportFile(resp, taskData, translate, "translation", filename);
       } else {
         const resp = await res.json();
 
