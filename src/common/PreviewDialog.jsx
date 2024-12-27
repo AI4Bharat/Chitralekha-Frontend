@@ -231,7 +231,7 @@ const PreviewDialog = ({
                 }}
               >
                 {taskType.includes("TRANSCRIPTION")
-                  ? el.text
+                  ? el.verbatim_text ? el.verbatim_text : el.text
                   : el.target_text}
               </Box>
             </Box>

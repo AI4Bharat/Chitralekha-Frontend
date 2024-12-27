@@ -4,7 +4,7 @@ import Partners from "./Partners";
 import Principles from "./Principles";
 import TestimonialPage from "./TestimonialPage";
 import Testimonials from "./Testimonials";
-import Thanks from "./Thanks";
+// import Thanks from "./Thanks";
 import UseCases from "./UseCases";
 
 export {
@@ -14,6 +14,6 @@ export {
   Principles,
   TestimonialPage,
   Testimonials,
-  Thanks,
+  // Thanks,
   UseCases,
 };

@@ -36,6 +36,7 @@ import superscriptMap from "config/superscript";
 import {
   ConfirmDialog,
   ConfirmErrorDialog,
+  ExportDialog,
   RecorderComponent,
   ShortcutKeys,
   TableDialog,
@@ -58,10 +59,15 @@ import {
   setTotalSentences,
   setSnackBar,
   CreateGlossaryAPI,
+  exportTranslationAPI,
+  FetchTranscriptExportTypesAPI,
+  FetchTranslationExportTypesAPI,
+  FetchVoiceoverExportTypesAPI,
+  exportTranscriptionAPI,
 } from "redux/actions";
 import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
-import { copySubs, onExpandTimeline } from "utils/subtitleUtils";
+import { copySubs, exportFile, onExpandTimeline } from "utils/subtitleUtils";
 import AudioPlayer from "./audioPanel";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, segment }) => {
@@ -130,12 +136,32 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const [redoStack, setRedoStack] = useState([]);
   const [contextMenu, setContextMenu] = React.useState(null);
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [openExportDialog, setOpenExportDialog] = useState(false);
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [selectedWord, setSelectedWord] = useState("");
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
   const [loader, setLoader] = useState(false);
+
+  const [exportTypes, setExportTypes] = useState({
+    transcription: ["srt"],
+    translation: ["srt"],
+    voiceover: "mp3",
+    speakerInfo: "false",
+    bgMusic: "false",
+  });
+
+  useEffect(() => {
+    const transcriptExportObj = new FetchTranscriptExportTypesAPI();
+    dispatch(APITransport(transcriptExportObj));
+
+    const translationExportObj = new FetchTranslationExportTypesAPI();
+    dispatch(APITransport(translationExportObj));
+
+    const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
+    dispatch(APITransport(voiceoverExportObj));
+  }, []);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -744,6 +770,123 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   //   }, 60000);
   // }, [currentOffset, sourceText]);
 
+  const handleTranscriptExport = async () => {
+    const { transcription, speakerInfo } = exportTypes;
+
+    transcription.map(async (transcript)=>{
+    const apiObj = new exportTranscriptionAPI(
+      taskId,
+      transcript,
+      speakerInfo
+    );
+    setOpenExportDialog(false);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+
+        exportFile(resp, taskData, transcript, "transcription");
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "success",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }})
+  };
+
+  const handleTranslationExport = async () => {
+    const { translation, speakerInfo } = exportTypes;
+
+    translation.map(async (translate)=>{
+    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
+    setOpenExportDialog(false);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+
+        exportFile(resp, taskData, translate, "translation");
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "success",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }})
+  };
+
+  const handleExportSubmitClick = (taskType) => {
+    if(taskType === "TRANSCRIPTION_VOICEOVER_EDIT"){
+      handleTranscriptExport();
+    }else{
+      handleTranslationExport();
+    }
+  };
+
+  const handleExportRadioButtonChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleExportCheckboxChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    let new_val=exportTypes[name]
+    if (new_val.includes(value)){
+      new_val = new_val.filter(item => item !== value)
+    } else{
+      new_val.push(value)
+    }
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: new_val,
+    }));
+  }
+
   return (
     <>
       {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
@@ -781,6 +924,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
             handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
+            setOpenExportDialog={setOpenExportDialog}
           />
         </Grid>
 
@@ -922,7 +1066,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                               : {}
                           }
                         >
-                          <AudioPlayer src={data[index]} />
+                          <AudioPlayer src={data[index]} fast={item?.fast_audio}/>
                           {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
@@ -969,6 +1113,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.target_language}
                       value={item.text}
                       onChangeText={(text) => {
@@ -1154,6 +1299,22 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             srcLang={taskData?.src_language}
             tgtLang={taskData?.target_language}
             disableFields={true}
+          />
+        )}
+
+        {openExportDialog && (
+          <ExportDialog
+            open={openExportDialog}
+            handleClose={() => setOpenExportDialog(false)}
+            task_type="TRANSLATION_VOICEOVER_EDIT"
+            taskType="TRANSLATION_VOICEOVER_EDIT"
+            exportTypes={exportTypes}
+            handleExportSubmitClick={handleExportSubmitClick}
+            handleExportRadioButtonChange={handleExportRadioButtonChange}
+            handleExportCheckboxChange={handleExportCheckboxChange}
+            isBulkTaskDownload={false}
+            currentSelectedTasks={[]}
+            multiOptionDialog={true}
           />
         )}
       </Box>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { useDispatch, useSelector } from "react-redux";
 import { configs, endpoints } from "config";
 
@@ -354,6 +354,7 @@ const FindAndReplace = (props) => {
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                apiKey={`JWT ${localStorage.getItem("token")}`}
                 lang={transliterationLanguage}
                 value={findValue}
                 onChangeText={(text) => {
@@ -422,6 +423,7 @@ const FindAndReplace = (props) => {
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                apiKey={`JWT ${localStorage.getItem("token")}`}
                 lang={transliterationLanguage}
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}

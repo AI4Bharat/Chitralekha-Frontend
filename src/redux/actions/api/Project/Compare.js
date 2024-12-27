@@ -2,17 +2,12 @@ import API from "../../../api";
 import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
-export default class DownloadOrganizationReportsAPI extends API {
-  constructor(id, endPoint, taskStartDate="", taskEndDate="", timeout = 2000) {
+export default class Compare extends API {
+  constructor(videoid,  timeout = 2000) {
     super("GET", timeout, false);
-    this.type = C.DOWNLOAD_ORGANIZATION_REPORTS;
-    this.endpoint = endPoint === "send_tasks_report_email" ? 
-     `${super.apiEndPointAuto()}${
-      ENDPOINTS.organization
-    }${id}/${endPoint}/?taskStartDate=${taskStartDate}&taskEndDate=${taskEndDate}`
-    :`${super.apiEndPointAuto()}${
-      ENDPOINTS.organization
-    }${id}/${endPoint}/`;
+    this.type = C.CREATE_BULK_PROJECTS;
+    this.videoid = videoid;
+    this.endpoint = `${super.apiEndPointAuto()}/transcript/retrieve_all_transcriptions/?video_id=${videoid}`
   }
 
   processResponse(res) {
@@ -26,7 +21,10 @@ export default class DownloadOrganizationReportsAPI extends API {
     return this.endpoint;
   }
 
-  getBody() {}
+  getBody() {
+    return {
+    };
+  }
 
   getHeaders() {
     this.headers = {

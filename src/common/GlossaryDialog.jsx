@@ -18,7 +18,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { ProjectStyle } from "styles";
 import { MenuProps } from "utils";
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
@@ -170,6 +170,7 @@ const GlossaryDialog = ({
           <Grid item md={6} xs={12} sx={{ mt: 3 }}>
             <IndicTransliterate
               customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+              apiKey={`JWT ${localStorage.getItem("token")}`}
               lang={sourceLanguage}
               value={sourceText}
               onChange={(event) => setSourceText(event.target.value)}
@@ -196,6 +197,7 @@ const GlossaryDialog = ({
           <Grid item md={6} xs={12} sx={{ mt: 3 }}>
             <IndicTransliterate
               customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+              apiKey={`JWT ${localStorage.getItem("token")}`}
               lang={targetLanguage}
               value={targetText}
               onChange={(event) => setTargetText(event.target.value)}

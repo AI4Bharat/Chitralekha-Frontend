@@ -19,7 +19,7 @@ import {
   renderTaskListColumnCell,
 } from "config";
 import moment from "moment";
-
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 //Themes
 import { tableTheme } from "theme";
 import { DatasetStyle, TableStyles } from "styles";
@@ -99,6 +99,7 @@ import {
 import constants from "redux/constants";
 import { updateCurrentSearchedColumn } from "redux/actions/taskFilters";
 import DeleteTaskDialog from "common/DeleteTaskDialog";
+import CompareEdits from "common/CompareEdits";
 
 const TaskList = () => {
   const userOrgId = getLocalStorageData("userData").organization.id;
@@ -141,6 +142,7 @@ const TaskList = () => {
     viewTaskDialog: false,
     previewDialog: false,
     editTaskDialog: false,
+    CompareEdits:false,
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
@@ -673,7 +675,9 @@ const TaskList = () => {
   const handlePreviewTask = () => {
     handleDialogOpen("previewDialog");
   };
-
+  const handleCompareEdits = () => {
+    handleDialogOpen("CompareEdits");
+  };
   const generateTranslationCall = async (id, taskStatus) => {
     if (taskStatus === "SELECTED_SOURCE") {
       const apiObj = new GenerateTranslationOutputAPI(id);
@@ -822,6 +826,9 @@ const TaskList = () => {
       case "Preview":
         handlePreviewTask();
         break;
+        case "CompareEdits":
+          handleCompareEdits();
+          break;
 
       case "Delete":
         handleDialogOpen("deleteTaskDialog", "", id);
@@ -1043,6 +1050,19 @@ const TaskList = () => {
                   </IconButton>
                 </Tooltip>
               }
+              {((selectedTask?.task_type == "TRANSLATION_VOICEOVER_EDIT"|| selectedTask?.task_type == "TRANSCRIPTION_EDIT" || selectedTask?.task_type == "TRANSLATION_EDIT" )&& selectedTask?.status === "COMPLETE" && (userData.role=="PROJECT_MANAGER" || userData.role=="ORG_OWNER"||userData.role=="ADMIN")) &&
+                <Tooltip key="Compare Edits" title="Compare Edits" >
+                  <IconButton
+                    onClick={() =>
+                      handleActionButtonClick(tableMeta, "CompareEdits")
+                    }
+                    color="primary"
+                  >
+                    <CompareArrowsIcon />
+                  </IconButton>
+                </Tooltip>
+              }
+
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -1378,6 +1398,15 @@ const TaskList = () => {
         <PreviewDialog
           openPreviewDialog={openDialogs.previewDialog}
           handleClose={() => handleDialogClose("previewDialog")}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
+        />
+      )}
+      {openDialogs.CompareEdits && (
+        <CompareEdits
+          openPreviewDialog={openDialogs.CompareEdits}
+          handleClose={() => handleDialogClose("CompareEdits")}
           taskType={currentTaskDetails?.task_type}
           videoId={currentTaskDetails?.video}
           targetLanguage={currentTaskDetails?.target_language}

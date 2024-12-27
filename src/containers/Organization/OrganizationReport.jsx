@@ -165,7 +165,9 @@ const OrganizationReport = () => {
     );
     const apiObj = new DownloadOrganizationReportsAPI(
       id,
-      temp[0].downloadEndPoint
+      temp[0].downloadEndPoint,
+      taskStartDate,
+      taskEndDate,
     );
     dispatch(APITransport(apiObj));
   };

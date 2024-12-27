@@ -37,6 +37,7 @@ import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { AddOrganizationMember, AlertComponent, Loader } from "common";
 import UploadFileDialog from "common/UploadFileDialog";
+import RegenerateFailedVotrTasksDialog from "common/RegenerateFailedVotrTasksDialog";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -71,7 +72,8 @@ const MyOrganization = () => {
   const [orgOwnerId, setOrgOwnerId] = useState("");
   const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
     useState(false);
-  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
+    const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
+  const [openRegenerateFailedVotrTasksDialog, setOpenRegenerateFailedVotrTasksDialog] = useState(false);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -88,6 +90,7 @@ const MyOrganization = () => {
       if (success) {
         if (apiType === "UPLOAD_CSV") {
           setOpenUploadBulkVideoDialog(false);
+          setOpenRegenerateFailedVotrTasksDialog(false);
         }
 
         if (apiType === "GET_USERS_ROLES") {
@@ -103,6 +106,7 @@ const MyOrganization = () => {
           setAlertMessage(data.message);
           setAlertColumn("csvAlertColumns");
           setOpenUploadBulkVideoDialog(false);
+          setOpenRegenerateFailedVotrTasksDialog(false);
         }
       }
     }
@@ -184,13 +188,13 @@ const MyOrganization = () => {
     );
   };
 
-  const handeFileUpload = (file) => {
+  const handeFileUpload = (file, regenerate = false) => {
     const reader = new FileReader();
     reader.onload = async () => {
       const csvData = reader.result;
       const csv = btoa(csvData);
 
-      const uploadCSVObj = new UploadCSVAPI("org", id, csv);
+      const uploadCSVObj = new UploadCSVAPI("org", id, csv, regenerate);
       dispatch(APITransport(uploadCSVObj));
     };
     reader.readAsBinaryString(file[0]);
@@ -302,6 +306,15 @@ const MyOrganization = () => {
                     variant="contained"
                   >
                     Add New Project
+                  </Button>
+
+                  <Button
+                    style={{ marginRight: "10px" }}
+                    className={classes.projectButton}
+                    onClick={() => setOpenRegenerateFailedVotrTasksDialog(true)}
+                    variant="contained"
+                  >
+                    Regenerate Failed VOTR Tasks
                   </Button>
 
                   <Button
@@ -433,6 +446,15 @@ const MyOrganization = () => {
           openDialog={openUploadBulkVideoDialog}
           handleClose={() => setOpenUploadBulkVideoDialog(false)}
           title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
+        />
+      )}
+
+      {openRegenerateFailedVotrTasksDialog && (
+        <RegenerateFailedVotrTasksDialog
+          openDialog={openRegenerateFailedVotrTasksDialog}
+          handleClose={() => setOpenRegenerateFailedVotrTasksDialog(false)}
+          title={"Regenerate Failed VOTR Tasks"}
           handleSubmit={handeFileUpload}
         />
       )}

@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 //Styles
 import { IntroDatasetStyle } from "styles";
@@ -10,11 +9,6 @@ import { YouTube, Github, Twitter } from "assets/profileImages/index";
 
 const Footer = () => {
   const classes = IntroDatasetStyle();
-  const navigate = useNavigate();
-
-  const handleClickThanks = () => {
-    navigate("/thanks");
-  };
   return (
     <div>
       <Grid container direction="row">
@@ -89,15 +83,6 @@ const Footer = () => {
               License
             </Typography>
           </a>
-          <span style={{ margin: "0px 15px 0px 15px" }}>|</span>
-          <Typography
-            variant="caption"
-            onClick={handleClickThanks}
-            sx={{ mt: 1 }}
-            className={classes.thanks}
-          >
-            Thanks
-          </Typography>
         </Grid>
         <Grid
           item

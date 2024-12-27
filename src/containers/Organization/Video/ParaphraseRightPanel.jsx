@@ -35,7 +35,7 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -52,8 +52,9 @@ import {
   setSubtitles,
 } from "redux/actions";
 import GlossaryDialog from "common/GlossaryDialog";
-import { bookmarkSegment, onExpandTimeline, paraphrase } from "utils/subtitleUtils";
+import { bookmarkSegment, onCopyToParaphrasedSegment, onExpandTimeline, paraphrase } from "utils/subtitleUtils";
 import LoopIcon from "@mui/icons-material/Loop";
+import { ArrowForward } from "@mui/icons-material";
 
 const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
@@ -300,6 +301,11 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
 
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
+  const copyToParaphrasedText = useCallback((index) => {
+    const sub = onCopyToParaphrasedSegment(index);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  }, [limit, currentOffset]);
 
   useEffect(() => {
     setSourceText(subtitles);
@@ -808,6 +814,7 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                       type={"endTime"}
                     />
                     {currentIndex === index && 
+                      <div style={{display:"flex"}}>
                       <Tooltip title="Paraphrase Segment" placement="bottom">
                         <IconButton
                           className={classes.optionIconBtn}
@@ -818,13 +825,24 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
                           <LoopIcon className={classes.rightPanelSvg} />
                         </IconButton>
                       </Tooltip>
+                      <Tooltip title="Copy to Paraphrased Segment" placement="bottom">
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          onClick={() => copyToParaphrasedText(index)}
+                          style={{ marginTop: "10px"}}
+                        >
+                          <ArrowForward className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                      </div>
                     }
                   </div>
 
-                  {enableTransliteration ? (
+                  {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
-                      lang={taskData?.target_language}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
+                      lang={taskData?.src_language}
                       value={item.paraphrased_text}
                       onChangeText={(text) => {
                         changeTranscriptHandler(text, index, "transaltion");

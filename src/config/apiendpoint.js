@@ -43,7 +43,7 @@ const endpoints = {
   task: "/task/",
 
   //Transliteration
-  transliteration: "/api/generic/transliteration/",
+  transliteration: "/xlit-api/generic/transliteration/",
 
   //Glossary
   glossary: "/glossary/",
