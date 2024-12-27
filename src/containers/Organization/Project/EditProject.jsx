@@ -192,6 +192,10 @@ const EditProject = () => {
 
     const apiObj = new EditProjectDetailsAPI(updateProjectReqBody, projectId);
     dispatch(APITransport(apiObj));
+
+    const apiObj2 = new FetchProjectDetailsAPI(projectId);
+    dispatch(APITransport(apiObj2));
+
   };
 
   const showBtn = () => {

@@ -142,11 +142,11 @@ const MyOrganization = () => {
       const {
         organization: { organization_owners },
       } = userData;
-  
+
       if (organization_owners && organization_owners?.length > 0) {
-        const ownerIds = organization_owners.map(owner => owner.id);
+        const ownerIds = organization_owners.map((owner) => owner.id);
         setOrgOwnerId(ownerIds);
-  
+
         if (ownerIds.includes(userData.id)) {
           setIsUserOrgOwner(true);
         } else {
@@ -173,7 +173,16 @@ const MyOrganization = () => {
     }
 
     return (
-      <Typography variant="h2" gutterBottom component="div">
+      <Typography
+        variant="h2"
+        gutterBottom
+        component="div"
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
         {organizationDetails?.title}
       </Typography>
     );
@@ -192,31 +201,81 @@ const MyOrganization = () => {
   };
 
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Grid container direction="row">
       <Card className={classes.workspaceCard}>
         {renderOrgDetails()}
 
         <Box>
           <Tabs
+            style={{ marginLeft: "1.5rem" }}
             value={value}
             onChange={(_event, newValue) => setValue(newValue)}
+            variant="fullWidth"
             aria-label="basic tabs example"
+            TabIndicatorProps={{
+              style: { display: "none" },
+            }}
           >
-            <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab
+              label={"Projects"}
+              sx={{
+                fontSize: 16,
+                fontWeight: "700",
+                bgcolor: value === 0 ? "#d3d3d3" : "#F5F5F5",
+                color: value === 0 ? "black" : "text.primary",
+                borderRadius: 1,
+                "&:hover": {
+                  bgcolor: "#e0e0e0",
+                },
+              }}
+            />
 
-            { roles.filter((role) => role.value === userData?.role)[0]
+            {roles.filter((role) => role.value === userData?.role)[0]
               ?.canAddMembers && (
-              <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+              <Tab
+                label={"Members"}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 1 ? "#d3d3d3" : "#F5F5F5",
+                  color: value === 1 ? "black" : "text.primary",
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
+              />
             )}
 
-            {(isUserOrgOwner|| userData?.role==="ADMIN") &&(
-              <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
+              <Tab
+                label={"Reports"}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 2 ? "#d3d3d3" : "#F5F5F5",
+                  color: value === 2 ? "black" : "text.primary",
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
+              />
             )}
 
-            {(isUserOrgOwner || userData?.role==="ADMIN")&&(
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
               <Tab
                 label={"Settings"}
-                sx={{ fontSize: 16, fontWeight: "700" }}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 3 ? "#d3d3d3" : "#F5F5F5",
+                  color: value === 3 ? "black" : "text.primary",
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
               />
             )}
           </Tabs>
@@ -234,7 +293,9 @@ const MyOrganization = () => {
             alignItems="center"
           >
             <Box display={"flex"} width={"100%"}>
-              {(isUserOrgOwner|| userData?.role==="ADMIN") && (
+              {(isUserOrgOwner ||
+                userData?.role === "ADMIN" ||
+                userData?.role === "PROJECT_MANAGER") && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
@@ -315,7 +376,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {(isUserOrgOwner|| userData?.role==="ADMIN") && (
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
