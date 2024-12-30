@@ -24,7 +24,7 @@ const Footer = () => {
           <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha">
             <img src={Github} alt="logo" className={classes.footerimg} />{" "}
           </a>
-          <a target="_blank" href=" https://twitter.com/ai4bharat">
+          <a target="_blank" href="https://x.com/ai4bharat">
             <img src={Twitter} alt="logo" className={classes.footerimg} />
           </a>
           <a
