@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.9ec9c719.css",
-    "main.js": "/static/js/main.4f7478d2.js",
+    "main.js": "/static/js/main.0e65ddc3.js",
     "static/js/850.195368b5.chunk.js": "/static/js/850.195368b5.chunk.js",
     "static/js/353.a8afe15a.chunk.js": "/static/js/353.a8afe15a.chunk.js",
     "reactPlayerPreview.js": "/static/js/reactPlayerPreview.816f9eae.chunk.js",
@@ -17,22 +17,15 @@
     "reactPlayerVidyard.js": "/static/js/reactPlayerVidyard.6c17381d.chunk.js",
     "reactPlayerKaltura.js": "/static/js/reactPlayerKaltura.c8573d22.chunk.js",
     "reactPlayerFilePlayer.js": "/static/js/reactPlayerFilePlayer.914a4ad8.chunk.js",
-    "static/media/Ganavi.png": "/static/media/Ganavi.2ee88c339dcf51b9b22f.png",
     "static/media/chiralekha-bg.png": "/static/media/chiralekha-bg.be4d1188e3aac2636abd.png",
     "static/media/Chitralekha_Logo.png": "/static/media/Chitralekha_Logo.186deb6fe7ab10b0eb0e.png",
-    "static/media/aravinth.png": "/static/media/aravinth.93bd3ae869c646ae9373.png",
-    "static/media/mrigank.png": "/static/media/mrigank.6bae7160446a83582cb1.png",
     "static/media/TicTac.png": "/static/media/TicTac.1542b557834ec6a9c635.png",
-    "static/media/Harsh.png": "/static/media/Harsh.12e176c962dc0ebc26b8.png",
     "static/media/Nptel.png": "/static/media/Nptel.e899763acf2cae1d88fe.png",
     "static/media/EkStep.png": "/static/media/EkStep.e0868145c2d109a9e9af.png",
-    "static/media/Alpana.png": "/static/media/Alpana.c825b040ecc2a5532c3a.png",
     "static/media/Dynamic.svg": "/static/media/Dynamic.fc5000c605f07268e767d237c9387624.svg",
     "static/media/logo.svg": "/static/media/logo.2968ade084e575085d672ccac19c6b74.svg",
-    "static/media/Shruti.png": "/static/media/Shruti.26549e6e423ecc9542c7.png",
     "static/media/youtube.png": "/static/media/youtube.82cba176af0592e340b6.png",
     "static/media/Extensible.svg": "/static/media/Extensible.61423ffc9a248617567d1e3d3c34edfd.svg",
-    "static/media/Aparna.png": "/static/media/Aparna.b792bfaac19dd3a55ef9.png",
     "static/media/Elegant.svg": "/static/media/Elegant.54ff54ba5842c9126ffb884c3fe949ae.svg",
     "static/media/OpenSource.svg": "/static/media/OpenSource.bb0463a6cbb522ab0561ebf1286eff4d.svg",
     "static/media/Scalable.svg": "/static/media/Scalable.f3db98b0847a0b82b773e6cc2b4d730a.svg",
@@ -43,7 +36,7 @@
     "index.html": "/index.html",
     "static/media/Card.svg": "/static/media/Card.93f0e69be62a5b18d067c6ba14e983e2.svg",
     "main.9ec9c719.css.map": "/static/css/main.9ec9c719.css.map",
-    "main.4f7478d2.js.map": "/static/js/main.4f7478d2.js.map",
+    "main.0e65ddc3.js.map": "/static/js/main.0e65ddc3.js.map",
     "850.195368b5.chunk.js.map": "/static/js/850.195368b5.chunk.js.map",
     "353.a8afe15a.chunk.js.map": "/static/js/353.a8afe15a.chunk.js.map",
     "reactPlayerPreview.816f9eae.chunk.js.map": "/static/js/reactPlayerPreview.816f9eae.chunk.js.map",
@@ -62,6 +55,6 @@
   },
   "entrypoints": [
     "static/css/main.9ec9c719.css",
-    "static/js/main.4f7478d2.js"
+    "static/js/main.0e65ddc3.js"
   ]
 }
