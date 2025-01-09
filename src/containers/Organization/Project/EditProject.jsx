@@ -27,10 +27,17 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogContentText, 
+  DialogActions, 
+  Snackbar,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Loader } from "common";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { DeleteDialog } from "common";
 
 //Styles
 import { ProjectStyle } from "styles";
@@ -47,9 +54,12 @@ import {
   FetchTranslationTypesAPI,
   StoreAccessTokenAPI,
 } from "redux/actions";
+import DeleteProjectAPI from "redux/actions/api/Project/DeleteProject";
 
 const EditProject = () => {
   const { projectId, orgId } = useParams();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const dispatch = useDispatch();
   const classes = ProjectStyle();
 
@@ -82,6 +92,7 @@ const EditProject = () => {
     label: null,
     value: null,
   });
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [taskDescription, setTaskDescription] = useState("");
   const [integrateVideo, setIntegrateVideo] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
@@ -105,6 +116,21 @@ const EditProject = () => {
       }
     }
   }, [userData]);
+
+  const handleDelete = () => {
+    const apiObj = new DeleteProjectAPI(projectId);
+    dispatch(APITransport(apiObj));
+  };
+
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (!progress && success && apiType === "DELETE_Project") {
+      setSnackbarMessage("Project deleted successfully.");
+      setSnackbarOpen(true);
+      setOpenDeleteDialog(false); 
+    }
+  }, [apiStatus]);
 
   useEffect(() => {
     const apiObj = new FetchProjectDetailsAPI(projectId);
@@ -800,10 +826,54 @@ const EditProject = () => {
                     <Loader size={20} margin="0 0 0 10px" color="secondary" />
                   )}
                 </Button>
+                {(isUserOrgOwner || userData?.role === "ADMIN") && (
+                <Button
+                  color="error"
+                  variant="contained"
+                  onClick={() => setOpenDeleteDialog(true)}
+                  style={{ 
+                    borderRadius: 6,
+                    marginLeft:15,
+                  }}
+                >
+                  Delete Project
+                </Button>
+              )}
               </Grid>
             )}
           </Grid>
         </Card>
+        <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Delete Project</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this project? All associated videos
+            and tasks will be deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setOpenDeleteDialog(false)}
+            color="primary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDelete}
+            color="error"
+            variant="contained"
+            disabled={apiStatus.loading}
+          >
+             {apiStatus.loading && (
+                    <Loader size={20} margin="0 0 0 10px" color="secondary" />
+                  )}
+          </Button>
+        </DialogActions>
+      </Dialog>
       </Grid>
     </>
   );

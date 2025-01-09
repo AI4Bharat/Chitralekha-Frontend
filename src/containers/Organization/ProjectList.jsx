@@ -92,7 +92,11 @@ const ProjectList = ({ data, removeProjectList }) => {
         const selectedRow = data[rowIndex];
 
         return (
-          <div style={{ textAlign: "center" }}>
+          <div style={{ 
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            }}>
             <Link
               to={`/my-organization/${id}/project/${selectedRow.id}`}
               style={{ textDecoration: "none" }}
@@ -104,13 +108,13 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            {(isUserOrgOwner || userData?.role==="ADMIN") && (
+            {/* {(isUserOrgOwner || userData?.role==="ADMIN") && (
               <Tooltip title="Delete">
                 <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
                   <DeleteIcon color="error" />
                 </IconButton>
               </Tooltip>
-            )}
+            )} */}
           </div>
         );
       },
