@@ -55,6 +55,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
+import { Loader } from "common";
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
@@ -217,7 +218,7 @@ const OrgLevelTaskList = () => {
       "description",
       "created_at",
       "updated_at",
-      "video_name",
+      // "video_name",
     ];
     allCols.forEach((ele) => {
       if (displayColsLocalStorage && ele in displayColsLocalStorage) {
@@ -1318,6 +1319,7 @@ const OrgLevelTaskList = () => {
 
   return (
     <>
+        {loading && <Loader size={50} color="primary" />}
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={tableData}

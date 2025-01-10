@@ -29,8 +29,6 @@ const DatasetStyle = makeStyles({
     width: "100%",
     minHeight: "500px",
     padding: "40px",
-    justifyContent: "center",
-    justifyItems: "center",
   },
   projectsettingGrid: {
     margin: "20px 0px 10px 0px",
@@ -45,7 +43,7 @@ const DatasetStyle = makeStyles({
     alignItems: "center",
     columnGap: "10px",
   },
- 
+
   filterContainer: {
     borderBottom: "1px solid #00000029",
     paddingLeft: "18.5px",
@@ -65,7 +63,7 @@ const DatasetStyle = makeStyles({
     // display : 'contents',
     alignItems: "center",
   },
- 
+
   applyBtn: {
     float: "right",
     borderRadius: "20px",
@@ -218,7 +216,7 @@ const DatasetStyle = makeStyles({
     marginRight: 2,
     textDecoration: "none",
   },
-  
+
   search: {
     //position: "relative",
     borderRadius: "24px",
@@ -264,38 +262,37 @@ const DatasetStyle = makeStyles({
     padding: "4px",
     verticalAlign: "sub",
     "& .MuiSvgIcon-root": {
-      fontSize: "1.3rem"
-    }
+      fontSize: "1.3rem",
+    },
   },
-  searchStyle:{
+  searchStyle: {
     position: "absolute",
     //  right: "107px",
     bottom: "2px",
     width: "85%",
     justifyContent: "flex-end",
   },
-  TaskListsearch:{
+  TaskListsearch: {
     position: "absolute",
-     right: "175px",
-      bottom: "2px"
-
+    right: "175px",
+    bottom: "2px",
   },
   clearAllBtn: {
     // float: "right",
-     margin: "10px 10px 10px 0px",
+    margin: "10px 10px 10px 0px",
     padding: "14px",
     // height: "15px",
   },
 
   taskQueueStatusTabs: {
-    fontSize: 16, 
-    fontWeight: "700"
+    fontSize: 16,
+    fontWeight: "700",
   },
 
   bulkProjectContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
 
   newProjectWrapper: {
@@ -306,8 +303,8 @@ const DatasetStyle = makeStyles({
   },
 
   bulkProjectButton: {
-    borderRadius: "8px", 
-    margin: "0px 10px 0px 0px"
+    borderRadius: "8px",
+    margin: "0px 10px 0px 0px",
   },
 });
 
