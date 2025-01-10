@@ -50,9 +50,18 @@ const CreatenewProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const userList = useSelector(
-    (state) => state.getOrganizatioProjectManagersUser.data
-  );
+
+    const projectManagers = useSelector(
+      (state) => state.getOrganizatioProjectManagersUser.data
+    );
+    const orgUsers = useSelector((state) => state.getOrganizatioUsers.data);
+  
+    const filteredOrgUsers = (orgUsers || []).filter(
+      (user) => user.role === "ORG_OWNER"
+    );
+    const userList = [...(projectManagers || []), ...filteredOrgUsers];
+  
+  
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
   const translationTypes = useSelector(
     (state) => state.getTranslationTypes.data
@@ -230,7 +239,7 @@ const CreatenewProject = () => {
                 );
               }}
             >
-              {userList.map((name, index) => (
+              {userList?.map((name, index) => (
                 <MenuItem key={index} value={name}>
                   <Checkbox checked={managerUsername.indexOf(name) > -1} />
                   {name.email}
