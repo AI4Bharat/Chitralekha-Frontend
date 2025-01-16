@@ -46,20 +46,8 @@ export const projectColumns = [
 
 export const usersColumns = [
   {
-    name: "name",
+    name: "first_name",
     label: "Name",
-    options: {
-      customBodyRender: (_value, tableMeta) => {
-        const { tableData: data, rowIndex } = tableMeta;
-        const selectedRow = data[rowIndex];
-
-        return (
-          <Box>
-            {selectedRow.first_name} {selectedRow.last_name}
-          </Box>
-        );
-      },
-    },
   },
   {
     name: "email",
