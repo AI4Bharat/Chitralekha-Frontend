@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import moment from "moment/moment";
+import moment, { duration } from "moment/moment";
 import { roles } from "utils";
 
 //APIs
@@ -80,6 +80,7 @@ const Project = () => {
   const [projectDetails, SetProjectDetails] = useState({});
   const [videoList, setVideoList] = useState([]);
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
+  const [duration, setDuration] = useState("00:00:00");
   const [videoLink, setVideoLink] = useState("");
   const [isAudio, setIsAudio] = useState(false);
   const [lang, setLang] = useState("");
@@ -245,6 +246,7 @@ const Project = () => {
   const addNewVideoHandler = async () => {
     const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
     const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
+    const dur = encodeURIComponent(duration);
     const create = true;
 
     dispatch(
@@ -264,7 +266,8 @@ const Project = () => {
       create,
       voice,
       speakerInfo,
-      speakerType
+      speakerType,
+      dur
     );
     dispatch(APITransport(apiObj));
 
@@ -527,6 +530,8 @@ const Project = () => {
           speakerInfo={speakerInfo}
           speakerType={speakerType}
           setSpeakerType={setSpeakerType}
+          duration={duration}
+          setDuration={setDuration}
         />
       )}
 
