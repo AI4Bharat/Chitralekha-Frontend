@@ -1,27 +1,49 @@
 import { makeStyles } from "@mui/styles";
 
 const LoginStyle = makeStyles({
+  pageWrpr: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    "@media (max-width:767px)": {
+      flexDirection: "column",
+    },
+  },
   appInfo: {
     background: "rgba(44, 39, 153, 1)",
-    minHeight: "100vh",
-    color: "white",
-    // color: theme.palette.primary.contrastText,
-    "@media (max-width:650px)": {
-      background: "white",
-      minHeight: "15vh",
+    width: "35%",
+    height: "100vh",
+    "@media (max-width:767px)": {
+      width: "100%",
+    },
+  },
+  appInfoContainer: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    gap: "1rem",
+    padding: "1rem",
+    "@media (max-width:767px)": {
+      padding: "1rem",
     },
   },
   title: {
-    width: "20%",
+    width: "100%",
     height: "auto",
-    margin: "22% 294px 10% 39px",
     cursor: "pointer",
     lineHeight: "1.53",
     letterSpacing: "3.9px",
     textAlign: "left",
-    "@media (max-width:650px)": {
-      margin: "0% 0% 00% 90%",
-      color: "black",
+    color: "white",
+    fontSize: "2rem",
+    "@media (min-width:768px) and (max-width:1024px)": {
+      fontSize: "1.5rem",
     },
   },
   subTitle: {
@@ -42,26 +64,33 @@ const LoginStyle = makeStyles({
     },
   },
   body: {
-    width: "80%",
+    width: "100%",
     height: "auto",
-    margin: "30px 0px 50px 39px",
     lineHeight: "1.5",
     letterSpacing: "1.6px",
     textAlign: "left",
     color: "#f2f2f4",
-    "@media (max-width:1040px)": {
-      letterSpacing: "1px",
-      maxWidth: "280px",
-    },
-    "@media (min-width:1790px)": {
-      width: "85%",
+    fontSize: "1rem",
+  },
+  secondaryBodyText: {
+    position: "absolute",
+    fontSize: "1rem",
+    bottom: "0.5rem",
+    color: "white",
+    "@media (min-width:768px) and (max-width:1024px)": {
+      fontSize: "0.75rem",
     },
   },
-  parent: {
+  loginForm: {
+    height: "100vh !important",
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
     justifyContent: "center",
+    width: "65%",
+    "@media (max-width:767px)": {
+      width: "100%",
+    },
   },
   containerForgotPassword: {
     marginTop: "2px",

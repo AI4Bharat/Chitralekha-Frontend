@@ -7,7 +7,6 @@ import { translate } from "config";
 import { LoginStyle } from "styles";
 import { themeDefault } from "theme";
 
-
 //Components
 import { Box, Grid, Link, ThemeProvider, Button } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -15,7 +14,12 @@ import Visibility from "@mui/icons-material/Visibility";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppInfo from "./AppInfo";
-import { CustomCard, CustomizedSnackbars, Loader, OutlinedTextField } from "common";
+import {
+  CustomCard,
+  CustomizedSnackbars,
+  Loader,
+  OutlinedTextField,
+} from "common";
 
 //APIs
 import {
@@ -91,7 +95,7 @@ const Login = () => {
     if (userData && accessToken) {
       if (userData.role === "ADMIN") {
         navigate(`/admin`);
-      }else{
+      } else {
         navigate(`/my-organization/${userInfo?.organization?.id}`);
       }
     }
@@ -214,19 +218,11 @@ const Login = () => {
   return (
     <ThemeProvider theme={themeDefault}>
       {renderSnackBar()}
-      <Grid container>
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          md={3}
-          lg={3}
-          color={"primary"}
-          className={classes.appInfo}
-        >
+      <Grid container className={classes.pageWrpr}>
+        <Grid item color={"primary"} className={classes.appInfo}>
           <AppInfo />
         </Grid>
-        <Grid item xs={12} sm={9} md={9} lg={9} className={classes.parent}>
+        <Grid className={classes.loginForm}>
           <form autoComplete="off">{renderCardContent()}</form>
         </Grid>
       </Grid>

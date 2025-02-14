@@ -51,7 +51,7 @@ const ForgotPassword = () => {
 
   const TextFields = () => {
     return (
-      <Grid container spacing={2} style={{ marginTop: "2px", width: "40%" }}>
+      <Grid container sx={{ padding: "1rem", gap: "1rem", maxWidth: "700px" }}>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Typography variant="h3">Forgot password?</Typography>
         </Grid>
@@ -74,7 +74,7 @@ const ForgotPassword = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} textAlign={"right"}>
           <Typography>
-            <Link href="/login"style={{ fontSize: "14px" }}>
+            <Link href="/login" style={{ fontSize: "14px" }}>
               Back to Login
             </Link>
           </Typography>
@@ -93,21 +93,11 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Grid container className={classes.loginGrid}>
-      <Grid
-        item
-        xs={12}
-        sm={3}
-        md={3}
-        lg={3}
-        color={"primary"}
-        className={classes.appInfo}
-      >
+    <Grid container className={classes.pageWrpr}>
+      <Grid item color={"primary"} className={classes.appInfo}>
         <AppInfo />
       </Grid>
-      <Grid item xs={12} sm={9} md={9} lg={9} className={classes.parent}>
-        {TextFields()}
-      </Grid>
+      <Grid className={classes.loginForm}>{TextFields()}</Grid>
     </Grid>
   );
 };
