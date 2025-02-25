@@ -64,6 +64,8 @@ const CreateVideoDialog = ({
   setSpeakerType,
   duration,
   setDuration,
+  youtubeUrl,
+  setYoutubeUrl,
 }) => {
   const userOrgId = getLocalStorageData("userData").organization.id;
 
@@ -82,6 +84,7 @@ const CreateVideoDialog = ({
 
   const videosInProject = useSelector((state)=>state.getProjectVideoList.data)
   const [showPopup, setShowPopup] = useState(false);
+  const [showYoutubeUrl, setShowYoutubeUrl] = useState(false);
   const [showDurationSelector, setDurationSelector] = useState(false);
   useEffect(() => {
     if (videosInProject.some((video) => video.url === videoLink)) {
@@ -91,6 +94,11 @@ const CreateVideoDialog = ({
       setDurationSelector(true);
     }else{
       setDurationSelector(false);
+    }
+    if (videoLink.includes("drive.google.com")){
+      setShowYoutubeUrl(true);
+    }else{
+      setShowYoutubeUrl(false);
     }
   }, [videoLink, videosInProject]);
   
@@ -258,6 +266,16 @@ const CreateVideoDialog = ({
           sx={{ mt: 3 }}
         />
         
+        {showYoutubeUrl &&
+          <TextField
+            label={"Enter YouTube Url"}
+            fullWidth
+            rows={1}
+            value={youtubeUrl}
+            onChange={(event) => setYoutubeUrl(event.target.value)}
+            sx={{ mt: 3 }}
+          />}
+
         {showDurationSelector &&
           <TextField
             label={"Video Duration"}

@@ -16,12 +16,11 @@ import { VideoLandingStyle } from "styles";
 import { setPlayer } from "redux/actions";
 
 const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
-    const classes = VideoLandingStyle();
-    const dispatch = useDispatch();
-    const $video = createRef();
-
-    const [poster, setPoster] = useState("play.png");
-
+  const classes = VideoLandingStyle();
+  const dispatch = useDispatch();
+  const $video = createRef();
+  const [poster, setPoster] = useState("play.png");
+  const [ytUrl, setYtUrl] = useState("");
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const fullscreenVideo = useSelector(
@@ -63,7 +62,20 @@ const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
       if(videoDetails?.direct_video_url === ""){
         setUseYtdlp(false);
       }
+      if(ytUrl.includes("youtube")){
+        setUseYtdlp(false);
+      }
     }, [videoDetails?.direct_video_url])
+
+    useEffect(() => {
+      if(taskData?.video_url?.length > 0){
+        if(taskData?.video_yt_url?.length > 0){
+          setYtUrl(taskData.video_yt_url);
+        }else{
+          setYtUrl(taskData.video_url);
+        }
+      }
+    }, [taskData])
 
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
@@ -72,7 +84,7 @@ const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
         <ReactPlayerYT
           onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
           ref={$video}
-          url={taskData.video_url.replace("https://www.youtube.com/watch?v=", "https://www.youtube.com/embed/")}
+          url={ytUrl?.replace("https://www.youtube.com/watch?v=", "https://www.youtube.com/embed/")}
           controls={true}
         />
         :
