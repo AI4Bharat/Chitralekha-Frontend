@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import moment, { duration } from "moment/moment";
+import moment from "moment/moment";
 import { roles } from "utils";
 
 //APIs
@@ -82,6 +82,7 @@ const Project = () => {
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
   const [duration, setDuration] = useState("00:00:00");
   const [videoLink, setVideoLink] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
   const [isAudio, setIsAudio] = useState(false);
   const [lang, setLang] = useState("");
   const [projectData, setProjectData] = useState([
@@ -247,6 +248,7 @@ const Project = () => {
     const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
     const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
     const dur = encodeURIComponent(duration);
+    const ytLink = encodeURIComponent(youtubeUrl.replace(/&amp;/g, "&"));
     const create = true;
 
     dispatch(
@@ -267,7 +269,8 @@ const Project = () => {
       voice,
       speakerInfo,
       speakerType,
-      dur
+      dur,
+      ytLink
     );
     dispatch(APITransport(apiObj));
 
@@ -532,6 +535,8 @@ const Project = () => {
           setSpeakerType={setSpeakerType}
           duration={duration}
           setDuration={setDuration}
+          youtubeUrl={youtubeUrl}
+          setYoutubeUrl={setYoutubeUrl}
         />
       )}
 
