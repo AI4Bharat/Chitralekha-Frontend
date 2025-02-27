@@ -79,7 +79,7 @@ const VideoPanel = ({ setCurrentTime, setPlaying, useYtdlp, setUseYtdlp }) => {
 
     return (
       <div className={classes.videoPlayerParent} style={{display: "flex", alignItems: "center", justifyContent: "center", height:"100%"}}>
-        { ((videoDetails.length === 0 && taskData?.video_url?.includes("youtube")) || useYtdlp === false) ?
+        { ((videoDetails.length === 0 && ytUrl?.includes("youtube")) || useYtdlp === false) ?
 
         <ReactPlayerYT
           onReady={() => {dispatch(setPlayer($video.current.getInternalPlayer()))}}
