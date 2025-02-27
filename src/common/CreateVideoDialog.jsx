@@ -91,7 +91,11 @@ const CreateVideoDialog = ({
       setShowPopup(true);
     }
     if (videoLink.length > 10 & !videoLink.includes("youtube")){
-      setDurationSelector(true);
+      if(youtubeUrl.includes("youtube.com")){
+        setDurationSelector(false);
+      }else{
+        setDurationSelector(true);
+      }
     }else{
       setDurationSelector(false);
     }
@@ -100,7 +104,7 @@ const CreateVideoDialog = ({
     }else{
       setShowYoutubeUrl(false);
     }
-  }, [videoLink, videosInProject]);
+  }, [videoLink, videosInProject, youtubeUrl]);
   
   const handleClear = () => {
     setLang("");
