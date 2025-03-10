@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
 import { fullscreenUtil, getKeyCode, Sub } from "utils";
 
@@ -52,8 +52,10 @@ import {
   setSubtitlesForCheck,
   setTotalPages,
   setTotalSentences,
+  setSnackBar,
 } from "redux/actions";
 import C from "redux/constants";
+import CustomizedSnackbars from "../../../common/Snackbar";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
 import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -65,7 +67,7 @@ const VideoLanding = () => {
   const { taskId, offset, segment } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
-
+  const navigate = useNavigate();
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubs, setCurrentSubs] = useState();
@@ -76,8 +78,10 @@ const VideoLanding = () => {
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
   const [subtitlePlacement, setSubtitlePlacement] = useState("bottom");
   const [useYtdlp, setUseYtdlp] = useState(true);
-
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const loggedin_user_role = JSON.parse(localStorage.getItem("userData"))?.role;
   const transcriptPayload = useSelector(
     (state) => state.getTranscriptPayload.data
   );
@@ -88,8 +92,30 @@ const VideoLanding = () => {
   const videoDetails = useSelector((state) => state.getVideoDetails.data);
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
-
   const ref = useRef(0);
+
+  useEffect(() => {
+    if (
+      taskDetails &&
+      loggedin_user_role && loggedin_user_id &&
+      loggedin_user_id !== taskDetails?.user?.id &&
+      loggedin_user_role !== "ADMIN" &&
+      loggedin_user_role !== "ORG_OWNER" &&
+      loggedin_user_role !== "PROJECT_MANAGER"
+    ) {
+      // 1. Render snackbar
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "You don't have permissions to access this page!",
+          variant: "error",
+        })
+      );
+      // 2. redirect
+      navigate("/task-list");
+    }
+  }, [taskDetails]);
+
   useEffect(() => {
     let intervalId;
 
@@ -181,6 +207,22 @@ const VideoLanding = () => {
     subs && setCurrentSubs(subs[currentIndex]);
   }, [subs, currentIndex]);
 
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
+
   const onKeyDown = useCallback(
     (event) => {
       const keyCode = getKeyCode(event);
@@ -267,153 +309,202 @@ const VideoLanding = () => {
     };
   }, []);
   return (
-    <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
-      {renderLoader()}
+    <>
+      {renderSnackBar()}
+      <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
+        {renderLoader()}
 
-      <PanelGroup direction="horizontal" className={classes.parentGrid}>
-        <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
-          <Box
-            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(92.5vh - 60px)" }}
-            className={classes.videoBox}
+        <PanelGroup direction="horizontal" className={classes.parentGrid}>
+          <Panel
+            defaultSize={25}
+            minSize={20}
+            id="video"
+            className={classes.videoParent}
           >
-            <VideoName
-              fontSize={fontSize}
-              setFontSize={setFontSize}
-              darkAndLightMode={darkAndLightMode}
-              setDarkAndLightMode={setDarkAndLightMode}
-              subtitlePlacement={subtitlePlacement}
-              setSubtitlePlacement={setSubtitlePlacement}
-              showSubtitles={showSubtitles}
-              setShowSubtitles={setShowSubtitles}
-              showTimeline={showTimeline}
-              setShowTimeline={setShowTimeline}
-              useYtdlp={useYtdlp}
-              setUseYtdlp={setUseYtdlp}
-            />
+            <Box
+              style={{
+                height: videoDetails?.video?.audio_only
+                  ? "100%"
+                  : showTimeline
+                  ? "calc(100vh - 183px)"
+                  : "calc(92.5vh - 60px)",
+              }}
+              className={classes.videoBox}
+            >
+              <VideoName
+                fontSize={fontSize}
+                setFontSize={setFontSize}
+                darkAndLightMode={darkAndLightMode}
+                setDarkAndLightMode={setDarkAndLightMode}
+                subtitlePlacement={subtitlePlacement}
+                setSubtitlePlacement={setSubtitlePlacement}
+                showSubtitles={showSubtitles}
+                setShowSubtitles={setShowSubtitles}
+                showTimeline={showTimeline}
+                setShowTimeline={setShowTimeline}
+                useYtdlp={useYtdlp}
+                setUseYtdlp={setUseYtdlp}
+              />
 
-            <VideoPanel
-              setCurrentTime={setCurrentTime}
-              setPlaying={setPlaying}
-              useYtdlp={useYtdlp}
-              setUseYtdlp={setUseYtdlp}
-            />
+              <VideoPanel
+                setCurrentTime={setCurrentTime}
+                setPlaying={setPlaying}
+                useYtdlp={useYtdlp}
+                setUseYtdlp={setUseYtdlp}
+              />
 
-            {currentSubs && showSubtitles && (
+              {currentSubs && showSubtitles && (
+                <div
+                  className={classes.subtitlePanel}
+                  style={{
+                    bottom: fullscreen || fullscreenVideo ? "10%" : "",
+                    margin: fullscreenVideo ? "auto" : "",
+                    top: subtitlePlacement === "top" ? "15%" : "",
+                  }}
+                >
+                  <div
+                    className={`${classes.playerTextarea} ${
+                      darkAndLightMode === "dark"
+                        ? classes.darkMode
+                        : classes.lightMode
+                    }`}
+                    style={{
+                      fontSize: fontSize,
+                      maxHeight: "100px",
+                    }}
+                  >
+                    {taskDetails.task_type.includes("TRANSCRIPTION") ||
+                    taskDetails.task_type.includes("VOICEOVER")
+                      ? currentSubs.text
+                      : currentSubs.target_text}
+                  </div>
+                </div>
+              )}
+
+              {!fullscreen && (
+                <Box>
+                  <Button
+                    className={classes.fullscreenVideoBtn}
+                    aria-label="fullscreen"
+                    onClick={() => handleFullscreenVideo()}
+                    variant="contained"
+                    style={{
+                      bottom: fullscreenVideo ? "2%" : "",
+                      right: fullscreenVideo ? "2%" : "",
+                    }}
+                  >
+                    {fullscreenVideo ? (
+                      <FullscreenExitIcon />
+                    ) : (
+                      <FullscreenIcon />
+                    )}
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </Panel>
+          <PanelResizeHandle />
+          <Panel
+            defaultSize={75}
+            minSize={50}
+            id="right-panel"
+            style={{
+              backgroundColor: "white",
+              paddingTop: fullscreen ? "4%" : "0",
+            }}
+          >
+            {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
+              taskDetails?.status === "PARAPHRASE" ? (
+                <ParaphraseRightPanel
+                  currentIndex={currentIndex}
+                  currentSubs={currentSubs}
+                  setCurrentIndex={setCurrentIndex}
+                  showTimeline={showTimeline}
+                  segment={segment}
+                />
+              ) : (
+                <RightPanel
+                  currentIndex={currentIndex}
+                  currentSubs={currentSubs}
+                  setCurrentIndex={setCurrentIndex}
+                  showTimeline={showTimeline}
+                  segment={segment}
+                />
+              )
+            ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
+              // <VoiceOverRightPanel currentIndex={currentIndex}
+              // setCurrentIndex={setCurrentIndex} />
+              <VoiceOverRightPanel1
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                showTimeline={showTimeline}
+                segment={segment}
+              />
+            ) : (
+              <TranslationRightPanel
+                currentIndex={currentIndex}
+                currentSubs={currentSubs}
+                setCurrentIndex={setCurrentIndex}
+                showTimeline={showTimeline}
+                segment={segment}
+              />
+            )}
+            {fullscreen && (
               <div
-                className={classes.subtitlePanel}
                 style={{
-                  bottom: fullscreen || fullscreenVideo ? "10%" : "",
-                  margin: fullscreenVideo ? "auto" : "",
-                  top: subtitlePlacement === "top" ? "15%" : "",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "2%",
                 }}
               >
-                <div
-                  className={`${classes.playerTextarea} ${darkAndLightMode === "dark"
-                      ? classes.darkMode
-                      : classes.lightMode
-                    }`}
-                  style={{
-                    fontSize: fontSize, maxHeight: "100px"
+                <PlayArrow
+                  color="primary"
+                  style={{ transform: "scale(3)", margin: "0 20px" }}
+                  onClick={() => {
+                    if (player)
+                      typeof player.pauseVideo === "function"
+                        ? player.playVideo()
+                        : player.play();
                   }}
-                >
-                  {
-                    taskDetails.task_type.includes("TRANSCRIPTION") ||
-                      taskDetails.task_type.includes("VOICEOVER")
-                      ? currentSubs.text
-                      : currentSubs.target_text
-                  }
-                </div>
+                />
+                <Pause
+                  color="primary"
+                  style={{ transform: "scale(3)", margin: "0 20px" }}
+                  onClick={() => {
+                    if (player)
+                      typeof player.pauseVideo === "function"
+                        ? player.pauseVideo()
+                        : player.pause();
+                  }}
+                />
               </div>
             )}
+            <Box>
+              <Button
+                className={classes.fullscreenBtn}
+                aria-label="fullscreen"
+                onClick={() => handleFullscreen()}
+                variant="contained"
+              >
+                {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              </Button>
+            </Box>
+          </Panel>
+        </PanelGroup>
 
-            {!fullscreen && (
-              <Box>
-                <Button
-                  className={classes.fullscreenVideoBtn}
-                  aria-label="fullscreen"
-                  onClick={() => handleFullscreenVideo()}
-                  variant="contained"
-                  style={{
-                    bottom: fullscreenVideo ? "2%" : "",
-                    right: fullscreenVideo ? "2%" : "",
-                  }}
-                >
-                  {fullscreenVideo ? (
-                    <FullscreenExitIcon />
-                  ) : (
-                    <FullscreenIcon />
-                  )}
-                </Button>
-              </Box>
-            )}
-          </Box>
-        </Panel>
-        <PanelResizeHandle />
-        <Panel defaultSize={75} minSize={50} id="right-panel" style={{backgroundColor:"white", paddingTop: fullscreen?"4%":"0"}}>
-          {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
-            taskDetails?.status === "PARAPHRASE" ?
-            <ParaphraseRightPanel
-              currentIndex={currentIndex}
-              currentSubs={currentSubs}
-              setCurrentIndex={setCurrentIndex}
-              showTimeline={showTimeline}
-              segment={segment}
-            />
-            :
-            <RightPanel
-              currentIndex={currentIndex}
-              currentSubs={currentSubs}
-              setCurrentIndex={setCurrentIndex}
-              showTimeline={showTimeline}
-              segment={segment}
-            />
-          ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
-            // <VoiceOverRightPanel currentIndex={currentIndex}
-            // setCurrentIndex={setCurrentIndex} />
-            <VoiceOverRightPanel1
-              currentIndex={currentIndex}
-              setCurrentIndex={setCurrentIndex}
-              showTimeline={showTimeline}
-              segment={segment}
-            />
-          ) : (
-            <TranslationRightPanel
-              currentIndex={currentIndex}
-              currentSubs={currentSubs}
-              setCurrentIndex={setCurrentIndex}
-              showTimeline={showTimeline}
-              segment={segment}
-            />
-          )}
-          {fullscreen && 
-          <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
-            <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.playVideo() : player.play()}}/>
-            <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.pauseVideo() : player.pause()}}/>
-          </div>}
-          <Box>
-            <Button
-              className={classes.fullscreenBtn}
-              aria-label="fullscreen"
-              onClick={() => handleFullscreen()}
-              variant="contained"
-            >
-              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-            </Button>
-          </Box>
-        </Panel>
-      </PanelGroup>
-
-      {showTimeline && 
-      <Grid
-        width={"100%"}
-        position="fixed"
-        bottom={1}
-        style={fullscreen ? { visibility: "hidden" } : {}}
-      >
-        <Timeline currentTime={currentTime} playing={playing} />
+        {showTimeline && (
+          <Grid
+            width={"100%"}
+            position="fixed"
+            bottom={1}
+            style={fullscreen ? { visibility: "hidden" } : {}}
+          >
+            <Timeline currentTime={currentTime} playing={playing} />
+          </Grid>
+        )}
       </Grid>
-      }
-    </Grid>
+    </>
   );
 };
 
