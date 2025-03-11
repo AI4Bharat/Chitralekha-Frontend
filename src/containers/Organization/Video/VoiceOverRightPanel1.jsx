@@ -27,7 +27,16 @@ import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 //Components
-import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  CardContent,
+  CircularProgress,
+  Grid,
+  IconButton,
+  Menu,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
 import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
@@ -67,18 +76,24 @@ import {
 } from "redux/actions";
 import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
+import CustomizedSnackbars from "../../../common/Snackbar";
 import { copySubs, exportFile, onExpandTimeline } from "utils/subtitleUtils";
 import AudioPlayer from "./audioPanel";
+import TaskDetails from "containers/Admin/TaskDetails";
 
-const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, segment }) => {
+const VoiceOverRightPanel1 = ({
+  currentIndex,
+  setCurrentIndex,
+  showTimeline,
+  segment,
+}) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
   const navigate = useNavigate();
-
   const xl = useMediaQuery("(min-width:1800px)");
   const $audioRef = useRef([]);
-
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
     ?.organization?.id;
@@ -100,7 +115,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     (state) => state.commonReducer.totalSentences
   );
   const textboxes = useRef([]);
-
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -151,6 +167,14 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     speakerInfo: "false",
     bgMusic: "false",
   });
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const transcriptExportObj = new FetchTranscriptExportTypesAPI();
@@ -205,14 +229,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
           setTableDialogResponse(data.data);
         }
 
-        if(apiType === "CREATE_GLOSSARY"){
+        if (apiType === "CREATE_GLOSSARY") {
           setOpenGlossaryDialog(false);
         }
 
-        if(apiType === "GET_TRANSCRIPT_PAYLOAD"){
+        if (apiType === "GET_TRANSCRIPT_PAYLOAD") {
           setLoader(false);
         }
-
       } else {
         if (apiType === "SAVE_TRANSCRIPT") {
           setOpenConfirmDialog(false);
@@ -240,14 +263,18 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   useEffect(() => {
     if (videoDetails.hasOwnProperty("video")) {
-        if(segment!==undefined){
-          setTimeout(() => {          
-            const subtitleScrollEle = document.getElementById("subtitleContainerVO");
-            subtitleScrollEle
-              .querySelector(`#container-${segment}`)
-              ?.scrollIntoView(true, { block: "start" });
-            subtitleScrollEle.querySelector(`#container-${segment} textarea`).click();
-          }, 2000);
+      if (segment !== undefined) {
+        setTimeout(() => {
+          const subtitleScrollEle = document.getElementById(
+            "subtitleContainerVO"
+          );
+          subtitleScrollEle
+            .querySelector(`#container-${segment}`)
+            ?.scrollIntoView(true, { block: "start" });
+          subtitleScrollEle
+            .querySelector(`#container-${segment} textarea`)
+            .click();
+        }, 2000);
       }
     }
   }, [videoDetails]);
@@ -295,51 +322,51 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     // }
 
     subtitles?.forEach((item, index) => {
-      if(!item.hasOwnProperty("blobUrl")){
-      if (item.audio && item.audio.hasOwnProperty("audioContent")) {
-        if(item.audio.audioContent === ""){
-          updatedArray[index] = "";
-        }else{
-          const blobUrl = base64toBlob(item.audio.audioContent);
-          item.blobUrl = blobUrl;
-          updatedArray[index] = blobUrl;
+      if (!item.hasOwnProperty("blobUrl")) {
+        if (item.audio && item.audio.hasOwnProperty("audioContent")) {
+          if (item.audio.audioContent === "") {
+            updatedArray[index] = "";
+          } else {
+            const blobUrl = base64toBlob(item.audio.audioContent);
+            item.blobUrl = blobUrl;
+            updatedArray[index] = blobUrl;
+          }
         }
-      }
-      changed = true;
+        changed = true;
       }
     });
 
-    if(changed){
-    setData(updatedArray);
-    setSourceText(subtitles);
+    if (changed) {
+      setData(updatedArray);
+      setSourceText(subtitles);
     }
   }, [subtitles]);
 
-  const changeTranscriptHandler = (text, index, type="translation") => {
+  const changeTranscriptHandler = (text, index, type = "translation") => {
     const arr = [...sourceText];
 
     arr.forEach((element, i) => {
       if (index === i) {
-        if(type==="translation"){
-        element.text = text;
-        }else if(type === "audio"){
-        element.text_changed = true;
-        }else if(type === "retranslate"){
-        element.retranslate = true;  
-        }else{
-        element.transcription_text = text;
+        if (type === "translation") {
+          element.text = text;
+        } else if (type === "audio") {
+          element.text_changed = true;
+        } else if (type === "retranslate") {
+          element.retranslate = true;
+        } else {
+          element.transcription_text = text;
         }
       }
-      if(index === "retranslate" && type === "retranslate"){
-        element.retranslate = true;  
+      if (index === "retranslate" && type === "retranslate") {
+        element.retranslate = true;
       }
-      if(index === "audio" && type === "audio"){
-        element.text_changed = true;  
+      if (index === "audio" && type === "audio") {
+        element.text_changed = true;
       }
     });
 
     dispatch(setSubtitles(arr, C.SUBTITLES));
-    if(type === "audio" || type === "retranslate"){
+    if (type === "audio" || type === "retranslate") {
       saveTranscriptHandler(false, true);
       setFetchInProgress(true);
     }
@@ -350,8 +377,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     isFinal,
     isGetUpdatedAudio,
     value = currentPage,
-    bookmark = false,
-    ) => {
+    bookmark = false
+  ) => {
     dispatch(
       setSnackBar({
         open: true,
@@ -359,7 +386,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
         variant: "info",
       })
     );
-    
+
     // if(isGetUpdatedAudio){
     //   SaveTranscriptAPI.isSaveInProgress(true);
     // }
@@ -367,7 +394,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     const subs = JSON.parse(JSON.stringify(sourceText));
     const reqBody = {
       task_id: taskId,
-      ...(bookmark && {bookmark: currentIndex}),
+      ...(bookmark && { bookmark: currentIndex }),
       offset: value,
       payload: {
         payload: subs,
@@ -376,8 +403,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
     if (isFinal) {
       reqBody.final = true;
-    }else{
-      reqBody.payload.payload.forEach(element => {
+    } else {
+      reqBody.payload.payload.forEach((element) => {
         element.audio = "";
       });
     }
@@ -526,7 +553,6 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   //     .getElementById("subtitleContainerVO")
   //     ?.querySelector(`#container-1`),
   // ]);
-
 
   useEffect(() => {
     const subtitleScrollEle = document.getElementById("subtitleContainerVO");
@@ -684,6 +710,22 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     }
   }, [limit, currentOffset]);
 
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
+
   const onUndo = useCallback(() => {
     if (undoStack.length > 0) {
       const lastAction = undoStack[undoStack.length - 1];
@@ -737,16 +779,21 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     ]);
     setRedoStack([]);
 
-    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, true, true);
+    const sub = onSplit(
+      currentIndexToSplitTextBlock,
+      selectionStart,
+      null,
+      null,
+      true,
+      true
+    );
     dispatch(setSubtitles(sub, C.SUBTITLES));
     // saveTranscriptHandler(false, true, sub);
-
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
-  
+
   const expandTimestamp = useCallback(() => {
     const sub = onExpandTimeline(currentIndex, true);
     dispatch(setSubtitles(sub, C.SUBTITLES));
-
   }, [currentIndex, limit]);
 
   // useEffect(() => {
@@ -756,12 +803,12 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   //     arr.forEach((element) => {
   //       if(element.audio.audioContent === ""){
-  //         element.text_changed = true;  
+  //         element.text_changed = true;
   //         fetchAudio = true;
   //         console.log(element.start_time);
   //       }
   //     });
-  
+
   //     if(fetchAudio){
   //       dispatch(setSubtitles(arr, C.SUBTITLES));
   //       saveTranscriptHandler(false, true);
@@ -773,89 +820,91 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const handleTranscriptExport = async () => {
     const { transcription, speakerInfo } = exportTypes;
 
-    transcription.map(async (transcript)=>{
-    const apiObj = new exportTranscriptionAPI(
-      taskId,
-      transcript,
-      speakerInfo
-    );
-    setOpenExportDialog(false);
+    transcription.map(async (transcript) => {
+      const apiObj = new exportTranscriptionAPI(
+        taskId,
+        transcript,
+        speakerInfo
+      );
+      setOpenExportDialog(false);
 
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        headers: apiObj.getHeaders().headers,
-      });
+      try {
+        const res = await fetch(apiObj.apiEndPoint(), {
+          method: "GET",
+          headers: apiObj.getHeaders().headers,
+        });
 
-      if (res.ok) {
-        const resp = await res.blob();
+        if (res.ok) {
+          const resp = await res.blob();
 
-        exportFile(resp, taskData, transcript, "transcription");
-      } else {
-        const resp = await res.json();
+          exportFile(resp, taskData, transcript, "transcription");
+        } else {
+          const resp = await res.json();
 
+          dispatch(
+            setSnackBar({
+              open: true,
+              message: resp.message,
+              variant: "success",
+            })
+          );
+        }
+      } catch (error) {
         dispatch(
           setSnackBar({
             open: true,
-            message: resp.message,
-            variant: "success",
+            message: "Something went wrong!!",
+            variant: "error",
           })
         );
       }
-    } catch (error) {
-      dispatch(
-        setSnackBar({
-          open: true,
-          message: "Something went wrong!!",
-          variant: "error",
-        })
-      );
-    }})
+    });
   };
 
   const handleTranslationExport = async () => {
     const { translation, speakerInfo } = exportTypes;
 
-    translation.map(async (translate)=>{
-    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
-    setOpenExportDialog(false);
+    translation.map(async (translate) => {
+      const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
+      setOpenExportDialog(false);
 
-    try {
-      const res = await fetch(apiObj.apiEndPoint(), {
-        method: "GET",
-        headers: apiObj.getHeaders().headers,
-      });
+      try {
+        const res = await fetch(apiObj.apiEndPoint(), {
+          method: "GET",
+          headers: apiObj.getHeaders().headers,
+        });
 
-      if (res.ok) {
-        const resp = await res.blob();
+        if (res.ok) {
+          const resp = await res.blob();
 
-        exportFile(resp, taskData, translate, "translation");
-      } else {
-        const resp = await res.json();
+          exportFile(resp, taskData, translate, "translation");
+        } else {
+          const resp = await res.json();
 
+          dispatch(
+            setSnackBar({
+              open: true,
+              message: resp.message,
+              variant: "success",
+            })
+          );
+        }
+      } catch (error) {
         dispatch(
           setSnackBar({
             open: true,
-            message: resp.message,
-            variant: "success",
+            message: "Something went wrong!!",
+            variant: "error",
           })
         );
       }
-    } catch (error) {
-      dispatch(
-        setSnackBar({
-          open: true,
-          message: "Something went wrong!!",
-          variant: "error",
-        })
-      );
-    }})
+    });
   };
 
   const handleExportSubmitClick = (taskType) => {
-    if(taskType === "TRANSCRIPTION_VOICEOVER_EDIT"){
+    if (taskType === "TRANSCRIPTION_VOICEOVER_EDIT") {
       handleTranscriptExport();
-    }else{
+    } else {
       handleTranslationExport();
     }
   };
@@ -875,21 +924,33 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     const {
       target: { name, value },
     } = event;
-    let new_val=exportTypes[name]
-    if (new_val.includes(value)){
-      new_val = new_val.filter(item => item !== value)
-    } else{
-      new_val.push(value)
+    let new_val = exportTypes[name];
+    if (new_val.includes(value)) {
+      new_val = new_val.filter((item) => item !== value);
+    } else {
+      new_val.push(value);
     }
     setExportTypes((prevState) => ({
       ...prevState,
       [name]: new_val,
     }));
-  }
+  };
 
   return (
     <>
-      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
+      {renderSnackBar()}
+      {loader && (
+        <CircularProgress
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            zIndex: "100",
+          }}
+          color="primary"
+          size="50px"
+        />
+      )}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -921,14 +982,27 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             onSplitClick={onSplitClick}
             showPopOver={showPopOver}
             expandTimestamp={expandTimestamp}
-            handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
-            handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
-            bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
+            handleReGenerateTranslation={() => {
+              changeTranscriptHandler(null, "retranslate", "retranslate");
+            }}
+            handleGetUpdatedAudioForAll={() => {
+              changeTranscriptHandler(null, "audio", "audio");
+            }}
+            bookmarkSegment={() => {
+              saveTranscriptHandler(false, false, currentPage, true);
+            }}
             setOpenExportDialog={setOpenExportDialog}
+            disabled={disable}
           />
         </Grid>
 
-        <Box className={classes.subTitleContainer} id={"subtitleContainerVO"} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
+        <Box
+          className={classes.subTitleContainer}
+          id={"subtitleContainerVO"}
+          style={{
+            height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)",
+          }}
+        >
           {sourceText?.map((item, index) => {
             return (
               <div
@@ -938,7 +1012,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   padding: "5px 0",
                   // margin: "2px",
                   // borderBottom: "1px solid grey",
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
                 id={`container-${index}`}
               >
@@ -950,31 +1024,40 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   style={{ alignItems: "center", padding: 0, width: "100%" }}
                   onClick={() => {
                     if (player) {
-                      if( typeof player.pauseVideo === 'function' ){
+                      if (typeof player.pauseVideo === "function") {
                         player.pauseVideo();
-                        if (player.getDuration() >= item.startTime && (player.getCurrentTime() < item.startTime || player.getCurrentTime() > item.endTime)) {
+                        if (
+                          player.getDuration() >= item.startTime &&
+                          (player.getCurrentTime() < item.startTime ||
+                            player.getCurrentTime() > item.endTime)
+                        ) {
                           player.seekTo(item.startTime + 0.001);
                         }
-                      }else{
+                      } else {
                         player.pause();
-                        if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
+                        if (
+                          player.duration >= item.startTime &&
+                          (player.currentTime < item.startTime ||
+                            player.currentTime > item.endTime)
+                        ) {
                           player.currentTime = item.startTime + 0.001;
                         }
                       }
                     }
                   }}
                 >
-                  {item.transcription_text.length>-1 &&
+                  {item.transcription_text.length > -1 && (
                     <div
                       className={classes.relative}
                       onContextMenu={handleContextMenu}
                       style={{ width: "100%" }}
                     >
                       <textarea
-                        readOnly={fetchInProgress ? true: false}
+                        readOnly={fetchInProgress ? true : false}
                         rows={item.transcription_text ? 4 : 6}
-                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                          }`}
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        }`}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         style={{ fontSize: fontSize }}
@@ -998,55 +1081,75 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                               ? "red"
                               : "green",
                           left: "20px",
-                          top: "3px"
+                          top: "3px",
                         }}
                       >
                         {sourceLength(index)}
                       </span>
-                    </div>}
-
-                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
-                    <div>{item.id}</div>
-                    <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
-                    <div style={{display: "flex"}}>
-                    <Tooltip title="Regenerate Translation" placement="bottom">
-                      <IconButton
-                        className={classes.optionIconBtn}
-                        style={{marginRight:"20px", marginLeft:"20px"}}
-                        onClick={() => changeTranscriptHandler(null, index, "retranslate")}
-                        disabled={apiInProgress}
-                      >
-                        <LoopIcon className={classes.rightPanelSvg} />
-                      </IconButton>
-                    </Tooltip>
-                    <div>
-                    <TimeBoxes
-                      readOnly={fetchInProgress ? true: false}
-                      handleTimeChange={handleTimeChange}
-                      time={item.start_time}
-                      index={index}
-                      type={"startTime"}
-                    />
-                    <TimeBoxes
-                      readOnly={fetchInProgress ? true: false}
-                      handleTimeChange={handleTimeChange}
-                      time={item.end_time}
-                      index={index}
-                      type={"endTime"}
-                    />
                     </div>
-                    {taskData.source_type === "Machine Generated" &&
-                    <Tooltip title="Get Updated Audio" placement="bottom">
-                      <IconButton
-                        className={classes.optionIconBtn}
-                        onClick={() => changeTranscriptHandler(null, index, "audio")}
-                        style={{marginRight:"20px", marginLeft:"20px"}}
-                        disabled={apiInProgress}
+                  )}
+
+                  <div
+                    className={classes.relative}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "4px",
+                      width: "50%",
+                    }}
+                  >
+                    <div>{item.id}</div>
+                    <div style={{ fontSize: "0.8rem" }}>
+                      Duration: {item.time_difference}
+                    </div>
+                    <div style={{ display: "flex" }}>
+                      <Tooltip
+                        title="Regenerate Translation"
+                        placement="bottom"
                       >
-                        <TaskAltIcon className={classes.rightPanelSvg} />
-                      </IconButton>
-                    </Tooltip>
-                    }
+                        <IconButton
+                          className={classes.optionIconBtn}
+                          style={{ marginRight: "20px", marginLeft: "20px" }}
+                          onClick={() =>
+                            changeTranscriptHandler(null, index, "retranslate")
+                          }
+                          disabled={apiInProgress}
+                        >
+                          <LoopIcon className={classes.rightPanelSvg} />
+                        </IconButton>
+                      </Tooltip>
+                      <div>
+                        <TimeBoxes
+                          readOnly={fetchInProgress ? true : false}
+                          handleTimeChange={handleTimeChange}
+                          time={item.start_time}
+                          index={index}
+                          type={"startTime"}
+                        />
+                        <TimeBoxes
+                          readOnly={fetchInProgress ? true : false}
+                          handleTimeChange={handleTimeChange}
+                          time={item.end_time}
+                          index={index}
+                          type={"endTime"}
+                        />
+                      </div>
+                      {taskData.source_type === "Machine Generated" && (
+                        <Tooltip title="Get Updated Audio" placement="bottom">
+                          <IconButton
+                            className={classes.optionIconBtn}
+                            onClick={() =>
+                              changeTranscriptHandler(null, index, "audio")
+                            }
+                            style={{ marginRight: "20px", marginLeft: "20px" }}
+                            disabled={apiInProgress}
+                          >
+                            <TaskAltIcon className={classes.rightPanelSvg} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </div>
                     <Box
                       sx={{
@@ -1060,13 +1163,16 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                           style={
                             !xl
                               ? {
-                                alignItems: "center",
-                                flexDirection: "row",
-                              }
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                }
                               : {}
                           }
                         >
-                          <AudioPlayer src={data[index]} fast={item?.fast_audio}/>
+                          <AudioPlayer
+                            src={data[index]}
+                            fast={item?.fast_audio}
+                          />
                           {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
@@ -1092,16 +1198,17 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                             margin: "18px auto",
                             fontSize: "18px",
                             // display: recordAudio[index] === "stop" ? "none" : "",
-                            display: "none"
+                            display: "none",
                           }}
                         >
                           <div>Recording Audio....</div>
                           <div style={{ marginTop: "10px" }}>
                             Remaining Time:{" "}
-                            {`${item.time_difference - recorderTime > 0
-                              ? item.time_difference - recorderTime
-                              : 0
-                              }`}{" "}
+                            {`${
+                              item.time_difference - recorderTime > 0
+                                ? item.time_difference - recorderTime
+                                : 0
+                            }`}{" "}
                             sec
                           </div>
                         </div>
@@ -1110,7 +1217,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   </div>
 
                   {taskData?.target_language !== "en" &&
-                    enableTransliteration ? (
+                  enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       apiKey={`JWT ${localStorage.getItem("token")}`}
@@ -1132,11 +1239,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
-                            readOnly={fetchInProgress ? true: false}
-                            className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                              } ${taskData?.source_type === "Original Source" &&
+                            readOnly={fetchInProgress ? true : false}
+                            className={`${classes.textAreaTransliteration} ${
+                              currentIndex === index ? classes.boxHighlight : ""
+                            } ${
+                              taskData?.source_type === "Original Source" &&
                               classes.w95
-                              }`}
+                            }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             ref={(el) => (textboxes.current[index] = el)}
                             rows={item.transcription_text ? 4 : 6}
@@ -1158,7 +1267,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                                   ? "red"
                                   : "green",
                               right: item.transcription_text ? "20px" : "32px",
-                              top: "3px"
+                              top: "3px",
                             }}
                           >
                             {targetLength(index)}
@@ -1169,21 +1278,20 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   ) : (
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
-                        readOnly={fetchInProgress ? true: false}
+                        readOnly={fetchInProgress ? true : false}
                         rows={item.transcription_text ? 4 : 6}
-                        className={`${classes.textAreaTransliteration} ${currentIndex === index ? classes.boxHighlight : ""
-                          } ${taskData?.source_type === "Original Source" &&
+                        className={`${classes.textAreaTransliteration} ${
+                          currentIndex === index ? classes.boxHighlight : ""
+                        } ${
+                          taskData?.source_type === "Original Source" &&
                           classes.w95
-                          }`}
+                        }`}
                         ref={(el) => (textboxes.current[index] = el)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         style={{ fontSize: fontSize }}
                         onChange={(event) => {
-                          changeTranscriptHandler(
-                            event.target.value,
-                            index,
-                          );
+                          changeTranscriptHandler(event.target.value, index);
                         }}
                         value={item.text}
                         onBlur={() => {
@@ -1203,7 +1311,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                               ? "red"
                               : "green",
                           right: item.transcription_text ? "20px" : "32px",
-                          top: "3px"
+                          top: "3px",
                         }}
                       >
                         {targetLength(index)}
@@ -1252,7 +1360,13 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             next={next}
             onClick={onNavigationClick}
             // jumpTo={[...Array(totalPages).keys()].map((_, index) => index + 1)}
-            jumpTo={taskData?.task_type?.includes("VOICEOVER")?[...Array(totalPages).keys()].map((_, index) => index + 1).filter((p)=>p%15==1):[...Array(totalPages).keys()].map((_, index) => index + 1)}
+            jumpTo={
+              taskData?.task_type?.includes("VOICEOVER")
+                ? [...Array(totalPages).keys()]
+                    .map((_, index) => index + 1)
+                    .filter((p) => p % 15 == 1)
+                : [...Array(totalPages).keys()].map((_, index) => index + 1)
+            }
             durationError={durationError}
             completedCount={completedCount}
             current={currentPage}

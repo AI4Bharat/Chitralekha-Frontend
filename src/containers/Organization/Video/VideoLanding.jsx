@@ -96,12 +96,11 @@ const VideoLanding = () => {
 
   useEffect(() => {
     if (
-      taskDetails &&
-      loggedin_user_role && loggedin_user_id &&
+      taskDetails?.user?.id &&
+      loggedin_user_role &&
+      loggedin_user_id &&
       loggedin_user_id !== taskDetails?.user?.id &&
-      loggedin_user_role !== "ADMIN" &&
-      loggedin_user_role !== "ORG_OWNER" &&
-      loggedin_user_role !== "PROJECT_MANAGER"
+      !["ADMIN", "ORG_OWNER", "PROJECT_MANAGER"].includes(loggedin_user_role)
     ) {
       // 1. Render snackbar
       dispatch(
@@ -114,7 +113,7 @@ const VideoLanding = () => {
       // 2. redirect
       navigate("/task-list");
     }
-  }, [taskDetails]);
+  }, [taskDetails, loggedin_user_id, loggedin_user_role, dispatch, navigate]);
 
   useEffect(() => {
     let intervalId;
@@ -133,13 +132,19 @@ const VideoLanding = () => {
     }, 60 * 1000);
 
     return () => {
-      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
-      dispatch(APITransport(apiObj));
+      if (
+        loggedin_user_id &&
+        taskDetails?.user?.id &&
+        loggedin_user_id === taskDetails?.user?.id
+      ) {
+        const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+        dispatch(APITransport(apiObj));
+      }
       clearInterval(intervalId);
       ref.current = 0;
     };
     // eslint-disable-next-line
-  }, []);
+  }, [taskDetails]);
 
   useAutoSave();
   useUpdateTimeSpent(ref);

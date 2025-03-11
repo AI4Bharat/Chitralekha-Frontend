@@ -1,5 +1,5 @@
 // Voice Over Right Panel
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
@@ -108,6 +108,17 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [recorderTime, setRecorderTime] = useState(0);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
+
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -535,6 +546,7 @@ const VoiceOverRightPanel = ({ setCurrentIndex }) => {
             durationError={durationError}
             handleInfoButtonClick={handleInfoButtonClick}
             expandTimestamp={expandTimestamp}
+            disabled={disable}
           />
         </Grid>
 
