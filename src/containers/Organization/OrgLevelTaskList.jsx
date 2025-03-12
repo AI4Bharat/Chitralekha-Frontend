@@ -46,6 +46,7 @@ import {
   UpdateBulkTaskDialog,
   UploadFormatDialog,
   ViewTaskDialog,
+  Loader,
 } from "common";
 
 //Icons
@@ -55,7 +56,6 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
-import { Loader } from "common";
 
 // Utils
 import getLocalStorageData from "utils/getLocalStorageData";
