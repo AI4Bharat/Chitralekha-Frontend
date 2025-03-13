@@ -42,6 +42,7 @@ const GlossaryDialog = ({
   const [targetText, setTargetText] = useState("");
   const [sourceLanguage, setSourceLanguage] = useState(srcLang);
   const [targetLanguage, setTargetLanguage] = useState(tgtLang);
+  const [meaning, setMeaning] = useState("");
   const [domain, setDomain] = useState("");
   const [enableTransliteration, setEnableTransliteration] = useState(true);
 
@@ -62,6 +63,7 @@ const GlossaryDialog = ({
         src: sourceText,
         tgt: targetText,
         locale: `${sourceLanguage}|${targetLanguage}`,
+        meaning: meaning,
         domain,
       },
     ];
@@ -225,7 +227,23 @@ const GlossaryDialog = ({
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <FormControl fullWidth sx={{ mt: 3, width: "98%" }}>
+            <FormControl fullWidth sx={{ mt: 3}}>
+            <div class="mui-input-outlined">
+              <input
+                className={classes.findReplaceTextbox}
+                type="text"
+                id="outlined-input"
+                placeholder=""
+                value={meaning}
+                onChange={(event) => setMeaning(event.target.value)}
+              />
+              <label for="outlined-input">Text Meaning (Optional)</label>
+            </div>
+            </FormControl>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <FormControl fullWidth sx={{ mt: 3, width: "98%", marginLeft:"8px" }}>
               <InputLabel id="select-domain">Domain (Optional)</InputLabel>
               <Select
                 fullWidth

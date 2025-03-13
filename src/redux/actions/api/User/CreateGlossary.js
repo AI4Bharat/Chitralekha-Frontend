@@ -3,11 +3,12 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class CreateGlossaryAPI extends API {
-  constructor(userId, sentences, timeout = 2000) {
+  constructor(userId, sentences, taskId="", timeout = 2000) {
     super("POST", timeout, false);
     this.type = C.CREATE_GLOSSARY;
 
     this.userId = userId;
+    this.taskId = taskId;
     this.sentences = sentences;
 
     this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.glossary}`;
@@ -28,6 +29,7 @@ export default class CreateGlossaryAPI extends API {
     return {
       userID: this.userId,
       sentences: this.sentences,
+      task_id: this.taskId
     };
   }
 
