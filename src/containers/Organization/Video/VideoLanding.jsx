@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
 import { fullscreenUtil, getKeyCode, Sub } from "utils";
 
@@ -52,6 +52,7 @@ import {
   setSubtitlesForCheck,
   setTotalPages,
   setTotalSentences,
+  setSnackBar
 } from "redux/actions";
 import C from "redux/constants";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
@@ -60,12 +61,13 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import PlayArrow from "@mui/icons-material/PlayArrow";
 import { Pause } from "@mui/icons-material";
 import ParaphraseRightPanel from "./ParaphraseRightPanel";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const VideoLanding = () => {
   const { taskId, offset, segment } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
-
+  const navigate = useNavigate();
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubs, setCurrentSubs] = useState();
@@ -76,6 +78,9 @@ const VideoLanding = () => {
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
   const [subtitlePlacement, setSubtitlePlacement] = useState("bottom");
   const [useYtdlp, setUseYtdlp] = useState(true);
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const loggedin_user_role = JSON.parse(localStorage.getItem("userData"))?.role;
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -90,6 +95,27 @@ const VideoLanding = () => {
   const player = useSelector((state) => state.commonReducer.player);
 
   const ref = useRef(0);
+
+  useEffect(() => {
+    if (
+      taskDetails?.user?.id &&
+      loggedin_user_role &&
+      loggedin_user_id &&
+      loggedin_user_id !== taskDetails?.user?.id &&
+      !["ADMIN", "ORG_OWNER", "PROJECT_MANAGER"].includes(loggedin_user_role) ){
+      // 1. Render snackbar
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "You don't have permissions to access this page!",
+          variant: "error",
+        })
+      );
+      // 2. redirect
+      navigate("/task-list");
+    }
+  }, [taskDetails,loggedin_user_id, loggedin_user_role, dispatch, navigate]);
+
   useEffect(() => {
     let intervalId;
 
@@ -107,13 +133,19 @@ const VideoLanding = () => {
     }, 60 * 1000);
 
     return () => {
-      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
-      dispatch(APITransport(apiObj));
+      if (
+        loggedin_user_id &&
+        taskDetails?.user?.id &&
+        loggedin_user_id === taskDetails?.user?.id
+      ) {
+        const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+        dispatch(APITransport(apiObj));
+      }
       clearInterval(intervalId);
       ref.current = 0;
     };
     // eslint-disable-next-line
-  }, []);
+  }, [taskDetails]);
 
   useAutoSave();
   useUpdateTimeSpent(ref);
@@ -180,6 +212,22 @@ const VideoLanding = () => {
   useMemo(() => {
     subs && setCurrentSubs(subs[currentIndex]);
   }, [subs, currentIndex]);
+
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
 
   const onKeyDown = useCallback(
     (event) => {
@@ -267,6 +315,8 @@ const VideoLanding = () => {
     };
   }, []);
   return (
+    <>
+    {renderSnackBar()}
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderLoader()}
 
@@ -414,6 +464,7 @@ const VideoLanding = () => {
       </Grid>
       }
     </Grid>
+    </>
   );
 };
 

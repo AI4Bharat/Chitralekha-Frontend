@@ -15,6 +15,7 @@ export const useAutoSave = () => {
   const apiStatus = useSelector((state) => state.apiStatus);
   const [apiInProgress, setApiInProgress] = useState(false);
   const apiInProgressRef = useRef(apiInProgress);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
   
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -49,7 +50,8 @@ export const useAutoSave = () => {
         },
       };
 
-      if (!apiInProgressRef.current) {
+      if ( loggedin_user_id && taskDetails?.user?.id && loggedin_user_id === taskDetails?.user?.id) {
+        console.log("Auto Save API Called", loggedin_user_id, taskDetails, taskDetails?.user?.id);
         const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
         dispatch(APITransport(obj));
       }
@@ -82,5 +84,5 @@ export const useAutoSave = () => {
     };
 
     // eslint-disable-next-line
-  }, [subs]);
+  }, [taskDetails, subs]);
 };

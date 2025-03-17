@@ -40,7 +40,7 @@ const FindAndReplace = (props) => {
   const dispatch = useDispatch();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const { subtitleDataKey, taskType ,currentSubs, videoId,targetLanguage } = { ...props };
+  const { subtitleDataKey, taskType ,currentSubs, videoId,targetLanguage, disabled } = { ...props };
 
   const transliterationLang = useSelector((state) => state.getTaskDetails.data);
   const sourceData = useSelector((state) => state.commonReducer.subtitles);
@@ -300,6 +300,7 @@ const FindAndReplace = (props) => {
         <IconButton
           className={classes.findReplaceButton}
           onClick={handleOpenModel}
+          disabled={disabled}
         >
           <FindReplaceIcon className={classes.rightPanelSvg}/>
         </IconButton>

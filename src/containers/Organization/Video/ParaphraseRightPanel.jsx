@@ -63,6 +63,8 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
   const navigate = useNavigate();
   const xl = useMediaQuery("(min-width:1800px)");
   const textboxes = useRef([]);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -112,6 +114,14 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
   const [showPopOver, setShowPopOver] = useState(false);
   const [loader, setLoader] = useState(false);
   const [apiInProgress, setApiInProgress] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+        setDisable(true);
+    } else {
+        setDisable(false);
+      }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -714,6 +724,7 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
             onSplitClick={onSplitClick}
             expandTimestamp={expandTimestamp}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
+            disabled={disable}
           />
         </Grid>
 
