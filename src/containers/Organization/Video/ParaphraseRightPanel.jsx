@@ -666,7 +666,7 @@ const ParaphraseRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showT
   const createGlossary = (sentences) => {
     const userId = loggedInUserData.id;
 
-    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    const apiObj = new CreateGlossaryAPI(userId, sentences, taskId);
     dispatch(APITransport(apiObj));
   };
 

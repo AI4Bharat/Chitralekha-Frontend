@@ -476,7 +476,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const createGlossary = (sentences) => {
     const userId = loggedInUserData.id;
 
-    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    const apiObj = new CreateGlossaryAPI(userId, sentences, taskId);
     dispatch(APITransport(apiObj));
   };
 
