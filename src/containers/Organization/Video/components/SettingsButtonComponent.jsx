@@ -456,6 +456,7 @@ const SettingsButtonComponent = ({
         currentSubs={currentSubs}
         videoId={taskData?.video}
         targetLanguage={taskData?.target_language}
+        disabled={disabled}
       />
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />

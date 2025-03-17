@@ -954,6 +954,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
             setOpenExportDialog={setOpenExportDialog}
+            disabled={disable}
           />
         </Grid>
 

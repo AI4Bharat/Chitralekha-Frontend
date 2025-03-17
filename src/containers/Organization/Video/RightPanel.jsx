@@ -73,14 +73,6 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
   const [disable, setDisable] = useState(false);
 
-  useEffect(() => {
-    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
-      setDisable(true);
-    } else {
-      setDisable(false);
-    }
-  }, [loggedin_user_id, taskData])
-
   const [selection, setselection] = useState(false);
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -131,6 +123,14 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [loader, setLoader] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
