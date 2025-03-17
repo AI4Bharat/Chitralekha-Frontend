@@ -70,6 +70,16 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const dispatch = useDispatch();
   const xl = useMediaQuery("(min-width:1800px)");
   const textboxes = useRef([]);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   const [selection, setselection] = useState(false);
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -674,6 +684,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
             subtitles={subtitles}
             expandTimestamp={expandTimestamp}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
+            disabled={disable}
           />
         </Grid>
 
