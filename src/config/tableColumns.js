@@ -618,6 +618,18 @@ export const glossaryColumns = [
     name: "target_text",
     label: "Target Text",
   },
+  {
+    name: "meaning",
+    label: "Meaning",
+  },
+  {
+    name: "task_ids",
+    label: "Task IDs",
+  },
+  {
+    name: "context",
+    label: "Context"
+  },
 ];
 
 export const onBoardingRequestColumns = [
