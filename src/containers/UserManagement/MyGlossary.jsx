@@ -24,6 +24,8 @@ import GlossaryDialog from "common/GlossaryDialog";
 import UploadFileDialog from "common/UploadFileDialog";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Iso } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
+import GlossaryEditDialog from "common/GlossaryEditDialog";
 
 const MyGlossary = () => {
   const classes = DatasetStyle();
@@ -32,6 +34,8 @@ const MyGlossary = () => {
   const dispatch = useDispatch();
 
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [openGlossaryEditDialog, setOpenGlossaryEditDialog] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState();
   const [openUploadGlossaryDialog, setOpenUploadGlossaryDialog] =
     useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
@@ -58,6 +62,7 @@ const MyGlossary = () => {
 
         if (apiType === "CREATE_GLOSSARY") {
           setOpenGlossaryDialog(false);
+          setOpenGlossaryEditDialog(false);
           getGlossaryList();
         }
 
@@ -120,6 +125,11 @@ const MyGlossary = () => {
     dispatch(APITransport(apiObj));
   };
 
+  const handleEditGlossary = (rowData) => {
+    setSelectedRowData(rowData);
+    setOpenGlossaryEditDialog(true);
+  };
+
   const actionColumn = {
     name: "Action",
     label: "Actions",
@@ -135,11 +145,18 @@ const MyGlossary = () => {
         const selectedRow = data[rowIndex];
 
         return (
-          <Tooltip title="Delete">
-            <IconButton onClick={() => handleDeleteGlossary(selectedRow)}>
-              <DeleteIcon color="error" />
+          <>
+          <Tooltip title="Edit">
+            <IconButton onClick={() => handleEditGlossary(selectedRow)}>
+              <EditIcon color="primary" />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Delete">
+          <IconButton onClick={() => handleDeleteGlossary(selectedRow)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+        </>
         );
       },
     },
@@ -244,6 +261,17 @@ const MyGlossary = () => {
             submit={(sentences) => createGlossary(sentences)}
             title={"Add Glossary"}
             disableFields={false}
+            acceptTaskIds={true}
+          />
+        )}
+
+        {openGlossaryEditDialog && (
+          <GlossaryEditDialog
+            openDialog={openGlossaryEditDialog}
+            handleClose={() => setOpenGlossaryEditDialog(false)}
+            submit={(sentences) => createGlossary(sentences)}
+            title={"Edit Glossary"}
+            selectedRow={selectedRowData}
           />
         )}
 
