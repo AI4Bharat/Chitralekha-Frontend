@@ -99,7 +99,6 @@ const Header = () => {
       name: "Help",
       onClick: () => {
         handleClickHelp();
-       
       },
     },
   ];
