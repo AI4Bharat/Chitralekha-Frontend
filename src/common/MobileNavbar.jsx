@@ -83,7 +83,7 @@ function MobileNavbar({ UserMenu, SettingsMenu, userData }) {
             position: "sticky",
             top: 0,
             zIndex: 10,
-            pb: 2,
+            paddingBottom: 2,
           }}
         >
           <Box className={classes.navbar_banner}>
