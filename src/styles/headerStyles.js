@@ -204,8 +204,10 @@ const headerStyle = makeStyles({
   sectionTitle: {
     fontSize: "1rem !important",
     fontWeight: 600,
-    paddingX: "32px",
-    marginX: "16px",
+    paddingLeft: "32px",
+    paddingRight: "32px",
+    marginLeft: "16px",
+    marginRight: "16px",
     letterSpacing: "0.5px",
     textTransform: "uppercase",
     color: "rgba(0, 0, 0, 0.6)",
