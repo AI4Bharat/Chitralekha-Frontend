@@ -165,7 +165,7 @@ const headerStyle = makeStyles({
     backgroundColor: "#f5f5f5",
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "start",
+    alignItems: "flex-start",
     borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
   },
   mobileNav_avatar: {
