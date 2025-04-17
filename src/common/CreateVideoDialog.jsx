@@ -99,7 +99,7 @@ const CreateVideoDialog = ({
     }else{
       setDurationSelector(false);
     }
-    if (videoLink.includes("drive.google.com")){
+    if (videoLink.includes("drive.google.com") || videoLink.includes("objectstore.e2enetworks.net") || videoLink.includes("blob.core.windows.net")){
       setShowYoutubeUrl(true);
     }else{
       setShowYoutubeUrl(false);
