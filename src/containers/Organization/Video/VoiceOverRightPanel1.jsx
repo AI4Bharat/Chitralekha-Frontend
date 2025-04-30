@@ -30,7 +30,7 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
 import CustomizedSnackbars from "../../../common/Snackbar";
@@ -1143,6 +1143,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      enableASR={true}
+                      asrApiUrl={`${configs.BASE_URL_AUTO}/asr-api/generic/transcribe`}
                       apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.target_language}
                       value={item.text}
