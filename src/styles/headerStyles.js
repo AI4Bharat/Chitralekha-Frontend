@@ -50,6 +50,9 @@ const headerStyle = makeStyles({
       backgroundColor: "#E0E0E0",
       boxShadow: "none",
     },
+    "@media (max-width: 1024px) and (min-width: 900px)": {
+      fontSize: "16px",
+    },
   },
   highlightedMenu: {
     backgroundColor: "#E0E0E0",
@@ -65,6 +68,9 @@ const headerStyle = makeStyles({
     "&:hover": {
       backgroundColor: "#E0E0E0",
       boxShadow: "none",
+    },
+    "@media (max-width: 1024px) and (min-width: 900px)": {
+      fontSize: "16px",
     },
   },
   avatar: {
@@ -97,11 +103,12 @@ const headerStyle = makeStyles({
   },
   icon: {
     color: "rgba(0, 0, 0, 0.54) !important",
-    fontSize: "2.25rem !important",
-  },
-  icon2: {
-    color: "rgba(0, 0, 0, 0.54) !important",
-    fontSize: "2rem !important",
+    "@media (max-width: 1024px) and (min-width: 900px)": {
+      fontSize: "1.8rem !important",
+    },
+    "@media (min-width: 1025px)": {
+      fontSize: "2.25rem !important",
+    },
   },
   ArticleIconStyle: {
     // backgroundColor: "#D3E4F7",
@@ -177,11 +184,20 @@ const headerStyle = makeStyles({
     "&:hover": {
       transform: "scale(1.05)",
     },
+    "@media (max-width: 600px)": {
+      width: 40,
+      height: 40,
+    },
+    "@media (max-width: 400px)": {
+      width: 30,
+      height: 30,
+    },
   },
   username: {
     color: "#000",
     fontWeight: 500,
-    fontSize: "1.4rem !important",
+    // fontSize: "1.4rem !important",
+    fontSize: "clamp('12px', '2vw', '4.4rem')",
   },
   closeButton: {
     position: "absolute",
@@ -193,6 +209,15 @@ const headerStyle = makeStyles({
     "&:hover": {
       transform: "rotate(90deg) !important",
       color: "#303F9A !important",
+    },
+    "@media (max-width: 600px)": {
+      right: 4,
+      top: 4,
+    },
+    "@media (max-width: 400px)": {
+      right: 1,
+      top: 1,
+      padding: "1px 1px 0 0 !important",
     },
   },
   profileBox: {
@@ -210,6 +235,15 @@ const headerStyle = makeStyles({
     textTransform: "uppercase",
     color: "rgba(0, 0, 0, 0.6)",
     padding: "16px 16px 8px 16px",
+    "@media (max-width: 600px)": {
+      fontSize: "0.8rem !important",
+    },
+    "@media (max-width: 400px)": {
+      fontSize: "0.7rem !important",
+    },
+    "@media (max-width: 300px)": {
+      fontSize: "0.6rem !important",
+    },
   },
   listItem: {
     cursor: "pointer",
@@ -221,6 +255,21 @@ const headerStyle = makeStyles({
     "&:hover": {
       backgroundColor: "rgba(0, 0, 0, 0.04)",
       transform: "translateX(5px)",
+    },
+    "@media (max-width: 600px)": {
+      fontSize: "0.9rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 400px)": {
+      fontSize: "0.8rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 300px)": {
+      fontSize: "0.7rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
     },
   },
   logoutItem: {
@@ -234,6 +283,22 @@ const headerStyle = makeStyles({
     "&:hover": {
       backgroundColor: "rgba(244, 67, 54, 0.1)",
       transform: "translateX(5px)",
+    },
+    "@media (max-width: 600px)": {
+      fontSize: "0.9rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 400px)": {
+      fontSize: "0.8rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 300px)": {
+      fontSize: "0.7rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+
     },
   },
   menuButton: {

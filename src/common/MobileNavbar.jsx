@@ -15,11 +15,8 @@ import {
   Avatar,
   Typography,
   Box,
-  Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import HelpDialog from "./HelpDialog";
 
@@ -99,7 +96,7 @@ function MobileNavbar({ UserMenu, SettingsMenu, userData }) {
                 >
                   {userData?.first_name?.charAt(0)}
                 </Avatar>
-                <Box style={{ marginLeft: "20px" }}>
+                <Box style={{ paddingLeft: "10px" }}>
                   <Typography variant="h6" className={classes.username}>
                     {userData?.first_name} {userData?.last_name}
                   </Typography>
