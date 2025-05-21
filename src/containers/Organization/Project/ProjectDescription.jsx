@@ -19,7 +19,7 @@ const ProjectDescription = (props) => {
   return (
     <Card
       style={{
-        minHeight: "100px",
+        minHeight: "50px",
         maxHeight: "100px",
         backgroundColor: imageArray[index]?.color,
         display: "flex",
@@ -35,7 +35,7 @@ const ProjectDescription = (props) => {
           xl={3}
           style={{
             display: "flex",
-            marginTop: "21px",
+            alignItems:"center",
             justifyContent: "center",
           }}
         >
@@ -56,7 +56,8 @@ const ProjectDescription = (props) => {
           md={9}
           lg={9}
           xl={9}
-          style={{ display: "flex", marginTop: "5px" }}
+          style={{ display: "flex",             alignItems:"center",
+          }}
         >
           <CardContent>
             <Typography

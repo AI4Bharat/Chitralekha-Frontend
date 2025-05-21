@@ -20,6 +20,9 @@ import {
   Tooltip,
   IconButton,
   Divider,
+  TablePagination,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import {
@@ -76,7 +79,7 @@ const VideoList = ({ data, removeVideo }) => {
       const {
         organization: { organization_owners },
       } = userData;
-  
+
       if (organization_owners && organization_owners?.length > 0) {
         const ownerIds = organization_owners.map(owner => owner.id);
         setOrgOwnerId(ownerIds);
@@ -124,9 +127,9 @@ const VideoList = ({ data, removeVideo }) => {
 
   useEffect(() => {
     const data = localStorage.getItem("videoColDisplayFilter");
-    if(data){
+    if (data) {
       setViewListColumns(JSON.parse(data));
-    }else{
+    } else {
       setViewListColumns(videoListColumns);
     }
   }, []);
@@ -175,8 +178,19 @@ const VideoList = ({ data, removeVideo }) => {
       item.status,
       item.description,
       <>
-        <Box sx={{ display: "flex" }}>
-          {/* <Grid  item xs={12} sm={12} md={12} lg={6} xl={6}> */}
+        <Box sx={{ 
+        display: "flex",
+        flexWrap: 'nowrap',
+        width: 'fit-content',
+        maxWidth: '220px',
+        gap: '4px',
+        '& .MuiIconButton-root': {
+          padding: '6px',
+          '& svg': {
+            fontSize: '20px'
+          }
+        }
+      }}>
 
           <Tooltip title="Download Related Tasks">
             <IconButton onClick={() => handleDownloadAll(item)}>
@@ -191,28 +205,28 @@ const VideoList = ({ data, removeVideo }) => {
           </Tooltip>
 
           {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-          isUserOrgOwner || userData?.role==="ADMIN")&& (
-            <Tooltip title="Create Task">
-              <IconButton
-                onClick={() => {
-                  setOpenCreateTaskDialog(true);
-                  setCurrentVideoDetails(item);
-                  setIsBulk(false);
-                }}
-              >
-                <NoteAddIcon color="primary" />
-              </IconButton>
-            </Tooltip>
-          )}
+            isUserOrgOwner || userData?.role === "ADMIN") && (
+              <Tooltip title="Create Task">
+                <IconButton
+                  onClick={() => {
+                    setOpenCreateTaskDialog(true);
+                    setCurrentVideoDetails(item);
+                    setIsBulk(false);
+                  }}
+                >
+                  <NoteAddIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            )}
 
           {(projectInfo.managers?.some((item) => item.id === userData.id) ||
-            isUserOrgOwner || userData?.role==="ADMIN") && (
-            <Tooltip title="Delete">
-              <IconButton onClick={() => handleDeleteVideo(item.id)}>
-                <DeleteIcon color="error" />
-              </IconButton>
-            </Tooltip>
-          )}
+            isUserOrgOwner || userData?.role === "ADMIN") && (
+              <Tooltip title="Delete">
+                <IconButton onClick={() => handleDeleteVideo(item.id)}>
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Tooltip>
+            )}
         </Box>
       </>,
     ];
@@ -299,9 +313,63 @@ const VideoList = ({ data, removeVideo }) => {
       </div>
     );
   };
+  const getAdjustedColumns = () => {
+  const columns = getColumns(viewListColumns);
+  
+  return columns.map(column => {
+    // For URL column
+    if (column.name === "url") {
+      return {
+        ...column,
+        options: {
+          ...column.options,
+          customBodyRender: (value) => (
+            <Tooltip title={value} placement="top">
+              <div style={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '200px' // Adjust as needed
+              }}>
+                {value}
+              </div>
+            </Tooltip>
+          ),
+          setCellProps: () => ({
+            style: {
+              maxWidth: '250px',
+              overflow: 'hidden'
+            }
+          })
+        }
+      };
+    }
+    
+    // For Actions column
+    if (column.name === "Actions") {
+      return {
+        ...column,
+        options: {
+          ...column.options,
+          setCellProps: () => ({
+            style: {
+              width: '250px',
+              minWidth: '250px',
+              maxWidth: '250px'
+            }
+          })
+        }
+      };
+    }
+    
+    return column;
+  });
+};
+
 
   function toggleDisplayExclude(label) {
     return viewListColumns.map(column => {
+      
       if (column.name === label) {
         if (column.options && column.options.display === "exclude") {
           const { display, ...restOptions } = column.options;
@@ -309,7 +377,9 @@ const VideoList = ({ data, removeVideo }) => {
             ...column,
             options: restOptions,
           };
-        } else {
+        }
+
+        else {
           return {
             ...column,
             options: {
@@ -322,6 +392,70 @@ const VideoList = ({ data, removeVideo }) => {
       return column;
     });
   }
+  const CustomFooter = ({ count, page, rowsPerPage, changeRowsPerPage, changePage }) => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: {
+            xs: "space-between",
+            md: "flex-end"
+          },
+          alignItems: "center",
+          padding: "10px",
+          gap: {
+            xs: "10px",
+            md: "20px"
+          },
+        }}
+      >
+
+        {/* Pagination Controls */}
+        <TablePagination
+          component="div"
+          count={count}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_, newPage) => changePage(newPage)}
+          onRowsPerPageChange={(e) => changeRowsPerPage(e.target.value)}
+          sx={{
+            "& .MuiTablePagination-actions": {
+              marginLeft: "0px",
+            },
+            "& .MuiInputBase-root.MuiInputBase-colorPrimary.MuiTablePagination-input": {
+              marginRight: "10px",
+            },
+          }}
+        />
+
+        {/* Jump to Page */}
+        <div>
+          <label style={{
+            marginRight: "5px",
+            fontSize: "0.83rem",
+          }}>
+            Jump to Page:
+          </label>
+          <Select
+            value={page + 1}
+            onChange={(e) => changePage(Number(e.target.value) - 1)}
+            sx={{
+              fontSize: "0.8rem",
+              padding: "4px",
+              height: "32px",
+            }}
+          >
+            {Array.from({ length: Math.ceil(count / rowsPerPage) }, (_, i) => (
+              <MenuItem key={i} value={i + 1}>
+                {i + 1}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+      </Box>
+    );
+  };
 
   const options = {
     textLabels: {
@@ -351,6 +485,16 @@ const VideoList = ({ data, removeVideo }) => {
 
     jumpToPage: true,
     customToolbar: renderToolBar,
+    responsive: "vertical",
+    customFooter: (count, page, rowsPerPage, changeRowsPerPage, changePage) => (
+      <CustomFooter
+        count={count}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        changeRowsPerPage={changeRowsPerPage}
+        changePage={changePage}
+      />
+    ),
     selectToolbarPlacement: "none",
     onRowSelectionChange: (currentRow, allRow) => {
       handleRowClick(currentRow, allRow);
@@ -366,13 +510,65 @@ const VideoList = ({ data, removeVideo }) => {
       localStorage.setItem("videoColDisplayFilter", JSON.stringify(toggleDisplayExclude(changedColumn)));
     },
   };
+  const enhanceColumns = (columns) => {
+  return columns.map(column => {
+    console.log(column);
+    
+    if (column.name === "url") {
+      return {
+        ...column,
+        options: {
+          ...column.options,
+          customBodyRender: (value) => (
+            <Tooltip title={value} placement="top">
+              <Box sx={{
+            padding: "16px",
+            whiteSpace: "normal",
+            overflowWrap: "break-word",
+            wordBreak: "break-word",
+              }}>
+                {value}
+              </Box>
+            </Tooltip>
+          ),
+          // setCellProps: () => ({
+          //   style: {
+          //     maxWidth: '250px',
+          //     overflow: 'hidden'
+          //   }
+          // })
+        }
+      };
+    }
+    
+    if (column.name === "Actions") { 
+      return {
+        ...column,
+        options: {
+          ...column.options,
+          setCellProps: () => ({
+            style: {
+width: '220px',
+          minWidth: '220px',
+          maxWidth: '220px',
+          overflow: 'visible'
+            }
+          })
+        }
+      };
+    }
+    
+    return column;
+  });
+};
+
 
   return (
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={result}
-          columns={getColumns(viewListColumns)}
+  columns={enhanceColumns(getColumns(viewListColumns))}
           options={options}
         />
       </ThemeProvider>

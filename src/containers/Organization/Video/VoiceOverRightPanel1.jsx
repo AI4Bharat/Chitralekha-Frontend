@@ -994,7 +994,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     }
                   }}
                 >
-                  {item.transcription_text.length>-1 &&
+                  {item?.transcription_text?.length>-1 &&
                     <div
                       className={classes.relative}
                       onContextMenu={handleContextMenu}

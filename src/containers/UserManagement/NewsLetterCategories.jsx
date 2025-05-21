@@ -70,7 +70,7 @@ const NewsLetterCategories = ({ email }) => {
   };
 
   return (
-    <Grid container display={"flex"} alignItems={"center"}>
+    <Grid container display={"flex"} alignItems={"center"} gap={2}>
       <Grid item xs={12} md={8} className={classes.newLetterGridItems}>
         <FormGroup row>
           {categoryConfig.map((item) => {

@@ -285,21 +285,19 @@ const Project = () => {
   };
 
   const renderProjectDetails = () => {
-    if (!projectInfo || projectInfo.length <= 0) {
-      return <Loader />;
-    }
 
     return (
       <>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
           <Card
             style={{
               display: "flex",
               justifyContent: "space-between",
               backgroundColor: "#0F2749",
               borderRadius: "8px",
-              marginBottom: "15px",
-              padding: "35px",
+              margin: "0  10px 0  10px",
+              padding: "1.3rem",
+              alignItems:"center"
             }}
           >
             <Typography variant="h4" className={classes.mainTitle}>
@@ -329,7 +327,7 @@ const Project = () => {
         </Grid>
 
         {projectDetails.description && (
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <Grid item xs={6} sm={12} md={12} lg={12} xl={12}>
             <Typography variant="h6" className={classes.modelTitle}>
               Description
             </Typography>
@@ -346,10 +344,11 @@ const Project = () => {
           </Grid>
         )}
 
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 2 }}>
-          <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ m: 1.5 }}>
+          <Grid container spacing={1}>
             {projectData?.map((des, i) => (
-              <Grid item xs={4} sm={4} md={4} lg={4} xl={4} key={i}>
+              <Grid item xs={12} sm={4} md={4} lg={4} xl={4} key={i}
+              >
                 <ProjectDescription
                   name={des.name}
                   value={des.value}
@@ -376,6 +375,7 @@ const Project = () => {
               localStorage.setItem("projectTabIndex", newValue);
             }}
             aria-label="basic tabs example"
+            variant="scrollable"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -401,12 +401,12 @@ const Project = () => {
             flexDirection="Column"
             justifyContent="center"
             alignItems="center"
+            gap={2}
           >
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.permittedToCreateVideoAudio && (
-              <Box display={"flex"} width={"100%"}>
+              <Box display={"flex"} width={"100%"} gap={1} flexDirection={{xs:'column',md:'row'}}>
                 <Button
-                  style={{ marginRight: "10px" }}
                   className={classes.projectButton}
                   onClick={() => setCreateVideoDialog(true)}
                   variant="contained"
@@ -415,7 +415,6 @@ const Project = () => {
                 </Button>
 
                 <Button
-                  style={{ marginLeft: "10px" }}
                   className={classes.projectButton}
                   variant="contained"
                   onClick={() => setOpenUploadBulkVideoDialog(true)}

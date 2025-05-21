@@ -8,7 +8,6 @@ import { projectColumns } from "config";
 import { tableTheme } from "theme";
 
 //Icons
-import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
@@ -108,13 +107,6 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            {/* {(isUserOrgOwner || userData?.role==="ADMIN") && (
-              <Tooltip title="Delete">
-                <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip>
-            )} */}
           </div>
         );
       },

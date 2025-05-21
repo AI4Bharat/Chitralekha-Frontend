@@ -5,6 +5,10 @@ const TableStyles = makeStyles({
     height: "32px",
     fontSize: "16px",
     padding: "16px",
+    whiteSpace: "normal",
+    overflowWrap: "break-word",
+    wordBreak: "break-word",
+
   },
 
   cellActionHeaderProps: {
