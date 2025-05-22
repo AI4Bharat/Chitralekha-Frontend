@@ -27,7 +27,7 @@ const ProjectList = ({ data, removeProjectList }) => {
   const [open, setOpen] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
   const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
-
+const [loading,setloading] = useState(false)
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
@@ -52,11 +52,18 @@ const ProjectList = ({ data, removeProjectList }) => {
   }, [userData]);
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
-
+if(progress){
+  if (apiType === "GET_PROJECT_LIST"){
+          setloading(true)
+        }
+}
     if (!progress) {
       if (success) {
         if (apiType === "DELETE_Project") {
           removeProjectList();
+        }
+        if (apiType === "GET_PROJECT_LIST"){
+          setloading(false)
         }
       }
       setOpen(false);

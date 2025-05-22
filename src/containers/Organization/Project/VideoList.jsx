@@ -44,8 +44,9 @@ import {
   FetchTranslationExportTypesAPI,
   setSnackBar,
 } from "redux/actions";
+import apistatus from "redux/reducers/apistatus/apistatus";
 
-const VideoList = ({ data, removeVideo }) => {
+const VideoList = ({ data, removeVideo,loading }) => {
   const classes = DatasetStyle();
   const dispatch = useDispatch();
 
@@ -460,7 +461,7 @@ const VideoList = ({ data, removeVideo }) => {
   const options = {
     textLabels: {
       body: {
-        noMatch: apiStatus.progress ? <Loader /> : "No records",
+        noMatch: loading ? <Loader /> : "No records",
       },
       toolbar: {
         search: "Search",

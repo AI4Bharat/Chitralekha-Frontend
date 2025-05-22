@@ -93,6 +93,7 @@ export const getOptions = (loading) => {
     search: true,
     jumpToPage: true,
     responsive: "vertical",
+
     customFooter: (count, page, rowsPerPage, changeRowsPerPage, changePage) => (
       <CustomFooter
         count={count}

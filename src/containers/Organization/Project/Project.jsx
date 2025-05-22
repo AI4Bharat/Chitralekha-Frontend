@@ -49,6 +49,7 @@ import {
   Loader,
 } from "common";
 import UploadFileDialog from "common/UploadFileDialog";
+import apistatus from "redux/reducers/apistatus/apistatus";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -77,6 +78,7 @@ const Project = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
+  const [loading, setloading] = useState(false);
   const [projectDetails, SetProjectDetails] = useState({});
   const [videoList, setVideoList] = useState([]);
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
@@ -109,6 +111,10 @@ const Project = () => {
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
+    const [isProjectDetailsLoading, setIsProjectDetailsLoading] = useState(true);
+  const [isVideoListLoading, setIsVideoListLoading] = useState(true);
+  const [isMembersLoading, setIsMembersLoading] = useState(true);
+
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -135,6 +141,7 @@ const Project = () => {
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
+    
 
     if (!progress) {
       if (success) {
@@ -168,6 +175,45 @@ const Project = () => {
 
     // eslint-disable-next-line
   }, [apiStatus]);
+  
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (progress) {
+      console.log(apiType,apiStatus.progress);
+
+      switch (apiType) {
+        case "GET_PROJECT_DETAILS":
+          setIsProjectDetailsLoading(true);
+          break;
+        case "GET_PROJECT_VIDEOS":
+          setIsVideoListLoading(true);
+          break;
+        case "GET_PROJECT_MEMBERS":
+          setIsMembersLoading(true);
+          break;
+        default:
+          break;
+      }
+    } else {
+      if (success) {
+        switch (apiType) {
+          case "GET_PROJECT_DETAILS":
+            setIsProjectDetailsLoading(false);
+            break;
+          case "GET_PROJECT_VIDEOS":
+            setIsVideoListLoading(false);
+            break;
+          case "GET_PROJECT_MEMBERS":
+            setIsMembersLoading(false);
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }, [apiStatus]);
+
 
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
@@ -229,6 +275,7 @@ const Project = () => {
   }, [projectInfo.id]);
 
   useEffect(() => {
+
     SetProjectDetails(projectInfo);
     setVideoList(projectvideoList);
   }, [projectInfo, projectvideoList]);
@@ -441,6 +488,7 @@ const Project = () => {
               <VideoList
                 data={videoList}
                 removeVideo={() => getProjectVideoList()}
+                loading={isVideoListLoading}
               />
             </div>
           </Box>
