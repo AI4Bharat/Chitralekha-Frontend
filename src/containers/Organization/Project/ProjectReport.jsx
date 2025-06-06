@@ -418,19 +418,62 @@ const ProjectReport = () => {
           // Try alternative approaches to find the metric
           // Check for completion metrics
           if (userMetricType === 'completed_tasks') {
-            const statusIndex = columns.findIndex(col => 
-              col.name.toLowerCase().includes('status') || 
-              col.label.toLowerCase().includes('status')
+            // First try: Look for a dedicated completed tasks column
+            const completedTasksIndex = columns.findIndex(col => 
+              (col.name.toLowerCase().includes('complete') && col.name.toLowerCase().includes('task')) || 
+              (col.label.toLowerCase().includes('complete') && col.label.toLowerCase().includes('task'))
             );
             
-            if (statusIndex !== -1) {
-              const status = String(row[statusIndex] || '').toLowerCase();
-              if (status.includes('complete') || status === 'done' || status === 'finished') {
+            if (completedTasksIndex !== -1) {
+              // Found direct completed tasks column
+              const value = row[completedTasksIndex];
+              const numValue = Number(value);
+              
+              if (!isNaN(numValue)) {
+                userTaskCounts[user] += numValue;
+              } else if (value && typeof value === 'string' && 
+                        (value.toLowerCase() === 'true' || value.toLowerCase() === 'yes')) {
                 userTaskCounts[user] += 1;
               }
             } else {
-              // If no status column, just count rows as a fallback
-              userTaskCounts[user] += 1;
+              // Second try: Look for task status column
+              const statusIndex = columns.findIndex(col => 
+                col.name.toLowerCase().includes('status') || 
+                col.label.toLowerCase().includes('status') ||
+                col.name.toLowerCase().includes('state') || 
+                col.label.toLowerCase().includes('state') ||
+                col.name.toLowerCase().includes('progress') || 
+                col.label.toLowerCase().includes('progress')
+              );
+              
+              if (statusIndex !== -1) {
+                const status = String(row[statusIndex] || '').toLowerCase();
+                // Expand list of completion status values
+                const completionTerms = ['complete', 'done', 'finished', 'approved', 'accepted', 'completed', 
+                                        'published', 'ready', 'delivered', '100%', 'closed'];
+                                        
+                // Check if status matches any completion term
+                if (completionTerms.some(term => status.includes(term))) {
+                  userTaskCounts[user] += 1;
+                }
+              } else {
+                // Third try: Look for completion percentage column
+                const percentIndex = columns.findIndex(col => 
+                  (col.name.toLowerCase().includes('percent') || col.label.toLowerCase().includes('percent') ||
+                   col.name.toLowerCase().includes('%') || col.label.toLowerCase().includes('%'))
+                );
+                
+                if (percentIndex !== -1) {
+                  const value = String(row[percentIndex] || '');
+                  // Extract percentage value and check if 100%
+                  const percentMatch = value.match(/(\d+)/);
+                  if (percentMatch && percentMatch[1] === '100') {
+                    userTaskCounts[user] += 1;
+                  }
+                }
+                // Don't count as completed if we can't determine completion status
+                // (removed the fallback that counted everything)
+              }
             }
           } 
           // Check for completion index (percentage)
