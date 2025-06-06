@@ -549,46 +549,6 @@ const OrgLevelTaskList = () => {
   const handlePreviewTask = async (id, taskType, targetlanguage) => {
     handleDialogOpen("previewDialog");
   };
-    const [isBrowser, setIsBrowser] = useState(false);
-
-    const tableRef = useRef(null);
-  const [displayWidth, setDisplayWidth] = useState(0);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setDisplayWidth(window.innerWidth);
-    };
-
-    if (typeof window !== 'undefined') {
-      handleResize();
-      window.addEventListener('resize', handleResize);
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleResize);
-      }
-    };
-  }, []);
-
-
-  useEffect(() => {
-    setIsBrowser(true);
-
-    // Force responsive mode after component mount
-    const applyResponsiveMode = () => {
-      if (tableRef.current) {
-        const tableWrapper = tableRef.current.querySelector('.MuiDataTable-responsiveBase');
-        if (tableWrapper) {
-          tableWrapper.classList.add('MuiDataTable-vertical');
-        }
-      }
-    };
-
-    // Apply after a short delay to ensure DOM is ready
-    const timer = setTimeout(applyResponsiveMode, 100);
-    return () => clearTimeout(timer);
-  }, []);
 
 
   const handleShowSearch = (col, event) => {
@@ -789,9 +749,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -806,9 +763,7 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
+
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -822,9 +777,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["eta"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
@@ -976,9 +928,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["Action"],
         sort: false,
         align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (_value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];

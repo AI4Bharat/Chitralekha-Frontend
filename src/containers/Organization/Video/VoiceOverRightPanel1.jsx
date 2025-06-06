@@ -18,6 +18,7 @@ import {
   onSplit,
 } from "utils";
 import { configs, endpoints, voiceoverFailInfoColumns } from "config";
+import { useTheme } from "@mui/material";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -166,6 +167,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
   }, []);
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // xs, sm, md
 
   useEffect(() => {
     if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
@@ -968,7 +972,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   padding: "5px 0",
                   // margin: "2px",
                   // borderBottom: "1px solid grey",
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
                 id={`container-${index}`}
               >
@@ -1035,7 +1039,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       </span>
                     </div>}
 
-                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
+                  <div className={classes.relative}
+ style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" ,         marginLeft: isSmallScreen ? "80px" : "0px",
+        marginRight: isSmallScreen ? "65px" : "0px",
+   
+}}>
                     <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
