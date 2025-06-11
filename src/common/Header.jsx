@@ -163,12 +163,14 @@ const Header = () => {
         <AppBar
           position="fixed"
           sx={
+            
             fullscreen
               ? {
                   zIndex: (theme) => theme.zIndex.drawer + 1,
                   visibility: "hidden",
                 }
               : { zIndex: (theme) => theme.zIndex.drawer + 1 }
+              
           }
         >
           <Container maxWidth="xl">
@@ -190,7 +192,7 @@ const Header = () => {
                 <Typography variant="h4" sx={{ color: "black" }}>
                   Chitralekha
                 </Typography>
-                <Typography sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000", margin: "auto" }}>
+                <Typography sx={{ fontSize: "0.6rem", fontWeight: "500", color: "#000000", margin: "auto" }}>
                   Powered by EkStep Foundation
                 </Typography>
               </Box>
@@ -311,58 +313,30 @@ const Header = () => {
                   ))}
                 </Menu>
 
-                {/* <IconButton
-                  onClick={handleOpenSettingsMenu}
-                  className={`${classes.icon} settings`}
-                >
-                  <Tooltip title="Settings">
-                    <SettingsOutlinedIcon
-                      color="primary"
-                      className={classes.icon}
-                    />
-                  </Tooltip>
-                </IconButton>
-
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElSettings}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={Boolean(anchorElSettings)}
-                  onClose={handleCloseSettingsMenu}
-                >
-                  {SettingsMenu.map((item, index) => (
-                    <MenuItem key={index} onClick={item.onClick}>
-                      <Typography variant="body2" textAlign="center">
-                        {item.name}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                </Menu> */}
 
                 <IconButton
                   onClick={handleOpenUserMenu}
                   className={`${classes.icon} profile`}
-                  sx={{ marginLeft: "20px" }}
                 >
                   <Avatar>{userData?.first_name?.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{
                       color: "rgb(39, 30, 79)",
-                      marginLeft: "10px",
-                      fontSize: "1.25rem",
                       fontFamily: "Roboto, sans-serif",
                       fontWeight: "400",
+                       ml: 1,
+                            fontSize: "1rem",
+                            fontWeight: 500,
+                            display: {
+                              xs: "block",
+                              sm: "block",
+                              md: "none",
+                              lg: "block",
+                            },
+                      
                     }}
+                    
                   >
                     {userData.first_name} {userData.last_name}
                   </Typography>
