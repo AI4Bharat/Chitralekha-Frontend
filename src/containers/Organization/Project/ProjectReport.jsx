@@ -745,25 +745,7 @@ const ProjectReport = () => {
             </FormControl>
           )}
         </Grid>
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          {reportsLevel && columns.length > 0 && comparisonMode === 'single' && (
-            <FormControl fullWidth>
-              <InputLabel id="chart-field-label" sx={{ fontSize: "18px" }}>
-                Visualize Field
-              </InputLabel>
-              <Select
-                labelId="chart-field-label"
-                value={chartField}
-                onChange={(e) => setChartField(e.target.value)}
-                label="Visualize Field"
-                sx={{ textAlign: "start" }}
-              >
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="user_distribution">User Distribution</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-        </Grid>
+        
         <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
           {reportsLevel && columns.length > 0 && (
             <FormControl fullWidth>
@@ -783,7 +765,25 @@ const ProjectReport = () => {
             </FormControl>
           )}
         </Grid>
-        
+        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+          {reportsLevel && columns.length > 0 && comparisonMode === 'single' && (
+            <FormControl fullWidth>
+              <InputLabel id="chart-field-label" sx={{ fontSize: "18px" }}>
+                Visualize Field
+              </InputLabel>
+              <Select
+                labelId="chart-field-label"
+                value={chartField}
+                onChange={(e) => setChartField(e.target.value)}
+                label="Visualize Field"
+                sx={{ textAlign: "start" }}
+              >
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="user_distribution">User Distribution</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+        </Grid>
         {comparisonMode === 'users' && (
           <>
             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
