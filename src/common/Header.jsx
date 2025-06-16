@@ -155,55 +155,48 @@ const Header = () => {
 
   return (
     <Grid container direction="row" style={{ zIndex: 1 }}>
-      <Box>
-        {isMobile ? (
-          <MobileNavbar
-            SettingsMenu={SettingsMenu}
-            UserMenu={UserMenu}
-            userData={userData}
-          />
-        ) : (
-          <AppBar
-            position="fixed"
-            sx={
-              fullscreen
-                ? {
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                    visibility: "hidden",
-                  }
-                : { zIndex: (theme) => theme.zIndex.drawer + 1 }
-            }
-          >
-            <Container maxWidth="xl">
-              <Toolbar disableGutters className={classes.toolbar}>
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  flexWrap={"wrap"}
-                  alignItems="center"
-                  justifyContent="space-evenly" // Add justifyContent to distribute space between items
-                  onClick={() => navigate("/login")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <img
-                    src={"Chitralekha_Logo_Transparent.png"}
-                    alt="ai4bharat"
-                    className={classes.Logo}
-                  />
-                  <Typography variant="h4" sx={{ color: "black" }}>
-                    Chitralekha
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: "0.7rem",
-                      fontWeight: "500",
-                      color: "#000000",
-                      margin: "auto",
-                    }}
-                  >
-                    Powered by EkStep Foundation
-                  </Typography>
-                </Box>
+    <Box>
+      {isMobile ? (
+        <MobileNavbar SettingsMenu={SettingsMenu} UserMenu={UserMenu} userData={userData} />
+      ) : (
+        <AppBar
+          position="fixed"
+          sx={
+            
+            fullscreen
+              ? {
+                  zIndex: (theme) => theme.zIndex.drawer + 1,
+                  visibility: "hidden",
+                }
+              : { zIndex: (theme) => theme.zIndex.drawer + 1 }
+              
+          }
+        >
+          <Container maxWidth="xl">
+            <Toolbar disableGutters className={classes.toolbar}>
+              <Box
+                display="flex"
+                flexDirection="row"
+                flexWrap={"wrap"}
+                alignItems="center"
+                justifyContent="space-evenly"  // Add justifyContent to distribute space between items
+                onClick={() => navigate("/login")}
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={"Chitralekha_Logo_Transparent.png"}
+                  alt="ai4bharat"
+                  className={classes.Logo}
+                />
+                <Typography variant="h4" sx={{ color: "black" }}>
+                  Chitralekha
+                </Typography>
+                <Typography sx={{ fontSize: "0.6rem", fontWeight: "500", color: "#000000", margin: "auto" }}>
+                  Powered by EkStep Foundation
+                </Typography>
+              </Box>
+
+
 
                 <Grid
                   container
@@ -284,51 +277,59 @@ const Header = () => {
                     </Tooltip>
                   </IconButton>
 
-                  <Menu
-                    sx={{ mt: "45px" }}
-                    id="menu-appbar"
-                    anchorEl={anchorElHelp}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "center",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "center",
-                    }}
-                    open={Boolean(anchorElHelp)}
-                    onClose={handleCloseHelpMenu}
-                  >
-                    {HelpMenu.map((item, index) => (
-                      <MenuItem key={index} onClick={item.onClick}>
-                        <Typography variant="body2" textAlign="center">
-                          {item.name}
-                        </Typography>
-                      </MenuItem>
-                    ))}
-                  </Menu>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElHelp}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  open={Boolean(anchorElHelp)}
+                  onClose={handleCloseHelpMenu}
+                >
+                  {HelpMenu.map((item, index) => (
+                    <MenuItem key={index} onClick={item.onClick}>
+                      <Typography variant="body2" textAlign="center">
+                        {item.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
 
-                  <IconButton
-                    onClick={handleOpenUserMenu}
-                    className={`${classes.icon} profile`}
+
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  className={`${classes.icon} profile`}
+                >
+                  <Avatar>{userData?.first_name?.charAt(0)}</Avatar>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      color: "rgb(39, 30, 79)",
+                      fontFamily: "Roboto, sans-serif",
+                      fontWeight: "400",
+                       ml: 1,
+                            fontSize: "1rem",
+                            fontWeight: 500,
+                            display: {
+                              xs: "block",
+                              sm: "block",
+                              md: "none",
+                              lg: "block",
+                            },
+                      
+                    }}
+                    
                   >
-                    <Avatar>{userData?.first_name?.charAt(0)}</Avatar>
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        color: "rgb(39, 30, 79) !important",
-                        marginLeft: "10px",
-                        fontFamily: "Roboto, sans-serif",
-                        fontWeight: "400",
-                        padding: "10px !important",
-                        margin: "0px !important",
-                      }}
-                      className={classes.headerMenu}
-                    >
-                      {userData.first_name} {userData.last_name}
-                    </Typography>
-                  </IconButton>
+                    {userData.first_name} {userData.last_name}
+                  </Typography>
+                </IconButton>
 
                   <Menu
                     sx={{ mt: "45px" }}

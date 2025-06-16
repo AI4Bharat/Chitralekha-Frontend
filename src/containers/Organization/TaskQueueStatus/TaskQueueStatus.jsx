@@ -23,6 +23,7 @@ const TaskQueueStatus = () => {
           <Tabs
             value={value}
             onChange={(_event, newValue) => setValue(newValue)}
+            variant="scrollable"
           >
             <Tab
               label={"Transcription"}

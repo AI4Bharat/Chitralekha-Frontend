@@ -1,5 +1,5 @@
 // OrgLevelTaskList
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
@@ -550,6 +550,7 @@ const OrgLevelTaskList = () => {
     handleDialogOpen("previewDialog");
   };
 
+
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     dispatch(
@@ -748,9 +749,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -765,9 +763,7 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
+
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -781,9 +777,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["eta"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
@@ -935,9 +928,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["Action"],
         sort: false,
         align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (_value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
@@ -1319,7 +1309,6 @@ const OrgLevelTaskList = () => {
 
   return (
     <>
-        {loading && <Loader size={50} color="primary" />}
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={tableData}

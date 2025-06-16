@@ -6,7 +6,17 @@ export default class FetchOrganizatioProjectManagersUserAPI extends API {
   constructor(id,projectrole, timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.GET_ORGANIZATION_PROJECT_MANAGER_USER;
-    this.endpoint = `${super.apiEndPointAuto()}${ENDPOINTS.organization}${id}/users/?role=${projectrole}`;
+        let endpoint = `${super.apiEndPointChitralekha()}${ENDPOINTS.getTranscriptReport}`;
+    if (this.start_date) {
+      endpoint += `?start_date=${this.start_date}`;
+    }
+    if (this.end_date) {
+      endpoint += `${this.start_date ? '&' : '?'}end_date=${this.end_date}`;
+    }
+    
+    this.endpoint = endpoint;
+  }
+
   }
 
   processResponse(res) {

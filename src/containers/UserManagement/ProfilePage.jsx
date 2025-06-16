@@ -48,7 +48,7 @@ const ProfilePage = () => {
   return (
     <>
       <Box sx={{ mb: 2 }}>
-        <Tabs value={tabValue} onChange={handleTabChange}>
+        <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" sx={{m:1}}>
           <Tab label="General" className={classes.profileTabs} />
 
           {(loggedInUserData.id === +id ||

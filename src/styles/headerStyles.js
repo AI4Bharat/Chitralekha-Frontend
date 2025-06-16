@@ -19,7 +19,7 @@ const headerStyle = makeStyles({
     display: "flex",
     alignItems: "center",
     // padding: "inherit !important",
-    padding: "0px !important",
+    padding:"5px !important",
     boxSizing: "border-box",
     minHeight: "54px",
     fontFamily: "sans-serif",
@@ -41,7 +41,7 @@ const headerStyle = makeStyles({
     padding: "12px ",
     color: "black",
     boxShadow: "none",
-    fontSize: "19px",
+    fontSize: "16px",
     fontFamily: "Roboto",
     fontWeight: 500,
     letterSpacing: "0.5px",
@@ -60,7 +60,7 @@ const headerStyle = makeStyles({
     padding: "12px ",
     color: "black",
     boxShadow: "none",
-    fontSize: "19px",
+    fontSize: "16px",
     fontFamily: "Roboto",
     fontWeight: 500,
     borderRadius: 12,
@@ -89,7 +89,7 @@ const headerStyle = makeStyles({
     color: "black",
   },
   Logo: {
-    width: "45px",
+    width: "2.5rem",
   },
   navBtn: {
     color: "black",
@@ -103,12 +103,11 @@ const headerStyle = makeStyles({
   },
   icon: {
     color: "rgba(0, 0, 0, 0.54) !important",
-    "@media (max-width: 1024px) and (min-width: 900px)": {
-      fontSize: "1.8rem !important",
-    },
-    "@media (min-width: 1025px)": {
-      fontSize: "2.25rem !important",
-    },
+    fontSize: "2rem !important",
+  },
+  icon2: {
+    color: "rgba(0, 0, 0, 0.54) !important",
+    fontSize: "1.7rem !important",
   },
   ArticleIconStyle: {
     // backgroundColor: "#D3E4F7",
