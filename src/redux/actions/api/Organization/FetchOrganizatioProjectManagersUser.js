@@ -17,8 +17,6 @@ export default class FetchOrganizatioProjectManagersUserAPI extends API {
     this.endpoint = endpoint;
   }
 
-  }
-
   processResponse(res) {
     super.processResponse(res);
     if (res) {
