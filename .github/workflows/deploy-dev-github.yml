@@ -3,6 +3,9 @@ on:
     push:
         branches:
             - develop2
+env: 
+  REACT_APP_CLIENT_ID: ${{ vars.REACT_APP_CLIENT_ID }}
+  REACT_APP_CLIENT_SECRET: ${{ vars.REACT_APP_CLIENT_SECRET }}
 jobs:
     build-and-deploy:
         concurrency: ci-${{ github.ref }}
