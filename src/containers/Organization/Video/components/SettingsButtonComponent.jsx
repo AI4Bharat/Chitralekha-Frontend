@@ -38,6 +38,8 @@ import ExpandIcon from "@mui/icons-material/Expand";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import BookmarkIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import DownloadIcon from "@mui/icons-material/DownloadOutlined";
+import NoPhotographyOutlinedIcon from '@mui/icons-material/NoPhotographyOutlined';
+import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
 
 const anchorOrigin = {
   vertical: "top",
@@ -82,6 +84,9 @@ const SettingsButtonComponent = ({
   handleGetUpdatedAudioForAll,
   bookmarkSegment,
   setOpenExportDialog,
+  enableScreenShots,
+  setEnableScreenShots,
+  videoLinkExpired,
 }) => {
   const classes = VideoLandingStyle();
   
@@ -539,6 +544,33 @@ const SettingsButtonComponent = ({
               <DownloadIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
+
+          {enableScreenShots ?
+            <Tooltip title="Hide Screenshots" placement="bottom">
+              <IconButton
+                className={classes.rightPanelBtnGrp}
+                onClick={() => { setEnableScreenShots(!enableScreenShots) }}
+                disabled={apiInProgress || videoLinkExpired}
+                sx={{
+                  "&.Mui-disabled": { backgroundColor: "lightgray" },
+                }}
+              >
+                <NoPhotographyOutlinedIcon className={classes.rightPanelSvg} />
+              </IconButton>
+            </Tooltip> :
+            <Tooltip title="Show Screenshots" placement="bottom">
+              <IconButton
+                className={classes.rightPanelBtnGrp}
+                onClick={() => { setEnableScreenShots(!enableScreenShots) }}
+                disabled={apiInProgress || videoLinkExpired}
+                sx={{
+                  "&.Mui-disabled": { backgroundColor: "lightgray" },
+                }}
+              >
+                <CameraAltOutlinedIcon className={classes.rightPanelSvg} />
+              </IconButton>
+            </Tooltip>
+          }
 
         </>
       }

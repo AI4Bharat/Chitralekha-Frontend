@@ -17,6 +17,7 @@ export default class Sub {
     this.paraphrased_text = obj.paraphrased_text;
     this.verbatim_text = obj.verbatim_text;
     this.fast_audio = obj.fast_audio;
+    this.image_url = obj.image_url;
   }
 
   get check() {
