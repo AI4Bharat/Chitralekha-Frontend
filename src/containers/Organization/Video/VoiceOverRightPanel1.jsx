@@ -924,7 +924,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     let url = null;
     if(imageDataUrl !== null){
       try {
-        url = await uploadToImgBB(imageDataUrl);
+        url = await uploadToImgBB(imageDataUrl, taskId);
         console.log('Successfully uploaded to ImgBB:', url);
       } catch (error) {
         console.log(error.message || 'An unknown error occurred during upload.');
