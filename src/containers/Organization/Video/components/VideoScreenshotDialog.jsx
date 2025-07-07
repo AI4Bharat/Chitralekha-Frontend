@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const VideoScreenshotDialog = ({ open, onClose, videoUrl, onCapture, initialTimestamp }) => {
+const VideoScreenshotDialog = ({ open, onClose, videoUrl, onCapture, initialTimestamp, imageUrl="" }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isVideoLoading, setVideoLoading] = useState(true);
@@ -86,16 +86,20 @@ const VideoScreenshotDialog = ({ open, onClose, videoUrl, onCapture, initialTime
           />
         </Box>
       </DialogContent>
+      {imageUrl !== "" && 
+      <DialogContent dividers>
+        <img src={imageUrl} height="30%" width="30%" style={{ display: "block", margin: "0 auto" }} />
+      </DialogContent>}
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button
+        {imageUrl!=="" && <Button
           onClick={deleteCapturedScreenshot}
           variant="contained"
           color="error"
           disabled={isVideoLoading}
         >
           Delete
-        </Button>
+        </Button>}
         <Button
           onClick={handleCaptureScreenshot}
           variant="contained"

@@ -908,14 +908,17 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const [videoLinkExpired, setVideoLinkExpired] = useState(true);
   const [screenShotDialogOpen, setScreenShotDialogOpen] = useState(false);
   const [currentStartTime, setCurrentStartTime] = useState(0);
+  const [currentImageUrl, setCurrentImageUrl] = useState("");
 
-  const handleSSOpenDialog = (time) => {
+  const handleSSOpenDialog = (time, imageurl) => {
     setCurrentStartTime(timestampToSeconds(time));
+    setCurrentImageUrl(imageurl);
     setScreenShotDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setCurrentStartTime(0);
+    setCurrentImageUrl("");
     setScreenShotDialogOpen(false);
   };
 
@@ -1280,7 +1283,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   {enableScreenShots &&
                   <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "20%" }}>
                     {item.image_url!==null ? 
-                    <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time)}} style={{ cursor: 'pointer' }}/>
+                    <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time, item.image_url)}} style={{ cursor: 'pointer' }}/>
                       :
                     <Tooltip title="Capture Screenshot" placement="bottom">
                       <IconButton
@@ -1407,6 +1410,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             videoUrl={taskData?.video_url}
             onCapture={handleCapture}
             initialTimestamp={Number(currentStartTime) || 0}
+            imageUrl={currentImageUrl}
           />
         )}
       </Box>
