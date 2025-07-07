@@ -9,13 +9,13 @@ const base64ToBlob = (base64, contentType = 'image/jpeg') => {
   return new Blob([byteArray], { type: contentType });
 };
 
-export const uploadToImgBB = async (base64Image) => {
+export const uploadToImgBB = async (base64Image, filename="screenshot") => {
   const apiKey = process.env.REACT_APP_IMGBB_API_KEY;
 
   const imageBlob = base64ToBlob(base64Image, 'image/jpeg');
 
   const formData = new FormData();
-  formData.append('image', imageBlob, 'screenshot.jpg');
+  formData.append('image', imageBlob, `${filename}_${Date.now()}.jpg`);
 
   try {
     const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
