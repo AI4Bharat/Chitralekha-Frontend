@@ -103,6 +103,7 @@ export const addSubtitleBox = (index, paraphrase=false) => {
         text: "",
         speaker_id: "",
         target_text: "",
+        image_url: null,
       })
     );
   
@@ -121,7 +122,8 @@ export const addSubtitleBox = (index, paraphrase=false) => {
           : DT.d2t(duration + 0.5),
       text: "",
       speaker_id: "",
-      ...(paraphrase ? {paraphrased_text: ""} : {target_text: ""})
+      ...(paraphrase ? {paraphrased_text: ""} : {target_text: ""}),
+      image_url: null,
     })
   );
 
@@ -171,6 +173,7 @@ export const onMerge = (index, votr=false, paraphrase=false) => {
         existingsourceData[index + 1].target_text
       }`}),
       speaker_id: "",
+      image_url: existingsourceData[index].image_url,
     })
   );
   }
@@ -319,6 +322,7 @@ export const onSplit = (
         text: text1,
         speaker_id: "",
         ...(paraphrase ? {paraphrased_text: targetText1} : ((translateSplit || targetSelectionStart) && { target_text: targetText1 })),
+        image_url: targetTextBlock.image_url,
       })
     );
 
@@ -334,6 +338,7 @@ export const onSplit = (
         text: text2,
         speaker_id: "",
         ...(paraphrase ? {paraphrased_text: targetText2} : ((translateSplit || targetSelectionStart) && { target_text: targetText2 })),
+        image_url: null,
       })
     );
     }
@@ -374,6 +379,8 @@ export const onSubtitleChange = (text, index, id) => {
         element.target_text = text;
       } else if (id === 3) {
         element.transcription_text = text;
+      } else if (id === 5) {
+        element.image_url = text;
       } else{
         element.text = text;
       }

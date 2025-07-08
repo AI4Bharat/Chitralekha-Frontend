@@ -544,7 +544,11 @@ const SettingsButtonComponent = ({
               <DownloadIcon className={classes.rightPanelSvg} />
             </IconButton>
           </Tooltip>
-
+          </>
+      }
+      {(taskData?.task_type?.includes("TRANSLATION_VOICEOVER") || taskData?.task_type?.includes("TRANSCRIPTION")) && 
+        <>
+          {taskData?.task_type?.includes("TRANSCRIPTION") && <Divider orientation="vertical" className={classes.rightPanelDivider} />}
           {enableScreenShots ?
             <Tooltip title="Hide Screenshots" placement="bottom">
               <IconButton
@@ -571,9 +575,8 @@ const SettingsButtonComponent = ({
               </IconButton>
             </Tooltip>
           }
-
         </>
-      }
+        }
     </>
   );
 };
