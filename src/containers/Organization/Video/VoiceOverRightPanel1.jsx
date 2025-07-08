@@ -1282,7 +1282,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   )}
                   {enableScreenShots &&
                   <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "20%" }}>
-                    {item.image_url!==null ? 
+                    {(item.image_url!==null && item.image_url!=="" && item.image_url!==undefined) ? 
                     <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time, item.image_url)}} style={{ cursor: 'pointer' }}/>
                       :
                     <Tooltip title="Capture Screenshot" placement="bottom">
