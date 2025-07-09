@@ -337,6 +337,17 @@ const MyOrganization = () => {
                     }}
                   >
                     Regenerate Failed VOTR Tasks
+                    <Tooltip title="Download sample CSV">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/RegenrateSamplefile.csv`);
+                        }}
+                        sx={{ color: "white" }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
                   </Button>
 
                   <Button
@@ -365,18 +376,16 @@ const MyOrganization = () => {
                     >
                       Bulk Video Upload
                       <Tooltip title="Download sample CSV">
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.location.assign(
-                              `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
-                            );
-                          }}
-                          sx={{ color: "white" }}
-                        >
-                          <InfoOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/SampleBulkupload.csv`);
+                        }}
+                        sx={{ color: "white" }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
                     </Button>
                   )}
                 </Fragment>
