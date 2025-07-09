@@ -18,34 +18,32 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
 import { ProjectStyle } from "styles";
 import { MenuProps } from "utils";
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { domains } from "config";
 
-const GlossaryDialog = ({
+const GlossaryEditDialog = ({
   openDialog,
   handleClose,
   submit,
-  selectedWord,
   title,
-  srcLang = "",
-  tgtLang = "",
-  disableFields,
-  acceptTaskIds=false,
+  selectedRow,
+
 }) => {
+  console.log(selectedRow);
   const classes = ProjectStyle();
   const dispatch = useDispatch();
 
-  const [sourceText, setSourceText] = useState(selectedWord);
-  const [targetText, setTargetText] = useState("");
-  const [sourceLanguage, setSourceLanguage] = useState(srcLang);
-  const [targetLanguage, setTargetLanguage] = useState(tgtLang);
-  const [meaning, setMeaning] = useState("");
-  const [taskIds, setTaskIds] = useState("");
-  const [domain, setDomain] = useState("");
+  const [sourceText, setSourceText] = useState(selectedRow.source_text);
+  const [targetText, setTargetText] = useState(selectedRow.target_text);
+  const [sourceLanguage, setSourceLanguage] = useState(selectedRow.source_language);
+  const [targetLanguage, setTargetLanguage] = useState(selectedRow.target_language);
+  const [meaning, setMeaning] = useState(selectedRow.meaning);
+  const [taskIds, setTaskIds] = useState(selectedRow.task_ids);
+  const [domain, setDomain] = useState(selectedRow.context);
   const [enableTransliteration, setEnableTransliteration] = useState(true);
 
   const supportedLanguages = useSelector(
@@ -112,7 +110,7 @@ const GlossaryDialog = ({
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
                 MenuProps={MenuProps}
-                disabled={disableFields}
+                disabled={true}
               >
                 {supportedLanguages?.map((item, index) => (
                   <MenuItem key={index} value={item.value}>
@@ -138,7 +136,7 @@ const GlossaryDialog = ({
                 style={{ zIndex: "0" }}
                 inputProps={{ "aria-label": "Without label" }}
                 MenuProps={MenuProps}
-                disabled={disableFields}
+                disabled={true}
               >
                 {supportedLanguages?.map((item, index) => (
                   <MenuItem key={index} value={item.value}>
@@ -149,7 +147,7 @@ const GlossaryDialog = ({
             </FormControl>
           </Grid>
 
-          <Grid item md={12} xs={12} sx={{ mt: 3 }}>
+          {/* <Grid item md={12} xs={12} sx={{ mt: 3 }}>
             <FormControl component="fieldset" variant="standard">
               <FormGroup>
                 <FormControlLabel
@@ -171,7 +169,7 @@ const GlossaryDialog = ({
                 />
               </FormGroup>
             </FormControl>
-          </Grid>
+          </Grid> */}
 
           <Grid item md={6} xs={12} sx={{ mt: 3 }}>
             <IndicTransliterate
@@ -183,7 +181,7 @@ const GlossaryDialog = ({
               onChangeText={() => {}}
               enabled={enableHandler(sourceLanguage)}
               className={classes.findReplaceTextbox}
-              disabled={disableFields || sourceLanguage.length === 0}
+              disabled={true}
               renderComponent={(props) => (
                 <>
                   <div class="mui-input-outlined">
@@ -192,8 +190,9 @@ const GlossaryDialog = ({
                       id="outlined-input"
                       placeholder=""
                       {...props}
+                      style={{color:'rgba(0, 0, 0, 0.38)'}}
                     />
-                    <label for="outlined-input">Source Text</label>
+                    <label for="outlined-input" style={{color:'rgba(0, 0, 0, 0.6)'}}>Source Text</label>
                   </div>
                 </>
               )}
@@ -210,7 +209,7 @@ const GlossaryDialog = ({
               onChangeText={() => {}}
               enabled={enableHandler(targetLanguage)}
               className={classes.findReplaceTextbox}
-              disabled={targetLanguage.length === 0}
+              disabled={true}
               renderComponent={(props) => (
                 <>
                   <div
@@ -222,8 +221,9 @@ const GlossaryDialog = ({
                       id="outlined-input"
                       placeholder=""
                       {...props}
+                      style={{color:'rgba(0, 0, 0, 0.38)'}}
                     />
-                    <label for="outlined-input">Target Text</label>
+                    <label for="outlined-input" style={{color:'rgba(0, 0, 0, 0.6)'}}>Target Text</label>
                   </div>
                 </>
               )}
@@ -268,7 +268,7 @@ const GlossaryDialog = ({
             </FormControl>
           </Grid>
 
-          {acceptTaskIds && <Grid item md={6} xs={12}>
+          <Grid item md={6} xs={12}>
             <FormControl fullWidth sx={{ mt: 3}}>
             <div class="mui-input-outlined">
               <input
@@ -282,7 +282,7 @@ const GlossaryDialog = ({
               <label for="outlined-input">Task ID's (Optional)</label>
             </div>
             </FormControl>
-          </Grid>}
+          </Grid>
         </Grid>
       </DialogContent>
 
@@ -308,11 +308,11 @@ const GlossaryDialog = ({
             sourceLanguage === targetLanguage
           }
         >
-          Add
+          Edit
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default GlossaryDialog;
+export default GlossaryEditDialog;

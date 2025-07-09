@@ -26,6 +26,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { VideoLandingStyle } from "styles";
 import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 
 //Components
 import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
@@ -71,6 +72,8 @@ import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
 import { copySubs, exportFile, onExpandTimeline } from "utils/subtitleUtils";
 import AudioPlayer from "./audioPanel";
+import { uploadToImgBB } from "./components/uploadToImgBB";
+import VideoScreenshotDialog from "./components/VideoScreenshotDialog";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
@@ -358,6 +361,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
         element.text_changed = true;
         }else if(type === "retranslate"){
         element.retranslate = true;  
+        }else if(type === "screenshot"){
+        element.image_url = text;
         }else{
         element.transcription_text = text;
         }
@@ -508,7 +513,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const createGlossary = (sentences) => {
     const userId = loggedInUserData.id;
 
-    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    const apiObj = new CreateGlossaryAPI(userId, sentences, taskId);
     dispatch(APITransport(apiObj));
   };
 
@@ -919,6 +924,68 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     }));
   }
 
+  function timestampToSeconds(timestamp) {
+    const [hours, minutes, rest] = timestamp.split(':');
+    const [seconds, milliseconds] = rest.split('.');
+  
+    return (
+      parseInt(hours) * 3600 +
+      parseInt(minutes) * 60 +
+      parseInt(seconds) +
+      parseInt(milliseconds) / 1000
+    );
+  }
+
+  const [enableScreenShots, setEnableScreenShots] = useState(false);
+  const [videoLinkExpired, setVideoLinkExpired] = useState(true);
+  const [screenShotDialogOpen, setScreenShotDialogOpen] = useState(false);
+  const [currentStartTime, setCurrentStartTime] = useState(0);
+  const [currentImageUrl, setCurrentImageUrl] = useState("");
+
+  const handleSSOpenDialog = (time, imageurl) => {
+    setCurrentStartTime(timestampToSeconds(time));
+    setCurrentImageUrl(imageurl);
+    setScreenShotDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setCurrentStartTime(0);
+    setCurrentImageUrl("");
+    setScreenShotDialogOpen(false);
+  };
+
+  const handleCapture = async (imageDataUrl) => {
+    let index = currentIndex;
+    let url = null;
+    if(imageDataUrl !== null){
+      try {
+        url = await uploadToImgBB(imageDataUrl, taskId);
+        console.log('Successfully uploaded to ImgBB:', url);
+      } catch (error) {
+        console.log(error.message || 'An unknown error occurred during upload.');
+      }
+    }
+    changeTranscriptHandler(url, index, "screenshot")
+  };
+
+  async function isVideoUrlValid(url) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('Content-Type');
+      return response.ok && contentType && contentType.startsWith('video/');
+    } catch (error) {
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if(taskData?.video_url?.includes("youtube.com")){
+      setVideoLinkExpired(true);
+    }else{
+      setVideoLinkExpired(!isVideoUrlValid(taskData?.video_url));
+    }
+  }, [taskData]);
+
   return (
     <>
       {renderSnackBar()}
@@ -959,6 +1026,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
             setOpenExportDialog={setOpenExportDialog}
             disabled={disable}
+            enableScreenShots={enableScreenShots}
+            setEnableScreenShots={setEnableScreenShots}
+            videoLinkExpired={videoLinkExpired}
           />
         </Grid>
 
@@ -1250,6 +1320,21 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       </span>
                     </div>
                   )}
+                  {enableScreenShots &&
+                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "20%" }}>
+                    {(item.image_url!==null && item.image_url!=="" && item.image_url!==undefined) ? 
+                    <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time, item.image_url)}} style={{ cursor: 'pointer' }}/>
+                      :
+                    <Tooltip title="Capture Screenshot" placement="bottom">
+                      <IconButton
+                        className={classes.optionIconBtn}
+                        onClick={()=>{handleSSOpenDialog(item.start_time)}}
+                        disabled={apiInProgress}
+                      >
+                        <AddAPhotoOutlinedIcon className={classes.rightPanelSvg} />
+                      </IconButton>
+                    </Tooltip>}
+                  </div>}
                 </CardContent>
                 <Menu
                   open={contextMenu !== null}
@@ -1355,6 +1440,17 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             isBulkTaskDownload={false}
             currentSelectedTasks={[]}
             multiOptionDialog={true}
+          />
+        )}
+
+        {screenShotDialogOpen && (
+          <VideoScreenshotDialog
+            open={screenShotDialogOpen}
+            onClose={handleCloseDialog}
+            videoUrl={taskData?.video_url}
+            onCapture={handleCapture}
+            initialTimestamp={Number(currentStartTime) || 0}
+            imageUrl={currentImageUrl}
           />
         )}
       </Box>

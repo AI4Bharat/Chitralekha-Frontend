@@ -64,7 +64,7 @@ export const projectColumns = [
 
 export const usersColumns = [
   {
-    name: "name",
+    name: "first_name",
     label: "Name",
     options: {
       customBodyRender: (_value, tableMeta) => {
@@ -669,6 +669,18 @@ export const glossaryColumns = [
   {
     name: "target_text",
     label: "Target Text",
+  },
+  {
+    name: "meaning",
+    label: "Meaning",
+  },
+  {
+    name: "task_ids",
+    label: "Task IDs",
+  },
+  {
+    name: "context",
+    label: "Context"
   },
 ];
 

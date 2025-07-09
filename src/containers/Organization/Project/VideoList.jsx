@@ -113,10 +113,6 @@ const VideoList = ({ data, removeVideo,loading }) => {
             }
             break;
 
-          case "BULK_VIDEO_DOWNLOAD":
-            exportZip(data, "video", videoName);
-            break;
-
           default:
             break;
         }
@@ -165,9 +161,12 @@ const VideoList = ({ data, removeVideo,loading }) => {
 
   const handleDownload = async () => {
     setOpenExportDialog(false);
-
     const obj = new BulkDownloadForVideoAPI(videoIdForDowload, exportType);
-    dispatch(APITransport(obj));
+    const link = document.createElement("a");
+    link.href = obj.apiEndPoint();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const result = data?.map((item, i) => {

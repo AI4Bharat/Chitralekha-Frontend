@@ -34,9 +34,11 @@ import {
   CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
+  Tooltip,
   useMediaQuery,
 } from "@mui/material";
 import {
@@ -49,6 +51,9 @@ import {
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
+import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
+import { uploadToImgBB } from "./components/uploadToImgBB";
+import VideoScreenshotDialog from "./components/VideoScreenshotDialog";
 
 //APIs
 import C from "redux/constants";
@@ -642,6 +647,68 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
     },
   ];
   
+  function timestampToSeconds(timestamp) {
+    const [hours, minutes, rest] = timestamp.split(':');
+    const [seconds, milliseconds] = rest.split('.');
+
+    return (
+      parseInt(hours) * 3600 +
+      parseInt(minutes) * 60 +
+      parseInt(seconds) +
+      parseInt(milliseconds) / 1000
+    );
+  }
+
+  const [enableScreenShots, setEnableScreenShots] = useState(false);
+  const [videoLinkExpired, setVideoLinkExpired] = useState(true);
+  const [screenShotDialogOpen, setScreenShotDialogOpen] = useState(false);
+  const [currentStartTime, setCurrentStartTime] = useState(0);
+  const [captureIndex, setCaptureIndex] = useState(-1);
+
+  const handleSSOpenDialog = (time, index) => {
+    setCurrentStartTime(timestampToSeconds(time));
+    setScreenShotDialogOpen(true);
+    setCaptureIndex(index);
+  };
+
+  const handleCloseDialog = () => {
+    setCurrentStartTime(0);
+    setScreenShotDialogOpen(false);
+    setCaptureIndex(-1);
+  };
+
+  const handleCapture = async (imageDataUrl) => {
+    let index = captureIndex;
+    let url = null;
+    if(imageDataUrl !== null){
+      try {
+        url = await uploadToImgBB(imageDataUrl);
+        console.log('Successfully uploaded to ImgBB:', url);
+      } catch (error) {
+        console.log(error.message || 'An unknown error occurred during upload.');
+      }
+    }
+    const sub = onSubtitleChange(url, index, 5);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  };
+
+  async function isVideoUrlValid(url) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('Content-Type');
+      return response.ok && contentType && contentType.startsWith('video/');
+    } catch (error) {
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if(taskData?.video_url?.includes("youtube.com")){
+      setVideoLinkExpired(true);
+    }else{
+      setVideoLinkExpired(!isVideoUrlValid(taskData?.video_url));
+    }
+  }, [taskData]);
 
   return (
     <>
@@ -685,6 +752,9 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
             expandTimestamp={expandTimestamp}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
             disabled={disable}
+            enableScreenShots={enableScreenShots}
+            setEnableScreenShots={setEnableScreenShots}
+            videoLinkExpired={videoLinkExpired}
           />
         </Grid>
 
@@ -807,8 +877,22 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                       </span>
                     </div>
                   )}
-                </CardContent>
 
+                </CardContent>
+                {enableScreenShots &&
+                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "12%" }}>
+                    {(item.image_url!==null && item.image_url!=="" && item.image_url!==undefined) ? 
+                    <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time)}} style={{ cursor: 'pointer', maxHeight: "80px" }}/>
+                      :
+                    <Tooltip title="Capture Screenshot" placement="bottom">
+                      <IconButton
+                        className={classes.optionIconBtn}
+                        onClick={()=>{handleSSOpenDialog(item.start_time, index)}}
+                      >
+                        <AddAPhotoOutlinedIcon className={classes.rightPanelSvg} />
+                      </IconButton>
+                    </Tooltip>}
+                  </div>}
                 {showSpeakerIdDropdown && (
                   <FormControl
                     sx={{ width: "50%", mr: "auto", float: "left" }}
@@ -875,6 +959,16 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
             submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the transcript?"}
             loading={apiStatus.loading}
+          />
+        )}
+
+        {screenShotDialogOpen && (
+          <VideoScreenshotDialog
+            open={screenShotDialogOpen}
+            onClose={handleCloseDialog}
+            videoUrl={taskData?.video_url}
+            onCapture={handleCapture}
+            initialTimestamp={Number(currentStartTime) || 0}
           />
         )}
 
