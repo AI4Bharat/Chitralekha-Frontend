@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-// Styles
 import { DatasetStyle } from "styles";
 
-// Components
 import { Box, Card, Grid, Tab, Tabs, Button, Typography, Paper } from "@mui/material";
 import OrganizationList from "./OrganizationList";
 import MemberList from "./MemberList";
@@ -96,7 +94,7 @@ const DashBoard = () => {
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Card className={classes.workspaceCard}>
         <Box>
-          <Tabs value={value} onChange={handleTabChange} aria-label="basic tabs example">
+          <Tabs value={value} onChange={handleTabChange} aria-label="basic tabs example" variant="scrollable">
             {isAdmin &&
               adminTabs.map((tab, index) => (
                 <Tab key={index} label={tab.label} sx={{ fontSize: 16, fontWeight: "700" }} />

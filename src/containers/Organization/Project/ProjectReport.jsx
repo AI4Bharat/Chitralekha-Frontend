@@ -43,6 +43,7 @@ const ProjectReport = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   const classes = TableStyles();
+  const [isLoading, setIsLoading] = useState(false); // Add local loading state
 
   const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -78,11 +79,15 @@ const ProjectReport = () => {
   ];
 
   const handleChangeReportsLevel = (event) => {
+        setIsLoading(true); // Set loading to true when changing report type
+
     setTableData([]);
     setreportsLevel(event.target.value);
     setlanguageLevelStats("");
     setOffset(0);
-    if (event.target.value === "Language") return;
+    if (event.target.value === "Language")    {  setIsLoading(false); // Don't forget to set loading to false if we return early
+ return;
+    }
     const apiObj = new FetchProjectReportsAPI(
       projectId,
       event.target.value,
@@ -93,6 +98,8 @@ const ProjectReport = () => {
   };
 
   const handleChangelanguageLevelStats = (event) => {
+        setIsLoading(true); // Set loading to true when changing language level stats
+
     setlanguageLevelStats(event.target.value);
     setOffset(0);
     const apiObj = new FetchProjectReportsAPI(
@@ -159,6 +166,7 @@ const ProjectReport = () => {
     rawData = projectReportData;
     createTableData(rawData);
     createReportColumns(rawData);
+    setIsLoading(false); // Data has arrived, set loading to false
 
     // eslint-disable-next-line
   }, [projectReportData, languageLevelsStats]);
@@ -261,7 +269,7 @@ const ProjectReport = () => {
   };
 
   useEffect(() => {
-    let option = getOptions(apiStatus.loading);
+    let option = getOptions(isLoading || apiStatus.loading); // Combine both loading states
 
     option = {
       ...option,

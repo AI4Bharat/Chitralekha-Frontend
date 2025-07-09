@@ -1,5 +1,5 @@
 // OrgLevelTaskList
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
@@ -25,7 +25,6 @@ import { tableTheme } from "theme";
 
 //Components
 import {
-  ThemeProvider,
   Box,
   Divider,
   Tooltip,
@@ -33,6 +32,9 @@ import {
   Button,
   Badge,
 } from "@mui/material";
+import { ThemeProvider, styled } from '@mui/material/styles';
+import InfoIcon from '@mui/icons-material/Info';
+import { tooltipClasses } from '@mui/material/Tooltip';
 import MUIDataTable from "mui-datatables";
 import {
   AlertComponent,
@@ -550,6 +552,7 @@ const OrgLevelTaskList = () => {
     handleDialogOpen("previewDialog");
   };
 
+
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     dispatch(
@@ -748,9 +751,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -765,9 +765,7 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
+
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -781,9 +779,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["eta"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
@@ -935,9 +930,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["Action"],
         sort: false,
         align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (_value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
@@ -1070,6 +1062,32 @@ const OrgLevelTaskList = () => {
         break;
     }
   };
+  const handleShowFilter = (event) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+
+  const areFiltersApplied = (filters) => {
+    return Object.values(filters).some((value) => 
+      Array.isArray(value) ? value.length > 0 : Boolean(value)
+    );
+  };
+
+  const filtersApplied = areFiltersApplied(orgSelectedFilters);
+
+  const CustomTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: "#e0e0e0",
+      color: "rgba(0, 0, 0, 0.87)",
+      maxWidth: 300,
+      fontSize: theme.typography.pxToRem(12),
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+      color: "#e0e0e0",
+    },
+  }));  
 
   const renderToolBar = () => {
     const arrayLengths = Object.values(orgSelectedFilters).map(
@@ -1079,17 +1097,54 @@ const OrgLevelTaskList = () => {
 
     return (
       <>
-        <Button
-          style={{ minWidth: "25px" }}
-          onClick={(event) => setAnchorEl(event.currentTarget)}
+        <div 
+          style={{ display: "inline-block", position: "relative" }} 
+          onClick={handleShowFilter}
         >
-          <Tooltip title={"Filter Table"}>
-            <Badge color="primary" badgeContent={sumOfLengths}>
+          {filtersApplied && (
+            <InfoIcon 
+              color="primary" 
+              fontSize="small" 
+              sx={{ position: "absolute", top: -4, right: -4 }} 
+            />
+          )}
+          <Button style={{ minWidth: "25px" }} onClick={handleShowFilter}>
+            <CustomTooltip
+              title={
+                filtersApplied ? (
+                  <Box 
+                    sx={{ 
+                      padding: "5px", 
+                      maxWidth: "300px", 
+                      fontSize: "12px", 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      gap: "5px" 
+                    }}
+                  >
+                    {orgSelectedFilters?.taskType && orgSelectedFilters.taskType.length > 0 && (
+                      <div><strong>Task Type:</strong> {orgSelectedFilters.taskType.join(", ")}</div>
+                    )}
+                    {orgSelectedFilters?.status && orgSelectedFilters.status.length > 0 && (
+                      <div><strong>Status:</strong> {orgSelectedFilters.status.join(", ")}</div>
+                    )}
+                    {orgSelectedFilters?.srcLanguage && orgSelectedFilters.srcLanguage.length > 0 && (
+                      <div><strong>Source Language:</strong> {orgSelectedFilters.srcLanguage.join(", ")}</div>
+                    )}
+                    {orgSelectedFilters?.tgtLanguage && orgSelectedFilters.tgtLanguage.length > 0 && (
+                      <div><strong>Target Language:</strong> {orgSelectedFilters.tgtLanguage.join(", ")}</div>
+                    )}
+                  </Box>
+                ) : (
+                  <span style={{ fontFamily: "Roboto, sans-serif" }}>Filter Table</span>
+                )
+              }
+              disableInteractive
+            >
               <FilterListIcon sx={{ color: "#515A5A" }} />
-            </Badge>
-          </Tooltip>
-        </Button>
-
+            </CustomTooltip>
+          </Button>
+        </div> 
         <div style={{ display: "inline", verticalAlign: "middle" }}>
           {roles.filter((role) => role.value === userData?.role)[0]
             ?.permittedToCreateTask &&
@@ -1319,7 +1374,6 @@ const OrgLevelTaskList = () => {
 
   return (
     <>
-        {loading && <Loader size={50} color="primary" />}
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={tableData}

@@ -12,26 +12,25 @@ const headerStyle = makeStyles({
     // marginBotto m : '5%'
   },
   toolbar: {
-    justifyContent : "space-between",
+    justifyContent: "space-between",
     maxWidth: "1272px",
     width: "100%",
     margin: "0 auto",
     display: "flex",
     alignItems: "center",
     // padding: "inherit !important",
-    padding:"0px !important",
+    padding:"5px !important",
     boxSizing: "border-box",
     minHeight: "54px",
-    fontFamily: 'sans-serif',
+    fontFamily: "sans-serif",
   },
   menu: {
-        maxWidth: "1272px",
-        width: "100%",
-        margin: "0 auto",
-        display: "flex",
-        alignItems: "center",
-        cursor: "pointer",
-     
+    maxWidth: "1272px",
+    width: "100%",
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
   },
   headerLogo: {
     height: "2rem",
@@ -42,7 +41,7 @@ const headerStyle = makeStyles({
     padding: "12px ",
     color: "black",
     boxShadow: "none",
-    fontSize: "19px",
+    fontSize: "16px",
     fontFamily: "Roboto",
     fontWeight: 500,
     letterSpacing: "0.5px",
@@ -51,6 +50,9 @@ const headerStyle = makeStyles({
       backgroundColor: "#E0E0E0",
       boxShadow: "none",
     },
+    "@media (max-width: 1024px) and (min-width: 900px)": {
+      fontSize: "16px",
+    },
   },
   highlightedMenu: {
     backgroundColor: "#E0E0E0",
@@ -58,7 +60,7 @@ const headerStyle = makeStyles({
     padding: "12px ",
     color: "black",
     boxShadow: "none",
-    fontSize: "19px",
+    fontSize: "16px",
     fontFamily: "Roboto",
     fontWeight: 500,
     borderRadius: 12,
@@ -66,6 +68,9 @@ const headerStyle = makeStyles({
     "&:hover": {
       backgroundColor: "#E0E0E0",
       boxShadow: "none",
+    },
+    "@media (max-width: 1024px) and (min-width: 900px)": {
+      fontSize: "16px",
     },
   },
   avatar: {
@@ -84,7 +89,7 @@ const headerStyle = makeStyles({
     color: "black",
   },
   Logo: {
-    width: "45px",
+    width: "2.5rem",
   },
   navBtn: {
     color: "black",
@@ -98,11 +103,11 @@ const headerStyle = makeStyles({
   },
   icon: {
     color: "rgba(0, 0, 0, 0.54) !important",
-    fontSize: "2.25rem !important",
+    fontSize: "2rem !important",
   },
   icon2: {
     color: "rgba(0, 0, 0, 0.54) !important",
-    fontSize: "2rem !important",
+    fontSize: "1.7rem !important",
   },
   ArticleIconStyle: {
     // backgroundColor: "#D3E4F7",
@@ -148,6 +153,160 @@ const headerStyle = makeStyles({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+  },
+  drawer: {
+    width: "50%",
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: "50%",
+    padding: "0",
+    transition: "all 0.8s ease-in-out",
+    overflowX: "hidden",
+  },
+  navbar_banner: {
+    position: "sticky",
+    top: "0px",
+    zIndex: 10,
+    backgroundColor: "#f5f5f5",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "start",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+  },
+  mobileNav_avatar: {
+    backgroundColor: "#2A61AD !important",
+    width: 45,
+    height: 45,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    transition: "transform 0.2s ease",
+    "&:hover": {
+      transform: "scale(1.05)",
+    },
+    "@media (max-width: 600px)": {
+      width: 40,
+      height: 40,
+    },
+    "@media (max-width: 400px)": {
+      width: 30,
+      height: 30,
+    },
+  },
+  username: {
+    color: "#000",
+    fontWeight: 500,
+    // fontSize: "1.4rem !important",
+    fontSize: "clamp('12px', '2vw', '4.4rem')",
+  },
+  closeButton: {
+    position: "absolute",
+    right: 8,
+    top: 8,
+    zIndex: 100,
+    color: "rgba(0, 0, 0, 0.6)",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      transform: "rotate(90deg) !important",
+      color: "#303F9A !important",
+    },
+    "@media (max-width: 600px)": {
+      right: 4,
+      top: 4,
+    },
+    "@media (max-width: 400px)": {
+      right: 1,
+      top: 1,
+      padding: "1px 1px 0 0 !important",
+    },
+  },
+  profileBox: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: "16px",
+  },
+  sectionTitle: {
+    fontSize: "1rem !important",
+    fontWeight: 600,
+    paddingX: "32px",
+    marginX: "16px",
+    letterSpacing: "0.5px",
+    textTransform: "uppercase",
+    color: "rgba(0, 0, 0, 0.6)",
+    padding: "16px 16px 8px 16px",
+    "@media (max-width: 600px)": {
+      fontSize: "0.8rem !important",
+    },
+    "@media (max-width: 400px)": {
+      fontSize: "0.7rem !important",
+    },
+    "@media (max-width: 300px)": {
+      fontSize: "0.6rem !important",
+    },
+  },
+  listItem: {
+    cursor: "pointer",
+    padding: "12px 12px",
+    fontSize: "1.2rem !important",
+    borderRadius: "8px",
+    margin: "4px 16px",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.04)",
+      transform: "translateX(5px)",
+    },
+    "@media (max-width: 600px)": {
+      fontSize: "0.9rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 400px)": {
+      fontSize: "0.8rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 300px)": {
+      fontSize: "0.7rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+  },
+  logoutItem: {
+    cursor: "pointer",
+    padding: "12px 12px",
+    borderRadius: "8px",
+    fontSize: "1.2rem !important",
+    margin: "4px 16px",
+    color: "#f44336",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      backgroundColor: "rgba(244, 67, 54, 0.1)",
+      transform: "translateX(5px)",
+    },
+    "@media (max-width: 600px)": {
+      fontSize: "0.9rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 400px)": {
+      fontSize: "0.8rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+    },
+    "@media (max-width: 300px)": {
+      fontSize: "0.7rem !important",
+      padding: "8px 8px",
+      margin: "4px 8px",
+
+    },
+  },
+  menuButton: {
+    color: "#2C2799",
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "rotate(90deg)",
+      color: "#303F9A",
+    },
   },
 });
 

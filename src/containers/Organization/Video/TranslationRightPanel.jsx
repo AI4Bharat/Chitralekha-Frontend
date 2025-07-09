@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import { useTheme } from "@mui/material";
+
 import { configs, endpoints, failInfoColumns } from "config";
 import {
   addSubtitleBox,
@@ -266,6 +268,10 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     // eslint-disable-next-line
     [limit, currentOffset]
   );
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // xs, sm, md
+
 
   const onMergeClick = useCallback(
     (index) => {
@@ -801,7 +807,8 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                     </div>
                   )}
 
-                <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
+                <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center" ,        marginLeft: isSmallScreen ? "25px" : "0px",
+}}>
                     <TimeBoxes
                       handleTimeChange={handleTimeChange}
                       time={item.start_time}

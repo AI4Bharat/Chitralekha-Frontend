@@ -23,8 +23,8 @@ import {
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import MobileNavbar from "./MobileNavbar";
-import HelpDialog from "./HelpDialog"
-import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+import HelpDialog from "./HelpDialog";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 
 //APIs
 import C from "redux/constants";
@@ -37,7 +37,6 @@ const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
   const [openHelpDialog, setOpenHelpDialog] = useState(false);
-
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -58,22 +57,21 @@ const Header = () => {
     // eslint-disable-next-line
   }, []);
 
-  if(localStorage.getItem("source") !== undefined){
+  if (localStorage.getItem("source") !== undefined) {
     localStorage.setItem("source", "chitralekha-frontend");
   }
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
-  
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const handleClickHelp = ()=>{
+  const handleClickHelp = () => {
     setAnchorElUser(null);
-    setOpenHelpDialog(true)
-    
-  }
+    setOpenHelpDialog(true);
+  };
 
   const handleClose = () => {
     setOpenHelpDialog(false);
@@ -99,7 +97,6 @@ const Header = () => {
       name: "Help",
       onClick: () => {
         handleClickHelp();
-       
       },
     },
   ];
@@ -133,14 +130,16 @@ const Header = () => {
       onClick: () => {
         handleCloseUserMenu();
         let endpoint = "";
-        if(userData?.user_history?.task_type.includes("TRANSCRIPTION")){
-          endpoint = "transcript";  
-        }else if(userData?.user_history?.task_type.includes("VOICEOVER")){
-          endpoint = "voiceover";  
-        }else{
+        if (userData?.user_history?.task_type.includes("TRANSCRIPTION")) {
+          endpoint = "transcript";
+        } else if (userData?.user_history?.task_type.includes("VOICEOVER")) {
+          endpoint = "voiceover";
+        } else {
           endpoint = "translate";
         }
-        navigate(`/task/${userData?.user_history?.task_id}/${endpoint}/${userData?.user_history?.offset}/${userData?.user_history?.segment}`);
+        navigate(
+          `/task/${userData?.user_history?.task_id}/${endpoint}/${userData?.user_history?.offset}/${userData?.user_history?.segment}`
+        );
       },
     },
     {
@@ -163,12 +162,14 @@ const Header = () => {
         <AppBar
           position="fixed"
           sx={
+            
             fullscreen
               ? {
                   zIndex: (theme) => theme.zIndex.drawer + 1,
                   visibility: "hidden",
                 }
               : { zIndex: (theme) => theme.zIndex.drawer + 1 }
+              
           }
         >
           <Container maxWidth="xl">
@@ -190,101 +191,91 @@ const Header = () => {
                 <Typography variant="h4" sx={{ color: "black" }}>
                   Chitralekha
                 </Typography>
-                <Typography sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000", margin: "auto" }}>
+                <Typography sx={{ fontSize: "0.6rem", fontWeight: "500", color: "#000000", margin: "auto" }}>
                   Powered by EkStep Foundation
                 </Typography>
               </Box>
 
 
 
-              <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                columnGap={2}
-                rowGap={2}
-              >
-  
-                <>
-                  <Typography variant="body1">
-                    <NavLink
-                      to={`/my-organization/${userData?.organization?.id}`}
-                      className={({ isActive }) =>
-                        isActive
-                          ? `${classes.highlightedMenu} organizations`
-                          : `${classes.headerMenu} organizations`
-                      }
-                    >
-                      Organizations
-                    </NavLink>
-                  </Typography>
-                  <Typography variant="body1">
-                  <NavLink
-                    to={`/task-list`}
-                    className={({ isActive }) =>
-                      isActive
-                        ? `${classes.highlightedMenu} task-list`
-                        : `${classes.headerMenu} task-list`
-                    }
-                  >
-                    Tasks
-                  </NavLink>
-                </Typography>
-                {(userData?.role === "ADMIN" || userData?.role==="ORG_OWNER") && (
-                  <Typography variant="body1">
-                    <NavLink
-                      to={`/admin`}
-                      className={({ isActive }) =>
-                        isActive
-                          ? `${classes.highlightedMenu} organizations`
-                          : `${classes.headerMenu} organizations`
-                      }
-                    >
-                      Admin
-                    </NavLink>
-                  </Typography>
-                )}
-                </>
-                {/* <Typography variant="body1">
-                  <NavLink
-                    to="/projects"
-                    className={({ isActive }) =>
-                      isActive
-                        ? `${classes.highlightedMenu} projects`
-                        : `${classes.headerMenu} projects`
-                    }
-                  >
-                    Projects
-                  </NavLink>
-                </Typography> */}
-                {/* <Typography variant="body1">
-                  <NavLink
-                    to="#"
-                    className={`${classes.headerMenu} workspace`}
-                  >
-                    Analytics
-                  </NavLink>
-                </Typography> */}
-              </Grid>
-
-              <Box className={classes.avatarBox}>
-                { userData?.role === "ADMIN" || userData?.role === "ORG_OWNER" || userData?.role === "PROJECT_MANAGER" ? <IconButton
-                  onClick={() => navigate('/task-queue-status')}
-                  className={`${classes.icon} help`}
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  columnGap={2}
+                  rowGap={2}
                 >
-                  <Tooltip title="Task Queue Status">                    
-                    <HourglassBottomIcon color="primary" className={classes.icon2}/>
-                  </Tooltip>
-                </IconButton> : "" }
+                  <>
+                    <Typography variant="body1">
+                      <NavLink
+                        to={`/my-organization/${userData?.organization?.id}`}
+                        className={({ isActive }) =>
+                          isActive
+                            ? `${classes.highlightedMenu} organizations`
+                            : `${classes.headerMenu} organizations`
+                        }
+                      >
+                        Organizations
+                      </NavLink>
+                    </Typography>
+                    <Typography variant="body1">
+                      <NavLink
+                        to={`/task-list`}
+                        className={({ isActive }) =>
+                          isActive
+                            ? `${classes.highlightedMenu} task-list`
+                            : `${classes.headerMenu} task-list`
+                        }
+                      >
+                        Tasks
+                      </NavLink>
+                    </Typography>
+                    {(userData?.role === "ADMIN" ||
+                      userData?.role === "ORG_OWNER") && (
+                      <Typography variant="body1">
+                        <NavLink
+                          to={`/admin`}
+                          className={({ isActive }) =>
+                            isActive
+                              ? `${classes.highlightedMenu} organizations`
+                              : `${classes.headerMenu} organizations`
+                          }
+                        >
+                          Admin
+                        </NavLink>
+                      </Typography>
+                    )}
+                  </>
+                </Grid>
 
-                <IconButton
-                  onClick={handleOpenHelpMenu}
-                  className={`${classes.icon} help`}
-                >
-                  <Tooltip title="Help">
-                    <HelpOutlineIcon color="primary" className={classes.icon} />
-                  </Tooltip>
-                </IconButton>
+                <Box className={classes.avatarBox}>
+                  {(userData?.role === "ADMIN" ||
+                  userData?.role === "ORG_OWNER" ||
+                  userData?.role === "PROJECT_MANAGER") && (
+                    <IconButton
+                      onClick={() => navigate("/task-queue-status")}
+                      className={`${classes.icon} help`}
+                    >
+                      <Tooltip title="Task Queue Status">
+                        <HourglassBottomIcon
+                          color="primary"
+                          className={classes.icon}
+                        />
+                      </Tooltip>
+                    </IconButton>
+                  )}
+
+                  <IconButton
+                    onClick={handleOpenHelpMenu}
+                    className={`${classes.icon} help`}
+                  >
+                    <Tooltip title="Help">
+                      <HelpOutlineIcon
+                        color="primary"
+                        className={classes.icon}
+                      />
+                    </Tooltip>
+                  </IconButton>
 
                 <Menu
                   sx={{ mt: "45px" }}
@@ -311,99 +302,72 @@ const Header = () => {
                   ))}
                 </Menu>
 
-                {/* <IconButton
-                  onClick={handleOpenSettingsMenu}
-                  className={`${classes.icon} settings`}
-                >
-                  <Tooltip title="Settings">
-                    <SettingsOutlinedIcon
-                      color="primary"
-                      className={classes.icon}
-                    />
-                  </Tooltip>
-                </IconButton>
-
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElSettings}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={Boolean(anchorElSettings)}
-                  onClose={handleCloseSettingsMenu}
-                >
-                  {SettingsMenu.map((item, index) => (
-                    <MenuItem key={index} onClick={item.onClick}>
-                      <Typography variant="body2" textAlign="center">
-                        {item.name}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                </Menu> */}
 
                 <IconButton
                   onClick={handleOpenUserMenu}
                   className={`${classes.icon} profile`}
-                  sx={{ marginLeft: "20px" }}
                 >
                   <Avatar>{userData?.first_name?.charAt(0)}</Avatar>
                   <Typography
                     variant="h4"
                     sx={{
                       color: "rgb(39, 30, 79)",
-                      marginLeft: "10px",
-                      fontSize: "1.25rem",
                       fontFamily: "Roboto, sans-serif",
                       fontWeight: "400",
+                       ml: 1,
+                            fontSize: "1rem",
+                            fontWeight: 500,
+                            display: {
+                              xs: "block",
+                              sm: "block",
+                              md: "none",
+                              lg: "block",
+                            },
+                      
                     }}
+                    
                   >
                     {userData.first_name} {userData.last_name}
                   </Typography>
                 </IconButton>
 
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  {UserMenu.map((item, index) => (
-                    <MenuItem key={index} onClick={item.onClick}>
-                      <Typography variant="body2" textAlign="center">
-                        {item.name}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </Toolbar>
-          </Container>
-        </AppBar>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "center",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "center",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    {UserMenu.map((item, index) => (
+                      <MenuItem key={index} onClick={item.onClick}>
+                        <Typography variant="body2" textAlign="center">
+                          {item.name}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </Box>
+              </Toolbar>
+            </Container>
+          </AppBar>
+        )}
+      </Box>
+      {openHelpDialog && (
+        <HelpDialog
+          openHelpDialog={openHelpDialog}
+          handleClose={() => handleClose()}
+          setOpenHelpDialog={setOpenHelpDialog}
+        />
       )}
-    </Box>
-    {openHelpDialog &&
-    <HelpDialog
-    openHelpDialog={openHelpDialog}
-    handleClose={() => handleClose()}
-    setOpenHelpDialog= {setOpenHelpDialog}
-    />}
     </Grid>
   );
 };

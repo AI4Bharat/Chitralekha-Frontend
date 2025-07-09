@@ -174,7 +174,6 @@ const OrganizationSettings = () => {
           sx={{
             width: "100%",
             minHeight: 500,
-            padding: 5,
             border: 0,
           }}
         >

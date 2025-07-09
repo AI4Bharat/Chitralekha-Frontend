@@ -442,7 +442,7 @@ const VideoLandingStyle = makeStyles({
     flexDirection: "column",
     borderTop: "1px solid #eaeaea",
     overflowY: "scroll",
-    overflowX: "hidden",
+    overflowX: "scroll",
     width: "100%",
     textAlign: "center",
     boxSizing: "border-box",
