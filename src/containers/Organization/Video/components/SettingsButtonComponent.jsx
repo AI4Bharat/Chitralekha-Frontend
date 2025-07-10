@@ -84,6 +84,7 @@ const SettingsButtonComponent = ({
   handleGetUpdatedAudioForAll,
   bookmarkSegment,
   setOpenExportDialog,
+  disabled,
   enableScreenShots,
   setEnableScreenShots,
   videoLinkExpired,
@@ -174,7 +175,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Add Subtitle Box" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex === -1 && taskData?.source_type !== "Manually Created"}
+              disabled={disabled ? disabled : (currentIndex === -1 && taskData?.source_type !== "Manually Created")}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -186,7 +187,7 @@ const SettingsButtonComponent = ({
           <Tooltip title="Delete" placement="bottom">
             <IconButton
               className={classes.rightPanelBtnGrp}
-              disabled={currentIndex === -1}
+              disabled={disabled ? disabled : currentIndex === -1}
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
@@ -203,7 +204,7 @@ const SettingsButtonComponent = ({
         <Tooltip title="Merge Next" placement="bottom">
           <IconButton
             className={classes.rightPanelBtnGrp}
-            disabled={currentIndex===-1 || currentIndex >= subtitles?.length - 1}
+            disabled={disabled ? disabled : (currentIndex===-1 || currentIndex >= subtitles?.length - 1)}
             sx={{
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
@@ -220,7 +221,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={onSplitClick}
-            disabled={!showPopOver}
+            disabled={disabled ? disabled : !showPopOver}
             sx={{
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
@@ -235,7 +236,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={expandTimestamp}
-            disabled={currentIndex===-1}
+            disabled={disabled ? disabled : currentIndex===-1}
             sx={{
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
@@ -255,7 +256,7 @@ const SettingsButtonComponent = ({
             sx={{
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
-            disabled={apiInProgress}
+            disabled={disabled ? disabled : apiInProgress}
           >
             <LoopIcon className={classes.rightPanelSvg} />
           </IconButton>
@@ -271,7 +272,7 @@ const SettingsButtonComponent = ({
               sx={{
                 "&.Mui-disabled": { backgroundColor: "lightgray" },
               }}
-              disabled={apiInProgress}
+              disabled={disabled ? disabled : apiInProgress}
             >
               <LoopIcon className={classes.rightPanelSvg} />
             </IconButton>
@@ -284,7 +285,7 @@ const SettingsButtonComponent = ({
                 sx={{
                   "&.Mui-disabled": { backgroundColor: "lightgray" },
                 }}
-                disabled={apiInProgress}
+                disabled={disabled ? disabled :apiInProgress}
               >
                 <TaskAltIcon className={classes.rightPanelSvg} />
               </IconButton>
@@ -297,7 +298,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={bookmarkSegment}
-            disabled={currentIndex===-1 || apiInProgress}
+            disabled={disabled ? disabled : (currentIndex===-1 || apiInProgress)}
             sx={{
               "&.Mui-disabled": { backgroundColor: "lightgray" },
             }}
@@ -313,6 +314,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={handleInfoButtonClick}
+          disabled={disabled}
         >
           <InfoOutlinedIcon className={classes.rightPanelSvg} />
         </IconButton>
@@ -322,6 +324,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={(event) => setAnchorElSettings(event.currentTarget)}
+          disabled={disabled}
         >
           <SettingsIcon className={classes.rightPanelSvg} />
         </IconButton>
@@ -385,6 +388,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={() => handleSubscript()}
+            disabled={disabled}
           >
             <SubscriptIcon className={classes.rightPanelSvg} />
           </IconButton>
@@ -395,6 +399,7 @@ const SettingsButtonComponent = ({
           className={classes.rightPanelBtnGrp}
           sx={{ marginLeft: "5px" }}
           onClick={() => handleSuperscript(currentIndexToSplitTextBlock)}
+          disabled={disabled}
         >
           <SuperscriptIcon className={classes.rightPanelSvg} />
         </IconButton>
@@ -408,6 +413,7 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={(event) => setAnchorElFont(event.currentTarget)}
+          disabled={disabled}
         >
           <FormatSizeIcon className={classes.rightPanelSvg} />
         </IconButton>
@@ -455,6 +461,7 @@ const SettingsButtonComponent = ({
         currentSubs={currentSubs}
         videoId={taskData?.video}
         targetLanguage={taskData?.target_language}
+        disabled={disabled}
       />
 
       <Divider orientation="vertical" className={classes.rightPanelDivider} />
@@ -466,7 +473,7 @@ const SettingsButtonComponent = ({
         :
         <IconButton
           className={classes.rightPanelBtnGrp}
-          disabled={getDisbled()}
+          disabled={disabled ? disabled : getDisbled()}
           onClick={() => saveTranscriptHandler(false)}
         >
           <SaveIcon className={classes.rightPanelSvg} />
@@ -480,6 +487,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={() => setOpenPreviewDialog(true)}
+            disabled={disabled}
           >
             <VisibilityIcon className={classes.rightPanelSvg} />
           </IconButton>
@@ -492,7 +500,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={onUndo}
-            disabled={undoStack?.length === 0}
+            disabled={disabled ? disabled : undoStack?.length === 0}
           >
             <UndoIcon className={classes.rightPanelSvg} />
           </IconButton>
@@ -502,7 +510,7 @@ const SettingsButtonComponent = ({
           <IconButton
             className={classes.rightPanelBtnGrp}
             onClick={onRedo}
-            disabled={redoStack?.length === 0}
+            disabled={disabled ? disabled : redoStack?.length === 0}
           >
             <RedoIcon className={classes.rightPanelSvg} />
           </IconButton>
@@ -524,7 +532,7 @@ const SettingsButtonComponent = ({
       <Tooltip title="Complete" placement="bottom">
         <IconButton
           className={classes.rightPanelBtnGrp}
-          disabled={getDisbled("complete") || apiInProgress}
+          disabled={disabled ? disabled : (getDisbled("complete") || apiInProgress)}
           onClick={() => setOpenConfirmDialog(true)}
           style={{backgroundColor:"red"}}
         >
@@ -540,6 +548,7 @@ const SettingsButtonComponent = ({
             <IconButton
               className={classes.rightPanelBtnGrp}
               onClick={() => {setOpenExportDialog(true)}}
+              disabled={disabled}
             >
               <DownloadIcon className={classes.rightPanelSvg} />
             </IconButton>

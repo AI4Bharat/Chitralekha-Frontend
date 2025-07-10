@@ -204,7 +204,7 @@ const MyGlossary = () => {
           My Glossary
         </Typography>
 
-        <Grid container direction="row" sx={{ my: 4 }}>
+        <Grid container direction="row"  >
           <Grid
             item
             md={  
@@ -215,11 +215,12 @@ const MyGlossary = () => {
                 : 12
             }
             xs={12}
+            lg={6}
           >
             <Button
-              style={{ marginRight: "10px", width: "100%" }}
               variant="contained"
               onClick={() => setOpenGlossaryDialog(true)}
+              sx={{width:'100%'}}
             >
               Add New Glossary
             </Button>
@@ -228,11 +229,11 @@ const MyGlossary = () => {
           {(isUserOrgOwner || loggedInUserData?.role==="ADMIN"||
 
             loggedInUserData.role === "PROJECT_MANAGER") && (
-            <Grid item md={6} xs={12}>
+            <Grid item md={6} xs={12} lg={6}>
               <Button
-                style={{ marginLeft: "10px", width: "100%" }}
                 variant="contained"
                 onClick={() => setOpenUploadGlossaryDialog(true)}
+                sx={{width:'100%',m:1}}
               >
                 Upload Glossary
                 <Tooltip title="Download sample CSV">

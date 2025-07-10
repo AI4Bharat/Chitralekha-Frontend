@@ -49,6 +49,7 @@ import {
   Loader,
 } from "common";
 import UploadFileDialog from "common/UploadFileDialog";
+import apistatus from "redux/reducers/apistatus/apistatus";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -77,6 +78,7 @@ const Project = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
+  const [loading, setloading] = useState(false);
   const [projectDetails, SetProjectDetails] = useState({});
   const [videoList, setVideoList] = useState([]);
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
@@ -111,6 +113,10 @@ const Project = () => {
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
+    const [isProjectDetailsLoading, setIsProjectDetailsLoading] = useState(true);
+  const [isVideoListLoading, setIsVideoListLoading] = useState(true);
+  const [isMembersLoading, setIsMembersLoading] = useState(true);
+
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
@@ -137,6 +143,7 @@ const Project = () => {
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
+    
 
     if (!progress) {
       if (success) {
@@ -170,6 +177,45 @@ const Project = () => {
 
     // eslint-disable-next-line
   }, [apiStatus]);
+  
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (progress) {
+      console.log(apiType,apiStatus.progress);
+
+      switch (apiType) {
+        case "GET_PROJECT_DETAILS":
+          setIsProjectDetailsLoading(true);
+          break;
+        case "GET_PROJECT_VIDEOS":
+          setIsVideoListLoading(true);
+          break;
+        case "GET_PROJECT_MEMBERS":
+          setIsMembersLoading(true);
+          break;
+        default:
+          break;
+      }
+    } else {
+      if (success) {
+        switch (apiType) {
+          case "GET_PROJECT_DETAILS":
+            setIsProjectDetailsLoading(false);
+            break;
+          case "GET_PROJECT_VIDEOS":
+            setIsVideoListLoading(false);
+            break;
+          case "GET_PROJECT_MEMBERS":
+            setIsMembersLoading(false);
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }, [apiStatus]);
+
 
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
@@ -231,6 +277,7 @@ const Project = () => {
   }, [projectInfo.id]);
 
   useEffect(() => {
+
     SetProjectDetails(projectInfo);
     setVideoList(projectvideoList);
   }, [projectInfo, projectvideoList]);
@@ -291,21 +338,19 @@ const Project = () => {
   };
 
   const renderProjectDetails = () => {
-    if (!projectInfo || projectInfo.length <= 0) {
-      return <Loader />;
-    }
 
     return (
       <>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
           <Card
             style={{
               display: "flex",
               justifyContent: "space-between",
               backgroundColor: "#0F2749",
               borderRadius: "8px",
-              marginBottom: "15px",
-              padding: "35px",
+              margin: "0  10px 0  10px",
+              padding: "1.3rem",
+              alignItems:"center"
             }}
           >
             <Typography variant="h4" className={classes.mainTitle}>
@@ -335,7 +380,7 @@ const Project = () => {
         </Grid>
 
         {projectDetails.description && (
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <Grid item xs={6} sm={12} md={12} lg={12} xl={12}>
             <Typography variant="h6" className={classes.modelTitle}>
               Description
             </Typography>
@@ -352,10 +397,11 @@ const Project = () => {
           </Grid>
         )}
 
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 2 }}>
-          <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ m: 1.5 }}>
+          <Grid container spacing={1}>
             {projectData?.map((des, i) => (
-              <Grid item xs={4} sm={4} md={4} lg={4} xl={4} key={i}>
+              <Grid item xs={12} sm={4} md={4} lg={4} xl={4} key={i}
+              >
                 <ProjectDescription
                   name={des.name}
                   value={des.value}
@@ -382,6 +428,7 @@ const Project = () => {
               localStorage.setItem("projectTabIndex", newValue);
             }}
             aria-label="basic tabs example"
+            variant="scrollable"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -407,12 +454,12 @@ const Project = () => {
             flexDirection="Column"
             justifyContent="center"
             alignItems="center"
+            gap={2}
           >
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.permittedToCreateVideoAudio && (
-              <Box display={"flex"} width={"100%"}>
+              <Box display={"flex"} width={"100%"} gap={1} flexDirection={{xs:'column',md:'row'}}>
                 <Button
-                  style={{ marginRight: "10px" }}
                   className={classes.projectButton}
                   onClick={() => setCreateVideoDialog(true)}
                   variant="contained"
@@ -421,7 +468,6 @@ const Project = () => {
                 </Button>
 
                 <Button
-                  style={{ marginLeft: "10px" }}
                   className={classes.projectButton}
                   variant="contained"
                   onClick={() => setOpenUploadBulkVideoDialog(true)}
@@ -448,6 +494,7 @@ const Project = () => {
               <VideoList
                 data={videoList}
                 removeVideo={() => getProjectVideoList()}
+                loading={isVideoListLoading}
               />
             </div>
           </Box>

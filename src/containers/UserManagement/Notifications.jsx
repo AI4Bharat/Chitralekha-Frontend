@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-
-//Styles
 import { LoginStyle } from "styles";
-
-//Components
 import { Card, Grid, Typography } from "@mui/material";
 import DailyEmailToggle from "./DailyEmailToggle";
 import NewsLetterEmail from "./NewsLetterEmail";
@@ -42,7 +38,9 @@ const Notifications = () => {
             <Grid
               container
               className={classes.editProfileParentGrid}
-              style={{ justifyContent: "center", padding: "40px" }}
+              style={{ justifyContent: "center", padding: "15px" }}
+              gap={2}
+
             >
               <Grid
                 item

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef, memo } from "react";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import subscript from "config/subscript";
@@ -75,6 +75,8 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const dispatch = useDispatch();
   const xl = useMediaQuery("(min-width:1800px)");
   const textboxes = useRef([]);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
 
   const [selection, setselection] = useState(false);
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -126,6 +128,14 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [loader, setLoader] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -741,6 +751,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
             subtitles={subtitles}
             expandTimestamp={expandTimestamp}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
+            disabled={disable}
             enableScreenShots={enableScreenShots}
             setEnableScreenShots={setEnableScreenShots}
             videoLinkExpired={videoLinkExpired}

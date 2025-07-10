@@ -17,6 +17,8 @@ import {
 
 //Styles
 import { DatasetStyle } from "styles";
+import {  useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 //Components
 import {
@@ -128,6 +130,10 @@ const MyOrganization = () => {
     const userObj = new FetchOrganizatioUsersAPI(id);
     dispatch(APITransport(userObj));
   };
+  
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
 
   useEffect(() => {
     getOrganizationDetails();
@@ -203,7 +209,6 @@ const MyOrganization = () => {
   return (
     <Grid container direction="row">
       <Card className={classes.workspaceCard}>
-        {renderOrgDetails()}
 
         <Box>
           <Tabs
@@ -215,6 +220,8 @@ const MyOrganization = () => {
             TabIndicatorProps={{
               style: { display: "none" },
             }}
+            
+            orientation={isSmallScreen ? "vertical" : "horizontal"}
           >
             <Tab
               label={"Projects"}
@@ -223,6 +230,8 @@ const MyOrganization = () => {
                 fontWeight: "700",
                 bgcolor: value === 0 ? "#d3d3d3" : "#F5F5F5",
                 color: value === 0 ? "black" : "text.primary",
+                margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
                 borderRadius: 1,
                 "&:hover": {
                   bgcolor: "#e0e0e0",
@@ -238,6 +247,8 @@ const MyOrganization = () => {
                   fontSize: 16,
                   fontWeight: "700",
                   bgcolor: value === 1 ? "#d3d3d3" : "#F5F5F5",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
                   color: value === 1 ? "black" : "text.primary",
                   borderRadius: 1,
                   "&:hover": {
@@ -255,6 +266,8 @@ const MyOrganization = () => {
                   fontWeight: "700",
                   bgcolor: value === 2 ? "#d3d3d3" : "#F5F5F5",
                   color: value === 2 ? "black" : "text.primary",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
                   borderRadius: 1,
                   "&:hover": {
                     bgcolor: "#e0e0e0",
@@ -271,6 +284,7 @@ const MyOrganization = () => {
                   fontWeight: "700",
                   bgcolor: value === 3 ? "#d3d3d3" : "#F5F5F5",
                   color: value === 3 ? "black" : "text.primary",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
                   borderRadius: 1,
                   "&:hover": {
                     bgcolor: "#e0e0e0",
@@ -292,7 +306,8 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Box display={"flex"} width={"100%"}>
+            <Box display={"flex"} width={"100%"} flexDirection={{xs:'Column',lg:"Row"}} gap={1}
+            >
               {(isUserOrgOwner ||
                 userData?.role === "ADMIN" ||
                 userData?.role === "PROJECT_MANAGER") && (
@@ -304,51 +319,73 @@ const MyOrganization = () => {
                       navigate(`/my-organization/${id}/create-new-project`)
                     }
                     variant="contained"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem"},
+                      minWidth: { xs: "150px", sm: "150px", md: "150px" },
+                    }}
                   >
                     Add New Project
                   </Button>
-
                   <Button
                     style={{ marginRight: "10px" }}
                     className={classes.projectButton}
                     onClick={() => setOpenRegenerateFailedVotrTasksDialog(true)}
                     variant="contained"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      minWidth: { xs: "200px", sm: "150px", md: "150px" },
+                    }}
                   >
                     Regenerate Failed VOTR Tasks
+                    <Tooltip title="Download sample CSV">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/RegenrateSamplefile.csv`);
+                        }}
+                        sx={{ color: "white" }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
                   </Button>
 
                   <Button
-                    style={{ marginRight: "10px" }}
                     className={classes.projectButton}
                     onClick={() =>
                       navigate(`/my-organization/${id}/create-bulk-projects`)
                     }
                     variant="contained"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem", md: "0.875rem" },
+                      minWidth: { xs: "200px", sm: "150px", md: "150px" },
+                    }}
                   >
                     Create Bulk Projects from Template
                   </Button>
 
                   {organizationDetails.enable_upload && (
                     <Button
-                      style={{ marginLeft: "10px" }}
                       className={classes.projectButton}
                       variant="contained"
                       onClick={() => setOpenUploadBulkVideoDialog(true)}
+                      sx={{
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                        minWidth: { xs: "150px", sm: "150px", md: "150px" },
+                      }}
                     >
                       Bulk Video Upload
                       <Tooltip title="Download sample CSV">
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.location.assign(
-                              `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
-                            );
-                          }}
-                          sx={{ color: "white" }}
-                        >
-                          <InfoOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/SampleBulkupload.csv`);
+                        }}
+                        sx={{ color: "white" }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
                     </Button>
                   )}
                 </Fragment>

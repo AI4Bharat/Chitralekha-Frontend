@@ -28,7 +28,7 @@ const DatasetStyle = makeStyles({
   workspaceCard: {
     width: "100%",
     minHeight: "500px",
-    padding: "40px",
+    padding: "10px",
   },
   projectsettingGrid: {
     margin: "20px 0px 10px 0px",

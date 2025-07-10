@@ -353,7 +353,7 @@ const EditProfile = () => {
   const profileLabels = useRef([]);
   profileLabels.current = [...profileOptions];
 
-  profileLabels.current.push(
+  profileLabels?.current.push(
     {
       title: "Role",
       name: "role",
@@ -415,7 +415,7 @@ const EditProfile = () => {
       <Card className={classes.editProfileParentCard}>
         {profileLabels.current.map((element) => {
           return (
-            <Grid className={classes.editProfileParentGrid} container>
+            <Grid className={classes.editProfileParentGrid} container gap={1}>
               <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                 <Typography variant="body1" sx={{ fontSize: "1rem" }}>
                   {element.title}

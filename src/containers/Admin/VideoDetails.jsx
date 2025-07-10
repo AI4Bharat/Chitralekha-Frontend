@@ -99,8 +99,8 @@ function VideoDetails() {
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Box sx={{ display: 'flex', gap: '2em', alignItems: 'center' }}>
+            <Grid item xs={12} sx={{display:"flex" ,flexDirection:{xs:'column',sm:'column',md:'row',lg:'row'},alignItems:{xs:'center',sm:'center'}}} >
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4} >
                     <TextField
                         id="video-url"
                         label="Video URL"
@@ -108,10 +108,13 @@ function VideoDetails() {
                         value={videoUrl}
                         onChange={(event) => setVideoUrl(event.target.value)}
                     />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
                     <Button variant="contained" onClick={fetchVideoDetails}>
                         Fetch Video Details
                     </Button>
-                </Box>
+                    
+                    </Grid>
             </Grid>
             {loading && (
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 8 }}>

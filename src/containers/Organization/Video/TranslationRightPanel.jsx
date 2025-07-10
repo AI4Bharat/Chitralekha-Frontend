@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import { useTheme } from "@mui/material";
+
 import { configs, endpoints, failInfoColumns } from "config";
 import {
   addSubtitleBox,
@@ -35,7 +37,7 @@ import {
   MenuItem,
   useMediaQuery,
 } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -109,6 +111,16 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [showPopOver, setShowPopOver] = useState(false);
   const [loader, setLoader] = useState(false);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -256,6 +268,10 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
     // eslint-disable-next-line
     [limit, currentOffset]
   );
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // xs, sm, md
+
 
   const onMergeClick = useCallback(
     (index) => {
@@ -705,6 +721,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
             onSplitClick={onSplitClick}
             expandTimestamp={expandTimestamp}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
+            disabled={disable}
           />
         </Grid>
 
@@ -790,7 +807,8 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
                     </div>
                   )}
 
-                <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
+                <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center" ,        marginLeft: isSmallScreen ? "25px" : "0px",
+}}>
                     <TimeBoxes
                       handleTimeChange={handleTimeChange}
                       time={item.start_time}

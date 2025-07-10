@@ -18,6 +18,7 @@ import {
   onSplit,
 } from "utils";
 import { configs, endpoints, voiceoverFailInfoColumns } from "config";
+import { useTheme } from "@mui/material";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -31,9 +32,10 @@ import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import CustomizedSnackbars from "../../../common/Snackbar";
 import {
   ConfirmDialog,
   ConfirmErrorDialog,
@@ -81,6 +83,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   const xl = useMediaQuery("(min-width:1800px)");
   const $audioRef = useRef([]);
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -165,6 +170,33 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
     dispatch(APITransport(voiceoverExportObj));
   }, []);
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // xs, sm, md
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
+
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -956,6 +988,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   return (
     <>
+      {renderSnackBar()}
       {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
@@ -992,6 +1025,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
             setOpenExportDialog={setOpenExportDialog}
+            disabled={disable}
             enableScreenShots={enableScreenShots}
             setEnableScreenShots={setEnableScreenShots}
             videoLinkExpired={videoLinkExpired}
@@ -1008,7 +1042,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   padding: "5px 0",
                   // margin: "2px",
                   // borderBottom: "1px solid grey",
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
                 id={`container-${index}`}
               >
@@ -1034,7 +1068,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     }
                   }}
                 >
-                  {item.transcription_text.length>-1 &&
+                  {item?.transcription_text?.length>-1 &&
                     <div
                       className={classes.relative}
                       onContextMenu={handleContextMenu}
@@ -1075,7 +1109,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       </span>
                     </div>}
 
-                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
+                  <div className={classes.relative}
+ style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" ,         marginLeft: isSmallScreen ? "80px" : "0px",
+        marginRight: isSmallScreen ? "65px" : "0px",
+   
+}}>
                     <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
@@ -1183,6 +1221,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      enableASR={true}
+                      asrApiUrl={`${configs.BASE_URL_AUTO}/asr-api/generic/transcribe`}
                       apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.target_language}
                       value={item.text}

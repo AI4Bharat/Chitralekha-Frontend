@@ -50,18 +50,16 @@ const CreatenewProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const projectManagers = useSelector(
+    (state) => state.getOrganizatioProjectManagersUser.data
+  );
+  const orgUsers = useSelector((state) => state.getOrganizatioUsers.data);
 
-    const projectManagers = useSelector(
-      (state) => state.getOrganizatioProjectManagersUser.data
-    );
-    const orgUsers = useSelector((state) => state.getOrganizatioUsers.data);
-  
-    const filteredOrgUsers = (orgUsers || []).filter(
-      (user) => user.role === "ORG_OWNER"
-    );
-    const userList = [...(projectManagers || []), ...filteredOrgUsers];
-  
-  
+  const filteredOrgUsers = (orgUsers || []).filter(
+    (user) => user.role === "ORG_OWNER"
+  );
+  const userList = [...(projectManagers || []), ...filteredOrgUsers];
+
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
   const translationTypes = useSelector(
     (state) => state.getTranslationTypes.data

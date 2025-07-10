@@ -16,10 +16,27 @@ export const projectColumns = [
     label: "Manager",
     options: {
       customBodyRender: (value) => {
-        return <Box>{value[0]?.email}</Box>;
+        return (
+          <Box 
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            {value[0]?.email}
+          </Box>
+        );
       },
+      setCellHeaderProps: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }
+      }),
     },
   },
+  
   {
     name: "created_at",
     label: "Created At",
@@ -44,14 +61,49 @@ export const projectColumns = [
   },
 ];
 
+
 export const usersColumns = [
   {
     name: "first_name",
     label: "Name",
+    options: {
+      customBodyRender: (_value, tableMeta) => {
+        const { tableData: data, rowIndex } = tableMeta;
+        const selectedRow = data[rowIndex];
+
+        return (
+          <Box >
+            {selectedRow.first_name} {selectedRow.last_name}
+          </Box>
+        );
+      },
+      
+    },
   },
   {
     name: "email",
     label: "Email",
+    options: {
+      customBodyRender: (value) => {
+        return (
+          <Box 
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            {value}
+          </Box>
+        );
+      },
+      setCellHeaderProps: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }
+      }),
+    },
   },
   {
     name: "languages",
