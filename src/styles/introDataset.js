@@ -12,24 +12,58 @@ const IntroDatasetStyle = makeStyles({
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    padding: "0 5%",
+    padding: "4rem",
+    paddingTop: "8rem",
     display: "flex",
     alignItems: "center",
-    height: "700px",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    height: "100vh",
+    width: "100vw",
+    "@media (max-width:767px)": {
+      paddingTop: "6rem",
+      padding: "1rem",
+      flexDirection: "column",
+    },
+  },
+  textSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    gap: "1rem",
+    width: "67.5%",
+    "@media (max-width:767px)": {
+      width: "100%",
+    },
+  },
+  imageWrpr: {
+    width: "27.5%",
   },
   headerbtn: {
     color: "#51504f",
     textTransform: "capitalize",
     fontSize: "16px",
     fontFamily: "roboto,sans-serif",
+    border: "2px solid red",
   },
   Chitralekhatitle: {
     fontWeight: "500",
-    fontSize: "62px",
-    lineHeight: 1.17,
+    fontSize: "3rem",
+    lineHeight: 1.1,
     color: "#3a3a3a",
     textAlign: "left",
-    margin: "0 35px 25px 45px",
+    "@media (max-width:767px)": {
+      fontSize: "2rem",
+    },
+  },
+  details: {
+    fontSize: "1.25rem",
+    lineHeight: "1.5rem",
+    textAlign: "justify",
+    "@media (max-width:767px)": {
+      fontSize: "1rem",
+    },
   },
   footerGridMain: {
     backgroundColor: "#51504f",
@@ -78,16 +112,12 @@ const IntroDatasetStyle = makeStyles({
   },
   featuresimg: {
     width: "150px",
-    margin: "20px 50px 12px 0px",
     float: "left",
   },
   titles: {
     fontSize: "55px",
     lineHeight: 1.17,
     color: "#51504f",
-    marginBottom: "50px",
-    fontFamily: '"Rowdies" ,sans-serif',
-    fontWeight: "500",
   },
   featuresTitle: {
     display: "flex",
@@ -100,6 +130,28 @@ const IntroDatasetStyle = makeStyles({
       fontSize: "20px",
     },
   },
+  principleTilesWrpr: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "2rem",
+  },
+
+  tilesWrpr: {
+    width: "50%",
+    height: "auto",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "1rem",
+    gap: "1rem",
+    "@media (max-width:767px)": {
+      width: "100%",
+    },
+  },
+
   principlesContent: {
     fontSize: "16px",
     color: "#707070",
@@ -150,12 +202,9 @@ const IntroDatasetStyle = makeStyles({
     backgroundColor: "rgb(44, 39, 153)",
     borderRadius: "5px",
     display: "flex",
-    marginLeft: "42px",
     fontSize: "16px",
     fontFamily: "roboto,sans-serif",
     height: "35px",
-    marginTop: "8px",
-    marginRight: "30px",
     padding: "22px",
     "&:hover": {
       backgroundColor: "#04115E",

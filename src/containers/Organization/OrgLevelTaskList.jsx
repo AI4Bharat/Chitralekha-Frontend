@@ -48,6 +48,7 @@ import {
   UpdateBulkTaskDialog,
   UploadFormatDialog,
   ViewTaskDialog,
+  Loader,
 } from "common";
 
 //Icons
@@ -1374,6 +1375,7 @@ const OrgLevelTaskList = () => {
 
   return (
     <>
+         {loading && <Loader size={50} color="primary" />}
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={tableData}

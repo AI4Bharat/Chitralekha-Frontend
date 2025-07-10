@@ -22,64 +22,30 @@ export default function AppInfo() {
   return (
     <div>
       <ThemeProvider theme={themeDefault}>
-        <Grid container>
-          <Hidden only="xs">
-            <Grid item xs={10} sm={10} md={10} lg={10} xl={10}>
-              <img
-                src={"Chitralekha_Logo.png"}
-                alt="logo"
-                style={{
-                  width: "85px",
-                  margin: "10% 0px 0% 35px",
-                  borderRadius: 20,
-                }}
-              />{" "}
-            </Grid>{" "}
-          </Hidden>
-
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid container className={classes.appInfoContainer}>
+          <Grid item>
+            <img
+              src={"Chitralekha_Logo.png"}
+              alt="logo"
+              style={{
+                width: "85px",
+                borderRadius: 20,
+              }}
+            />
+          </Grid>
+          <Grid item>
             <Typography
               variant={"h2"}
               className={classes.title}
-              style={{ margin: "10% 294px 10% 39px" }}
               onClick={routeChange}
             >
               Chitralekha
             </Typography>
           </Grid>
-
-          <Hidden only="xs">
-            <Typography
-              variant={"body1"}
-              className={classes.body}
-              style={{ margin: "10px 0px 40px 39px" }}
-            >
-              {translate("label.chitralekhaInfo")}
-            </Typography>
-          </Hidden>
-
-          {/* <Button
-            variant="contained"
-            color="secondary"
-            sx={{
-              margin: "auto",
-              width: "80%",
-              background: "white",
-              color: "rgba(44, 39, 153, 1)",
-            }}
-            onClick={() => setOpenOnboardingForm(true)}
-          >
-            Request to Join
-          </Button> */}
-
-          <Typography
-            style={{
-              // position: "absolute",
-              fontSize: "1rem",
-              // bottom: "0.5rem",
-              margin: "10px 0px 10px 39px",
-            }}
-          >
+          <Typography variant={"body1"} className={classes.body}>
+            {translate("label.chitralekhaInfo")}
+          </Typography>
+          <Typography className={classes.secondaryBodyText}>
             Powered by EkStep Foundation
           </Typography>
         </Grid>
