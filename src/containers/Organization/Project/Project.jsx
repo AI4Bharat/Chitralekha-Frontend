@@ -1,5 +1,5 @@
 //My Organization
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment/moment";
@@ -48,6 +48,8 @@ import {
   CreateVideoDialog,
   Loader,
 } from "common";
+import UploadFileDialog from "common/UploadFileDialog";
+import apistatus from "redux/reducers/apistatus/apistatus";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -70,17 +72,19 @@ const Project = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const csvUpload = useRef();
 
   const [addmembers, setAddmembers] = useState([]);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
   const [voice, setVoice] = useState("");
+  const [loading, setloading] = useState(false);
   const [projectDetails, SetProjectDetails] = useState({});
   const [videoList, setVideoList] = useState([]);
   const [createVideoDialog, setCreateVideoDialog] = useState(false);
+  const [duration, setDuration] = useState("00:00:00");
   const [videoLink, setVideoLink] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
   const [isAudio, setIsAudio] = useState(false);
   const [lang, setLang] = useState("");
   const [projectData, setProjectData] = useState([
@@ -102,32 +106,53 @@ const Project = () => {
   const [alertColumn, setAlertColumn] = useState("");
   const [orgOwnerId, setOrgOwnerId] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
+  const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
+    useState(false);
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
     (state) => state.getProjectVideoList.data
   );
+    const [isProjectDetailsLoading, setIsProjectDetailsLoading] = useState(true);
+  const [isVideoListLoading, setIsVideoListLoading] = useState(true);
+  const [isMembersLoading, setIsMembersLoading] = useState(true);
+
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
   const userList = useSelector((state) => state.getOrganizatioUsers.data);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
+  
+      if (organization_owners && organization_owners.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [userData]);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
+    
 
     if (!progress) {
       if (success) {
         if (apiType === "ADD_PROJECT_MEMBERS") {
           getProjectMembers();
+        }
+
+        if (apiType === "UPLOAD_CSV") {
+          setOpenUploadBulkVideoDialog(false);
         }
 
         if (apiType === "CREATE_NEW_VIDEO") {
@@ -145,12 +170,52 @@ const Project = () => {
           setAlertMessage(data.message);
           setAlertData(data.response);
           setAlertColumn("csvAlertColumns");
+          setOpenUploadBulkVideoDialog(false);
         }
       }
     }
 
     // eslint-disable-next-line
   }, [apiStatus]);
+  
+  useEffect(() => {
+    const { progress, success, apiType } = apiStatus;
+
+    if (progress) {
+      console.log(apiType,apiStatus.progress);
+
+      switch (apiType) {
+        case "GET_PROJECT_DETAILS":
+          setIsProjectDetailsLoading(true);
+          break;
+        case "GET_PROJECT_VIDEOS":
+          setIsVideoListLoading(true);
+          break;
+        case "GET_PROJECT_MEMBERS":
+          setIsMembersLoading(true);
+          break;
+        default:
+          break;
+      }
+    } else {
+      if (success) {
+        switch (apiType) {
+          case "GET_PROJECT_DETAILS":
+            setIsProjectDetailsLoading(false);
+            break;
+          case "GET_PROJECT_VIDEOS":
+            setIsVideoListLoading(false);
+            break;
+          case "GET_PROJECT_MEMBERS":
+            setIsMembersLoading(false);
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }, [apiStatus]);
+
 
   const getProjectMembers = () => {
     const userObj = new FetchProjectMembersAPI(projectId);
@@ -212,6 +277,7 @@ const Project = () => {
   }, [projectInfo.id]);
 
   useEffect(() => {
+
     SetProjectDetails(projectInfo);
     setVideoList(projectvideoList);
   }, [projectInfo, projectvideoList]);
@@ -228,6 +294,8 @@ const Project = () => {
   const addNewVideoHandler = async () => {
     const link = encodeURIComponent(videoLink.replace(/&amp;/g, "&"));
     const desc = encodeURIComponent(videoDescription.replace(/&amp;/g, "&"));
+    const dur = encodeURIComponent(duration);
+    const ytLink = encodeURIComponent(youtubeUrl.replace(/&amp;/g, "&"));
     const create = true;
 
     dispatch(
@@ -247,7 +315,9 @@ const Project = () => {
       create,
       voice,
       speakerInfo,
-      speakerType
+      speakerType,
+      dur,
+      ytLink
     );
     dispatch(APITransport(apiObj));
 
@@ -268,21 +338,19 @@ const Project = () => {
   };
 
   const renderProjectDetails = () => {
-    if (!projectInfo || projectInfo.length <= 0) {
-      return <Loader />;
-    }
 
     return (
       <>
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
           <Card
             style={{
               display: "flex",
               justifyContent: "space-between",
               backgroundColor: "#0F2749",
               borderRadius: "8px",
-              marginBottom: "15px",
-              padding: "35px",
+              margin: "0  10px 0  10px",
+              padding: "1.3rem",
+              alignItems:"center"
             }}
           >
             <Typography variant="h4" className={classes.mainTitle}>
@@ -312,7 +380,7 @@ const Project = () => {
         </Grid>
 
         {projectDetails.description && (
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <Grid item xs={6} sm={12} md={12} lg={12} xl={12}>
             <Typography variant="h6" className={classes.modelTitle}>
               Description
             </Typography>
@@ -329,10 +397,11 @@ const Project = () => {
           </Grid>
         )}
 
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 2 }}>
-          <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ m: 1.5 }}>
+          <Grid container spacing={1}>
             {projectData?.map((des, i) => (
-              <Grid item xs={4} sm={4} md={4} lg={4} xl={4} key={i}>
+              <Grid item xs={12} sm={4} md={4} lg={4} xl={4} key={i}
+              >
                 <ProjectDescription
                   name={des.name}
                   value={des.value}
@@ -359,10 +428,15 @@ const Project = () => {
               localStorage.setItem("projectTabIndex", newValue);
             }}
             aria-label="basic tabs example"
+            variant="scrollable"
           >
             <Tab label={"Videos"} sx={{ fontSize: 16, fontWeight: "700" }} />
             <Tab label={"Tasks"} sx={{ fontSize: 16, fontWeight: "700" }} />
-            <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {/* <Tab label={"Members1"} sx={{ fontSize: 16, fontWeight: "700" }} /> */}
+            {roles.filter((role) => role.value === userData?.role)[0]
+              ?.canAddMembers && (
+              <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            )}
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.ProjectReport && (
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -380,12 +454,12 @@ const Project = () => {
             flexDirection="Column"
             justifyContent="center"
             alignItems="center"
+            gap={2}
           >
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.permittedToCreateVideoAudio && (
-              <Box display={"flex"} width={"100%"}>
+              <Box display={"flex"} width={"100%"} gap={1} flexDirection={{xs:'column',md:'row'}}>
                 <Button
-                  style={{ marginRight: "10px" }}
                   className={classes.projectButton}
                   onClick={() => setCreateVideoDialog(true)}
                   variant="contained"
@@ -394,10 +468,9 @@ const Project = () => {
                 </Button>
 
                 <Button
-                  style={{ marginLeft: "10px" }}
                   className={classes.projectButton}
                   variant="contained"
-                  onClick={() => csvUpload.current.click()}
+                  onClick={() => setOpenUploadBulkVideoDialog(true)}
                 >
                   Bulk Video Upload
                   <Tooltip title="Download sample CSV">
@@ -405,7 +478,7 @@ const Project = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         window.location.assign(
-                          `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
+                          `https://chitralekhastoragedev.blob.core.windows.net/multimedia/SampleInputProjectUpload.csv`
                         );
                       }}
                       sx={{ color: "white" }}
@@ -413,16 +486,6 @@ const Project = () => {
                       <InfoOutlinedIcon />
                     </IconButton>
                   </Tooltip>
-                  <input
-                    type="file"
-                    style={{ display: "none" }}
-                    ref={csvUpload}
-                    accept=".csv"
-                    onChange={(event) => {
-                      handeFileUpload(event.target.files);
-                      event.target.value = null;
-                    }}
-                  />
                 </Button>
               </Box>
             )}
@@ -431,6 +494,7 @@ const Project = () => {
               <VideoList
                 data={videoList}
                 removeVideo={() => getProjectVideoList()}
+                loading={isVideoListLoading}
               />
             </div>
           </Box>
@@ -465,7 +529,7 @@ const Project = () => {
             alignItems="center"
           >
             {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-              userData?.id === orgOwnerId) && (
+              isUserOrgOwner|| userData?.role==="ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
@@ -516,6 +580,10 @@ const Project = () => {
           speakerInfo={speakerInfo}
           speakerType={speakerType}
           setSpeakerType={setSpeakerType}
+          duration={duration}
+          setDuration={setDuration}
+          youtubeUrl={youtubeUrl}
+          setYoutubeUrl={setYoutubeUrl}
         />
       )}
 
@@ -541,6 +609,15 @@ const Project = () => {
           message={alertMessage}
           report={alertData}
           columns={alertColumn}
+        />
+      )}
+
+      {openUploadBulkVideoDialog && (
+        <UploadFileDialog
+          openDialog={openUploadBulkVideoDialog}
+          handleClose={() => setOpenUploadBulkVideoDialog(false)}
+          title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
         />
       )}
     </Grid>

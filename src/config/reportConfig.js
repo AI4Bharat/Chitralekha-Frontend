@@ -25,6 +25,7 @@ export const languagelevelStats = [
   { lable: "Transcript", value: "transcript_stats" },
   { lable: "Translation", value: "translation_stats" },
   { lable: "Voiceover", value: "voiceover_stats" },
+  { lable: "Translation Voiceover", value: "translation_voiceover_stats" },
 ];
 
 export const projectReportLevels = [

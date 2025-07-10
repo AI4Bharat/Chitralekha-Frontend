@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 //Components
@@ -13,22 +13,33 @@ import {
   FormControlLabel,
   IconButton,
   Radio,
+  Checkbox,
   RadioGroup,
   Typography,
+  FormGroup,
+  Select,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { speakerInfoOptions, bgMusicOptions } from "config";
+import { MenuItem } from "react-contextmenu";
 
 const ExportDialog = ({
   open,
   handleClose,
+  task_type,
   taskType,
   exportTypes,
   handleExportSubmitClick,
   handleExportRadioButtonChange,
+  handleExportCheckboxChange,
+  isBulkTaskDownload,
+  currentSelectedTasks,
+  multiOptionDialog=false,
 }) => {
   const { transcription, translation, voiceover, speakerInfo, bgMusic } =
     exportTypes;
+
+  const [currentTaskType, setCurrentTaskType] = useState(taskType);
 
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -40,6 +51,22 @@ const ExportDialog = ({
     (state) => state.getVoiceoverExportTypes.data.export_types
   );
 
+  useEffect(() => {
+    if (isBulkTaskDownload) {
+      const tasks = currentSelectedTasks.map((item) => item.task_type);
+
+      if (tasks.every((item) => item === "VOICEOVER_EDIT")) {
+        setCurrentTaskType("VOICEOVER_EDIT");
+      } else {
+        setCurrentTaskType("TRANSLATION_EDIT");
+      }
+    } else {
+      if(!multiOptionDialog){
+        setCurrentTaskType(taskType);
+      }
+    }
+  }, [taskType, isBulkTaskDownload, currentSelectedTasks]);
+
   return (
     <Dialog
       open={open}
@@ -47,7 +74,16 @@ const ExportDialog = ({
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4" display="flex" alignItems={"center"}>
-        <Typography variant="h4">Export Subtitles</Typography>{" "}
+        {multiOptionDialog ? 
+        <Typography variant="h4">Export &nbsp;
+          <Select value={currentTaskType} onChange={(event)=>{setCurrentTaskType(event.target.value)}}>
+            <MenuItem key={1} value="TRANSCRIPTION_VOICEOVER_EDIT">Transcription</MenuItem>
+            <MenuItem key={2} value="TRANSLATION_VOICEOVER_EDIT">Translation</MenuItem>
+          </Select>
+        </Typography>
+        :
+        <Typography variant="h4">Export {currentTaskType}</Typography>
+        }
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -61,63 +97,70 @@ const ExportDialog = ({
         <DialogContentText id="select-export-types" sx={{ mt: 2 }}>
           Select Type
         </DialogContentText>
-        {taskType?.includes("TRANSCRIPTION") ? (
+        {currentTaskType?.includes("TRANSCRIPTION") ? (
           <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup row>
+              <FormGroup row>
                 {transcriptExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Radio />}
-                    checked={transcription === item}
+                    control={
+                      <Checkbox 
+                        checked={transcription.includes(item)}
+                        onChange={(event) => handleExportCheckboxChange(event)}  
+                      />
+                    }
                     label={item}
                     name="transcription"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
-              </RadioGroup>
+              </FormGroup>
             </FormControl>
           </DialogActions>
-        ) : taskType?.includes("VOICEOVER") ? (
+        ) : currentTaskType?.includes("TRANSLATION") && task_type !== "VO" ? (
           <DialogActions sx={{ mb: 1, mt: 1 }}>
             <FormControl>
-              <RadioGroup row>
-                {voiceoverExportTypes?.map((item, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={item}
-                    control={<Radio />}
-                    checked={voiceover === item}
-                    label={item}
-                    name="voiceover"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </DialogActions>
-        ) : (
-          <DialogActions sx={{ mb: 1, mt: 1 }}>
-            <FormControl>
-              <RadioGroup row>
+              <FormGroup row>
                 {translationExportTypes?.map((item, index) => (
                   <FormControlLabel
                     key={index}
                     value={item}
-                    control={<Radio />}
-                    checked={translation === item}
+                    control={
+                      <Checkbox 
+                        checked={translation.includes(item)}
+                        onChange={(event) => handleExportCheckboxChange(event)}  
+                      />
+                    }
                     label={item}
                     name="translation"
-                    onClick={(event) => handleExportRadioButtonChange(event)}
                   />
                 ))}
-              </RadioGroup>
-            </FormControl>
-          </DialogActions>
+                </FormGroup>
+              </FormControl>
+            </DialogActions>
+          ) : (
+            <DialogActions sx={{ mb: 1, mt: 1 }}>
+              <FormControl>
+                <RadioGroup row>
+                  {voiceoverExportTypes?.map((item, index) => (
+                    <FormControlLabel
+                      key={index}
+                      value={item}
+                      control={<Radio />}
+                      checked={voiceover === item}
+                      label={item}
+                      name="voiceover"
+                      disabled={isBulkTaskDownload && item === "mp4"}
+                      onClick={(event) => handleExportRadioButtonChange(event)}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </DialogActions>
         )}
 
-        {!taskType?.includes("VOICEOVER") ? (
+        {!currentTaskType?.includes("VOICEOVER") ? (
           <>
             <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
               Speaker Info
@@ -143,8 +186,8 @@ const ExportDialog = ({
         ) : (
           <></>
         )}
-
-        {taskType?.includes("VOICEOVER") && (
+{/* 
+        {currentTaskType?.includes("VOICEOVER") && !isBulkTaskDownload && (
           <>
             <DialogContentText id="select-speaker-info" sx={{ mt: 2 }}>
               Background Music
@@ -167,12 +210,12 @@ const ExportDialog = ({
               </FormControl>
             </DialogActions>
           </>
-        )}
+        )} */}
 
         <DialogActions>
           <Button
             variant="contained"
-            onClick={handleExportSubmitClick}
+            onClick={multiOptionDialog ? () => handleExportSubmitClick(currentTaskType) : () => handleExportSubmitClick()}
             style={{ borderRadius: "8px" }}
             autoFocus
           >

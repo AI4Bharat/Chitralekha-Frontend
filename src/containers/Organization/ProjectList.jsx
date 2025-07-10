@@ -8,7 +8,6 @@ import { projectColumns } from "config";
 import { tableTheme } from "theme";
 
 //Icons
-import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 
 //Components
@@ -27,30 +26,44 @@ const ProjectList = ({ data, removeProjectList }) => {
   const [projectid, setprojectid] = useState([]);
   const [open, setOpen] = useState(false);
   const [orgOwnerId, setOrgOwnerId] = useState("");
-
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
+const [loading,setloading] = useState(false)
   const apiStatus = useSelector((state) => state.apiStatus);
   const userData = useSelector((state) => state.getLoggedInUserDetails.data);
 
   useEffect(() => {
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
-
-      console.log(organization_owner,'organization_owner tetete');
-
-      setOrgOwnerId(organization_owner.id);
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
+  
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
     // eslint-disable-next-line
   }, [userData]);
-
   useEffect(() => {
     const { progress, success, apiType } = apiStatus;
-
+if(progress){
+  if (apiType === "GET_PROJECT_LIST"){
+          setloading(true)
+        }
+}
     if (!progress) {
       if (success) {
         if (apiType === "DELETE_Project") {
           removeProjectList();
+        }
+        if (apiType === "GET_PROJECT_LIST"){
+          setloading(false)
         }
       }
       setOpen(false);
@@ -85,7 +98,11 @@ const ProjectList = ({ data, removeProjectList }) => {
         const selectedRow = data[rowIndex];
 
         return (
-          <div style={{ textAlign: "center" }}>
+          <div style={{ 
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            }}>
             <Link
               to={`/my-organization/${id}/project/${selectedRow.id}`}
               style={{ textDecoration: "none" }}
@@ -97,13 +114,6 @@ const ProjectList = ({ data, removeProjectList }) => {
               </Tooltip>
             </Link>
 
-            {userData?.id === orgOwnerId && (
-              <Tooltip title="Delete">
-                <IconButton onClick={() => handleDeleteProject(selectedRow.id)}>
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip>
-            )}
           </div>
         );
       },

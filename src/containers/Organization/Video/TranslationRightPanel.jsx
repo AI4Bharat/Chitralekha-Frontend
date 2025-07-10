@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import { useTheme } from "@mui/material";
 
+import { configs, endpoints, failInfoColumns } from "config";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -18,6 +20,7 @@ import {
   getSelectionStart,
   getTargetSelectionStart,
   reGenerateTranslation,
+  onSplit,
 } from "utils";
 
 //Styles
@@ -25,8 +28,16 @@ import "../../../styles/scrollbarStyle.css";
 import { VideoLandingStyle } from "styles";
 
 //Components
-import { Box, CardContent, Grid, useMediaQuery } from "@mui/material";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import {
+  Box,
+  CardContent,
+  CircularProgress,
+  Grid,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+} from "@mui/material";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
@@ -36,14 +47,16 @@ import { ConfirmDialog, ShortcutKeys, TableDialog, TimeBoxes } from "common";
 import C from "redux/constants";
 import {
   APITransport,
+  CreateGlossaryAPI,
   FetchTaskFailInfoAPI,
   FetchTranscriptPayloadAPI,
   SaveTranscriptAPI,
   setSubtitles,
 } from "redux/actions";
-import { failInfoColumns } from "config";
+import GlossaryDialog from "common/GlossaryDialog";
+import { bookmarkSegment, onExpandTimeline } from "utils/subtitleUtils";
 
-const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
+const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const dispatch = useDispatch();
@@ -68,6 +81,10 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   );
   const limit = useSelector((state) => state.commonReducer.limit);
   const apiStatus = useSelector((state) => state.apiStatus);
+  const loggedInUserData = useSelector(
+    (state) => state.getLoggedInUserDetails.data
+  );
+  const videoDetails = useSelector((state) => state.getVideoDetails.data);
 
   const [sourceText, setSourceText] = useState([]);
   const [enableTransliteration, setTransliteration] = useState(true);
@@ -88,6 +105,22 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [subsuper, setsubsuper] = useState(false);
+  const [contextMenu, setContextMenu] = React.useState(null);
+  const [selectedWord, setSelectedWord] = useState("");
+  const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
+  const [showPopOver, setShowPopOver] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -116,6 +149,14 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTableDialogColumn(failInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
+            break;
+
+          case "CREATE_GLOSSARY":
+            setOpenGlossaryDialog(false);
+            break;
+
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
             break;
 
           default:
@@ -148,6 +189,45 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
       setCurrentOffset(currentPage);
     }
   }, [currentPage]);
+
+
+  useEffect(() => {
+    if (videoDetails.hasOwnProperty("video")) {
+        if(segment!==undefined){
+          setTimeout(() => {          
+            const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
+            subtitleScrollEle
+              .querySelector(`#sub_${segment}`)
+              ?.scrollIntoView(true, { block: "start" });
+            subtitleScrollEle.querySelector(`#sub_${segment} textarea`).click();
+          }, 2000);
+      }
+    }
+  }, [videoDetails]);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+
+    const selectedText = window.getSelection().toString();
+    setSelectedWord(selectedText);
+
+    if (selectedText !== "") {
+      setContextMenu(
+        contextMenu === null
+          ? {
+              mouseX: event.clientX + 2,
+              mouseY: event.clientY - 6,
+            }
+          : null
+      );
+    }
+  };
+
+  const handleContextMenuClick = (dialogTitle) => {
+    setContextMenu(null);
+    setOpenGlossaryDialog(true);
+    setGlossaryDialogTitle(dialogTitle);
+  };
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -189,6 +269,10 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     [limit, currentOffset]
   );
 
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // xs, sm, md
+
+
   const onMergeClick = useCallback(
     (index) => {
       const selectionStart = getSelectionStart(index);
@@ -212,18 +296,43 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     [limit, currentOffset]
   );
 
+  const onSplitClick = useCallback(() => {
+    setUndoStack((prevState) => [
+      ...prevState,
+      {
+        type: "split",
+        index: currentIndexToSplitTextBlock,
+        selectionStart,
+      },
+    ]);
+    setRedoStack([]);
+
+    const sub = onSplit(currentIndexToSplitTextBlock, selectionStart, null, null, true);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+    // saveTranscriptHandler(false, true, sub);
+
+    // eslint-disable-next-line
+  }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
+
   useEffect(() => {
     setSourceText(subtitles);
   }, [subtitles]);
 
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById(
+  //     "subtitleContainerTranslation"
+  //   );
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
+
   useEffect(() => {
-    const subtitleScrollEle = document.getElementById(
-      "subtitleContainerTranslation"
-    );
+    const subtitleScrollEle = document.getElementById("subtitleContainerTranslation");
     subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
+      .querySelector(`#sub_0`)
       ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  }, [currentOffset]);
 
   const changeTranscriptHandler = (text, index, type) => {
     const arr = [...sourceText];
@@ -244,12 +353,14 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
   const saveTranscriptHandler = async (
     isFinal,
     isRegenerate = false,
-    subs = sourceText
-  ) => {
+    subs = sourceText,
+    bookmark = false,
+    ) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
+      ...(bookmark && {bookmark: currentIndex}),
       payload: {
         payload: subs,
       },
@@ -284,6 +395,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     if (e && e.target) {
       const { selectionStart, value } = e.target;
       if (selectionStart !== undefined && value !== undefined) {
+        setShowPopOver(true);
         setCurrentIndexToSplitTextBlock(blockIdx);
         setSelectionStart(selectionStart);
       }
@@ -309,6 +421,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
     setTimeout(() => {
       const selectedText = getSelectedText();
+
       if (selectedText !== "" && subsuper === true) {
         setselection(true);
         localStorage.setItem(
@@ -394,11 +507,11 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
-      const sub = timeChange(value, index, type, time);
+      const sub = timeChange(value, index, type, time, player);
       dispatch(setSubtitles(sub, C.SUBTITLES));
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [limit, currentOffset, player]
   );
 
   const addNewSubtitleBox = useCallback(
@@ -464,7 +577,23 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     return 0;
   };
 
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -541,8 +670,22 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
     },
   ];
 
+  const createGlossary = (sentences) => {
+    const userId = loggedInUserData.id;
+
+    const apiObj = new CreateGlossaryAPI(userId, sentences, taskId);
+    dispatch(APITransport(apiObj));
+  };
+
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex, limit]);
+
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -553,6 +696,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             setsubsuper={setsubsuper}
+            currentSubs={currentSubs}
             subsuper={subsuper}
             handleSubscript={handleSubscript}
             handleSuperscript={handleSuperscript}
@@ -567,12 +711,24 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             undoStack={undoStack}
             redoStack={redoStack}
             handleInfoButtonClick={handleInfoButtonClick}
+            currentIndex={currentIndex}
+            onMergeClick={onMergeClick}
+            onDelete={onDelete}
+            addNewSubtitleBox={addNewSubtitleBox}
+            subtitles={subtitles}
+            handleReGenerateTranslation={handleReGenerateTranslation}
+            showPopOver={showPopOver}
+            onSplitClick={onSplitClick}
+            expandTimestamp={expandTimestamp}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
+            disabled={disable}
           />
         </Grid>
 
         <Box
           className={classes.subTitleContainer}
           id={"subtitleContainerTranslation"}
+          style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}
         >
           {sourceText?.map((item, index) => {
             return (
@@ -580,69 +736,49 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                 key={index}
                 id={`sub_${index}`}
                 style={{
-                  padding: "15px",
-                  borderBottom: "1px solid lightgray",
-                  backgroundColor:
-                    index % 2 === 0
-                      ? "rgb(214, 238, 255)"
-                      : "rgb(233, 247, 239)",
+                  padding: "0",
+                  margin:"2px",
+                  // borderBottom: "1px solid lightgray",
+                  backgroundColor: "white",
+                  display: "flex"
                 }}
               >
-                <Box
-                  display="flex"
-                  alignItems={"center"}
-                  justifyContent="center"
-                  sx={{ margin: "0 10px" }}
-                >
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.start_time}
-                    index={index}
-                    type={"startTime"}
-                  />
-
-                  <ButtonComponent
-                    index={index}
-                    lastItem={index < sourceText.length - 1}
-                    onMergeClick={onMergeClick}
-                    onDelete={onDelete}
-                    addNewSubtitleBox={addNewSubtitleBox}
-                    handleReGenerateTranslation={handleReGenerateTranslation}
-                  />
-
-                  <TimeBoxes
-                    handleTimeChange={handleTimeChange}
-                    time={item.end_time}
-                    index={index}
-                    type={"endTime"}
-                  />
-                </Box>
-
                 <CardContent
                   sx={{
                     display: "flex",
-                    padding: "5px 0",
+                    padding: "0",
                   }}
-                  className={classes.cardContent}
+                  style={{alignItems:"center", padding: 0, width:"100%"}}
                   onClick={() => {
                     if (player) {
-                      player.pause();
-                      if (player.duration >= item.startTime) {
-                        player.currentTime = item.startTime + 0.001;
+                      if( typeof player.pauseVideo === 'function' ){
+                        player.pauseVideo();
+                        if (player.getDuration() >= item.startTime && (player.getCurrentTime() < item.startTime || player.getCurrentTime() > item.endTime)) {
+                          player.seekTo(item.startTime + 0.001);
+                        }
+                      }else{
+                        player.pause();
+                        if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
+                          player.currentTime = item.startTime + 0.001;
+                        }
                       }
                     }
                   }}
                 >
                   {taskData?.source_type !== "Original Source" && (
-                    <div className={classes.relative} style={{ width: "100%" }}>
+                    <div
+                      className={classes.relative}
+                      style={{ width: "100%", cursor: "context-menu" }}
+                      onContextMenu={handleContextMenu}
+                    >
                       <textarea
-                        rows={4}
+                        rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
                         }`}
                         onMouseUp={(e) => onMouseUp(e, index)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
-                        style={{ fontSize: fontSize, height: "100px" }}
+                        style={{ fontSize: fontSize }}
                         ref={(el) => (textboxes.current[index] = el)}
                         value={item.text}
                         onChange={(event) => {
@@ -662,7 +798,8 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                             ) >= 3
                               ? "red"
                               : "green",
-                          left: "6px",
+                          left: "20px",
+                          top: "3px"
                         }}
                       >
                         {sourceLength(index)}
@@ -670,8 +807,27 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                     </div>
                   )}
 
+                <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center" ,        marginLeft: isSmallScreen ? "25px" : "0px",
+}}>
+                    <TimeBoxes
+                      handleTimeChange={handleTimeChange}
+                      time={item.start_time}
+                      index={index}
+                      type={"startTime"}
+                    />
+                    <br />
+                    <TimeBoxes
+                      handleTimeChange={handleTimeChange}
+                      time={item.end_time}
+                      index={index}
+                      type={"endTime"}
+                    />
+                  </div>
+
                   {enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.target_language}
                       value={item.target_text}
                       onChangeText={(text) => {
@@ -680,8 +836,13 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                       containerStyles={{
                         width: "100%",
                       }}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          setShowPopOver(false);
+                        }, 200);
+                      }}
                       onMouseUp={(e) => onMouseUp(e, index)}
-                      style={{ fontSize: fontSize, height: "100px" }}
+                      style={{ fontSize: fontSize }}
                       renderComponent={(props) => (
                         <div className={classes.relative}>
                           <textarea
@@ -693,7 +854,12 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                             }`}
                             dir={enableRTL_Typing ? "rtl" : "ltr"}
                             ref={(el) => (textboxes.current[index] = el)}
-                            rows={4}
+                            rows={2}
+                            onBlur={() => {
+                              setTimeout(() => {
+                                setShowPopOver(false);
+                              }, 200);
+                            }}
                             {...props}
                           />
                           <span
@@ -705,8 +871,9 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                                 ) >= 3
                                   ? "red"
                                   : "green",
-                              right: "10px",
-                            }}
+                              right: "20px",
+                          top: "3px"
+                        }}
                           >
                             {targetLength(index)}
                           </span>
@@ -716,7 +883,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                   ) : (
                     <div className={classes.relative} style={{ width: "100%" }}>
                       <textarea
-                        rows={4}
+                        rows={2}
                         className={`${classes.textAreaTransliteration} ${
                           currentIndex === index ? classes.boxHighlight : ""
                         } ${
@@ -726,7 +893,7 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                         ref={(el) => (textboxes.current[index] = el)}
                         dir={enableRTL_Typing ? "rtl" : "ltr"}
                         onMouseUp={(e) => onMouseUp(e, index)}
-                        style={{ fontSize: fontSize, height: "100px" }}
+                        style={{ fontSize: fontSize }}
                         onChange={(event) => {
                           changeTranscriptHandler(
                             event.target.value,
@@ -735,6 +902,11 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                           );
                         }}
                         value={item.target_text}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setShowPopOver(false);
+                          }, 200);
+                        }}
                       />
                       <span
                         className={classes.wordCount}
@@ -745,7 +917,8 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                             ) >= 3
                               ? "red"
                               : "green",
-                          right: "10px",
+                          right: "20px",
+                          top: "3px"
                         }}
                       >
                         {targetLength(index)}
@@ -753,6 +926,27 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
                     </div>
                   )}
                 </CardContent>
+                <Menu
+                  open={contextMenu !== null}
+                  onClose={() => setContextMenu(null)}
+                  anchorReference="anchorPosition"
+                  anchorPosition={
+                    contextMenu !== null
+                      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                      : undefined
+                  }
+                >
+                  <MenuItem
+                    onClick={() => handleContextMenuClick("Add Glossary")}
+                  >
+                    Add Glossary
+                  </MenuItem>
+                  {/* <MenuItem
+                    onClick={() => handleContextMenuClick("Suggest Glossary")}
+                  >
+                    Suggest Glossary
+                  </MenuItem> */}
+                </Menu>
               </Box>
             );
           })}
@@ -760,11 +954,11 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
 
         <Box
           className={classes.paginationBox}
-          style={{
-            ...(!xl && {
-              bottom: "-11%",
-            }),
-          }}
+          // style={{
+          //   ...(!xl && {
+          //     bottom: "-11%",
+          //   }),
+          // }}
         >
           <Pagination
             range={getSubtitleRangeTranscript()}
@@ -797,6 +991,19 @@ const TranslationRightPanel = ({ currentIndex, setCurrentIndex }) => {
             message={tableDialogMessage}
             response={tableDialogResponse}
             columns={tableDialogColumn}
+          />
+        )}
+
+        {openGlossaryDialog && (
+          <GlossaryDialog
+            openDialog={openGlossaryDialog}
+            handleClose={() => setOpenGlossaryDialog(false)}
+            submit={(sentences) => createGlossary(sentences)}
+            selectedWord={selectedWord}
+            title={glossaryDialogTitle}
+            srcLang={taskData?.src_language}
+            tgtLang={taskData?.target_language}
+            disableFields={true}
           />
         )}
       </Box>

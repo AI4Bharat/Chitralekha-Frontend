@@ -23,6 +23,7 @@ const TaskQueueStatus = () => {
           <Tabs
             value={value}
             onChange={(_event, newValue) => setValue(newValue)}
+            variant="scrollable"
           >
             <Tab
               label={"Transcription"}
@@ -34,6 +35,14 @@ const TaskQueueStatus = () => {
             />
             <Tab
               label={"Voice-Over"}
+              className={classes.taskQueueStatusTabs}
+            />
+            <Tab
+              label={"Translation Voice-Over"}
+              className={classes.taskQueueStatusTabs}
+            />
+            <Tab
+              label={"All-Tasks"}
               className={classes.taskQueueStatusTabs}
             />
             {/* <Tab
@@ -65,6 +74,22 @@ const TaskQueueStatus = () => {
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <QueueStatusTable queueType={"tts"} />
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={3}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <QueueStatusTable queueType={"nmt_tts"} />
+        </TabPanel>
+
+        <TabPanel
+          value={value}
+          index={4}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <QueueStatusTable queueType={"all_tasks"} />
         </TabPanel>
 
         {/* <TabPanel

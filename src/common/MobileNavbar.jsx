@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-//Style
+//Styles
 import { headerStyle } from "styles";
 
 //Components
@@ -10,7 +10,6 @@ import {
   IconButton,
   List,
   ListItem,
-  Grid,
   AppBar,
   Divider,
   Avatar,
@@ -18,146 +17,171 @@ import {
   Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import HelpDialog from "./HelpDialog";
 
-function MobileNavbar({ UserMenu, SettingsMenu }) {
+function MobileNavbar({ UserMenu, SettingsMenu, userData }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const classes = headerStyle();
+  const navigate = useNavigate();
+  const [openHelpDialog, setOpenHelpDialog] = useState(false);
+
+  const handleClickHelp = () => {
+    setOpenHelpDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenHelpDialog(false);
+  };
 
   const tabs = [
     {
       name: "Organizations",
       onClick: () => {
+        navigate(`/my-organization/${userData?.organization?.id}`);
         setOpenDrawer(false);
       },
     },
     {
-      name: "project",
+      name: "Tasks",
       onClick: () => {
+        navigate(`/task-list`);
         setOpenDrawer(false);
       },
     },
-    {
-      name: "workspace",
-      onClick: () => {
-        setOpenDrawer(false);
-      },
-    },
-  ];
-
+    userData?.role === "ADMIN"
+      ? {
+          name: "Admin",
+          onClick: () => {
+            navigate(`/admin`);
+            setOpenDrawer(false);
+          },
+        }
+      : null,
+  ].filter(Boolean);
   return (
     <>
       <Drawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
+        className={classes.drawer}
         PaperProps={{
           style: {
-            padding: "16px",
+            fontFamily: "Rowdies,cursive,Roboto,sans-serif",
           },
         }}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+        transitionDuration={{ enter: 400, exit: 300 }}
       >
         <Box
           style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            height: "100%",
-            paddingBottom: "16px",
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            pb: 2,
           }}
         >
-          <Box>
+          <Box className={classes.navbar_banner}>
             <NavLink
+              to={`/profile/${userData.id}`}
               onClick={() => setOpenDrawer(false)}
-              style={{
-                textDecoration: "none",
-              }}
+              style={{ textDecoration: "none" }}
             >
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  columnGap: "16px",
-                  paddingBottom: "16px",
-                }}
-              >
+              <Box className={classes.profileBox}>
                 <Avatar
                   alt="user_profile_pic"
-                  variant="contained"
-                  className={classes.avatar}
+                  className={classes.mobileNav_avatar}
                 >
-                  U
+                  {userData?.first_name?.charAt(0)}
                 </Avatar>
-                <Typography
-                  variant="h2"
-                  sx={{ p: 0, ml: 1 }}
-                  style={{
-                    color: "black",
-                  }}
-                >
-                  User
-                </Typography>
+                <Box style={{ paddingLeft: "10px" }}>
+                  <Typography variant="h6" className={classes.username}>
+                    {userData?.first_name} {userData?.last_name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    style={{ color: "rgba(0,0,0,0.6)", fontSize: "0.85rem" }}
+                  >
+                    View Profile
+                  </Typography>
+                </Box>
               </Box>
             </NavLink>
-            <Divider />
+            <IconButton
+              className={classes.closeButton}
+              onClick={() => setOpenDrawer(false)}
+            >
+              <CloseIcon />
+            </IconButton>
           </Box>
 
-          <Box >
+          <Box style={{ padding: "8px" }}>
+            <Typography className={classes.sectionTitle}>
+              Organization
+            </Typography>
             <List>
               {tabs.map((tab, index) => (
-                <ListItem key={index} onClick={() => setOpenDrawer(false)}>
-                  <Typography variant="body1">
-                    <NavLink
-                      to=""
-                      className={classes.headerMenu}
-                      activeClassName={classes.highlightedMenu}
-                    >
-                      {tab.name}
-                    </NavLink>
-                  </Typography>
+                <ListItem
+                  key={index}
+                  onClick={tab.onClick}
+                  className={classes.listItem}
+                >
+                  {tab.name}
                 </ListItem>
               ))}
             </List>
           </Box>
 
-          <Box>
-            <Typography
-              variant="h6"
-              align="center"
-              style={{
-                fontSize: "1.1rem",
-              }}
-            >
+          <Box style={{ padding: "8px" }}>
+            <Typography className={classes.sectionTitle}>
               App Settings
             </Typography>
             <Divider />
             <List>
-              {SettingsMenu.map((setting, index) => (
-                <ListItem key={index} onClick={setting.onclick}>
-                  <Typography
-                    variant="body1"
-                    textAlign="center"
-                    style={{
-                      color: "black",
-                      fontSize: "1rem",
-                      fontWeight: "400",
-                    }}
-                  >
-                    {setting.name}
-                  </Typography>
+              {userData?.role === "ADMIN" ||
+              userData?.role === "ORG_OWNER" ||
+              userData?.role === "PROJECT_MANAGER" ? (
+                <ListItem
+                  onClick={() => {
+                    navigate("/task-queue-status");
+                    setOpenDrawer(false);
+                  }}
+                  className={classes.listItem}
+                >
+                  {"Task Queue Status"}
                 </ListItem>
-              ))}
+              ) : (
+                ""
+              )}
+              <ListItem
+                onClick={() => {
+                  window.open(
+                    "https://github.com/AI4Bharat/Chitralekha/wiki",
+                    "_blank"
+                  );
+                  setOpenDrawer(false);
+                }}
+                className={classes.listItem}
+              >
+                {"Wiki"}
+              </ListItem>
+
+              <ListItem
+                onClick={() => {
+                  handleClickHelp();
+                  setOpenDrawer(false);
+                }}
+                className={classes.listItem}
+              >
+                {"Help"}
+              </ListItem>
             </List>
           </Box>
 
-          <Box>
-            <Typography
-              variant="h6"
-              align="center"
-              style={{
-                fontSize: "1.1rem",
-              }}
-            >
+          <Box style={{ padding: "8px" }}>
+            <Typography className={classes.sectionTitle}>
               User Settings
             </Typography>
             <Divider />
@@ -166,21 +190,16 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
                 <ListItem
                   key={index}
                   onClick={() => {
-                    setting.onclick();
+                    setting.onClick();
                     setOpenDrawer(false);
                   }}
+                  className={
+                    setting.name === "Logout"
+                      ? classes.logoutItem
+                      : classes.listItem
+                  }
                 >
-                  <Typography
-                    variant="body2"
-                    textAlign="center"
-                    style={{
-                      color: "black",
-                      fontSize: "1rem",
-                      fontWeight: "400",
-                    }}
-                  >
-                    {setting.name}
-                  </Typography>
+                  {setting.name}
                 </ListItem>
               ))}
             </List>
@@ -189,13 +208,12 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
       </Drawer>
 
       <AppBar style={{ backgroundColor: "#ffffff", padding: "8px 0" }}>
-        <Grid
-          container
-          direction="row"
-          justifyContent={"space-between"}
-          style={{
-            padding: "0 5%",
-          }}
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          padding="0 16px"
         >
           <Box display="flex" flexDirection="column" alignItems="center">
             <Box display="flex" alignItems="center">
@@ -204,23 +222,37 @@ function MobileNavbar({ UserMenu, SettingsMenu }) {
                 alt="logo"
                 className={classes.headerLogo}
               />
-              <Typography variant="h3" sx={{ color: "black", marginLeft: "10px" }}>
+              <Typography
+                variant="h3"
+                sx={{ color: "black", marginLeft: "10px" }}
+              >
                 Chitralekha
               </Typography>
             </Box>
-            <Typography sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000", marginTop: "auto" }}>
+            <Typography
+              sx={{ fontSize: "0.7rem", fontWeight: "500", color: "#000000" }}
+            >
               Powered by EkStep Foundation
             </Typography>
           </Box>
 
-          <Grid item>
-            <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
-              <MenuIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
+          <IconButton
+            className={classes.menuButton}
+            onClick={() => setOpenDrawer(!openDrawer)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Box>
       </AppBar>
+      {openHelpDialog && (
+        <HelpDialog
+          openHelpDialog={openHelpDialog}
+          handleClose={() => handleClose()}
+          setOpenHelpDialog={setOpenHelpDialog}
+        />
+      )}
     </>
   );
 }
+
 export default MobileNavbar;

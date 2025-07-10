@@ -129,7 +129,7 @@ const Login = () => {
   };
 
   const createToken = async () => {
-    const apiObj = new LoginAPI(credentials.email, credentials.password);
+    const apiObj = new LoginAPI(credentials.email.toLowerCase(), credentials.password);
     dispatch(APITransport(apiObj));
   };
 

@@ -1,5 +1,5 @@
 //My Organization
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { roles } from "utils";
@@ -17,6 +17,8 @@ import {
 
 //Styles
 import { DatasetStyle } from "styles";
+import {  useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 //Components
 import {
@@ -36,6 +38,8 @@ import OrganizationReport from "./OrganizationReport";
 import ProjectList from "./ProjectList";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { AddOrganizationMember, AlertComponent, Loader } from "common";
+import UploadFileDialog from "common/UploadFileDialog";
+import RegenerateFailedVotrTasksDialog from "common/RegenerateFailedVotrTasksDialog";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -58,7 +62,6 @@ const MyOrganization = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-  const csvUpload = useRef();
 
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
@@ -69,6 +72,10 @@ const MyOrganization = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColumn, setAlertColumn] = useState([]);
   const [orgOwnerId, setOrgOwnerId] = useState("");
+  const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
+    useState(false);
+    const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
+  const [openRegenerateFailedVotrTasksDialog, setOpenRegenerateFailedVotrTasksDialog] = useState(false);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -83,6 +90,11 @@ const MyOrganization = () => {
 
     if (!progress) {
       if (success) {
+        if (apiType === "UPLOAD_CSV") {
+          setOpenUploadBulkVideoDialog(false);
+          setOpenRegenerateFailedVotrTasksDialog(false);
+        }
+
         if (apiType === "GET_USERS_ROLES") {
           setNewMemberName([]);
           setNewMemberRole("");
@@ -95,6 +107,8 @@ const MyOrganization = () => {
           setAlertData(data.response);
           setAlertMessage(data.message);
           setAlertColumn("csvAlertColumns");
+          setOpenUploadBulkVideoDialog(false);
+          setOpenRegenerateFailedVotrTasksDialog(false);
         }
       }
     }
@@ -116,6 +130,10 @@ const MyOrganization = () => {
     const userObj = new FetchOrganizatioUsersAPI(id);
     dispatch(APITransport(userObj));
   };
+  
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
 
   useEffect(() => {
     getOrganizationDetails();
@@ -128,12 +146,19 @@ const MyOrganization = () => {
 
     if (userData && userData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = userData;
 
-      console.log(organization_owner,'organization_owner tetete');
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map((owner) => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(userData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
     // eslint-disable-next-line
   }, [userData]);
@@ -154,50 +179,117 @@ const MyOrganization = () => {
     }
 
     return (
-      <Typography variant="h2" gutterBottom component="div">
+      <Typography
+        variant="h2"
+        gutterBottom
+        component="div"
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
         {organizationDetails?.title}
       </Typography>
     );
   };
 
-  const handeFileUpload = (file) => {
+  const handeFileUpload = (file, regenerate = false) => {
     const reader = new FileReader();
     reader.onload = async () => {
       const csvData = reader.result;
       const csv = btoa(csvData);
 
-      const uploadCSVObj = new UploadCSVAPI("org", id, csv);
+      const uploadCSVObj = new UploadCSVAPI("org", id, csv, regenerate);
       dispatch(APITransport(uploadCSVObj));
     };
     reader.readAsBinaryString(file[0]);
   };
 
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Grid container direction="row">
       <Card className={classes.workspaceCard}>
-        {renderOrgDetails()}
 
         <Box>
           <Tabs
+            style={{ marginLeft: "1.5rem" }}
             value={value}
             onChange={(_event, newValue) => setValue(newValue)}
+            variant="fullWidth"
             aria-label="basic tabs example"
+            TabIndicatorProps={{
+              style: { display: "none" },
+            }}
+            
+            orientation={isSmallScreen ? "vertical" : "horizontal"}
           >
-            <Tab label={"Projects"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            <Tab
+              label={"Projects"}
+              sx={{
+                fontSize: 16,
+                fontWeight: "700",
+                bgcolor: value === 0 ? "#d3d3d3" : "#F5F5F5",
+                color: value === 0 ? "black" : "text.primary",
+                margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
+                borderRadius: 1,
+                "&:hover": {
+                  bgcolor: "#e0e0e0",
+                },
+              }}
+            />
 
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.canAddMembers && (
-              <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
+              <Tab
+                label={"Members"}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 1 ? "#d3d3d3" : "#F5F5F5",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
+                  color: value === 1 ? "black" : "text.primary",
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
+              />
             )}
 
-            {userData?.id === orgOwnerId && (
-              <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
+              <Tab
+                label={"Reports"}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 2 ? "#d3d3d3" : "#F5F5F5",
+                  color: value === 2 ? "black" : "text.primary",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
+              />
             )}
 
-            {userData?.id === orgOwnerId && (
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
               <Tab
                 label={"Settings"}
-                sx={{ fontSize: 16, fontWeight: "700" }}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 3 ? "#d3d3d3" : "#F5F5F5",
+                  color: value === 3 ? "black" : "text.primary",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
               />
             )}
           </Tabs>
@@ -214,8 +306,11 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Box display={"flex"} width={"100%"}>
-              {userData?.id === orgOwnerId && (
+            <Box display={"flex"} width={"100%"} flexDirection={{xs:'Column',lg:"Row"}} gap={1}
+            >
+              {(isUserOrgOwner ||
+                userData?.role === "ADMIN" ||
+                userData?.role === "PROJECT_MANAGER") && (
                 <Fragment>
                   <Button
                     style={{ marginRight: "10px" }}
@@ -224,41 +319,73 @@ const MyOrganization = () => {
                       navigate(`/my-organization/${id}/create-new-project`)
                     }
                     variant="contained"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem"},
+                      minWidth: { xs: "150px", sm: "150px", md: "150px" },
+                    }}
                   >
                     Add New Project
+                  </Button>
+                  <Button
+                    style={{ marginRight: "10px" }}
+                    className={classes.projectButton}
+                    onClick={() => setOpenRegenerateFailedVotrTasksDialog(true)}
+                    variant="contained"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      minWidth: { xs: "200px", sm: "150px", md: "150px" },
+                    }}
+                  >
+                    Regenerate Failed VOTR Tasks
+                    <Tooltip title="Download sample CSV">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/RegenrateSamplefile.csv`);
+                        }}
+                        sx={{ color: "white" }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Button>
+
+                  <Button
+                    className={classes.projectButton}
+                    onClick={() =>
+                      navigate(`/my-organization/${id}/create-bulk-projects`)
+                    }
+                    variant="contained"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem", md: "0.875rem" },
+                      minWidth: { xs: "200px", sm: "150px", md: "150px" },
+                    }}
+                  >
+                    Create Bulk Projects from Template
                   </Button>
 
                   {organizationDetails.enable_upload && (
                     <Button
-                      style={{ marginLeft: "10px" }}
                       className={classes.projectButton}
                       variant="contained"
-                      onClick={() => csvUpload.current.click()}
+                      onClick={() => setOpenUploadBulkVideoDialog(true)}
+                      sx={{
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                        minWidth: { xs: "150px", sm: "150px", md: "150px" },
+                      }}
                     >
                       Bulk Video Upload
                       <Tooltip title="Download sample CSV">
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.location.assign(
-                              `https://chitralekhadev.blob.core.windows.net/multimedia/SampleInputOrgUpload.csv`
-                            );
-                          }}
-                          sx={{ color: "white" }}
-                        >
-                          <InfoOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        ref={csvUpload}
-                        accept=".csv"
-                        onChange={(event) => {
-                          handeFileUpload(event.target.files);
-                          event.target.value = null;
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/SampleBulkupload.csv`);
                         }}
-                      />
+                        sx={{ color: "white" }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
                     </Button>
                   )}
                 </Fragment>
@@ -286,7 +413,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {userData?.id === orgOwnerId && (
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
@@ -348,6 +475,24 @@ const MyOrganization = () => {
           message={alertMessage}
           report={alertData}
           columns={alertColumn}
+        />
+      )}
+
+      {openUploadBulkVideoDialog && (
+        <UploadFileDialog
+          openDialog={openUploadBulkVideoDialog}
+          handleClose={() => setOpenUploadBulkVideoDialog(false)}
+          title={"Upload Bulk Videos"}
+          handleSubmit={handeFileUpload}
+        />
+      )}
+
+      {openRegenerateFailedVotrTasksDialog && (
+        <RegenerateFailedVotrTasksDialog
+          openDialog={openRegenerateFailedVotrTasksDialog}
+          handleClose={() => setOpenRegenerateFailedVotrTasksDialog(false)}
+          title={"Regenerate Failed VOTR Tasks"}
+          handleSubmit={handeFileUpload}
         />
       )}
     </Grid>

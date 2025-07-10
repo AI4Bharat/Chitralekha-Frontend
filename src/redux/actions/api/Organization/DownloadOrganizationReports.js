@@ -3,10 +3,14 @@ import ENDPOINTS from "../../../../config/apiendpoint";
 import C from "../../../constants";
 
 export default class DownloadOrganizationReportsAPI extends API {
-  constructor(id, endPoint, timeout = 2000) {
+  constructor(id, endPoint, taskStartDate="", taskEndDate="", timeout = 2000) {
     super("GET", timeout, false);
     this.type = C.DOWNLOAD_ORGANIZATION_REPORTS;
-    this.endpoint = `${super.apiEndPointAuto()}${
+    this.endpoint = endPoint === "send_tasks_report_email" ? 
+     `${super.apiEndPointAuto()}${
+      ENDPOINTS.organization
+    }${id}/${endPoint}/?taskStartDate=${taskStartDate}&taskEndDate=${taskEndDate}`
+    :`${super.apiEndPointAuto()}${
       ENDPOINTS.organization
     }${id}/${endPoint}/`;
   }

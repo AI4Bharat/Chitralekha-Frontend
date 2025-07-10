@@ -1,0 +1,34 @@
+name: Build and Deploy
+on:
+    push:
+        branches:
+            - develop2
+
+env: 
+  REACT_APP_CLIENT_ID: ${{ vars.REACT_APP_CLIENT_ID }}
+  REACT_APP_CLIENT_SECRET: ${{ vars.REACT_APP_CLIENT_SECRET }}
+
+jobs:
+    build-and-deploy:
+        concurrency: ci-${{ github.ref }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout 🛎️
+              uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                node-version: 18
+
+            - name: Install and Build 🔧
+              run: |
+                  npm install --legacy-peer-deps
+                  npm run build
+              env:
+                  REACT_APP_APIGW_BASE_URL: ${{ vars.DEV__REACT_APP_APIGW_BASE_URL }}
+                  CI: false
+
+            - name: Deploy 🚀
+              uses: JamesIves/github-pages-deploy-action@v4.4.0
+              with:
+                  branch: gh-pages
+                  folder: build

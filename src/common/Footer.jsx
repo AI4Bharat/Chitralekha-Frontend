@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 //Styles
 import { IntroDatasetStyle } from "styles";
@@ -10,11 +9,6 @@ import { YouTube, Github, Twitter } from "assets/profileImages/index";
 
 const Footer = () => {
   const classes = IntroDatasetStyle();
-  const navigate = useNavigate();
-
-  const handleClickThanks = () => {
-    navigate("/thanks");
-  };
   return (
     <div>
       <Grid container direction="row">
@@ -30,7 +24,7 @@ const Footer = () => {
           <a target="_blank" href="https://github.com/AI4Bharat/Chitralekha">
             <img src={Github} alt="logo" className={classes.footerimg} />{" "}
           </a>
-          <a target="_blank" href=" https://twitter.com/ai4bharat">
+          <a target="_blank" href="https://x.com/ai4bharat">
             <img src={Twitter} alt="logo" className={classes.footerimg} />
           </a>
           <a
@@ -89,15 +83,6 @@ const Footer = () => {
               License
             </Typography>
           </a>
-          <span style={{ margin: "0px 15px 0px 15px" }}>|</span>
-          <Typography
-            variant="caption"
-            onClick={handleClickThanks}
-            sx={{ mt: 1 }}
-            className={classes.thanks}
-          >
-            Thanks
-          </Typography>
         </Grid>
         <Grid
           item

@@ -5,6 +5,10 @@ const TableStyles = makeStyles({
     height: "32px",
     fontSize: "16px",
     padding: "16px",
+    whiteSpace: "normal",
+    overflowWrap: "break-word",
+    wordBreak: "break-word",
+
   },
 
   cellActionHeaderProps: {
@@ -55,6 +59,22 @@ const TableStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     marginBottom: "10px",
+  },
+
+  rejectBtn: {
+    color: "#E02B1D",
+    fontSize: "14px",
+    fontWeight: 500,
+    padding: "8px 24px 8px 24px",
+    lineHeight: "16px",
+    marginRight: "8px",
+  },
+
+  approveBtn: {
+    fontSize: "14px",
+    fontWeight: 500,
+    padding: "8px 24px 8px 24px",
+    lineHeight: "16px",
   },
 });
 

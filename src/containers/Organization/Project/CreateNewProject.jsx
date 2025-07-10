@@ -50,9 +50,16 @@ const CreatenewProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const userList = useSelector(
+  const projectManagers = useSelector(
     (state) => state.getOrganizatioProjectManagersUser.data
   );
+  const orgUsers = useSelector((state) => state.getOrganizatioUsers.data);
+
+  const filteredOrgUsers = (orgUsers || []).filter(
+    (user) => user.role === "ORG_OWNER"
+  );
+  const userList = [...(projectManagers || []), ...filteredOrgUsers];
+
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
   const translationTypes = useSelector(
     (state) => state.getTranslationTypes.data
@@ -77,6 +84,7 @@ const CreatenewProject = () => {
   const [translationLanguage, setTranslationLanguage] = useState([]);
   const [voiceOverSourceType, setVoiceOverSourceType] =
     useState("MACHINE_GENERATED");
+  const [paraphrase, setParaphrase] = useState(false);
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -172,6 +180,7 @@ const CreatenewProject = () => {
       default_voiceover_type: voiceOverSourceType,
       default_task_types: defaultTask.map((item) => item.value),
       default_target_languages: translationLanguage.map((item) => item.value),
+      paraphrase_enabled: paraphrase,
     };
 
     const apiObj = new CreateNewProjectAPI(newPrjectReqBody);
@@ -228,7 +237,7 @@ const CreatenewProject = () => {
                 );
               }}
             >
-              {userList.map((name, index) => (
+              {userList?.map((name, index) => (
                 <MenuItem key={index} value={name}>
                   <Checkbox checked={managerUsername.indexOf(name) > -1} />
                   {name.email}
@@ -326,6 +335,23 @@ const CreatenewProject = () => {
                   {item.label}
                 </MenuItem>
               ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography gutterBottom component="div" label="Required">
+            Paraphrasing Stage
+          </Typography>
+          <FormControl fullWidth>
+            <Select
+              id="Voiceover-source-type"
+              value={paraphrase}
+              onChange={(event) => setParaphrase(event.target.value)}
+              MenuProps={MenuProps}
+            >
+                <MenuItem key={1} value={false}>Disabled</MenuItem>
+                <MenuItem key={2} value={true}>Enabled</MenuItem>
             </Select>
           </FormControl>
         </Box>

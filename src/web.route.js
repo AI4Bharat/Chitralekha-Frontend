@@ -20,10 +20,11 @@ import SignUp from "./containers/UserManagement/signup";
 import ConfirmForgetPassword from "./containers/UserManagement/ConfirmForgotPassword";
 import OrgLevelTaskList from "./containers/Organization/OrgLevelTaskList";
 import TaskQueueStatus from "./containers/Organization/TaskQueueStatus/TaskQueueStatus";
-import Thanks from "./containers/intro/Thanks";
-import UseCases from "./containers/intro/UseCases";
 import ChitralekhaPortal from "./common/ChitralekhaPortal";
 import Unsubscribe from "containers/UserManagement/Unsubscribe";
+import MyGlossary from "containers/UserManagement/MyGlossary";
+import CreateBulkProjects from "containers/Organization/Project/CreateBulkProjects";
+import { Charts, TestimonialPage, UseCases } from "containers/intro";
 
 const RootRouter = () => {
   const ProtectedRoute = ({ user, children }) => {
@@ -35,7 +36,8 @@ const RootRouter = () => {
 
   const PublicRoute = ({ user, children }) => {
     if (authenticateUser()) {
-      const orgId = JSON.parse(localStorage.getItem("userData"))?.organization.id;
+      const orgId = JSON.parse(localStorage.getItem("userData"))?.organization
+        .id;
       return <Navigate to={`/my-organization/${orgId}`} />;
     }
     return children;
@@ -53,12 +55,15 @@ const RootRouter = () => {
     <HashRouter>
       <Routes>
         <Route
-
           path="/"
-          element={PublicRouteWrapper(<Layout component={<ChitralekhaPortal />} />)}
+          element={PublicRouteWrapper(
+            <Layout component={<ChitralekhaPortal />} />
+          )}
         />
-        <Route path="/Thanks" element={<Layout component={<Thanks />} />} />
+        {/* <Route path="/Thanks" element={<Layout component={<Thanks />} />} /> */}
         <Route path="/useCases" element={<Layout component={<UseCases />} />} />
+        <Route path="/testimonials" element={<Layout component={<TestimonialPage />} />} />
+        <Route path="/dashboards" element={<Layout component={<Charts />} />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/profile/:id"
@@ -97,11 +102,25 @@ const RootRouter = () => {
           )}
         />
         <Route
+          path="/my-organization/:orgId/create-bulk-projects"
+          element={ProtectedRouteWrapper(
+            <Layout component={<CreateBulkProjects />} Backbutton={true} />
+          )}
+        />
+        <Route
           path="/profile/:id/change-password"
           element={ProtectedRouteWrapper(
             <Layout component={<ChangePassword />} Backbutton={true} />
           )}
         />
+
+        <Route
+          path="/profile/:id/my-glossary"
+          element={ProtectedRouteWrapper(
+            <Layout component={<MyGlossary />} Backbutton={true} />
+          )}
+        />
+
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/forget-password/confirm/:key/:token"
@@ -122,6 +141,13 @@ const RootRouter = () => {
         />
 
         <Route
+          path="/task/:taskId/transcript/:offset/:segment"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
           path="/task/:taskId/translate"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true} />
@@ -129,7 +155,21 @@ const RootRouter = () => {
         />
 
         <Route
+          path="/task/:taskId/translate/:offset/:segment"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
           path="/task/:taskId/voiceover"
+          element={ProtectedRouteWrapper(
+            <Layout component={<VideoLanding />} isDrawer={true} />
+          )}
+        />
+
+        <Route
+          path="/task/:taskId/voiceover/:offset/:segment"
           element={ProtectedRouteWrapper(
             <Layout component={<VideoLanding />} isDrawer={true} />
           )}

@@ -62,17 +62,25 @@ const CreateTaskDialog = ({
     (state) => state.getSupportedLanguages.voiceoverLanguage
   );
   const bulkTaskTypes = useSelector((state) => state.getBulkTaskTypes.data);
-
+const[langLabel,setlabel] =useState("")
   const [taskType, setTaskType] = useState("");
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
   const [language, setLanguage] = useState("");
   const [priority, setPriority] = useState("");
+  const [membersToShow,setmembersToShow]=useState();
   const [date, setDate] = useState(moment().format());
   const [allowedTaskType, setAllowedTaskType] = useState("");
   const [showAllowedTaskList, setShowAllowedTaskList] = useState(false);
   const [showLimitWarning, setShowLimitWarning] = useState(false);
-
+  const [showPopup, setShowPopup] = useState(false);
+  
+  const filteredMembers = projectMembers.filter((member) =>
+    member.languages.includes(langLabel)
+  );
+  const sourceLangMembers = projectMembers.filter((member) =>
+    member.languages.includes(videoDetails?.language_label)
+  );
   useEffect(() => {
     const taskObj = new FetchTaskTypeAPI();
     dispatch(APITransport(taskObj));
@@ -85,6 +93,19 @@ const CreateTaskDialog = ({
 
     // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    console.log(filteredMembers,videoDetails,taskType,langLabel,sourceLangMembers,projectMembers)
+    if (!taskType.includes("TRANSCRIPTION")&&filteredMembers.length === 0) {
+      setShowPopup(true);
+    }
+    else{
+      setShowPopup(false)
+    }
+  }, [filteredMembers]);
+  useEffect(()=>{
+    setmembersToShow(taskType=="TRANSCRIPTION"  ? sourceLangMembers : filteredMembers);
+
+  },[langLabel,taskType])
 
   useEffect(() => {
     if (taskType.length && !taskType.includes("TRANSCRIPTION")) {
@@ -147,8 +168,13 @@ const CreateTaskDialog = ({
     const {
       target: { value },
     } = event;
-
+    const selectedLanguage = translationLanguage.find(
+      (lang) => lang.value === event.target.value
+    ) || voiceoverLanguage.find(
+      (lang) => lang.value === event.target.value
+    );
     setLanguage(value);
+    setlabel(selectedLanguage.label)
 
     if (isBulk) {
       const obj = new FetchProjectMembersAPI(projectId, taskType, "", value);
@@ -168,17 +194,17 @@ const CreateTaskDialog = ({
   const selectAllowedTaskHandler = (value) => {
     setAllowedTaskType(value);
 
-    const obj = new FetchProjectMembersAPI(
-      projectId,
-      value,
-      videoDetails.id,
-      language
-    );
-    dispatch(APITransport(obj));
+    // const obj = new FetchProjectMembersAPI(
+    //   projectId,
+    //   value,
+    //   videoDetails.id,
+    //   language
+    // );
+    // dispatch(APITransport(obj));
   };
 
   const disableBtn = () => {
-    if (!taskType || !allowedTaskType) {
+    if (!taskType || !allowedTaskType || !user) {
       return true;
     }
 
@@ -367,12 +393,49 @@ const CreateTaskDialog = ({
                 inputProps={{ "aria-label": "Without label" }}
                 disabled={isAssignUserDropdownDisabled()}
               >
-                {projectMembers.map((item, index) => (
-                  <MenuItem key={index} value={item}>
-                    {`${item.first_name} ${item.last_name} (${item.email})`}
-                  </MenuItem>
-                ))}
-              </Select>
+                {membersToShow?.map((item, index) => (
+      <MenuItem key={index} value={item}>
+        {`${item.first_name} ${item.last_name} (${item.email})`}
+      </MenuItem>
+    ))}
+
+    {showPopup && (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            position: 'relative',
+            minWidth: '300px',
+          }}
+        >
+          <p>Please add a user for the task language</p>
+          <Button
+            style={{ marginTop: '10px' }}
+            onClick={() => setShowPopup(false)}
+            variant="contained"
+          >
+            Close
+          </Button>
+        </div>
+      </div>
+    )}
+            </Select>
             </FormControl>
           </Box>
 

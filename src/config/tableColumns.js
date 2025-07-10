@@ -4,6 +4,10 @@ import statusColor from "../utils/getStatusColor";
 
 export const projectColumns = [
   {
+    name: "id",
+    label: "Id",
+  },
+  {
     name: "title",
     label: "Name",
   },
@@ -12,10 +16,27 @@ export const projectColumns = [
     label: "Manager",
     options: {
       customBodyRender: (value) => {
-        return <Box>{value[0]?.email}</Box>;
+        return (
+          <Box 
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            {value[0]?.email}
+          </Box>
+        );
       },
+      setCellHeaderProps: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }
+      }),
     },
   },
+  
   {
     name: "created_at",
     label: "Created At",
@@ -40,9 +61,10 @@ export const projectColumns = [
   },
 ];
 
+
 export const usersColumns = [
   {
-    name: "name",
+    name: "first_name",
     label: "Name",
     options: {
       customBodyRender: (_value, tableMeta) => {
@@ -50,16 +72,38 @@ export const usersColumns = [
         const selectedRow = data[rowIndex];
 
         return (
-          <Box>
+          <Box >
             {selectedRow.first_name} {selectedRow.last_name}
           </Box>
         );
       },
+      
     },
   },
   {
     name: "email",
     label: "Email",
+    options: {
+      customBodyRender: (value) => {
+        return (
+          <Box 
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            {value}
+          </Box>
+        );
+      },
+      setCellHeaderProps: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }
+      }),
+    },
   },
   {
     name: "languages",
@@ -158,6 +202,10 @@ export const adminMemberListColumns = [
 
 export const videoTaskListColumns = [
   {
+    name:"id",
+    label:"Task Id"
+  },
+  {
     name: "task_type",
     label: "Task Type",
   },
@@ -171,8 +219,26 @@ export const videoTaskListColumns = [
     },
   },
   {
+    name: "eta",
+    label: "ETA",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+      },
+    },
+  },
+  {
     name: "created_at",
     label: "Created At",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+      },
+    },
+  },
+  {
+    name: "eta",
+    label: "ETA",
     options: {
       customBodyRender: (value) => {
         return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
@@ -255,6 +321,21 @@ export const renderTaskListColumnCell = (value, tableMeta) => {
   );
 };
 
+export const parseNotesResponseData = (value) => {
+  let notesTextData = ['']
+  if (value){
+    notesTextData = value.split("'")
+    notesTextData=notesTextData.filter((ele)=>ele!='[' && ele!=']' && ele!=', ' && ele!='[]')
+  }
+
+  return (
+    <Box
+    >
+      {notesTextData.length?notesTextData[notesTextData.length-1].split("||").join(": "):''}
+    </Box>
+  );
+};
+
 export const taskListColumns = [
   {
     name: "id",
@@ -306,6 +387,20 @@ export const taskListColumns = [
       },
     },
   },
+  {
+    name: "eta",  
+    label: "ETA",  
+    options: {
+      customBodyRender: (value) => {
+        if (value) {
+          const formattedETA = new Date(value).toLocaleString();
+          return <Box>{formattedETA}</Box>;
+        }
+        return <Box>N/A</Box>;
+      },
+    },
+  },
+
   {
     name: "time_spent",
     label: "Time Spent",
@@ -390,9 +485,9 @@ export const taskQueueStatusColumns = [
   {
     name: "task_id",
     label: "Task Id",
-    options: {
-      display: false,
-    },
+    // options: {
+    //   display: false,
+    // },
   },
   {
     name: "video_id",
@@ -410,7 +505,49 @@ export const taskQueueStatusColumns = [
     name: "video_duration",
     label: "Video Duration",
   },
+  {
+    name: "status",
+    label: "Status",
+  },
 ];
+
+export const taskQueueStatusAdminColumns = [
+  {
+    name: "S. No",
+    label: "Seq. No.",
+  },
+  {
+    name: "task_id",
+    label: "Task Id",
+    // options: {
+    //   display: false,
+    // },
+  },
+  {
+    name: "uuid",
+    label: "Queue UUID",
+  },
+  {
+    name: "name",
+    label: "Name",
+  },
+  {
+    name: "state",
+    label: "Task State",
+  },
+  {
+    name: "received_time",
+    label: "Received Time",
+  },
+  {
+    name: "started_time",
+    label: "Started Time",
+  },
+  {
+    name: "worker",
+    label: "Worker Name",
+  },
+]
 
 export const failInfoColumns = [
   {
@@ -419,7 +556,7 @@ export const failInfoColumns = [
   },
   {
     name: "index",
-    label: "Id",
+    label: "Card No.",
   },
   {
     name: "start_time",
@@ -450,7 +587,7 @@ export const failTranscriptionInfoColumns = [
   },
   {
     name: "index",
-    label: "Id",
+    label: "Card No.",
   },
   {
     name: "start_time",
@@ -464,6 +601,10 @@ export const failTranscriptionInfoColumns = [
     name: "text",
     label: "Text",
   },
+  {
+    name: "issue_type",
+    label: "Issue Type",
+  },
 ];
 
 export const voiceoverFailInfoColumns = [
@@ -473,7 +614,7 @@ export const voiceoverFailInfoColumns = [
   },
   {
     name: "index",
-    label: "Id",
+    label: "Card No.",
   },
   {
     name: "reason",
@@ -505,5 +646,129 @@ export const reopenTableColumns = [
   {
     name: "task_type",
     label: "Task Type",
+  },
+];
+
+export const glossaryColumns = [
+  {
+    name: "id",
+    label: "S. No.",
+  },
+  {
+    name: "source_language",
+    label: "Source Language",
+  },
+  {
+    name: "target_language",
+    label: "Target Language",
+  },
+  {
+    name: "source_text",
+    label: "Source Text",
+  },
+  {
+    name: "target_text",
+    label: "Target Text",
+  },
+  {
+    name: "meaning",
+    label: "Meaning",
+  },
+  {
+    name: "task_ids",
+    label: "Task IDs",
+  },
+  {
+    name: "context",
+    label: "Context"
+  },
+];
+
+export const onBoardingRequestColumns = [
+  {
+    name: "id",
+    label: "S No",
+  },
+  {
+    name: "orgname",
+    label: "Org Name",
+  },
+  {
+    name: "org_type",
+    label: "Org Type",
+  },
+  {
+    name: "org_portal",
+    label: "Org Portal",
+  },
+  {
+    name: "email_domain_name",
+    label: "Email Domain Name",
+  },
+  {
+    name: "email",
+    label: "Email ID",
+  },
+  {
+    name: "phone",
+    label: "Phone",
+  },
+  {
+    name: "status",
+    label: "Status",
+    // options: {
+    //   customBodyRender: (value) => {
+    //     return <Box>{statusColor(value)?.element}</Box>;
+    //   },
+    // },
+  },
+  {
+    name: "notes",
+    label: "Notes",
+    options: {
+      customBodyRender: parseNotesResponseData,
+    },
+  },
+  {
+    name: "interested_in",
+    label: "Interested In",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "src_language",
+    label: "Source Language",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "tgt_language",
+    label: "Target Language",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "Usage",
+    label: "Usage",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "purpose",
+    label: "Purpose",
+    options: {
+      display: false,
+    },
+  },
+  {
+    name: "source",
+    label: "Source",
+    options: {
+      display: false,
+    },
   },
 ];

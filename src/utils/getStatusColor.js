@@ -14,6 +14,10 @@ const colors = [
     color: "blue",
   },
   {
+    label: "Paraphrase",
+    color: "blue",
+  },
+  {
     label: "Selected Source",
     color: "purple",
   },
@@ -29,11 +33,29 @@ const colors = [
     label: "Reopen",
     color: "darkblue",
   },
+  {
+    label: "Pending",
+    color: "purple",
+  },
+  {
+    label: "On Hold",
+    color: "blue",
+  },
+  {
+    label: "Approved",
+    color: "green",
+  },
+  {
+    label: "Rejected",
+    color: "red",
+  },
 ];
 
 const getColor = (status) => {
-  const temp = colors.filter((item) => item.label === status);
-  return temp[0].color;
+  const temp = colors.filter(
+    (item) => item.label.toLocaleLowerCase() === status.toLocaleLowerCase()
+  );
+  return temp[0]?.color;
 };
 
 const statusColor = (statusLabel) => {

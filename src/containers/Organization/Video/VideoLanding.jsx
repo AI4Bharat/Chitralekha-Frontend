@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { cloneDeep } from "lodash";
 import { fullscreenUtil, getKeyCode, Sub } from "utils";
 
@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import RightPanel from "./RightPanel";
-import VoiceOverRightPanel from "./VoiceOverRightPanel";
+// import VoiceOverRightPanel from "./VoiceOverRightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./components/VideoPanel";
 import TranslationRightPanel from "./TranslationRightPanel";
@@ -52,22 +52,35 @@ import {
   setSubtitlesForCheck,
   setTotalPages,
   setTotalSentences,
+  setSnackBar
 } from "redux/actions";
 import C from "redux/constants";
 import { useAutoSave, useUpdateTimeSpent } from "hooks";
+import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import PlayArrow from "@mui/icons-material/PlayArrow";
+import { Pause } from "@mui/icons-material";
+import ParaphraseRightPanel from "./ParaphraseRightPanel";
+import CustomizedSnackbars from "../../../common/Snackbar";
 
 const VideoLanding = () => {
-  const { taskId } = useParams();
+  const { taskId, offset, segment } = useParams();
   const dispatch = useDispatch();
   const classes = VideoLandingStyle();
-
+  const navigate = useNavigate();
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubs, setCurrentSubs] = useState();
+  const [showSubtitles, setShowSubtitles] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [fontSize, setFontSize] = useState("large");
   const [darkAndLightMode, setDarkAndLightMode] = useState("dark");
   const [subtitlePlacement, setSubtitlePlacement] = useState("bottom");
+  const [useYtdlp, setUseYtdlp] = useState(true);
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const loggedin_user_role = JSON.parse(localStorage.getItem("userData"))?.role;
 
   const taskDetails = useSelector((state) => state.getTaskDetails.data);
   const transcriptPayload = useSelector(
@@ -82,6 +95,26 @@ const VideoLanding = () => {
   const player = useSelector((state) => state.commonReducer.player);
 
   const ref = useRef(0);
+
+  useEffect(() => {
+    if (
+      taskDetails?.user?.id &&
+      loggedin_user_role &&
+      loggedin_user_id &&
+      loggedin_user_id !== taskDetails?.user?.id &&
+      !["ADMIN", "ORG_OWNER", "PROJECT_MANAGER"].includes(loggedin_user_role) ){
+      // 1. Render snackbar
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "You don't have permissions to access this page!",
+          variant: "error",
+        })
+      );
+      // 2. redirect
+      navigate("/task-list");
+    }
+  }, [taskDetails,loggedin_user_id, loggedin_user_role, dispatch, navigate]);
 
   useEffect(() => {
     let intervalId;
@@ -100,13 +133,19 @@ const VideoLanding = () => {
     }, 60 * 1000);
 
     return () => {
-      const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
-      dispatch(APITransport(apiObj));
+      if (
+        loggedin_user_id &&
+        taskDetails?.user?.id &&
+        loggedin_user_id === taskDetails?.user?.id
+      ) {
+        const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
+        dispatch(APITransport(apiObj));
+      }
       clearInterval(intervalId);
       ref.current = 0;
     };
     // eslint-disable-next-line
-  }, []);
+  }, [taskDetails]);
 
   useAutoSave();
   useUpdateTimeSpent(ref);
@@ -120,7 +159,6 @@ const VideoLanding = () => {
     };
     // eslint-disable-next-line
   }, []);
-
   useEffect(() => {
     if (taskDetails && taskDetails?.id) {
       const apiObj = new FetchVideoDetailsAPI(
@@ -134,7 +172,8 @@ const VideoLanding = () => {
       (async () => {
         const payloadObj = new FetchTranscriptPayloadAPI(
           taskDetails.id,
-          taskDetails.task_type
+          taskDetails.task_type,
+          offset !== undefined ? offset : 1
         );
         dispatch(APITransport(payloadObj));
       })();
@@ -173,6 +212,22 @@ const VideoLanding = () => {
   useMemo(() => {
     subs && setCurrentSubs(subs[currentIndex]);
   }, [subs, currentIndex]);
+
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
 
   const onKeyDown = useCallback(
     (event) => {
@@ -225,7 +280,7 @@ const VideoLanding = () => {
   }, [onKeyDown]);
 
   const handleFullscreen = () => {
-    const res = fullscreenUtil(document.documentElement);
+    const res = fullscreenUtil(document.getElementById("right-panel"));
     dispatch(FullScreen(res, C.FULLSCREEN));
   };
 
@@ -235,16 +290,16 @@ const VideoLanding = () => {
   };
 
   const renderLoader = () => {
-    if (videoDetails.length <= 0) {
-      return (
-        <Backdrop className={classes.backDrop} open={true}>
-          <CircularProgress color="inherit" size="50px" />
-          <Typography sx={{ mt: 3 }}>
-            Please wait while your request is being processed
-          </Typography>
-        </Backdrop>
-      );
-    }
+    // if (videoDetails.length <= 0) {
+    //   return (
+    //     <Backdrop className={classes.backDrop} open={true}>
+    //       <CircularProgress color="inherit" size="50px" />
+    //       <Typography sx={{ mt: 3 }}>
+    //         Please wait while your request is being processed
+    //       </Typography>
+    //     </Backdrop>
+    //   );
+    // }
   };
 
   useEffect(() => {
@@ -259,15 +314,16 @@ const VideoLanding = () => {
       localStorage.setItem("canReload", true);
     };
   }, []);
-
   return (
+    <>
+    {renderSnackBar()}
     <Grid className={fullscreen ? classes.fullscreenStyle : ""}>
       {renderLoader()}
 
-      <Grid container direction={"row"} className={classes.parentGrid}>
-        <Grid md={3} xs={12} id="video" className={classes.videoParent}>
+      <PanelGroup direction="horizontal" className={classes.parentGrid}>
+        <Panel defaultSize={25} minSize={20} id="video" className={classes.videoParent}>
           <Box
-            style={{ height: videoDetails?.video?.audio_only ? "100%" : "" }}
+            style={{ height: videoDetails?.video?.audio_only ? "100%" : showTimeline ? "calc(100vh - 183px)" : "calc(92.5vh - 60px)" }}
             className={classes.videoBox}
           >
             <VideoName
@@ -277,14 +333,22 @@ const VideoLanding = () => {
               setDarkAndLightMode={setDarkAndLightMode}
               subtitlePlacement={subtitlePlacement}
               setSubtitlePlacement={setSubtitlePlacement}
+              showSubtitles={showSubtitles}
+              setShowSubtitles={setShowSubtitles}
+              showTimeline={showTimeline}
+              setShowTimeline={setShowTimeline}
+              useYtdlp={useYtdlp}
+              setUseYtdlp={setUseYtdlp}
             />
 
             <VideoPanel
               setCurrentTime={setCurrentTime}
               setPlaying={setPlaying}
+              useYtdlp={useYtdlp}
+              setUseYtdlp={setUseYtdlp}
             />
 
-            {currentSubs && (
+            {currentSubs && showSubtitles && (
               <div
                 className={classes.subtitlePanel}
                 style={{
@@ -293,23 +357,22 @@ const VideoLanding = () => {
                   top: subtitlePlacement === "top" ? "15%" : "",
                 }}
               >
-                <ReactTextareaAutosize
-                  className={`${classes.playerTextarea} ${
-                    darkAndLightMode === "dark"
+                <div
+                  className={`${classes.playerTextarea} ${darkAndLightMode === "dark"
                       ? classes.darkMode
                       : classes.lightMode
-                  }`}
-                  value={
+                    }`}
+                  style={{
+                    fontSize: fontSize, maxHeight: "100px"
+                  }}
+                >
+                  {
                     taskDetails.task_type.includes("TRANSCRIPTION") ||
-                    taskDetails.task_type.includes("VOICEOVER")
+                      taskDetails.task_type.includes("VOICEOVER")
                       ? currentSubs.text
                       : currentSubs.target_text
                   }
-                  style={{
-                    fontSize: fontSize,
-                  }}
-                  spellCheck={false}
-                />
+                </div>
               </div>
             )}
 
@@ -334,26 +397,63 @@ const VideoLanding = () => {
               </Box>
             )}
           </Box>
-        </Grid>
-
-        <Grid md={9} xs={18} sx={{ width: "100%" }}>
+        </Panel>
+        <PanelResizeHandle />
+        <Panel defaultSize={75} minSize={50} id="right-panel" style={{backgroundColor:"white", paddingTop: fullscreen?"4%":"0"}}>
           {taskDetails?.task_type?.includes("TRANSCRIPTION") ? (
+            taskDetails?.status === "PARAPHRASE" ?
+            <ParaphraseRightPanel
+              currentIndex={currentIndex}
+              currentSubs={currentSubs}
+              setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
+              segment={segment}
+            />
+            :
             <RightPanel
               currentIndex={currentIndex}
+              currentSubs={currentSubs}
               setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
+              segment={segment}
             />
-          ) : taskDetails?.task_type?.includes("TRANSLATION") ? (
-            <TranslationRightPanel
+          ) : taskDetails?.task_type?.includes("VOICEOVER") ? (
+            // <VoiceOverRightPanel currentIndex={currentIndex}
+            // setCurrentIndex={setCurrentIndex} />
+            <VoiceOverRightPanel1
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
+              segment={segment}
             />
           ) : (
-            <VoiceOverRightPanel currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex} />
+            <TranslationRightPanel
+              currentIndex={currentIndex}
+              currentSubs={currentSubs}
+              setCurrentIndex={setCurrentIndex}
+              showTimeline={showTimeline}
+              segment={segment}
+            />
           )}
-        </Grid>
-      </Grid>
+          {fullscreen && 
+          <div style={{display:"flex", justifyContent:"center", alignItems:"center", marginTop:"2%"}}>
+            <PlayArrow color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.playVideo() : player.play()}}/>
+            <Pause color="primary" style={{transform:"scale(3)", margin:"0 20px"}} onClick={() => {if(player) typeof player.pauseVideo === 'function' ? player.pauseVideo() : player.pause()}}/>
+          </div>}
+          <Box>
+            <Button
+              className={classes.fullscreenBtn}
+              aria-label="fullscreen"
+              onClick={() => handleFullscreen()}
+              variant="contained"
+            >
+              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+            </Button>
+          </Box>
+        </Panel>
+      </PanelGroup>
 
+      {showTimeline && 
       <Grid
         width={"100%"}
         position="fixed"
@@ -362,18 +462,9 @@ const VideoLanding = () => {
       >
         <Timeline currentTime={currentTime} playing={playing} />
       </Grid>
-
-      <Box>
-        <Button
-          className={classes.fullscreenBtn}
-          aria-label="fullscreen"
-          onClick={() => handleFullscreen()}
-          variant="contained"
-        >
-          {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </Button>
-      </Box>
+      }
     </Grid>
+    </>
   );
 };
 

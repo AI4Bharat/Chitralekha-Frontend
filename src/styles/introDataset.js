@@ -199,7 +199,6 @@ const IntroDatasetStyle = makeStyles({
   },
   buttons: {
     textTransform: "capitalize",
-    padding: "10px",
     backgroundColor: "rgb(44, 39, 153)",
     borderRadius: "5px",
     display: "flex",
@@ -269,7 +268,6 @@ const IntroDatasetStyle = makeStyles({
     border: "1px solid #CCD1D1",
   },
   usecaseContent: {
-    textAlign: "left",
     fontSize: "16px",
     color: "#707070",
     lineHeight: "25px",
@@ -295,6 +293,69 @@ const IntroDatasetStyle = makeStyles({
     justifyContent: "center",
     marginTop: "20px",
   },
+  testimonialCardsWrapper: {
+    width: "70%",
+    height: "auto",
+    margin: "auto",
+    borderRadius: "20px",
+    backgroundColor: "#26262633",
+    textAlign: "left",
+    fontSize: 20,
+    color: "#000",
+  },
+  headerButtons: {
+    color: "#51504f",
+    textTransform: "capitalize",
+    fontSize: "16px",
+    fontFamily: "roboto,sans-serif",
+    marginLeft: "24px",
+  },
+  poweredByEkstep: {
+    position: "absolute",
+    bottom: 50,
+    right: 1,
+    left: 1,
+    fontSize: "0.7rem",
+    fontWeight: "500",
+    color: "#000000",
+    marginTop: "auto",
+  },
+  headerDrawerButton: {
+    color: "#51504f",
+    textTransform: "capitalize",
+    fontSize: "16px",
+    fontFamily: "roboto,sans-serif",
+  },
+  testimonialWrapper: {
+    width: "75%",
+    borderRadius: "10px",
+    padding: "10px",
+  },
+  testimonialContent: {
+    textAlign: "justify",
+    fontSize: "16px",
+    color: "rgb(44, 39, 153)",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    "-webkit-line-clamp": 3,
+    "-webkit-box-orient": "vertical",
+  },
+  testimonialPageContent: {
+    textAlign: "justify",
+    fontSize: "16px",
+    color: "rgb(44, 39, 153)",
+  },
+  testimonialContent2: {
+    fontSize: "16px",
+    color: "rgb(44, 39, 153)",
+    textAlign: "right",
+  },
+  chartHeader: {
+    marginTop: "6%",
+    fontSize: "55px",
+    color: "#51504f",
+  }
 });
 
 export default IntroDatasetStyle;

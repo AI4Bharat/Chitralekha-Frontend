@@ -33,8 +33,10 @@ import C from "redux/constants";
 import {
   APITransport,
   FetchTranscriptPayloadAPI,
+  SaveTranscriptAPI,
   setSubtitles,
 } from "redux/actions";
+import { useParams } from "react-router-dom";
 
 function magnetically(time, closeTime) {
   if (!closeTime) return time;
@@ -57,6 +59,7 @@ let isDroging = false;
 
 export default memo(
   function ({ render, currentTime }) {
+    const { taskId } = useParams();
     const classes = VideoLandingStyle();
     const dispatch = useDispatch();
 
@@ -88,7 +91,22 @@ export default memo(
         const isLastSub =
           player.currentTime > subtitles[subtitles?.length - 1]?.endTime;
 
+          const handleAutosave = () => {
+            const reqBody = {
+              task_id: taskId,
+              offset: currentPage,
+              limit: limit,
+              payload: {
+                payload: subtitles,
+              },
+            };
+      
+            const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
+            dispatch(APITransport(obj));
+          };
+
         if (next && isLastSub && isPlaying(player)) {
+          handleAutosave();
           const payloadObj = new FetchTranscriptPayloadAPI(
             taskDetails.id,
             taskDetails.task_type,

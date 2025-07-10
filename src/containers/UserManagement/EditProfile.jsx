@@ -92,14 +92,24 @@ const EditProfile = () => {
     const userObj = new FetchUserRolesAPI();
     dispatch(APITransport(userObj));
   };
+  const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
 
   useEffect(() => {
     if (loggedInUserData && loggedInUserData.id) {
       const {
-        organization: { organization_owner },
+        organization: { organization_owners },
       } = loggedInUserData;
+  
+      if (organization_owners && organization_owners?.length > 0) {
+        const ownerIds = organization_owners.map(owner => owner.id);
+        setOrgOwnerId(ownerIds);
 
-      setOrgOwnerId(organization_owner.id);
+        if (ownerIds.includes(loggedInUserData.id)) {
+          setIsUserOrgOwner(true);
+        } else {
+          setIsUserOrgOwner(false);
+        }
+      }
     }
   }, [loggedInUserData]);
 
@@ -145,7 +155,7 @@ const EditProfile = () => {
     const langObj = new FetchSupportedLanguagesAPI("TRANSLATION");
     dispatch(APITransport(langObj));
     // eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (userData?.email && userData?.role) {
@@ -236,7 +246,7 @@ const EditProfile = () => {
     let apiObj;
     if (
       loggedInUserData.role === "ADMIN" ||
-      loggedInUserData.id === orgOwnerId
+      isUserOrgOwner
     ) {
       apiObj = new UpdateProfileAPI(updateProfileReqBody, id);
     } else {
@@ -248,16 +258,18 @@ const EditProfile = () => {
 
   const getDisabledOption = (name) => {
     const { id: userId, role } = loggedInUserData;
-
-    if (userId === +id) {
-      if (role === "ADMIN" || userId === orgOwnerId) {
-        return name === "org" || name === "availability";
-      } else {
-        return name === "role" || name === "org" || name === "availability";
-      }
+    
+  if (userId === +id ||  loggedInUserData?.role=="ORG_OWNER") {
+    if ( role === "ORG_OWNER") {
+      return false; 
+    } else if ( role === "PROJECT_MANAGER") {
+      return name === "org" || name === "availability";
     } else {
-      return name !== "role";
+      return name === "role" || name === "org" || name === "availability";
     }
+  } else {
+    return name !== "role";
+  }
   };
 
   const renderTextField = (name) => {
@@ -341,7 +353,7 @@ const EditProfile = () => {
   const profileLabels = useRef([]);
   profileLabels.current = [...profileOptions];
 
-  profileLabels.current.push(
+  profileLabels?.current.push(
     {
       title: "Role",
       name: "role",
@@ -366,10 +378,10 @@ const EditProfile = () => {
   const onSubmitClick = () => {
     const { id: userId, role } = loggedInUserData;
 
-    if (userId === +id) {
+    if (userId === +id || loggedInUserData?.role ==="ORG_OWNER" ) {
       if (
         role === "ADMIN" ||
-        userId === orgOwnerId ||
+        isUserOrgOwner ||
         role === "PROJECT_MANAGER"
       ) {
         if (roleIsEdited) {
@@ -389,6 +401,7 @@ const EditProfile = () => {
     setRoleIsEdited(false);
 
     const body = {
+
       user_id: id,
       role: userDetails?.role?.value,
     };
@@ -402,7 +415,7 @@ const EditProfile = () => {
       <Card className={classes.editProfileParentCard}>
         {profileLabels.current.map((element) => {
           return (
-            <Grid className={classes.editProfileParentGrid} container>
+            <Grid className={classes.editProfileParentGrid} container gap={1}>
               <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                 <Typography variant="body1" sx={{ fontSize: "1rem" }}>
                   {element.title}
@@ -421,7 +434,7 @@ const EditProfile = () => {
 
               {(loggedInUserData.id === +id ||
                 loggedInUserData.role === "ADMIN" ||
-                loggedInUserData.id === orgOwnerId ||
+                isUserOrgOwner||
                 loggedInUserData.role === "PROJECT_MANAGER") && (
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                   <Button
@@ -441,7 +454,7 @@ const EditProfile = () => {
 
         {(loggedInUserData.id === +id ||
           loggedInUserData.role === "ADMIN" ||
-          loggedInUserData.id === orgOwnerId ||
+          isUserOrgOwner ||
           loggedInUserData.role === "PROJECT_MANAGER") && (
           <Grid
             container

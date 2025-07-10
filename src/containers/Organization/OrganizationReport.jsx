@@ -20,22 +20,32 @@ import {
   Grid,
   Tooltip,
   Button,
+  TextField,
+  Badge,
+  CircularProgress,
+  Box
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import MailIcon from "@mui/icons-material/Mail";
-import { ColumnSelector } from "common";
+import { ColumnSelector, FilterList } from "common";
 
 //APIs
 import {
   APITransport,
   FetchOrganizationReportsAPI,
   DownloadOrganizationReportsAPI,
+  updateOrgSelectedFilter,
+  FetchSupportedLanguagesAPI,
 } from "redux/actions";
 
 //Themes
 import { ProjectStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
+import { Download } from "@mui/icons-material";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { DatePicker } from "@mui/x-date-pickers";
+import moment from "moment";
 
 const OrganizationReport = () => {
   const { id } = useParams();
@@ -49,28 +59,109 @@ const OrganizationReport = () => {
   const [options, setOptions] = useState();
   const [tableData, setTableData] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEle, setAnchorEle] = useState(null);
   const [originalTableData, setOriginalTableData] = useState([]);
+  const [showUserReportProjectColumn, setShowUserReportProjectColumn] = useState(true);
 
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [loading, setLoading] = useState(false);
+  const [taskStartDate, setTaskStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [taskEndDate, setTaskEndDate] = useState(moment().format("YYYY-MM-DD"));
   const openSelector = Boolean(anchorEl);
 
   const apiStatus = useSelector((state) => state.apiStatus);
-  const reportData = useSelector((state) => state.getOrganizationReports?.data);
+  const { reports: reportData, total_count } = useSelector(
+    (state) => state.getOrganizationReports?.data
+  );
+  const orgSelectedFilters = useSelector(
+    (state) => state.orgTaskFilters.orgSelectedFilters
+  );
   const SearchProject = useSelector((state) => state.searchList.data);
 
   const handleChangeReportsLevel = (event) => {
+    setTableData([]);
+    setOriginalTableData([])
+    setLoading(true)
     setReportsLevel(event.target.value);
     setlanguageLevelStats("");
-
+    setOffset(0);
+    setShowUserReportProjectColumn(true);
+    if (event.target.value === "Project Language" || event.target.value === "Task") return;
     const temp = reportLevels.filter(
       (item) => item.reportLevel === event.target.value
     );
 
-    const apiObj = new FetchOrganizationReportsAPI(id, temp[0].endPoint);
+    const apiObj = new FetchOrganizationReportsAPI(
+      id,
+      temp[0].endPoint,
+      limit,
+      offset + 1
+    );
     dispatch(APITransport(apiObj));
   };
 
+  const handleTaskReportSubmit = () => {
+    const filter = {
+      task_type: orgSelectedFilters?.taskType,
+      status: orgSelectedFilters?.status,
+      src_language: orgSelectedFilters?.srcLanguage,
+      target_language: orgSelectedFilters?.tgtLanguage,
+    };
+    const temp = reportLevels.filter(
+      (item) => item.reportLevel === reportsLevel
+    );
+    const filterRequest = Object.entries(filter).reduce((acc, [key, value]) => {
+      if (value.length > 0) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    setLoading(true);
+    const apiObj = new FetchOrganizationReportsAPI(
+      id,
+      temp[0].endPoint,
+      limit,
+      offset + 1,
+      "",
+      filterRequest,
+      taskStartDate,
+      taskEndDate
+    );
+    dispatch(APITransport(apiObj));
+  }
+
+  useEffect(() => {
+    if(reportLevels !== undefined && reportsLevel === "Task")
+    {handleTaskReportSubmit();}
+  }, [orgSelectedFilters]);
+
+  useEffect(() => {
+    const transcriptLangObj = new FetchSupportedLanguagesAPI("TRANSCRIPTION");
+    dispatch(APITransport(transcriptLangObj));
+
+    const translationLangObj = new FetchSupportedLanguagesAPI("TRANSLATION");
+    dispatch(APITransport(translationLangObj));
+  }, [])
+
   const handleChangelanguageLevelStats = (event) => {
-    setlanguageLevelStats(event.target.value);
+    setTableData([])
+    setOriginalTableData([])
+        setlanguageLevelStats(event.target.value);
+    setOffset(0);
+    const temp = reportLevels.filter(
+      (item) => item.reportLevel === reportsLevel
+    );
+
+    setLoading(true);
+    const apiObj = new FetchOrganizationReportsAPI(
+      id,
+      temp[0].endPoint,
+      limit,
+      offset + 1,
+      event.target.value
+    );
+    dispatch(APITransport(apiObj));
   };
 
   const handleDownloadReport = async () => {
@@ -79,38 +170,106 @@ const OrganizationReport = () => {
     );
     const apiObj = new DownloadOrganizationReportsAPI(
       id,
-      temp[0].downloadEndPoint
+      temp[0].downloadEndPoint,
+      taskStartDate,
+      taskEndDate,
     );
     dispatch(APITransport(apiObj));
   };
 
+  const handleDownloadReportCsv = () => {
+    var header = '';
+    columns.forEach((item) => {
+      header += item.label + ","
+    })
+    var data = tableData.map((item) => {
+      var row = item;
+      return row.join(",");
+    }).join("\n");
+    const blob = new Blob([header.slice(0,-1)+'\n'+data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reports_"+Date.now()+".csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   useEffect(() => {
-    let rawData = [];
-
-    if (reportsLevel.includes("Language")) {
-      if (languageLevelsStats === "transcript_stats") {
-        rawData = reportData.transcript_stats;
-      } else if (languageLevelsStats === "translation_stats") {
-        rawData = reportData.translation_stats;
-      } else if (languageLevelsStats === "voiceover_stats") {
-        rawData = reportData.voiceover_stats;
-      } else {
-        rawData = [];
-      }
+    if (reportsLevel === "") return;
+    if (showUserReportProjectColumn) {
+      const temp = reportLevels.filter(
+        (item) => item.reportLevel === reportsLevel
+      );
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        temp[0].endPoint,
+        limit,
+        offset + 1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
     } else {
-      rawData = reportData;
+      const endPoint = "get_aggregated_report_users";
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        endPoint,
+        limit,
+        offset + 1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
     }
+  }, [offset, showUserReportProjectColumn]);
 
+  useEffect(() => {
+    setOffset(0);
+    if (reportsLevel === "" || reportsLevel === "Task") return;
+    if (showUserReportProjectColumn) {
+      const temp = reportLevels.filter(
+        (item) => item.reportLevel === reportsLevel
+      );
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        temp[0].endPoint,
+        limit,
+        1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
+    } else {
+      const endPoint = "get_aggregated_report_users";
+      setLoading(true);
+      const apiObj = new FetchOrganizationReportsAPI(
+        id,
+        endPoint,
+        limit,
+        1,
+        languageLevelsStats
+      );
+      dispatch(APITransport(apiObj));
+    }
+  }, [limit]);
+
+  useEffect(() => {
+    setLoading(false);
+    let rawData = [];
+    rawData = reportData;
     createTableData(rawData);
     createReportColumns(rawData);
 
     // eslint-disable-next-line
-  }, [reportData, languageLevelsStats, reportsLevel]);
+  }, [reportData, languageLevelsStats]);
 
   const createReportColumns = (rawData) => {
     let tempColumns = [];
 
-    if (rawData.length > 0 && rawData[0]) {
+    if (rawData?.length > 0 && rawData[0] && loading==false) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
@@ -129,6 +288,21 @@ const OrganizationReport = () => {
               if (isArray(value)) {
                 value = value.join(", ");
               }
+              
+              if (el[1].label.toLowerCase().includes('email')) {
+                return (
+                    <Box
+                      sx={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                                  }}
+                    >
+                      {value}
+                    </Box>
+                );
+              }
+    
               return value === null ? (
                 "-"
               ) : el[0] === "video_name" ? (
@@ -143,12 +317,19 @@ const OrganizationReport = () => {
         });
       });
     }
-
+    if (reportsLevel === "User" && !showUserReportProjectColumn){
+      tempColumns.map((column) => {
+        if (column["name"] === "project"){
+          column["options"]["display"] = "false";
+        }
+        return column;
+      });
+    }
     setColumns(tempColumns);
   };
 
   const createTableData = (rawData) => {
-    if (rawData?.length > 0) {
+    if (rawData?.length > 0 && loading==false) {
       let result = [];
 
       let tableData = rawData.map((el) => {
@@ -214,9 +395,16 @@ const OrganizationReport = () => {
     });
 
     setColumns(selectedColumns);
+    if (reportsLevel === "User" && e.target.name === "project") {
+      setShowUserReportProjectColumn(e.target.checked);
+    }
   };
 
   const renderToolBar = () => {
+    const arrayLengths = Object.values(orgSelectedFilters).map(
+      (arr) => arr.length
+    );
+    const sumOfLengths = arrayLengths.reduce((acc, length) => acc + length, 0);
     return (
       <>
         <Button
@@ -237,24 +425,69 @@ const OrganizationReport = () => {
             </Tooltip>
           </Button>
         )}
+        {reportsLevel && tableData?.length > 0 && (
+          <Button
+            style={{ minWidth: "25px" }}
+            onClick={() => handleDownloadReportCsv()}
+          >
+            <Tooltip title={"Download CSV"}>
+              <Download sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+            </Tooltip>
+          </Button>
+        )}
+        {reportsLevel === "Task" &&
+         <Button
+           style={{ minWidth: "25px" }}
+           onClick={(event) => setAnchorEle(event.currentTarget)}
+         >
+           <Tooltip title={"Filter Table"}>
+             <Badge color="primary" badgeContent={sumOfLengths}>
+               <FilterListIcon sx={{ color: "#515A5A" }} />
+             </Badge>
+           </Tooltip>
+         </Button>}
       </>
     );
   };
 
   useEffect(() => {
-    let option = getOptions(apiStatus.loading);
+let option = getOptions(apiStatus.loading || loading); 
 
     option = {
       ...option,
       download: false,
       viewColumns: false,
       customToolbar: renderToolBar,
+      serverSide: true,
+      page: offset,
+      rowsPerPage: limit,
+      count: total_count,
+      customToolbar: renderToolBar,
+      rowsPerPageOptions: [10, 25, 50, 100, "All"],
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case "changePage":
+            setOffset(tableState.page);
+            break;
+          case "changeRowsPerPage":
+            if (tableState.rowsPerPage == "All"){
+              setLimit(total_count)
+            }
+            else{
+              setLimit(tableState.rowsPerPage);
+            }
+            break;
+          default:
+        }
+      },
     };
 
     setOptions(option);
 
     // eslint-disable-next-line
-  }, [apiStatus]);
+  }, [apiStatus, tableData]);
+  console.log(tableData);
+  
 
   return (
     <>
@@ -282,39 +515,83 @@ const OrganizationReport = () => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-          {reportsLevel.includes("Language") && (
-            <FormControl fullWidth>
-              <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
-                Select Task Type
-              </InputLabel>
+        {reportsLevel.includes("Language") && (
+           <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <FormControl fullWidth>
+                 <InputLabel id="SelectTaskTypeLabel" sx={{ fontSize: "18px" }}>
+                   Select Task Type
+                 </InputLabel>
 
-              <Select
-                labelId="SelectTaskTypeLabel"
-                id="demo-simple-select"
-                label="Select Task Type"
-                value={languageLevelsStats}
-                onChange={handleChangelanguageLevelStats}
-                sx={{ textAlign: "start" }}
-              >
-                {languagelevelStats.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
-                    {item.lable}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </Grid>
+                 <Select
+                   labelId="SelectTaskTypeLabel"
+                   id="demo-simple-select"
+                   label="Select Task Type"
+                   value={languageLevelsStats}
+                   onChange={handleChangelanguageLevelStats}
+                   sx={{ textAlign: "start" }}
+                 >
+                   {languagelevelStats.map((item, index) => (
+                     <MenuItem key={index} value={item.value}>
+                       {item.lable}
+                     </MenuItem>
+                   ))}
+                 </Select>
+               </FormControl> 
+           </Grid>
+         )}
+         {reportsLevel.includes("Task") && (
+           <>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="Start Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskStartDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskStartDate(formatedDate)
+                 }
+                 }
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>  
+               <DatePicker
+                 label="End Date"
+                 inputFormat="DD/MM/YYYY"
+                 value={taskEndDate}
+                 onChange={(newValue) => {
+                   let formatedDate=newValue.toDate().toLocaleDateString("en-GB").split("/").reverse().join("-")
+                   console.log(formatedDate)
+                   setTaskEndDate(formatedDate)
+                 }}
+                 renderInput={(params) => <TextField {...params} />}
+                 className={classes.datePicker}
+               />
+             </Grid>
+             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+               <Button
+                 variant="contained"
+                 onClick={()=>{handleTaskReportSubmit()}}
+                 autoFocus
+                 sx={{ borderRadius: "8px" }}
+               >
+               {/* <Button onClick={()=>{handleTaskReportSubmit()}}> */}
+                 submit
+               </Button>
+             </Grid>
+           </>
+         )}
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <MUIDataTable
-          title=""
-          data={tableData}
-          columns={columns}
-          options={options}
-        />
+          <MUIDataTable
+            title=""
+            data={tableData}
+            columns={columns}
+            options={options}
+          />
       </ThemeProvider>
 
       {openSelector && (
@@ -323,7 +600,19 @@ const OrganizationReport = () => {
           open={openSelector}
           handleClose={() => setAnchorEl(null)}
           columns={columns}
+          showUserReportProjectColumn={showUserReportProjectColumn}
           handleColumnSelection={handleColumnSelection}
+        />
+      )}
+
+      {Boolean(anchorEle) && (
+        <FilterList
+          id={"filterList"}
+          open={Boolean(anchorEle)}
+          anchorEl={anchorEle}
+          handleClose={() => setAnchorEle(null)}
+          updateFilters={updateOrgSelectedFilter}
+          currentFilters={orgSelectedFilters}
         />
       )}
     </>

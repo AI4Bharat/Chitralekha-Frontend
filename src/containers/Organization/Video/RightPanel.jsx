@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef, memo } from "react";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import { configs, endpoints } from "config";
 import {
   addSubtitleBox,
   getSubtitleRangeTranscript,
@@ -30,11 +31,14 @@ import { VideoLandingStyle } from "styles";
 import {
   Box,
   CardContent,
+  CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
+  Tooltip,
   useMediaQuery,
 } from "@mui/material";
 import {
@@ -47,6 +51,9 @@ import {
 import ButtonComponent from "./components/ButtonComponent";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
+import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
+import { uploadToImgBB } from "./components/uploadToImgBB";
+import VideoScreenshotDialog from "./components/VideoScreenshotDialog";
 
 //APIs
 import C from "redux/constants";
@@ -58,16 +65,18 @@ import {
   setSnackBar,
   setSubtitles,
 } from "redux/actions";
+import { failTranscriptionInfoColumns } from "config";
+import { onExpandTimeline } from "utils/subtitleUtils";
 
-import { failInfoColumns } from "config";
-
-const RightPanel = ({ currentIndex, setCurrentIndex }) => {
+const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
   const classes = VideoLandingStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const xl = useMediaQuery("(min-width:1800px)");
   const textboxes = useRef([]);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
 
   const [selection, setselection] = useState(false);
   const taskData = useSelector((state) => state.getTaskDetails.data);
@@ -102,7 +111,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [currentOffset, setCurrentOffset] = useState(1);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState([]);
+  const [showSpeakerIdDropdown, setShowSpeakerIdDropdown] = useState(false);
   const [speakerIdList, setSpeakerIdList] = useState([]);
   const [currentSelectedIndex, setCurrentSelectedIndex] = useState(0);
   const [tagSuggestionsAnchorEl, setTagSuggestionsAnchorEl] = useState(null);
@@ -118,6 +127,15 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const [tableDialogMessage, setTableDialogMessage] = useState("");
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
+  const [loader, setLoader] = useState(false);
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
 
   useEffect(() => {
     const { progress, success, apiType, data } = apiStatus;
@@ -143,9 +161,13 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
           case "GET_TASK_FAIL_INFO":
             setOpenInfoDialog(true);
-            setTableDialogColumn(failInfoColumns.filter((col)=>col.name!='target_text'));
+            setTableDialogColumn(failTranscriptionInfoColumns);
             setTableDialogMessage(data.message);
             setTableDialogResponse(data.data);
+            break;
+
+          case "GET_TRANSCRIPT_PAYLOAD":
+            setLoader(false);
             break;
 
           default:
@@ -158,7 +180,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
             if (complete) {
               setOpenInfoDialog(true);
-              setTableDialogColumn(failInfoColumns.filter((col)=>col.name!='target_text'));
+              setTableDialogColumn(failTranscriptionInfoColumns);
               setTableDialogMessage(data.message);
               setTableDialogResponse(data.data);
             }
@@ -179,7 +201,16 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
         return speaker;
       });
       setSpeakerIdList(speakerList);
-      setShowSpeakerIdDropdown(videoDetails?.video?.multiple_speaker);
+      setShowSpeakerIdDropdown(false);
+      if(segment!==undefined){
+        setTimeout(() => {    
+          const subtitleScrollEle = document.getElementById("subTitleContainer");
+          subtitleScrollEle
+            .querySelector(`#sub_${segment}`)
+            ?.scrollIntoView(true, { block: "start" });      
+          subtitleScrollEle.querySelector(`#sub_${segment} textarea`).click();
+        }, 2000);
+      }
     }
   }, [videoDetails]);
 
@@ -189,12 +220,19 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
     }
   }, [currentPage]);
 
+  // useEffect(() => {
+  //   const subtitleScrollEle = document.getElementById("subTitleContainer");
+  //   subtitleScrollEle
+  //     .querySelector(`#sub_${currentIndex}`)
+  //     ?.scrollIntoView(true, { block: "start" });
+  // }, [currentIndex]);
+
   useEffect(() => {
     const subtitleScrollEle = document.getElementById("subTitleContainer");
     subtitleScrollEle
-      .querySelector(`#sub_${currentIndex}`)
+      .querySelector(`#sub_0`)
       ?.scrollIntoView(true, { block: "start" });
-  }, [currentIndex]);
+  }, [currentOffset]);
 
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
@@ -227,16 +265,16 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   }, [limit, currentOffset]);
 
   const onMouseUp = (e, blockIdx) => {
-    setTimeout(() => {
-      setCurrentIndex(blockIdx);
-    }, 100);
+  setTimeout(() => {
+    setCurrentIndex(blockIdx);
+  }, 100);
 
-    if (e && e.target) {
-      const { selectionStart, value } = e.target;
-      if (selectionStart !== undefined && value !== undefined) {
-        setShowPopOver(true);
-        setCurrentIndexToSplitTextBlock(blockIdx);
-        setSelectionStart(selectionStart);
+  if (e && e.target) {
+    const { selectionStart, value } = e.target;
+    if (selectionStart !== undefined && value !== undefined) {
+      setShowPopOver(true);
+      setCurrentIndexToSplitTextBlock(blockIdx);
+      setSelectionStart(selectionStart);
       }
     }
 
@@ -365,6 +403,12 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
     // eslint-disable-next-line
   }, [currentIndexToSplitTextBlock, selectionStart, limit, currentOffset]);
 
+  const expandTimestamp = useCallback(() => {
+    const sub = onExpandTimeline(currentIndex);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+
+  }, [currentIndex]);
+
   const changeTranscriptHandler = (event, index) => {
     const {
       target: { value },
@@ -408,12 +452,14 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
   const saveTranscriptHandler = async (
     isFinal,
     isAutosave,
-    payload = subtitles
+    payload = subtitles,
+    bookmark = false,
   ) => {
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
+      ...(bookmark && {bookmark: currentIndex}),
       payload: {
         payload: payload,
       },
@@ -432,12 +478,12 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
-      const sub = timeChange(value, index, type, time);
+      const sub = timeChange(value, index, type, time, player);
       dispatch(setSubtitles(sub, C.SUBTITLES));
       // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [limit, currentOffset, player]
   );
 
   const onDelete = useCallback(
@@ -519,7 +565,24 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
     return 0;
   };
 
+
+  const handleAutosave = () => {
+    const reqBody = {
+      task_id: taskId,
+      offset: currentPage,
+      limit: limit,
+      payload: {
+        payload: subtitles,
+      },
+    };
+
+    const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
+    dispatch(APITransport(obj));
+  };
+
   const onNavigationClick = (value) => {
+    handleAutosave();
+    setLoader(true);
     getPayload(value, limit);
   };
 
@@ -583,9 +646,73 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
       },
     },
   ];
+  
+  function timestampToSeconds(timestamp) {
+    const [hours, minutes, rest] = timestamp.split(':');
+    const [seconds, milliseconds] = rest.split('.');
+
+    return (
+      parseInt(hours) * 3600 +
+      parseInt(minutes) * 60 +
+      parseInt(seconds) +
+      parseInt(milliseconds) / 1000
+    );
+  }
+
+  const [enableScreenShots, setEnableScreenShots] = useState(false);
+  const [videoLinkExpired, setVideoLinkExpired] = useState(true);
+  const [screenShotDialogOpen, setScreenShotDialogOpen] = useState(false);
+  const [currentStartTime, setCurrentStartTime] = useState(0);
+  const [captureIndex, setCaptureIndex] = useState(-1);
+
+  const handleSSOpenDialog = (time, index) => {
+    setCurrentStartTime(timestampToSeconds(time));
+    setScreenShotDialogOpen(true);
+    setCaptureIndex(index);
+  };
+
+  const handleCloseDialog = () => {
+    setCurrentStartTime(0);
+    setScreenShotDialogOpen(false);
+    setCaptureIndex(-1);
+  };
+
+  const handleCapture = async (imageDataUrl) => {
+    let index = captureIndex;
+    let url = null;
+    if(imageDataUrl !== null){
+      try {
+        url = await uploadToImgBB(imageDataUrl);
+        console.log('Successfully uploaded to ImgBB:', url);
+      } catch (error) {
+        console.log(error.message || 'An unknown error occurred during upload.');
+      }
+    }
+    const sub = onSubtitleChange(url, index, 5);
+    dispatch(setSubtitles(sub, C.SUBTITLES));
+  };
+
+  async function isVideoUrlValid(url) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('Content-Type');
+      return response.ok && contentType && contentType.startsWith('video/');
+    } catch (error) {
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if(taskData?.video_url?.includes("youtube.com")){
+      setVideoLinkExpired(true);
+    }else{
+      setVideoLinkExpired(!isVideoUrlValid(taskData?.video_url));
+    }
+  }, [taskData]);
 
   return (
     <>
+      {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
         className={classes.rightPanelParentBox}
@@ -596,6 +723,7 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             setTransliteration={setTransliteration}
             enableTransliteration={enableTransliteration}
             subsuper={subsuper}
+            currentSubs={currentSubs}
             setsubsuper={setsubsuper}
             index={index}
             currentIndexToSplitTextBlock={currentIndexToSplitTextBlock}
@@ -615,17 +743,22 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             handleSubscript={handleSubscript}
             handleSuperscript={handleSuperscript}
             showPopOver={showPopOver}
-            showSplit={true}
             handleInfoButtonClick={handleInfoButtonClick}
             currentIndex={currentIndex}
             onMergeClick={onMergeClick}
             onDelete={onDelete}
             addNewSubtitleBox={addNewSubtitleBox}
             subtitles={subtitles}
+            expandTimestamp={expandTimestamp}
+            bookmarkSegment={() => {saveTranscriptHandler(false, false, subtitles, true)}}
+            disabled={disable}
+            enableScreenShots={enableScreenShots}
+            setEnableScreenShots={setEnableScreenShots}
+            videoLinkExpired={videoLinkExpired}
           />
         </Grid>
 
-        <Box id={"subTitleContainer"} className={classes.subTitleContainer}>
+        <Box id={"subTitleContainer"} className={classes.subTitleContainer} style={{height: showTimeline ? "calc(100vh - 270px)" : "calc(84vh - 60px)"}}>
           {subtitles?.map((item, index) => {
             return (
               <Box
@@ -633,14 +766,26 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                 id={`sub_${index}`}
                 style={{
                   padding: "0",
-                  borderBottom: "1px solid lightgray",
+                  margin: "2px",
+                  // borderBottom: "1px solid lightgray",
                   backgroundColor: "white",
                   display: "flex"
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%" }}>
-                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.start_time}</div>
-                  <div style={{ border: "solid", backgroundColor: "#F5F5F5", borderColor: "#EEEEEE", marginBottom: "2px" }}>{item.end_time}</div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems:"center", justifyContent: "center", paddingLeft:"1%"}}>
+                  <TimeBoxes
+                     handleTimeChange={handleTimeChange}
+                     time={item.start_time}
+                     index={index}
+                     type={"startTime"}
+                   />
+                  <br/>
+                  <TimeBoxes
+                     handleTimeChange={handleTimeChange}
+                     time={item.end_time}
+                     index={index}
+                     type={"endTime"}
+                   />
                 </div>
 
                 <CardContent
@@ -648,15 +793,24 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                   aria-describedby={"suggestionList"}
                   onClick={() => {
                     if (player) {
-                      player.pause();
-                      if (player.duration >= item.startTime) {
-                        player.currentTime = item.startTime + 0.001;
+                      if( typeof player.pauseVideo === 'function' ){
+                        player.pauseVideo();
+                        if (player.getDuration() >= item.startTime && (player.getCurrentTime() < item.startTime || player.getCurrentTime() > item.endTime)) {
+                          player.seekTo(item.startTime + 0.001);
+                        }
+                      }else{
+                        player.pause();
+                        if (player.duration >= item.startTime && (player.currentTime < item.startTime || player.currentTime > item.endTime)) {
+                          player.currentTime = item.startTime + 0.001;
+                        }
                       }
                     }
                   }}
                 >
                   {taskData?.src_language !== "en" && enableTransliteration ? (
                     <IndicTransliterate
+                      customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.src_language}
                       value={item.text}
                       onChange={(event) => {
@@ -689,6 +843,9 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                             style={{ fontSize: fontSize, height: "120px" }}
                             {...props}
                           />
+                          <span id="charNum" className={classes.wordCount}>
+                            {targetLength(index)} 
+                          </span>
                         </div>
                       )}
                     />
@@ -706,20 +863,36 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
                         }`}
                         style={{
                           fontSize: fontSize,
-                          height: "120px",
                         }}
                         rows={2}
                         ref={(el) => (textboxes.current[index] = el)}
                         onBlur={() => {
                           setTimeout(() => {
-                            setShowPopOver(false);
+                            // setShowPopOver(false);
                           }, 200);
                         }}
                       />
+                      <span id="charNum" className={classes.wordCount}>
+                         {targetLength(index)} 
+                      </span>
                     </div>
                   )}
-                </CardContent>
 
+                </CardContent>
+                {enableScreenShots &&
+                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "12%" }}>
+                    {(item.image_url!==null && item.image_url!=="" && item.image_url!==undefined) ? 
+                    <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time)}} style={{ cursor: 'pointer', maxHeight: "80px" }}/>
+                      :
+                    <Tooltip title="Capture Screenshot" placement="bottom">
+                      <IconButton
+                        className={classes.optionIconBtn}
+                        onClick={()=>{handleSSOpenDialog(item.start_time, index)}}
+                      >
+                        <AddAPhotoOutlinedIcon className={classes.rightPanelSvg} />
+                      </IconButton>
+                    </Tooltip>}
+                  </div>}
                 {showSpeakerIdDropdown && (
                   <FormControl
                     sx={{ width: "50%", mr: "auto", float: "left" }}
@@ -759,11 +932,11 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
 
         <Box
           className={classes.paginationBox}
-          style={{
-            ...(!xl && {
-              bottom: "-11%",
-            }),
-          }}
+          // style={{
+          //   ...(!xl && {
+          //     bottom: "-11%",
+          //   }),
+          // }}
         >
           <Pagination
             range={getSubtitleRangeTranscript()}
@@ -786,6 +959,16 @@ const RightPanel = ({ currentIndex, setCurrentIndex }) => {
             submit={() => saveTranscriptHandler(true)}
             message={"Do you want to submit the transcript?"}
             loading={apiStatus.loading}
+          />
+        )}
+
+        {screenShotDialogOpen && (
+          <VideoScreenshotDialog
+            open={screenShotDialogOpen}
+            onClose={handleCloseDialog}
+            videoUrl={taskData?.video_url}
+            onCapture={handleCapture}
+            initialTimestamp={Number(currentStartTime) || 0}
           />
         )}
 

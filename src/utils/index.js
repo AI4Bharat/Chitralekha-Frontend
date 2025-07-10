@@ -61,9 +61,9 @@ import {
   roles,
   snakeToTitleCase,
   steps,
+  validatePhone,
 } from "./utils";
-import {partnerData,useCaseData} from "./introUtils";
-import teamDetails from "./userDetails";
+import { partnerData, useCaseData } from "./introUtils";
 
 export {
   assignSpeakerId,
@@ -124,7 +124,7 @@ export {
   exportVoiceover,
   exportFile,
   exportZip,
-  teamDetails,
   partnerData,
   useCaseData,
+  validatePhone,
 };

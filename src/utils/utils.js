@@ -199,6 +199,25 @@ export const roles = [
     canAddMembers: true,
     canDeleteProject: true,
   },
+  {
+    label: "Admin",
+    value: "ADMIN",
+    permittedToDeleteVideoAudio: true,
+    permittedToCreateTask: true,
+    permittedToAddMembersInProject: true,
+    permittedToDeleteProject: true,
+    permittedToCreateVideoAudio: true,
+    taskAction: true,
+    orgSettingVisible: true,
+    projectSettingVisible: true,
+    showSelectCheckbox: true,
+    canEditTask: true,
+    canDeleteTask: true,
+    ProjectReport: true,
+    organizationReport: true,
+    canAddMembers: true,
+    canDeleteProject: true,
+  }
 ];
 
 export const availability = [
@@ -250,9 +269,9 @@ export const getMilliseconds = (timeInString) => {
   return 0;
 };
 
-export const getUpdatedTime = (value, type, time, index, startEnd) => {
+export const getUpdatedTime = (value, type, time, index, startEnd, player) => {
   const subtitles = store.getState().commonReducer.subtitles;
-  const videoDuration = store.getState().getVideoDetails.data.video.duration;
+  const videoDuration = typeof player.getDuration === 'function' ? DT.d2t(player.getDuration()) : store.getState().getVideoDetails.data.video.duration;
 
   let newValue = "";
 
@@ -569,8 +588,13 @@ export const filterTaskList = (taskList, selectedFilters) => {
   return filterResult;
 };
 
-export const validateEmail=(email)=>{
+export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
   return emailRegex.test(email);
+};
+
+export const validatePhone = (phone) => {
+  const regex = /^[0-9\b]+$/;
+  return regex.test(phone);
 };
