@@ -314,7 +314,6 @@ const SettingsButtonComponent = ({
         <IconButton
           className={classes.rightPanelBtnGrp}
           onClick={handleInfoButtonClick}
-          disabled={disabled}
         >
           <InfoOutlinedIcon className={classes.rightPanelSvg} />
         </IconButton>
@@ -563,7 +562,7 @@ const SettingsButtonComponent = ({
               <IconButton
                 className={classes.rightPanelBtnGrp}
                 onClick={() => { setEnableScreenShots(!enableScreenShots) }}
-                disabled={apiInProgress || videoLinkExpired}
+                disabled={disabled || apiInProgress || videoLinkExpired}
                 sx={{
                   "&.Mui-disabled": { backgroundColor: "lightgray" },
                 }}
@@ -575,7 +574,7 @@ const SettingsButtonComponent = ({
               <IconButton
                 className={classes.rightPanelBtnGrp}
                 onClick={() => { setEnableScreenShots(!enableScreenShots) }}
-                disabled={apiInProgress || videoLinkExpired}
+                disabled={disabled || apiInProgress || videoLinkExpired}
                 sx={{
                   "&.Mui-disabled": { backgroundColor: "lightgray" },
                 }}

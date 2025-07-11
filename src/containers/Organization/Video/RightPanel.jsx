@@ -682,7 +682,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
     let url = null;
     if(imageDataUrl !== null){
       try {
-        url = await uploadToImgBB(imageDataUrl);
+        url = await uploadToImgBB(imageDataUrl, taskId);
         console.log('Successfully uploaded to ImgBB:', url);
       } catch (error) {
         console.log(error.message || 'An unknown error occurred during upload.');
@@ -807,17 +807,23 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                     }
                   }}
                 >
-                  {taskData?.src_language !== "en" && enableTransliteration ? (
+                  {enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
                       apiKey={`JWT ${localStorage.getItem("token")}`}
+                      enableASR={true}
+                      asrApiUrl={`${configs.BASE_URL_AUTO}/asr-api/generic/transcribe`}
                       lang={taskData?.src_language}
                       value={item.text}
-                      onChange={(event) => {
-                        changeTranscriptHandler(event, index);
-                      }}
-                      enabled={enableTransliterationSuggestion}
-                      onChangeText={() => {}}
+                      onChange={() => {}}
+                      enabled={enableTransliterationSuggestion ? taskData?.src_language === "en" ? false : true : false}
+                      onChangeText={(text) => {changeTranscriptHandler(
+                        {
+                          target: { value: text },
+                          currentTarget: textboxes.current[index],
+                        },
+                        index
+                      );}}
                       onMouseUp={(e) => onMouseUp(e, index)}
                       containerStyles={{}}
                       onBlur={() => {
