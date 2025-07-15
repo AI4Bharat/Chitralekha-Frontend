@@ -150,6 +150,49 @@ export const getColumns = (config, displayColsData) => {
   return columns;
 };
 
+export const getTaskColumns = (config, displayColsData) => {
+  const classes = TableStyles();
+  const columns = [];
+
+  const options = {
+    filter: false,
+    sort: false,
+    align: "center",
+    setCellHeaderProps: () => ({
+      className: classes.TaskcellHeaderProps,
+    }),
+    customBodyRender: (value) => {
+      return <Box>{value}</Box>;
+    },
+  };
+
+  config.forEach((element) => {
+    if (element.options) {
+      element.options = {
+        ...element.options,
+        filter: false,
+        sort: false,
+        align: "center",
+        setCellHeaderProps: () => ({
+          className: classes.cellHeaderProps,
+        }),
+      };
+      if (displayColsData) {
+        element.options.display = displayColsData[element["name"]];
+      }
+    }
+
+    columns.push({
+      name: element.name,
+      label: element.label,
+      options: element.options ? element.options : options,
+    });
+  });
+
+  return columns;
+};
+
+
 export const userReportDataParser = (dataInTable) => {
   const displayData = [];
 

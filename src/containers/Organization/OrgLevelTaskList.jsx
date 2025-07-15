@@ -8,6 +8,7 @@ import {
   exportVoiceover,
   exportZip,
   getColumns,
+  getTaskColumns,
   getOptions,
   roles,
 } from "utils";
@@ -994,7 +995,7 @@ const OrgLevelTaskList = () => {
     };
 
     const columns = [
-      ...getColumns(orgTaskListColumns, orgTaskColDisplayState),
+      ...getTaskColumns(orgTaskListColumns, orgTaskColDisplayState),
       actionColumn,
     ];
     columns.splice(0, 1, id);

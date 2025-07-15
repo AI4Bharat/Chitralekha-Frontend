@@ -39,6 +39,7 @@ import {
 } from "./subtitleUtils";
 import {
   getColumns,
+  getTaskColumns,
   getOptions,
   transcriptLanguageReportDataParser,
   userReportDataParser,
@@ -100,6 +101,7 @@ export {
   themeMenu,
   timeChange,
   getColumns,
+  getTaskColumns,
   getOptions,
   transcriptLanguageReportDataParser,
   userReportDataParser,
