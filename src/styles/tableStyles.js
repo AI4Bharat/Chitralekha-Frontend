@@ -10,6 +10,15 @@ const TableStyles = makeStyles({
     wordBreak: "break-word",
 
   },
+  TaskcellHeaderProps: {
+    height: "32px",
+    fontSize: "16px",
+    padding: "16px",
+    // whiteSpace: "normal",
+    // overflowWrap: "break-word",
+    // wordBreak: "break-word",
+
+  },
 
   cellActionHeaderProps: {
     height: "32px",
