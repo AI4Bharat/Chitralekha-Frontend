@@ -107,7 +107,8 @@ export const getOptions = (loading) => {
 
   return options;
 };
-export const getTaskColumns = (config, displayColsData) => {
+
+export const getColumns = (config, displayColsData) => {
   const classes = TableStyles();
   const columns = [];
 
@@ -149,8 +150,7 @@ export const getTaskColumns = (config, displayColsData) => {
   return columns;
 };
 
-
-export const getColumns = (config, displayColsData) => {
+export const getTaskColumns = (config, displayColsData) => {
   const classes = TableStyles();
   const columns = [];
 
@@ -191,6 +191,7 @@ export const getColumns = (config, displayColsData) => {
 
   return columns;
 };
+
 
 export const userReportDataParser = (dataInTable) => {
   const displayData = [];

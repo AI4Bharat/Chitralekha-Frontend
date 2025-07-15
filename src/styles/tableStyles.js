@@ -10,7 +10,7 @@ const TableStyles = makeStyles({
     wordBreak: "break-word",
 
   },
-  TaskcellHeaderProps: {
+    TaskcellHeaderProps: {
     height: "32px",
     fontSize: "16px",
     padding: "16px",

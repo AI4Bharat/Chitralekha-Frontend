@@ -7,6 +7,7 @@ import {
   exportFile,
   exportVoiceover,
   exportZip,
+  getColumns,
   getTaskColumns,
   getOptions,
   roles,
