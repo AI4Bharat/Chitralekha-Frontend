@@ -762,7 +762,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
           {subtitles?.map((item, index) => {
             return (
               <Box
-                key={index}
+                key={`${currentPage}-${index}`}
                 id={`sub_${index}`}
                 style={{
                   padding: "0",
