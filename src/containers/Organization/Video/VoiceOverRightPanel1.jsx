@@ -1036,7 +1036,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
           {sourceText?.map((item, index) => {
             return (
               <div
-                key={`${currentPage}-${index}`}
+                key={`${taskId}-${currentPage}-${index}`}
                 className={isDisabled(index) ? classes.disabledCard : ""}
                 style={{
                   padding: "5px 0",
