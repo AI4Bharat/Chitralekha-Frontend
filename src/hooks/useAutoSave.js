@@ -15,6 +15,7 @@ export const useAutoSave = () => {
   const apiStatus = useSelector((state) => state.apiStatus);
   const [apiInProgress, setApiInProgress] = useState(false);
   const apiInProgressRef = useRef(apiInProgress);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
   
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -49,17 +50,26 @@ export const useAutoSave = () => {
         },
       };
 
-      if (!apiInProgressRef.current) {
+      if ( loggedin_user_id && taskDetails?.user?.id && loggedin_user_id === taskDetails?.user?.id) {
+        console.log("Auto Save API Called", loggedin_user_id, taskDetails, taskDetails?.user?.id);
         const obj = new SaveTranscriptAPI(reqBody, taskDetails?.task_type);
         dispatch(APITransport(obj));
       }
     };
 
-    saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    if(taskDetails?.task_type?.includes("TRANSLATION_VOICEOVER")){
+      saveIntervalRef.current = setInterval(handleAutosave, 5 * 60 * 1000);
+    }else{
+      saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+    }
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        if(taskDetails?.task_type?.includes("TRANSLATION_VOICEOVER")){
+          saveIntervalRef.current = setInterval(handleAutosave, 5 * 60 * 1000);
+        }else{
+          saveIntervalRef.current = setInterval(handleAutosave, 60 * 1000);
+        }
       } else {
         handleAutosave();
         clearInterval(saveIntervalRef.current);
@@ -74,5 +84,5 @@ export const useAutoSave = () => {
     };
 
     // eslint-disable-next-line
-  }, [subs]);
+  }, [taskDetails, subs]);
 };

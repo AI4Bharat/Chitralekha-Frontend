@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import { useDispatch, useSelector } from "react-redux";
 import { configs, endpoints } from "config";
 
@@ -40,7 +40,7 @@ const FindAndReplace = (props) => {
   const dispatch = useDispatch();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const { subtitleDataKey, taskType ,currentSubs, videoId,targetLanguage } = { ...props };
+  const { subtitleDataKey, taskType ,currentSubs, videoId,targetLanguage, disabled } = { ...props };
 
   const transliterationLang = useSelector((state) => state.getTaskDetails.data);
   const sourceData = useSelector((state) => state.commonReducer.subtitles);
@@ -300,6 +300,7 @@ const FindAndReplace = (props) => {
         <IconButton
           className={classes.findReplaceButton}
           onClick={handleOpenModel}
+          disabled={disabled}
         >
           <FindReplaceIcon className={classes.rightPanelSvg}/>
         </IconButton>
@@ -354,6 +355,7 @@ const FindAndReplace = (props) => {
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                apiKey={`JWT ${localStorage.getItem("token")}`}
                 lang={transliterationLanguage}
                 value={findValue}
                 onChangeText={(text) => {
@@ -422,6 +424,7 @@ const FindAndReplace = (props) => {
 
               <IndicTransliterate
                 customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                apiKey={`JWT ${localStorage.getItem("token")}`}
                 lang={transliterationLanguage}
                 value={replaceValue}
                 onChangeText={(text) => setReplaceValue(text)}

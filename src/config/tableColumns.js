@@ -16,10 +16,27 @@ export const projectColumns = [
     label: "Manager",
     options: {
       customBodyRender: (value) => {
-        return <Box>{value[0]?.email}</Box>;
+        return (
+          <Box 
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            {value[0]?.email}
+          </Box>
+        );
       },
+      setCellHeaderProps: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }
+      }),
     },
   },
+  
   {
     name: "created_at",
     label: "Created At",
@@ -44,9 +61,10 @@ export const projectColumns = [
   },
 ];
 
+
 export const usersColumns = [
   {
-    name: "name",
+    name: "first_name",
     label: "Name",
     options: {
       customBodyRender: (_value, tableMeta) => {
@@ -54,16 +72,38 @@ export const usersColumns = [
         const selectedRow = data[rowIndex];
 
         return (
-          <Box>
+          <Box >
             {selectedRow.first_name} {selectedRow.last_name}
           </Box>
         );
       },
+      
     },
   },
   {
     name: "email",
     label: "Email",
+    options: {
+      customBodyRender: (value) => {
+        return (
+          <Box 
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            {value}
+          </Box>
+        );
+      },
+      setCellHeaderProps: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }
+      }),
+    },
   },
   {
     name: "languages",
@@ -190,6 +230,15 @@ export const videoTaskListColumns = [
   {
     name: "created_at",
     label: "Created At",
+    options: {
+      customBodyRender: (value) => {
+        return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
+      },
+    },
+  },
+  {
+    name: "eta",
+    label: "ETA",
     options: {
       customBodyRender: (value) => {
         return <Box>{moment(value).format("DD/MM/YYYY HH:mm:ss")}</Box>;
@@ -339,6 +388,20 @@ export const taskListColumns = [
     },
   },
   {
+    name: "eta",  
+    label: "ETA",  
+    options: {
+      customBodyRender: (value) => {
+        if (value) {
+          const formattedETA = new Date(value).toLocaleString();
+          return <Box>{formattedETA}</Box>;
+        }
+        return <Box>N/A</Box>;
+      },
+    },
+  },
+
+  {
     name: "time_spent",
     label: "Time Spent",
     options: {
@@ -441,6 +504,10 @@ export const taskQueueStatusColumns = [
   {
     name: "video_duration",
     label: "Video Duration",
+  },
+  {
+    name: "status",
+    label: "Status",
   },
 ];
 
@@ -602,6 +669,18 @@ export const glossaryColumns = [
   {
     name: "target_text",
     label: "Target Text",
+  },
+  {
+    name: "meaning",
+    label: "Meaning",
+  },
+  {
+    name: "task_ids",
+    label: "Task IDs",
+  },
+  {
+    name: "context",
+    label: "Context"
   },
 ];
 

@@ -5,6 +5,7 @@ import store from "../redux/store/store";
 import { noiseTags } from "config";
 import { specialOrgIds } from "config";
 import getLocalStorageData from "./getLocalStorageData";
+import { FetchVideoDetailsAPI } from "redux/actions";
 
 export const newSub = (item) => {
   return new Sub(item);
@@ -102,6 +103,7 @@ export const addSubtitleBox = (index, paraphrase=false) => {
         text: "",
         speaker_id: "",
         target_text: "",
+        image_url: null,
       })
     );
   
@@ -120,7 +122,8 @@ export const addSubtitleBox = (index, paraphrase=false) => {
           : DT.d2t(duration + 0.5),
       text: "",
       speaker_id: "",
-      ...(paraphrase ? {paraphrased_text: ""} : {target_text: ""})
+      ...(paraphrase ? {paraphrased_text: ""} : {target_text: ""}),
+      image_url: null,
     })
   );
 
@@ -170,6 +173,7 @@ export const onMerge = (index, votr=false, paraphrase=false) => {
         existingsourceData[index + 1].target_text
       }`}),
       speaker_id: "",
+      image_url: existingsourceData[index].image_url,
     })
   );
   }
@@ -184,6 +188,12 @@ export const onSubtitleDelete = (index) => {
   copySub.splice(index, 1);
 
   return copySub;
+};
+
+export const onCopyToParaphrasedSegment = (index) => {
+  const subtitles = store.getState().commonReducer.subtitles;
+  subtitles[index].paraphrased_text = subtitles[index].text;
+  return subtitles;
 };
 
 export const onSplit = (
@@ -312,6 +322,7 @@ export const onSplit = (
         text: text1,
         speaker_id: "",
         ...(paraphrase ? {paraphrased_text: targetText1} : ((translateSplit || targetSelectionStart) && { target_text: targetText1 })),
+        image_url: targetTextBlock.image_url,
       })
     );
 
@@ -327,6 +338,7 @@ export const onSplit = (
         text: text2,
         speaker_id: "",
         ...(paraphrase ? {paraphrased_text: targetText2} : ((translateSplit || targetSelectionStart) && { target_text: targetText2 })),
+        image_url: null,
       })
     );
     }
@@ -340,7 +352,7 @@ export const onExpandTimeline = (id, vo=false) => {
   const copySub = [...subtitles];
 
   if(id === 0 && copySub.length > 1){
-    copySub[id].start_time = DT.d2t(0);
+    // copySub[id].start_time = DT.d2t(0);
     copySub[id].end_time = DT.d2t(DT.t2d(copySub[id+1].start_time)-0.2);
   }else if(id+1 === copySub.length){
     copySub[id].start_time = DT.d2t(DT.t2d(copySub[id-1].end_time)+0.2)
@@ -367,6 +379,8 @@ export const onSubtitleChange = (text, index, id) => {
         element.target_text = text;
       } else if (id === 3) {
         element.transcription_text = text;
+      } else if (id === 5) {
+        element.image_url = text;
       } else{
         element.text = text;
       }
@@ -671,41 +685,75 @@ export const paraphrase = (index) => {
   return copySub;
 };
 
-export const exportVoiceover = (data, taskDetails, exportTypes) => {
+export const exportVoiceover = async (data, taskDetails, exportTypes) => {
   const userOrgId = getLocalStorageData("userData").organization.id;
 
-  const { video_name: videoName, target_language: targetLanguage } =
+  const { video_name: videoName, target_language: targetLanguage, project, video_url, src_language } =
     taskDetails;
+
+  const apiObj = new FetchVideoDetailsAPI(
+    video_url,
+    src_language,
+    project
+  );
+  const res = await fetch(apiObj.apiEndPoint(), {
+    method: "GET",
+    headers: apiObj.getHeaders().headers,
+  });
+  const video = await res.json();
+  console.log(video);
 
   const { voiceover } = exportTypes;
 
   if (data.azure_url) {
-    const link = document.createElement("a");
-    link.href = data.azure_url;
-
     let fileName = "";
     if (specialOrgIds.includes(userOrgId)) {
       fileName = data.video_name
+    } else if (video?.video?.description?.length){
+      fileName = `${video.video.description}.${voiceover}`;
     } else {
       fileName = `Chitralekha_Video_${videoName}_${getDateTime()}_${targetLanguage}.${voiceover}`;
     }
 
-    link.setAttribute("download", fileName);
+    fetch(data.azure_url)
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
 
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error("Error downloading file:", error));
   }
 };
 
-export const exportFile = (data, taskDetails, exportType, type) => {
+export const exportFile = async (data, taskDetails, exportType, type) => {
   const {
     video: videoId,
     src_language: sourceLanguage,
     target_language: targetLanguage,
-    description,
+    description,    
+    project,
+    video_url
   } = taskDetails;
   const userOrgId = getLocalStorageData("userData").organization.id;
+
+  const apiObj = new FetchVideoDetailsAPI(
+    video_url,
+    sourceLanguage,
+    project
+  );
+  const res = await fetch(apiObj.apiEndPoint(), {
+    method: "GET",
+    headers: apiObj.getHeaders().headers,
+  });
+  const video = await res.json();
 
   let newBlob;
   if (exportType === "docx") {
@@ -734,6 +782,8 @@ export const exportFile = (data, taskDetails, exportType, type) => {
   let fileName = "";
   if (specialOrgIds.includes(userOrgId) && description.length) {
     fileName = `${description}.${format}`;
+  } else if(video?.video?.description?.length){
+    fileName = `${video.video.description}.${format}`;
   } else {
     fileName = `Chitralekha_Video${videoId}_${YYYYMMDD}_${HHMMSS}_${language}.${format}`;
   }

@@ -17,9 +17,11 @@ import {
   RadioGroup,
   Typography,
   FormGroup,
+  Select,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { speakerInfoOptions, bgMusicOptions } from "config";
+import { MenuItem } from "react-contextmenu";
 
 const ExportDialog = ({
   open,
@@ -32,11 +34,12 @@ const ExportDialog = ({
   handleExportCheckboxChange,
   isBulkTaskDownload,
   currentSelectedTasks,
+  multiOptionDialog=false,
 }) => {
   const { transcription, translation, voiceover, speakerInfo, bgMusic } =
     exportTypes;
 
-  const [currentTaskType, setCurrentTaskType] = useState("");
+  const [currentTaskType, setCurrentTaskType] = useState(taskType);
 
   const transcriptExportTypes = useSelector(
     (state) => state.getTranscriptExportTypes.data.export_types
@@ -58,7 +61,9 @@ const ExportDialog = ({
         setCurrentTaskType("TRANSLATION_EDIT");
       }
     } else {
-      setCurrentTaskType(taskType);
+      if(!multiOptionDialog){
+        setCurrentTaskType(taskType);
+      }
     }
   }, [taskType, isBulkTaskDownload, currentSelectedTasks]);
 
@@ -69,7 +74,16 @@ const ExportDialog = ({
       PaperProps={{ style: { borderRadius: "10px" } }}
     >
       <DialogTitle variant="h4" display="flex" alignItems={"center"}>
-        <Typography variant="h4">Export Voiceover</Typography>{" "}
+        {multiOptionDialog ? 
+        <Typography variant="h4">Export &nbsp;
+          <Select value={currentTaskType} onChange={(event)=>{setCurrentTaskType(event.target.value)}}>
+            <MenuItem key={1} value="TRANSCRIPTION_VOICEOVER_EDIT">Transcription</MenuItem>
+            <MenuItem key={2} value="TRANSLATION_VOICEOVER_EDIT">Translation</MenuItem>
+          </Select>
+        </Typography>
+        :
+        <Typography variant="h4">Export {currentTaskType}</Typography>
+        }
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -201,7 +215,7 @@ const ExportDialog = ({
         <DialogActions>
           <Button
             variant="contained"
-            onClick={handleExportSubmitClick}
+            onClick={multiOptionDialog ? () => handleExportSubmitClick(currentTaskType) : () => handleExportSubmitClick()}
             style={{ borderRadius: "8px" }}
             autoFocus
           >

@@ -23,7 +23,11 @@ const endpoints = {
 
   //Video
   video: "/video/",
+  getVideoTasks: '/video/list_tasks',
+  listVideosTasks:'/video/get_listings',
   transcript: "/transcript/",
+  GetAllTranscriptions:"/transcript/retrieve_all_transcriptions/",
+  GetAllTranslations:"/translation/retrieve_all_translations/",
   translation: "/translation/",
   voiceover: "/voiceover/",
   videoSubtitle: "/transcript/get_word_aligned_json/?video_id",
@@ -39,7 +43,7 @@ const endpoints = {
   task: "/task/",
 
   //Transliteration
-  transliteration: "/api/generic/transliteration/",
+  transliteration: "/xlit-api/generic/transliteration/",
 
   //Glossary
   glossary: "/glossary/",

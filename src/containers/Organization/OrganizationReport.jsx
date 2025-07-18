@@ -22,7 +22,8 @@ import {
   Button,
   TextField,
   Badge,
-  CircularProgress
+  CircularProgress,
+  Box
 } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
@@ -80,6 +81,8 @@ const OrganizationReport = () => {
 
   const handleChangeReportsLevel = (event) => {
     setTableData([]);
+    setOriginalTableData([])
+    setLoading(true)
     setReportsLevel(event.target.value);
     setlanguageLevelStats("");
     setOffset(0);
@@ -142,7 +145,9 @@ const OrganizationReport = () => {
   }, [])
 
   const handleChangelanguageLevelStats = (event) => {
-    setlanguageLevelStats(event.target.value);
+    setTableData([])
+    setOriginalTableData([])
+        setlanguageLevelStats(event.target.value);
     setOffset(0);
     const temp = reportLevels.filter(
       (item) => item.reportLevel === reportsLevel
@@ -165,7 +170,9 @@ const OrganizationReport = () => {
     );
     const apiObj = new DownloadOrganizationReportsAPI(
       id,
-      temp[0].downloadEndPoint
+      temp[0].downloadEndPoint,
+      taskStartDate,
+      taskEndDate,
     );
     dispatch(APITransport(apiObj));
   };
@@ -262,7 +269,7 @@ const OrganizationReport = () => {
   const createReportColumns = (rawData) => {
     let tempColumns = [];
 
-    if (rawData?.length > 0 && rawData[0]) {
+    if (rawData?.length > 0 && rawData[0] && loading==false) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
@@ -281,6 +288,21 @@ const OrganizationReport = () => {
               if (isArray(value)) {
                 value = value.join(", ");
               }
+              
+              if (el[1].label.toLowerCase().includes('email')) {
+                return (
+                    <Box
+                      sx={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                                  }}
+                    >
+                      {value}
+                    </Box>
+                );
+              }
+    
               return value === null ? (
                 "-"
               ) : el[0] === "video_name" ? (
@@ -307,7 +329,7 @@ const OrganizationReport = () => {
   };
 
   const createTableData = (rawData) => {
-    if (rawData?.length > 0) {
+    if (rawData?.length > 0 && loading==false) {
       let result = [];
 
       let tableData = rawData.map((el) => {
@@ -429,7 +451,7 @@ const OrganizationReport = () => {
   };
 
   useEffect(() => {
-    let option = getOptions(apiStatus.loading);
+let option = getOptions(apiStatus.loading || loading); 
 
     option = {
       ...option,
@@ -464,6 +486,8 @@ const OrganizationReport = () => {
 
     // eslint-disable-next-line
   }, [apiStatus, tableData]);
+  console.log(tableData);
+  
 
   return (
     <>
@@ -562,15 +586,12 @@ const OrganizationReport = () => {
       </Grid>
 
       <ThemeProvider theme={tableTheme}>
-        <div style={{filter: loading && "blur(1px)", pointerEvents: loading && "none"}}>
           <MUIDataTable
             title=""
             data={tableData}
             columns={columns}
             options={options}
           />
-        </div>
-        { loading && <CircularProgress style={{marginTop:16, position:"absolute", top:"50%", bottom: "50%"}} size={40}/>}
       </ThemeProvider>
 
       {openSelector && (

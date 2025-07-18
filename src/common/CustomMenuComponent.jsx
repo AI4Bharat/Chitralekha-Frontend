@@ -98,7 +98,7 @@ const CustomMenuComponent = ({
               <input type="checkbox" checked={showSubtitles} onChange={() => {setShowSubtitles(!showSubtitles)}}/>
             </div>
           </MenuItem>
-          <MenuItem key="Show Timeline">
+          {/* <MenuItem key="Show Timeline">
             <div
               style={{
                 display: "flex",
@@ -110,7 +110,7 @@ const CustomMenuComponent = ({
               <span>Show Timeline</span>
               <input type="checkbox" checked={showTimeline} onChange={() => {setShowTimeline(!showTimeline)}}/>
             </div>
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem key="Youtube Player">
             <div
               style={{

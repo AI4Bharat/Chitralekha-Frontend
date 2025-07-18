@@ -19,15 +19,15 @@ const success = (res, api, dispatch) => {
     dispatch(dispatchAPIAsync(api));
   }
 
-  if (data.message) {
-    dispatch(
-      setSnackBar({
-        open: true,
-        message: data.message,
-        variant: "success",
-      })
-    );
-  }
+  // if (data.message) {
+  //   dispatch(
+  //     setSnackBar({
+  //       open: true,
+  //       message: data.message,
+  //       variant: "success",
+  //     })
+  //   );
+  // }
 
   if (
     typeof api.processNextSuccessStep === "function" &&

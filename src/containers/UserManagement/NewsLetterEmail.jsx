@@ -40,13 +40,12 @@ const NewsLetterEmail = ({ email, setEmail }) => {
   };
 
   return (
-    <Grid container display={"flex"} alignItems={"center"}>
+    <Grid container display={"flex"} alignItems={"center"} gap={2}>
       <Grid item xs={12} md={8} className={classes.newLetterGridItems}>
         <TextField
           placeholder="emailId@example.com"
           onChange={(e) => setEmail(e.target.value)}
           value={email}
-          sx={{ width: "70%" }}
         />
       </Grid>
 

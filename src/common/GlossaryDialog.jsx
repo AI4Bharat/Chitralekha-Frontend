@@ -18,7 +18,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import { IndicTransliterate } from "indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import { ProjectStyle } from "styles";
 import { MenuProps } from "utils";
 import { APITransport, FetchSupportedLanguagesAPI } from "redux/actions";
@@ -34,6 +34,7 @@ const GlossaryDialog = ({
   srcLang = "",
   tgtLang = "",
   disableFields,
+  acceptTaskIds=false,
 }) => {
   const classes = ProjectStyle();
   const dispatch = useDispatch();
@@ -42,6 +43,8 @@ const GlossaryDialog = ({
   const [targetText, setTargetText] = useState("");
   const [sourceLanguage, setSourceLanguage] = useState(srcLang);
   const [targetLanguage, setTargetLanguage] = useState(tgtLang);
+  const [meaning, setMeaning] = useState("");
+  const [taskIds, setTaskIds] = useState("");
   const [domain, setDomain] = useState("");
   const [enableTransliteration, setEnableTransliteration] = useState(true);
 
@@ -57,12 +60,15 @@ const GlossaryDialog = ({
   }, []);
 
   const createGlossary = () => {
+    let taskIDs = taskIds.split(",") .map(id => id.trim()).filter(id => id !== "").map(Number);
     const sentences = [
       {
         src: sourceText,
         tgt: targetText,
         locale: `${sourceLanguage}|${targetLanguage}`,
+        meaning: meaning,
         domain,
+        task_ids: taskIDs,
       },
     ];
 
@@ -170,6 +176,7 @@ const GlossaryDialog = ({
           <Grid item md={6} xs={12} sx={{ mt: 3 }}>
             <IndicTransliterate
               customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+              apiKey={`JWT ${localStorage.getItem("token")}`}
               lang={sourceLanguage}
               value={sourceText}
               onChange={(event) => setSourceText(event.target.value)}
@@ -196,6 +203,7 @@ const GlossaryDialog = ({
           <Grid item md={6} xs={12} sx={{ mt: 3 }}>
             <IndicTransliterate
               customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+              apiKey={`JWT ${localStorage.getItem("token")}`}
               lang={targetLanguage}
               value={targetText}
               onChange={(event) => setTargetText(event.target.value)}
@@ -223,7 +231,23 @@ const GlossaryDialog = ({
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <FormControl fullWidth sx={{ mt: 3, width: "98%" }}>
+            <FormControl fullWidth sx={{ mt: 3}}>
+            <div class="mui-input-outlined">
+              <input
+                className={classes.findReplaceTextbox}
+                type="text"
+                id="outlined-input"
+                placeholder=""
+                value={meaning}
+                onChange={(event) => setMeaning(event.target.value)}
+              />
+              <label for="outlined-input">Text Meaning (Optional)</label>
+            </div>
+            </FormControl>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <FormControl fullWidth sx={{ mt: 3, width: "98%", marginLeft:"8px" }}>
               <InputLabel id="select-domain">Domain (Optional)</InputLabel>
               <Select
                 fullWidth
@@ -243,6 +267,22 @@ const GlossaryDialog = ({
               </Select>
             </FormControl>
           </Grid>
+
+          {acceptTaskIds && <Grid item md={6} xs={12}>
+            <FormControl fullWidth sx={{ mt: 3}}>
+            <div class="mui-input-outlined">
+              <input
+                className={classes.findReplaceTextbox}
+                type="text"
+                id="outlined-input"
+                placeholder=""
+                value={taskIds}
+                onChange={(event) => setTaskIds(event.target.value)}
+              />
+              <label for="outlined-input">Task ID's (Optional)</label>
+            </div>
+            </FormControl>
+          </Grid>}
         </Grid>
       </DialogContent>
 

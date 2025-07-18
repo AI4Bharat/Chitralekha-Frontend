@@ -62,6 +62,10 @@ const CreateVideoDialog = ({
   speakerInfo,
   speakerType,
   setSpeakerType,
+  duration,
+  setDuration,
+  youtubeUrl,
+  setYoutubeUrl,
 }) => {
   const userOrgId = getLocalStorageData("userData").organization.id;
 
@@ -80,11 +84,27 @@ const CreateVideoDialog = ({
 
   const videosInProject = useSelector((state)=>state.getProjectVideoList.data)
   const [showPopup, setShowPopup] = useState(false);
+  const [showYoutubeUrl, setShowYoutubeUrl] = useState(false);
+  const [showDurationSelector, setDurationSelector] = useState(false);
   useEffect(() => {
     if (videosInProject.some((video) => video.url === videoLink)) {
       setShowPopup(true);
     }
-  }, [videoLink, videosInProject]);
+    if (videoLink.length > 10 & !videoLink.includes("youtube")){
+      if(youtubeUrl.includes("youtube.com")){
+        setDurationSelector(false);
+      }else{
+        setDurationSelector(true);
+      }
+    }else{
+      setDurationSelector(false);
+    }
+    if (videoLink.includes("drive.google.com") || videoLink.includes("objectstore.e2enetworks.net") || videoLink.includes("blob.core.windows.net")){
+      setShowYoutubeUrl(true);
+    }else{
+      setShowYoutubeUrl(false);
+    }
+  }, [videoLink, videosInProject, youtubeUrl]);
   
   const handleClear = () => {
     setLang("");
@@ -249,6 +269,27 @@ const CreateVideoDialog = ({
           onChange={(event) => setVideoLink(event.target.value)}
           sx={{ mt: 3 }}
         />
+        
+        {showYoutubeUrl &&
+          <TextField
+            label={"Enter YouTube Url"}
+            fullWidth
+            rows={1}
+            value={youtubeUrl}
+            onChange={(event) => setYoutubeUrl(event.target.value)}
+            sx={{ mt: 3 }}
+          />}
+
+        {showDurationSelector &&
+          <TextField
+            label={"Video Duration"}
+            fullWidth
+            defaultValue="00:00:00"
+            rows={1}
+            value={duration}
+            onChange={(event) => setDuration(event.target.value)}
+            sx={{ mt: 3 }}
+          />}
         {showPopup && (
   <div
     style={{

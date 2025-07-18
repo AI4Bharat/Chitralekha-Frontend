@@ -28,18 +28,11 @@ const ChitralekhaPortal = () => {
   return (
     <div style={{ backgroundColor: "white" }}>
       <Grid container direction="row" className={classes.section}>
-        <Grid item xs={12} sm={12} md={6} lg={6} xl={6} sx={{ mt: 20, mb: 20 }}>
+        <Grid item className={classes.textSection}>
           <Typography variant="h2" className={classes.Chitralekhatitle}>
             Chitralekha
           </Typography>
-          <Typography
-            sx={{
-              fontSize: "1.25rem",
-              lineHeight: "2rem",
-              margin: "0 35px 25px 45px",
-              textAlign: "justify",
-            }}
-          >
+          <Typography className={classes.details}>
             <b>Chitralekha</b> is an <b>open source</b> platform for video
             subtitling across various Indic languages, using ML model support
             (ASR for Transcription, NMT for Translation and TTS for Voice Over).
@@ -56,12 +49,15 @@ const ChitralekhaPortal = () => {
             Watch Demo Video
           </Button>
         </Grid>
-        <Grid item xs={12} sm={12} md={5} lg={5} xl={5} sx={{ mt: 2 }}>
+        <Grid item className={classes.imageWrpr}>
           <Box display={{ xs: "none", md: "inherit" }}>
             <img
               alt="Chitralekhaimg"
               src={Chitralekhaimg}
-              style={{ width: "100%" }}
+              style={{
+                width: "100%",
+                mixBlendMode: "darken",
+              }}
             />
           </Box>
         </Grid>

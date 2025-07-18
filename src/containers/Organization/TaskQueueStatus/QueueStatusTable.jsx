@@ -45,6 +45,7 @@ const QueueStatusTable = ({ queueType }) => {
                 item.submitter_name,
                 item.org_name,
                 item.video_duration,
+                item.status,
               ];
             });
             setTableData(result);

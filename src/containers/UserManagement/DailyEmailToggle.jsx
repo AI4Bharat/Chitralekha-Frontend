@@ -60,7 +60,6 @@ const DailyEmailToggle = () => {
     <Grid display="flex" justifyContent="center" item xs={12} md={8}>
       <Tooltip
         title={`${dailyEmail ? "Disable" : "Enable"} daily mails`}
-        sx={{ marginLeft: "0", marginTop: "8px" }}
       >
         <FormControlLabel
           control={<Switch color="primary" />}

@@ -1,5 +1,5 @@
 // OrgLevelTaskList
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import C from "redux/constants";
@@ -18,7 +18,7 @@ import {
   toolBarActions,
 } from "config";
 import { renderTaskListColumnCell } from "config/tableColumns";
-
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 //Themes
 import { DatasetStyle, TableStyles } from "styles";
 import { tableTheme } from "theme";
@@ -48,6 +48,7 @@ import {
   UpdateBulkTaskDialog,
   UploadFormatDialog,
   ViewTaskDialog,
+  Loader,
 } from "common";
 
 //Icons
@@ -100,6 +101,7 @@ import {
 } from "redux/actions";
 import moment from "moment";
 import DeleteTaskDialog from "common/DeleteTaskDialog";
+import CompareEdits from "common/CompareEdits";
 
 const OrgLevelTaskList = () => {
   const userOrgId = getLocalStorageData("userData").organization.id;
@@ -136,6 +138,7 @@ const OrgLevelTaskList = () => {
     viewTaskDialog: false,
     previewDialog: false,
     editTaskDialog: false,
+    CompareEdits:false,
     uploadDialog: false,
     speakerInfoDialog: false,
     tableDialog: false,
@@ -193,6 +196,9 @@ const OrgLevelTaskList = () => {
   const currentOrgSearchedColumn = useSelector(
     (state) => state.orgTaskFilters.currentOrgSearchedColumn
   );
+  const handleCompareEdits = () => {
+    handleDialogOpen("CompareEdits");
+  };
 
   useEffect(() => {
     const displayCols = {};
@@ -208,12 +214,13 @@ const OrgLevelTaskList = () => {
       "created_at",
       "updated_at",
       "Action",
+      "eta"
     ];
     const defaultDisabledDisplayCols = [
       "description",
       "created_at",
       "updated_at",
-      "video_name",
+      // "video_name",
     ];
     allCols.forEach((ele) => {
       if (displayColsLocalStorage && ele in displayColsLocalStorage) {
@@ -545,6 +552,7 @@ const OrgLevelTaskList = () => {
     handleDialogOpen("previewDialog");
   };
 
+
   const handleShowSearch = (col, event) => {
     setSearchAnchor(event.currentTarget);
     dispatch(
@@ -581,7 +589,7 @@ const OrgLevelTaskList = () => {
               <Badge
                 color="primary"
                 variant="dot"
-                invisible={!orgSearchValue[col.name].length}
+                invisible={!orgSearchValue[col.name]?.length}
               >
                 <SearchIcon id={col.name + "_btn"} />
               </Badge>
@@ -702,6 +710,11 @@ const OrgLevelTaskList = () => {
       case "Preview":
         handlePreviewTask();
         break;
+        
+        case "CompareEdits":
+          handleCompareEdits();
+          break;
+
 
       case "Delete":
         handleDialogOpen("deleteTaskDialog", "", id);
@@ -738,9 +751,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["id"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: renderTaskListColumnCell,
       },
     };
@@ -755,12 +765,37 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["video_name"],
         align: "center",
         customHeadLabelRender: CustomTableHeader,
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
+
         customBodyRender: renderTaskListColumnCell,
       },
     };
+    const ETA = {
+      name: "eta",
+      label: "ETA",
+      options: {
+        filter: false,
+        sort: false,
+        canBeSearch: false,
+        display: orgTaskColDisplayState["eta"],
+        align: "center",
+        customHeadLabelRender: CustomTableHeader,
+        customBodyRender: (value, tableMeta) => {
+          const { tableData: data, rowIndex } = tableMeta;
+          const selectedTask = data[rowIndex];
+
+          return (
+            <Box
+              style={{
+                color: selectedTask.is_active ? "" : "grey",
+              }}
+            >
+          {value ? moment(value).format("DD/MM/YYYY HH:mm:ss") : "-"}
+          </Box>
+          );
+        },
+      },
+    };
+
 
     const assigneeColumn = {
       name: "user",
@@ -895,9 +930,6 @@ const OrgLevelTaskList = () => {
         display: orgTaskColDisplayState["Action"],
         sort: false,
         align: "center",
-        setCellHeaderProps: () => ({
-          className: tableClasses.cellHeaderProps,
-        }),
         customBodyRender: (_value, tableMeta) => {
           const { tableData: data, rowIndex } = tableMeta;
           const selectedTask = data[rowIndex];
@@ -922,6 +954,19 @@ const OrgLevelTaskList = () => {
                   </IconButton>
                 </Tooltip>
               }
+              {((selectedTask?.task_type == "TRANSLATION_VOICEOVER_EDIT"|| selectedTask?.task_type == "TRANSCRIPTION_EDIT" || selectedTask?.task_type == "TRANSLATION_EDIT" )&& selectedTask?.status === "COMPLETE" && (userData.role=="PROJECT_MANAGER" || userData.role=="ORG_OWNER"||userData.role=="ADMIN")) &&
+                <Tooltip key="Compare Edits" title="Compare Edits" >
+                  <IconButton
+                    onClick={() =>
+                      handleActionButtonClick(tableMeta, "CompareEdits")
+                    }
+                    color="primary"
+                  >
+                    <CompareArrowsIcon />
+                  </IconButton>
+                </Tooltip>
+              }
+
               {buttonConfig.map((item) => {
                 return (
                   <Tooltip key={item.key} title={item.title}>
@@ -956,6 +1001,7 @@ const OrgLevelTaskList = () => {
     columns.splice(2, 0, videoName);
     columns.splice(3, 0, createdAtColumn);
     columns.splice(4, 0, updatedAtColumn);
+    columns.splice(5, 0, ETA);
     columns.splice(7, 0, assigneeColumn);
     columns.splice(10, 0, descriptionColumn);
 
@@ -1328,6 +1374,7 @@ const OrgLevelTaskList = () => {
 
   return (
     <>
+         {loading && <Loader size={50} color="primary" />}
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
           data={tableData}
@@ -1407,7 +1454,15 @@ const OrgLevelTaskList = () => {
           targetLanguage={currentTaskDetails?.target_language}
         />
       )}
-
+{openDialogs.CompareEdits && (
+        <CompareEdits
+          openPreviewDialog={openDialogs.CompareEdits}
+          handleClose={() => handleDialogClose("CompareEdits")}
+          taskType={currentTaskDetails?.task_type}
+          videoId={currentTaskDetails?.video}
+          targetLanguage={currentTaskDetails?.target_language}
+        />
+      )}
       {Boolean(anchorEl) && (
         <FilterList
           id={"filterList"}

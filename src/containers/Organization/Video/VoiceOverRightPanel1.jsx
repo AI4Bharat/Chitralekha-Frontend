@@ -18,6 +18,7 @@ import {
   onSplit,
 } from "utils";
 import { configs, endpoints, voiceoverFailInfoColumns } from "config";
+import { useTheme } from "@mui/material";
 
 //Styles
 import "../../../styles/scrollbarStyle.css";
@@ -25,17 +26,20 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { VideoLandingStyle } from "styles";
 import LoopIcon from "@mui/icons-material/Loop";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 
 //Components
 import { Box, CardContent, CircularProgress, Grid, IconButton, Menu, Tooltip, Typography } from "@mui/material";
 import SettingsButtonComponent from "./components/SettingsButtonComponent";
 import Pagination from "./components/Pagination";
-import { IndicTransliterate } from "@ai4bharat/indic-transliterate";
+import { IndicTransliterate } from "@ai4bharat/indic-transliterate-transcribe";
 import subscript from "config/subscript";
 import superscriptMap from "config/superscript";
+import CustomizedSnackbars from "../../../common/Snackbar";
 import {
   ConfirmDialog,
   ConfirmErrorDialog,
+  ExportDialog,
   RecorderComponent,
   ShortcutKeys,
   TableDialog,
@@ -58,11 +62,18 @@ import {
   setTotalSentences,
   setSnackBar,
   CreateGlossaryAPI,
+  exportTranslationAPI,
+  FetchTranscriptExportTypesAPI,
+  FetchTranslationExportTypesAPI,
+  FetchVoiceoverExportTypesAPI,
+  exportTranscriptionAPI,
 } from "redux/actions";
 import { MenuItem } from "react-contextmenu";
 import GlossaryDialog from "common/GlossaryDialog";
-import { copySubs, onExpandTimeline } from "utils/subtitleUtils";
+import { copySubs, exportFile, onExpandTimeline } from "utils/subtitleUtils";
 import AudioPlayer from "./audioPanel";
+import { uploadToImgBB } from "./components/uploadToImgBB";
+import VideoScreenshotDialog from "./components/VideoScreenshotDialog";
 
 const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, segment }) => {
   const { taskId } = useParams();
@@ -72,6 +83,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
   const xl = useMediaQuery("(min-width:1800px)");
   const $audioRef = useRef([]);
+  const snackbar = useSelector((state) => state.commonReducer.snackbar);
+  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const [disable, setDisable] = useState(false);
 
   const taskData = useSelector((state) => state.getTaskDetails.data);
   const assignedOrgId = JSON.parse(localStorage.getItem("userData"))
@@ -130,12 +144,59 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const [redoStack, setRedoStack] = useState([]);
   const [contextMenu, setContextMenu] = React.useState(null);
   const [openGlossaryDialog, setOpenGlossaryDialog] = useState(false);
+  const [openExportDialog, setOpenExportDialog] = useState(false);
   const [glossaryDialogTitle, setGlossaryDialogTitle] = useState(false);
   const [selectedWord, setSelectedWord] = useState("");
   const loggedInUserData = useSelector(
     (state) => state.getLoggedInUserDetails.data
   );
   const [loader, setLoader] = useState(false);
+
+  const [exportTypes, setExportTypes] = useState({
+    transcription: ["srt"],
+    translation: ["srt"],
+    voiceover: "mp3",
+    speakerInfo: "false",
+    bgMusic: "false",
+  });
+
+  useEffect(() => {
+    const transcriptExportObj = new FetchTranscriptExportTypesAPI();
+    dispatch(APITransport(transcriptExportObj));
+
+    const translationExportObj = new FetchTranslationExportTypesAPI();
+    dispatch(APITransport(translationExportObj));
+
+    const voiceoverExportObj = new FetchVoiceoverExportTypesAPI();
+    dispatch(APITransport(voiceoverExportObj));
+  }, []);
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // xs, sm, md
+
+  useEffect(() => {
+    if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [loggedin_user_id, taskData])
+
+  const renderSnackBar = useCallback(() => {
+    return (
+      <CustomizedSnackbars
+        open={snackbar.open}
+        handleClose={() =>
+          dispatch(setSnackBar({ open: false, message: "", variant: "" }))
+        }
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        variant={snackbar.variant}
+        message={[snackbar.message]}
+      />
+    );
+
+    //eslint-disable-next-line
+  }, [snackbar]);
 
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
@@ -300,6 +361,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
         element.text_changed = true;
         }else if(type === "retranslate"){
         element.retranslate = true;  
+        }else if(type === "screenshot"){
+        element.image_url = text;
         }else{
         element.transcription_text = text;
         }
@@ -450,7 +513,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   const createGlossary = (sentences) => {
     const userId = loggedInUserData.id;
 
-    const apiObj = new CreateGlossaryAPI(userId, sentences);
+    const apiObj = new CreateGlossaryAPI(userId, sentences, taskId);
     dispatch(APITransport(apiObj));
   };
 
@@ -744,8 +807,188 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
   //   }, 60000);
   // }, [currentOffset, sourceText]);
 
+  const handleTranscriptExport = async () => {
+    const { transcription, speakerInfo } = exportTypes;
+
+    transcription.map(async (transcript)=>{
+    const apiObj = new exportTranscriptionAPI(
+      taskId,
+      transcript,
+      speakerInfo
+    );
+    setOpenExportDialog(false);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+
+        exportFile(resp, taskData, transcript, "transcription");
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "success",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }})
+  };
+
+  const handleTranslationExport = async () => {
+    const { translation, speakerInfo } = exportTypes;
+
+    translation.map(async (translate)=>{
+    const apiObj = new exportTranslationAPI(taskId, translate, speakerInfo);
+    setOpenExportDialog(false);
+
+    try {
+      const res = await fetch(apiObj.apiEndPoint(), {
+        method: "GET",
+        headers: apiObj.getHeaders().headers,
+      });
+
+      if (res.ok) {
+        const resp = await res.blob();
+
+        exportFile(resp, taskData, translate, "translation");
+      } else {
+        const resp = await res.json();
+
+        dispatch(
+          setSnackBar({
+            open: true,
+            message: resp.message,
+            variant: "success",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        setSnackBar({
+          open: true,
+          message: "Something went wrong!!",
+          variant: "error",
+        })
+      );
+    }})
+  };
+
+  const handleExportSubmitClick = (taskType) => {
+    if(taskType === "TRANSCRIPTION_VOICEOVER_EDIT"){
+      handleTranscriptExport();
+    }else{
+      handleTranslationExport();
+    }
+  };
+
+  const handleExportRadioButtonChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleExportCheckboxChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    let new_val=exportTypes[name]
+    if (new_val.includes(value)){
+      new_val = new_val.filter(item => item !== value)
+    } else{
+      new_val.push(value)
+    }
+    setExportTypes((prevState) => ({
+      ...prevState,
+      [name]: new_val,
+    }));
+  }
+
+  function timestampToSeconds(timestamp) {
+    const [hours, minutes, rest] = timestamp.split(':');
+    const [seconds, milliseconds] = rest.split('.');
+  
+    return (
+      parseInt(hours) * 3600 +
+      parseInt(minutes) * 60 +
+      parseInt(seconds) +
+      parseInt(milliseconds) / 1000
+    );
+  }
+
+  const [enableScreenShots, setEnableScreenShots] = useState(false);
+  const [videoLinkExpired, setVideoLinkExpired] = useState(true);
+  const [screenShotDialogOpen, setScreenShotDialogOpen] = useState(false);
+  const [currentStartTime, setCurrentStartTime] = useState(0);
+  const [currentImageUrl, setCurrentImageUrl] = useState("");
+
+  const handleSSOpenDialog = (time, imageurl) => {
+    setCurrentStartTime(timestampToSeconds(time));
+    setCurrentImageUrl(imageurl);
+    setScreenShotDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setCurrentStartTime(0);
+    setCurrentImageUrl("");
+    setScreenShotDialogOpen(false);
+  };
+
+  const handleCapture = async (imageDataUrl) => {
+    let index = currentIndex;
+    let url = null;
+    if(imageDataUrl !== null){
+      try {
+        url = await uploadToImgBB(imageDataUrl, taskId);
+        console.log('Successfully uploaded to ImgBB:', url);
+      } catch (error) {
+        console.log(error.message || 'An unknown error occurred during upload.');
+      }
+    }
+    changeTranscriptHandler(url, index, "screenshot")
+  };
+
+  async function isVideoUrlValid(url) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('Content-Type');
+      return response.ok && contentType && contentType.startsWith('video/');
+    } catch (error) {
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if(taskData?.video_url?.includes("youtube.com")){
+      setVideoLinkExpired(true);
+    }else{
+      setVideoLinkExpired(!isVideoUrlValid(taskData?.video_url));
+    }
+  }, [taskData]);
+
   return (
     <>
+      {renderSnackBar()}
       {loader && <CircularProgress style={{position:"absolute", left:"50%", top:"50%", zIndex:"100"}} color="primary" size="50px" />}
       <ShortcutKeys shortcuts={shortcuts} />
       <Box
@@ -781,6 +1024,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             handleReGenerateTranslation={()=>{changeTranscriptHandler(null, "retranslate", "retranslate")}}
             handleGetUpdatedAudioForAll={()=>{changeTranscriptHandler(null, "audio", "audio")}}
             bookmarkSegment={() => {saveTranscriptHandler(false, false, currentPage, true)}}
+            setOpenExportDialog={setOpenExportDialog}
+            disabled={disable}
+            enableScreenShots={enableScreenShots}
+            setEnableScreenShots={setEnableScreenShots}
+            videoLinkExpired={videoLinkExpired}
           />
         </Grid>
 
@@ -794,7 +1042,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                   padding: "5px 0",
                   // margin: "2px",
                   // borderBottom: "1px solid grey",
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
                 id={`container-${index}`}
               >
@@ -820,7 +1068,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     }
                   }}
                 >
-                  {item.transcription_text.length>-1 &&
+                  {item?.transcription_text?.length>-1 &&
                     <div
                       className={classes.relative}
                       onContextMenu={handleContextMenu}
@@ -861,7 +1109,11 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       </span>
                     </div>}
 
-                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" }}>
+                  <div className={classes.relative}
+ style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "50%" ,         marginLeft: isSmallScreen ? "80px" : "0px",
+        marginRight: isSmallScreen ? "65px" : "0px",
+   
+}}>
                     <div>{item.id}</div>
                     <div style={{ fontSize: "0.8rem" }}>Duration: {item.time_difference}</div>
                     <div style={{display: "flex"}}>
@@ -922,7 +1174,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                               : {}
                           }
                         >
-                          <AudioPlayer src={data[index]} />
+                          <AudioPlayer src={data[index]} fast={item?.fast_audio}/>
                           {/* <audio
                             disabled={isDisabled(index)}
                             src={data[index]}
@@ -969,6 +1221,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                     enableTransliteration ? (
                     <IndicTransliterate
                       customApiURL={`${configs.BASE_URL_AUTO}${endpoints.transliteration}`}
+                      enableASR={true}
+                      asrApiUrl={`${configs.BASE_URL_AUTO}/asr-api/generic/transcribe`}
+                      apiKey={`JWT ${localStorage.getItem("token")}`}
                       lang={taskData?.target_language}
                       value={item.text}
                       onChangeText={(text) => {
@@ -1065,6 +1320,21 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
                       </span>
                     </div>
                   )}
+                  {enableScreenShots &&
+                  <div className={classes.relative} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", width: "20%" }}>
+                    {(item.image_url!==null && item.image_url!=="" && item.image_url!==undefined) ? 
+                    <img src={item.image_url} height="110%" width="110%" onClick={()=>{handleSSOpenDialog(item.start_time, item.image_url)}} style={{ cursor: 'pointer' }}/>
+                      :
+                    <Tooltip title="Capture Screenshot" placement="bottom">
+                      <IconButton
+                        className={classes.optionIconBtn}
+                        onClick={()=>{handleSSOpenDialog(item.start_time)}}
+                        disabled={apiInProgress}
+                      >
+                        <AddAPhotoOutlinedIcon className={classes.rightPanelSvg} />
+                      </IconButton>
+                    </Tooltip>}
+                  </div>}
                 </CardContent>
                 <Menu
                   open={contextMenu !== null}
@@ -1154,6 +1424,33 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
             srcLang={taskData?.src_language}
             tgtLang={taskData?.target_language}
             disableFields={true}
+          />
+        )}
+
+        {openExportDialog && (
+          <ExportDialog
+            open={openExportDialog}
+            handleClose={() => setOpenExportDialog(false)}
+            task_type="TRANSLATION_VOICEOVER_EDIT"
+            taskType="TRANSLATION_VOICEOVER_EDIT"
+            exportTypes={exportTypes}
+            handleExportSubmitClick={handleExportSubmitClick}
+            handleExportRadioButtonChange={handleExportRadioButtonChange}
+            handleExportCheckboxChange={handleExportCheckboxChange}
+            isBulkTaskDownload={false}
+            currentSelectedTasks={[]}
+            multiOptionDialog={true}
+          />
+        )}
+
+        {screenShotDialogOpen && (
+          <VideoScreenshotDialog
+            open={screenShotDialogOpen}
+            onClose={handleCloseDialog}
+            videoUrl={taskData?.video_url}
+            onCapture={handleCapture}
+            initialTimestamp={Number(currentStartTime) || 0}
+            imageUrl={currentImageUrl}
           />
         )}
       </Box>

@@ -15,6 +15,9 @@ export default class Sub {
     this.speaker_id = obj.speaker_id;
     this.transcription_text = obj.transcription_text;
     this.paraphrased_text = obj.paraphrased_text;
+    this.verbatim_text = obj.verbatim_text;
+    this.fast_audio = obj.fast_audio;
+    this.image_url = obj.image_url;
   }
 
   get check() {
