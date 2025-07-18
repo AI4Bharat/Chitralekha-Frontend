@@ -413,7 +413,8 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {(isUserOrgOwner || userData?.role === "ADMIN") && (
+            {(isUserOrgOwner || userData?.role === "ADMIN" || userData?.role === "PROJECT_MANAGER") && (         
+            
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
