@@ -20,7 +20,10 @@ const UserList = ({ data }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  data.forEach(user => {
+  // Handle the new API response structure where data might be nested
+  const users = data?.data || data || [];
+
+  users.forEach(user => {
     user.first_name = user.first_name + " " + user.last_name;
   });
 
@@ -72,7 +75,7 @@ const UserList = ({ data }) => {
     <>
       <ThemeProvider theme={tableTheme}>
         <MUIDataTable
-          data={data}
+          data={users}
           columns={columns}
           options={getOptions(apiStatus.progress)}
         />
