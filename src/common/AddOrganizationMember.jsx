@@ -19,6 +19,7 @@ import {
   Select,
   TextField,
   Typography,
+  Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -36,16 +37,24 @@ const AddOrganizationMember = ({
   selectFieldValue,
   handleSelectField,
   isAdmin,
+  userRole, // Add userRole prop to determine flow
 }) => {
   const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState("");
+  const [isManager, setIsManager] = useState(false);
 
   const userRoles = useSelector((state) => state.getUserRoles.data);
+
+  useEffect(() => {
+    // Check if current user is a project manager
+    setIsManager(userRole === "PROJECT_MANAGER");
+  }, [userRole]);
 
   const getUserRolesList = () => {
     const userObj = new FetchUserRolesAPI();
     dispatch(APITransport(userObj));
   };
+  
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " " || event.key === ",") {
       event.preventDefault();
@@ -55,26 +64,9 @@ const AddOrganizationMember = ({
       }
     }
   };
-  // const save =(event)=>{
-  //   if (inputValue.trim()) {
-  //     handleTextField((prev) => [...prev, inputValue.trim()]);
-  //     setInputValue("");
-  //   }
-  // }
-
-  // const handleAddButtonClick = async() => {
-  //   save();
-  //   await(handleTextField)
-  //   setTimeout(() => {
-  //     addBtnClickHandler();
-  //     handleUserDialogClose();
-  //   }, 1000);
-  // };
-
 
   useEffect(() => {
     getUserRolesList();
-
     // eslint-disable-next-line
   }, []);
 
@@ -95,10 +87,7 @@ const AddOrganizationMember = ({
         <Typography variant="h4">{title}</Typography>
         <IconButton
           aria-label="close"
-          onClick={()=>{
-            addBtnClickHandler()
-            handleUserDialogClose()
-          }}
+          onClick={handleUserDialogClose}
           sx={{ marginLeft: "auto" }}
         >
           <CloseIcon />
@@ -106,14 +95,21 @@ const AddOrganizationMember = ({
       </DialogTitle>
 
       <DialogContent style={{ paddingTop: 4 }}>
+        {isManager && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            As a Project Manager, your user suggestions will be sent to organization admins for approval.
+          </Alert>
+        )}
+        
         <Autocomplete
           multiple
           freeSolo
           id="add-members"
           value={textFieldValue}
-          onChange={(event, newValue, reason) => {
-            console.log("hello",event,newValue,reason);
-            
+          onChange={(event, newValue) => {
+            console.log("Autocomplete onChange - newValue:", newValue);
+            console.log("Autocomplete onChange - newValue type:", typeof newValue);
+            handleTextField(newValue);
           }}
           inputValue={inputValue}
           onInputChange={(event, newInputValue) => {
@@ -189,7 +185,7 @@ const AddOrganizationMember = ({
           }}
           disabled={textFieldLabel || selectFieldValue ? false : true}
         >
-          Add
+          {isManager ? "Suggest Users" : "Add"}
         </Button>
       </DialogActions>
     </Dialog>

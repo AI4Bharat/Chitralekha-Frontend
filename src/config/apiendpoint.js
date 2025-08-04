@@ -20,6 +20,11 @@ const endpoints = {
   newsletter: "/newsletter/",
   preview: "/newsletter/preview/",
   onboarding: "/onboarding/",
+  getPendingUsers: "/users/",
+  inviteRequestUser: "/users/invite/request_user/",
+  pendingUsers: "/users/invite/pending/",
+  rejectUser: "/users/invite/reject_user/",
+  approveUser: "/users/invite/approve_user/",
 
   //Video
   video: "/video/",

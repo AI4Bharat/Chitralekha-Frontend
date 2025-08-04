@@ -14,6 +14,7 @@ import {
   ProjectListAPI,
   setSnackBar,
 } from "redux/actions";
+import InviteManagerSuggestions from "redux/actions/api/Organization/InviteManagerSuggestions";
 
 //Styles
 import { DatasetStyle } from "styles";
@@ -40,6 +41,8 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { AddOrganizationMember, AlertComponent, Loader } from "common";
 import UploadFileDialog from "common/UploadFileDialog";
 import RegenerateFailedVotrTasksDialog from "common/RegenerateFailedVotrTasksDialog";
+import ManagerSuggestions from "common/ManagerSuggestions";
+import Invites from "common/Invites";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -62,7 +65,6 @@ const MyOrganization = () => {
   const dispatch = useDispatch();
   const classes = DatasetStyle();
   const navigate = useNavigate();
-
   const [value, setValue] = useState(0);
   const [addUserDialog, setAddUserDialog] = useState(false);
   const [newMemberName, setNewMemberName] = useState([]);
@@ -76,6 +78,7 @@ const MyOrganization = () => {
     useState(false);
     const [isUserOrgOwner, setIsUserOrgOwner] = useState(false);
   const [openRegenerateFailedVotrTasksDialog, setOpenRegenerateFailedVotrTasksDialog] = useState(false);
+  const [openManagerSuggestionsDialog, setOpenManagerSuggestionsDialog] = useState(false);
 
   const organizationDetails = useSelector(
     (state) => state.getOrganizationDetails.data
@@ -164,13 +167,29 @@ const MyOrganization = () => {
   }, [userData]);
 
   const addNewMemberHandler = async () => {
-    const data = {
-      role: newMemberRole,
-      emails: newMemberName,
-      organization_id: id,
-    };
-    const apiObj = new AddOrganizationMemberAPI(data);
-    dispatch(APITransport(apiObj));
+    console.log("addmembers before API call:", newMemberName);
+    if (userData?.role === "PROJECT_MANAGER") {
+      const emails = newMemberName.map((el) => el.email || el); // handle both object and string
+      console.log("emails to send:", emails);
+      // MANAGER FLOW - Use the correct suggestion API
+      const apiObj = new InviteManagerSuggestions(id, emails, newMemberRole);
+      dispatch(APITransport(apiObj));
+      dispatch(setSnackBar({
+        open: true,
+        message: "Your suggestion has been sent for approval.",
+        variant: "info",
+      }));
+    } else {
+      // ADMIN/OWNER FLOW - Direct invitation
+      const data = {
+        role: newMemberRole,
+        emails: newMemberName,
+        organization_id: id,
+      };
+      console.log("Direct invitation payload:", data);
+      const apiObj = new AddOrganizationMemberAPI(data);
+      dispatch(APITransport(apiObj));
+    }
   };
 
   const renderOrgDetails = () => {
@@ -260,7 +279,7 @@ const MyOrganization = () => {
 
             {(isUserOrgOwner || userData?.role === "ADMIN") && (
               <Tab
-                label={"Reports"}
+                label={"Invites"}
                 sx={{
                   fontSize: 16,
                   fontWeight: "700",
@@ -278,12 +297,30 @@ const MyOrganization = () => {
 
             {(isUserOrgOwner || userData?.role === "ADMIN") && (
               <Tab
-                label={"Settings"}
+                label={"Reports"}
                 sx={{
                   fontSize: 16,
                   fontWeight: "700",
                   bgcolor: value === 3 ? "#d3d3d3" : "#F5F5F5",
                   color: value === 3 ? "black" : "text.primary",
+                  margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
+
+                  borderRadius: 1,
+                  "&:hover": {
+                    bgcolor: "#e0e0e0",
+                  },
+                }}
+              />
+            )}
+
+            {(isUserOrgOwner || userData?.role === "ADMIN") && (
+              <Tab
+                label={"Settings"}
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  bgcolor: value === 4 ? "#d3d3d3" : "#F5F5F5",
+                  color: value === 4 ? "black" : "text.primary",
                   margin: isSmallScreen ? "0 0 1rem 0" : "0 1rem 0 0",
                   borderRadius: 1,
                   "&:hover": {
@@ -413,8 +450,7 @@ const MyOrganization = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {(isUserOrgOwner || userData?.role === "ADMIN" || userData?.role === "PROJECT_MANAGER") && (         
-            
+            {(isUserOrgOwner || userData?.role === "ADMIN" || userData?.role === "PROJECT_MANAGER") && (
               <Button
                 className={classes.projectButton}
                 onClick={() => setAddUserDialog(true)}
@@ -423,15 +459,19 @@ const MyOrganization = () => {
                 Add New Member
               </Button>
             )}
-
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <UserList data={usersList} />
             </div>
           </Box>
         </TabPanel>
+        <TabPanel value={value} index={2} style={{ textAlign: "center", maxWidth: "100%" }}>
+          <Box display={"flex"} flexDirection="Column" justifyContent="center" alignItems="center">
+            <Invites orgId={id} />
+          </Box>
+        </TabPanel>
         <TabPanel
           value={value}
-          index={2}
+          index={3}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <Box
@@ -448,7 +488,7 @@ const MyOrganization = () => {
 
         <TabPanel
           value={value}
-          index={3}
+          index={4}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <OrganizationSettings />
@@ -466,6 +506,7 @@ const MyOrganization = () => {
           addBtnClickHandler={addNewMemberHandler}
           selectFieldValue={newMemberRole}
           handleSelectField={setNewMemberRole}
+          userRole={userData?.role}
         />
       )}
 
@@ -494,6 +535,14 @@ const MyOrganization = () => {
           handleClose={() => setOpenRegenerateFailedVotrTasksDialog(false)}
           title={"Regenerate Failed VOTR Tasks"}
           handleSubmit={handeFileUpload}
+        />
+      )}
+
+      {openManagerSuggestionsDialog && (
+        <ManagerSuggestions
+          open={openManagerSuggestionsDialog}
+          onClose={() => setOpenManagerSuggestionsDialog(false)}
+          organizationId={id}
         />
       )}
     </Grid>

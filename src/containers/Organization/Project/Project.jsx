@@ -19,6 +19,10 @@ import {
   setSnackBar,
 } from "redux/actions";
 import C from "redux/constants";
+import InviteManagerSuggestions from "redux/actions/api/Organization/InviteManagerSuggestions";
+import GetManagerSuggestionsAPI from "redux/actions/api/Organization/GetManagerSuggestions";
+import ApproveManagerSuggestionsAPI from "redux/actions/api/Organization/ApproveManagerSuggestions";
+import RejectManagerSuggestionsAPI from "redux/actions/api/Organization/RejectManagerSuggestions";
 
 //Styles
 import { DatasetStyle } from "styles";
@@ -34,7 +38,18 @@ import {
   Tooltip,
   Typography,
   Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Alert,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import VideoList from "./VideoList";
 import ProjectMemberDetails from "./ProjectMemberDetails";
 import TaskList from "./TaskList";
@@ -50,6 +65,7 @@ import {
 } from "common";
 import UploadFileDialog from "common/UploadFileDialog";
 import apistatus from "redux/reducers/apistatus/apistatus";
+import ProjectManagerSuggestions from "common/ManagerSuggestions";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -108,6 +124,10 @@ const Project = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [openUploadBulkVideoDialog, setOpenUploadBulkVideoDialog] =
     useState(false);
+  const [openProjectManagerSuggestionsDialog, setOpenProjectManagerSuggestionsDialog] = useState(false);
+  const [managerSuggestions, setManagerSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState("");
 
   const projectInfo = useSelector((state) => state.getProjectDetails.data);
   const projectvideoList = useSelector(
@@ -242,6 +262,101 @@ const Project = () => {
     dispatch(APITransport(userObj));
   };
 
+  const fetchManagerSuggestions = async () => {
+    console.log("Debug - fetchManagerSuggestions called with orgId:", orgId);
+    setSuggestionsLoading(true);
+    setSuggestionsError("");
+    try {
+      const apiObj = new GetManagerSuggestionsAPI(orgId);
+      console.log("Debug - API endpoint:", apiObj.apiEndPoint());
+      console.log("Debug - API headers:", apiObj.getHeaders());
+      const res = await fetch(apiObj.apiEndPoint(), apiObj.getHeaders());
+      console.log("Debug - API response status:", res.status);
+      if (!res.ok) throw new Error("Failed to fetch suggestions");
+      const data = await res.json();
+      // Shoonya-style: use data.data as user list, filter for has_accepted_invite === false
+      const userArr = Array.isArray(data) ? data : data.data || [];
+      const pendingInvites = userArr.filter((user) => user.has_accepted_invite === false);
+      console.log('Debug - userArr:', userArr);
+      console.log('Debug - pendingInvites:', pendingInvites);
+      setManagerSuggestions(pendingInvites);
+    } catch (err) {
+      console.log("Debug - Error fetching suggestions:", err);
+      setSuggestionsError("Failed to fetch suggestions");
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  };
+
+  const handleApproveSuggestion = async (suggestionId) => {
+    setSuggestionsLoading(true);
+    setSuggestionsError("");
+    try {
+      const apiObj = new ApproveManagerSuggestionsAPI(suggestionId);
+      const res = await fetch(apiObj.apiEndPoint(), { method: "POST", ...apiObj.getHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Failed to approve");
+      dispatch(setSnackBar({
+        open: true,
+        message: "Suggestion approved successfully",
+        variant: "success",
+      }));
+      await fetchManagerSuggestions();
+    } catch (err) {
+      setSuggestionsError("Failed to approve suggestion");
+      dispatch(setSnackBar({
+        open: true,
+        message: "Failed to approve suggestion",
+        variant: "error",
+      }));
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  };
+
+  const handleRejectSuggestion = async (suggestionId) => {
+    setSuggestionsLoading(true);
+    setSuggestionsError("");
+    try {
+      const apiObj = new RejectManagerSuggestionsAPI(suggestionId);
+      const res = await fetch(apiObj.apiEndPoint(), { method: "DELETE", ...apiObj.getHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Failed to reject");
+      dispatch(setSnackBar({
+        open: true,
+        message: "Suggestion rejected successfully",
+        variant: "success",
+      }));
+      await fetchManagerSuggestions();
+    } catch (err) {
+      setSuggestionsError("Failed to reject suggestion");
+      dispatch(setSnackBar({
+        open: true,
+        message: "Failed to reject suggestion",
+        variant: "error",
+      }));
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "approved":
+        return "success";
+      case "rejected":
+        return "error";
+      case "pending":
+        return "warning";
+      default:
+        return "default";
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
   useEffect(() => {
     const temp = +localStorage.getItem("projectTabIndex");
     temp && setTabIndex(temp);
@@ -251,6 +366,18 @@ const Project = () => {
     getProjectnDetails();
     getProjectVideoList();
     getOrganizatioUsersList();
+
+    // Debug logging for tab visibility
+    console.log("Debug - userData:", userData);
+    console.log("Debug - isUserOrgOwner:", isUserOrgOwner);
+    console.log("Debug - userData?.role:", userData?.role);
+    console.log("Debug - Should show Manager Suggestions tab:", (isUserOrgOwner || userData?.role === "ADMIN"));
+
+    // Fetch manager suggestions if user is admin/owner
+    if (isUserOrgOwner || userData?.role === "ADMIN") {
+      console.log("Debug - Fetching manager suggestions...");
+      fetchManagerSuggestions();
+    }
 
     return () => {
       dispatch({ type: C.CLEAR_PROJECT_VIDEOS, payload: [] });
@@ -283,12 +410,29 @@ const Project = () => {
   }, [projectInfo, projectvideoList]);
 
   const addNewMemberHandler = async () => {
-    const body = {
-      user_id: addmembers.map((el, i) => el.id),
-    };
-
-    const apiObj = new AddProjectMembersAPI(projectId, body);
-    dispatch(APITransport(apiObj));
+    console.log("addmembers before API call:", addmembers);
+    if (userData?.role === "PROJECT_MANAGER") {
+      // Use selected emails from the dialog
+      const emails = addmembers;
+      console.log("emails to send (selected):", emails);
+      const role = "PROJECT_MEMBER"; // Adjust as needed
+      const apiObj = new InviteManagerSuggestions(orgId, emails, role);
+      dispatch(APITransport(apiObj));
+      dispatch(setSnackBar({
+        open: true,
+        message: "Your suggestion has been sent for approval.",
+        variant: "info",
+      }));
+    } else {
+      // Map selected emails back to user IDs
+      const selectedUsers = userList.filter(user => addmembers.includes(user.email));
+      const body = {
+        user_id: selectedUsers.map(user => user.id),
+      };
+      console.log("user_id to send:", body.user_id);
+      const apiObj = new AddProjectMembersAPI(projectId, body);
+      dispatch(APITransport(apiObj));
+    }
   };
 
   const addNewVideoHandler = async () => {
@@ -437,6 +581,12 @@ const Project = () => {
               ?.canAddMembers && (
               <Tab label={"Members"} sx={{ fontSize: 16, fontWeight: "700" }} />
             )}
+            {(() => {
+              console.log("Debug - Rendering Manager Suggestions tab condition:", (isUserOrgOwner || userData?.role === "ADMIN"));
+              return (isUserOrgOwner || userData?.role === "ADMIN") && (
+                <Tab label={"Manager Suggestions"} sx={{ fontSize: 16, fontWeight: "700" }} />
+              );
+            })()}
             {roles.filter((role) => role.value === userData?.role)[0]
               ?.ProjectReport && (
               <Tab label={"Reports"} sx={{ fontSize: 16, fontWeight: "700" }} />
@@ -528,24 +678,82 @@ const Project = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
-              isUserOrgOwner|| userData?.role==="ADMIN") && (
-              <Button
-                className={classes.projectButton}
-                onClick={() => setAddUserDialog(true)}
-                variant="contained"
-              >
-                Add Project Members
-              </Button>
-            )}
+            <Box display="flex" gap={2} mb={2}>
+              {(projectInfo?.managers?.some((item) => item.id === userData.id) ||
+                isUserOrgOwner || userData?.role === "ADMIN") && (
+                <Button
+                  className={classes.projectButton}
+                  onClick={() => setAddUserDialog(true)}
+                  variant="contained"
+                >
+                  Add Project Members
+                </Button>
+              )}
+            </Box>
             <div className={classes.workspaceTables} style={{ width: "100%" }}>
               <ProjectMemberDetails />
             </div>
           </Box>
         </TabPanel>
+
         <TabPanel
           value={tabIndex}
           index={3}
+          style={{ textAlign: "center", maxWidth: "100%" }}
+        >
+          <Box
+            display={"flex"}
+            flexDirection="Column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            {suggestionsError && (
+              <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                {suggestionsError}
+              </Alert>
+            )}
+            
+            {suggestionsLoading ? (
+              <Box display="flex" justifyContent="center" p={3}>
+                <Loader />
+              </Box>
+            ) : managerSuggestions.length === 0 ? (
+              <Typography variant="body1" align="center" sx={{ mt: 4 }}>
+                No manager suggestions found.
+              </Typography>
+            ) : (
+              <TableContainer component={Paper} sx={{ mt: 2, width: "100%" }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Role</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {managerSuggestions.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.role}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={user.has_accepted_invite ? "Accepted" : "Pending"}
+                            color={user.has_accepted_invite ? "success" : "warning"}
+                            size="small"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Box>
+        </TabPanel>
+        <TabPanel
+          value={tabIndex}
+          index={4}
           style={{ textAlign: "center", maxWidth: "100%" }}
         >
           <Box
@@ -596,6 +804,7 @@ const Project = () => {
           selectFieldValue={addmembers}
           handleSelectField={(item) => setAddmembers(item)}
           title="Add Project Members"
+          userRole={userData?.role}
         />
       )}
 
@@ -618,6 +827,14 @@ const Project = () => {
           handleClose={() => setOpenUploadBulkVideoDialog(false)}
           title={"Upload Bulk Videos"}
           handleSubmit={handeFileUpload}
+        />
+      )}
+
+      {openProjectManagerSuggestionsDialog && (
+        <ProjectManagerSuggestions
+          open={openProjectManagerSuggestionsDialog}
+          onClose={() => setOpenProjectManagerSuggestionsDialog(false)}
+          projectId={projectId}
         />
       )}
     </Grid>

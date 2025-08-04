@@ -13,6 +13,7 @@ import {
   Typography,
   Autocomplete,
   TextField,
+  Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -29,14 +30,13 @@ const AddProjectMembers = ({
   selectFieldValue,
   handleSelectField,
   managerNames,
+  userRole,
 }) => {
-  const alreadyExistingUsers = useSelector((state)=>state.
-  getProjectMembers.data);
-  console.log(alreadyExistingUsers);
+  console.log("managerNames:", managerNames);
+  const alreadyExistingUsers = useSelector((state)=>state.getProjectMembers.data);
   const acceptedManagers = managerNames.filter((manager) =>manager.has_accepted_invite === true &&
       !alreadyExistingUsers.some((user) => user.id === manager.id)
   );
-  console.log(acceptedManagers)
   const filterOptions = (options, state) => {
     const newOptions = options.filter((user) => {
       const { first_name, last_name, email } = user;
@@ -54,6 +54,13 @@ const AddProjectMembers = ({
 
     return newOptions;
   };
+
+  const isManager = userRole === "PROJECT_MANAGER";
+  const emailOptions = acceptedManagers
+    .map(u => u && u.email)
+    .filter(email => !!email);
+  console.log("acceptedManagers:", acceptedManagers);
+  console.log("emailOptions:", emailOptions);
 
   return (
     <Dialog
@@ -75,17 +82,22 @@ const AddProjectMembers = ({
         </IconButton>
       </DialogTitle>
       <DialogContent style={{ paddingTop: 4 }}>
+        {isManager && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            As a Project Manager, your member suggestions will be sent to admins/owners for approval.
+          </Alert>
+        )}
         <FormControl fullWidth>
           <Autocomplete
             multiple
             id="add-project-member"
-            options={acceptedManagers}
+            options={emailOptions}
             value={selectFieldValue}
             onChange={(_event, newValue) => {
+              console.log("Selected emails in dialog:", newValue);
               handleSelectField(newValue);
             }}
             disableCloseOnSelect
-            getOptionLabel={(option) => option.email}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
                 <Checkbox
@@ -94,11 +106,10 @@ const AddProjectMembers = ({
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.email}
+                {option}
               </li>
             )}
             renderInput={(params) => <TextField {...params} label="Select" />}
-            filterOptions={filterOptions}
           />
         </FormControl>
       </DialogContent>
@@ -117,7 +128,7 @@ const AddProjectMembers = ({
             handleUserDialogClose();
           }}
         >
-          Add
+          {isManager ? "Suggest Members" : "Add"}
         </Button>
       </DialogActions>
     </Dialog>
