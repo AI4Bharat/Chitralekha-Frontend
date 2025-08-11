@@ -20,10 +20,6 @@ const UserList = ({ data }) => {
   const dispatch = useDispatch();
   const apiStatus = useSelector((state) => state.apiStatus);
 
-  data.forEach(user => {
-    user.first_name = user.first_name + " " + user.last_name;
-  });
-
   const handleReinvite = (email) => {
     let apiObj;
     apiObj = new ResendUserInviteAPI([email]);
