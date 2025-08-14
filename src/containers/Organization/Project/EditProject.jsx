@@ -33,6 +33,8 @@ import {
   DialogContentText, 
   DialogActions, 
   Snackbar,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Loader } from "common";
@@ -60,6 +62,7 @@ const EditProject = () => {
   const { projectId, orgId } = useParams();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [currentTab, setCurrentTab] = useState(0);
   const dispatch = useDispatch();
   const classes = ProjectStyle();
 
@@ -307,52 +310,25 @@ const EditProject = () => {
     );
   };
 
-  return (
-    <>
-      <Grid
-        container
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Card
-          sx={{
-            width: "100%",
-            minHeight: 500,
-            padding: 5,
-            border: 0,
-          }}
-        >
-          <Grid container spacing={4}>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={12}
-              lg={12}
-              xl={12}
-              style={{ display: "flex",justifyContent:"space-around"}}
-            >
-              <Typography variant="h3" align="center"  >
-                Project Settings
-              </Typography>
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
 
-              {/* <Button
-                color="primary"
-                variant="contained"
-                onClick={() => handleSubmit()}
-                style={{
-                  borderRadius: 6,
-                  marginLeft: "auto",
-                  visibility: showBtn() ? "" : "hidden",
-                }}
-              >
-                Update Project{" "}
-                {apiStatus.loading && (
-                  <Loader size={20} margin="0 0 0 10px" color="secondary" />
-                )}
-              </Button> */}
-            </Grid>
+  const renderProjectSettingsTab = () => (
+    <Grid container spacing={4}>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={12}
+        lg={12}
+        xl={12}
+        style={{ display: "flex",justifyContent:"space-around"}}
+      >
+        <Typography variant="h3" align="center"  >
+          Project Settings
+        </Typography>
+      </Grid>
 
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
               <TextField
@@ -826,54 +802,137 @@ const EditProject = () => {
                     <Loader size={20} margin="0 0 0 10px" color="secondary" />
                   )}
                 </Button>
-                {(isUserOrgOwner || userData?.role === "ADMIN") && (
-                <Button
-                  color="error"
-                  variant="contained"
-                  onClick={() => setOpenDeleteDialog(true)}
-                  style={{ 
-                    borderRadius: 6,
-                    marginLeft:15,
-                  }}
-                >
-                  Delete Project
-                </Button>
-              )}
               </Grid>
             )}
           </Grid>
+        );
+
+  const renderDeleteProjectTab = () => (
+    <Grid container spacing={4}>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Card
+          sx={{
+            padding: 4,
+            border: "1px solid #e0e0e0",
+            backgroundColor: "#fff5f5",
+          }}
+        >
+          <Typography variant="h6" color="error" gutterBottom>
+            ⚠️ Warning: This action cannot be undone
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Deleting this project will permanently remove:
+          </Typography>
+          <Box component="ul" sx={{ pl: 3 }}>
+            <Typography component="li" variant="body2">
+              All project videos and associated files
+            </Typography>
+            <Typography component="li" variant="body2">
+              All tasks and their progress
+            </Typography>
+            <Typography component="li" variant="body2">
+              All project settings and configurations
+            </Typography>
+            <Typography component="li" variant="body2">
+              All team member assignments
+            </Typography>
+          </Box>
+          <Typography variant="body1" paragraph sx={{ mt: 2 }}>
+            This action is irreversible. Please make sure you have backed up any important data before proceeding.
+          </Typography>
+          
+          {(isUserOrgOwner || userData?.role === "ADMIN") && (
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+              <Button
+                color="error"
+                variant="contained"
+                size="large"
+                onClick={() => setOpenDeleteDialog(true)}
+                sx={{ 
+                  borderRadius: 2,
+                  px: 4,
+                  py: 1.5,
+                }}
+              >
+                Delete Project
+              </Button>
+            </Box>
+          )}
         </Card>
-        <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
+      </Grid>
+    </Grid>
+  );
+
+  return (
+    <>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
       >
-        <DialogTitle>Delete Project</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this project? All associated videos
-            and tasks will be deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setOpenDeleteDialog(false)}
-            color="primary"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDelete}
-            color="error"
-            variant="contained"
-            disabled={apiStatus.loading}
-          >
-             {apiStatus.loading && (
-                    <Loader size={20} margin="0 0 0 10px" color="secondary" />
-                  )}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Card
+          sx={{
+            width: "100%",
+            minHeight: 500,
+            padding: 5,
+            border: 0,
+          }}
+        >
+          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+            <Tabs 
+              value={currentTab} 
+              onChange={handleTabChange}
+              centered
+            >
+              <Tab label="Project Settings" />
+              <Tab label="Advanced" />
+            </Tabs>
+          </Box>
+          
+          {currentTab === 0 && renderProjectSettingsTab()}
+          {currentTab === 1 && renderDeleteProjectTab()}
+        </Card>
+        
+        <Dialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+        >
+          <DialogTitle>Delete Project</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this project? All associated videos
+              and tasks will be deleted.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenDeleteDialog(false)}
+              color="primary"
+              variant="outlined"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              color="error"
+              variant="contained"
+              disabled={apiStatus.loading}
+            >
+              Delete
+              {apiStatus.loading && (
+                <Loader size={20} margin="0 0 0 10px" color="secondary" />
+              )}
+            </Button>
+          </DialogActions>
+        </Dialog>
+        
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+          message={snackbarMessage}
+        />
       </Grid>
     </>
   );
