@@ -201,7 +201,11 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
         return speaker;
       });
       setSpeakerIdList(speakerList);
-      setShowSpeakerIdDropdown(false);
+      if(speakerList.length > 1){
+        setShowSpeakerIdDropdown(true);
+      }else{
+        setShowSpeakerIdDropdown(false);
+      }
       if(segment!==undefined){
         setTimeout(() => {    
           const subtitleScrollEle = document.getElementById("subTitleContainer");
@@ -901,7 +905,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
                   </div>}
                 {showSpeakerIdDropdown && (
                   <FormControl
-                    sx={{ width: "50%", mr: "auto", float: "left" }}
+                    sx={{ width: "15%", mr: "auto", float: "left" }}
                     size="small"
                   >
                     <InputLabel id="select-speaker">Select Speaker</InputLabel>
