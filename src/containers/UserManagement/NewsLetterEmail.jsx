@@ -42,21 +42,26 @@ const NewsLetterEmail = ({ email, setEmail }) => {
   return (
     <Grid container display={"flex"} alignItems={"center"} gap={2}>
       <Grid item xs={12} md={8} className={classes.newLetterGridItems}>
-        <TextField
-          placeholder="emailId@example.com"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-        />
-      </Grid>
-
-      <Grid item xs={12} md={4} className={classes.newLetterGridItems}>
-        <Button
-          variant="contained"
-          onClick={() => handleEmailUpdate()}
-          disabled={!validateEmail(email)}
-        >
-          Update Email
-        </Button>
+        <Grid container direction="column" alignItems={"flex-start"} rowSpacing={2}>
+          <Grid item>
+            <TextField
+              fullWidth
+              sx={{ width: '350px' }}
+              placeholder="emailId@example.com"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+            />
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              onClick={() => handleEmailUpdate()}
+              disabled={!validateEmail(email)}
+            >
+              Update Email
+            </Button>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

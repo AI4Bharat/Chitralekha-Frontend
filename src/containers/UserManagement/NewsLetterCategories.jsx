@@ -72,29 +72,32 @@ const NewsLetterCategories = ({ email }) => {
   return (
     <Grid container display={"flex"} alignItems={"center"} gap={2}>
       <Grid item xs={12} md={8} className={classes.newLetterGridItems}>
-        <FormGroup row>
-          {categoryConfig.map((item) => {
-            return (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={selectedCategory[item.name]}
-                    onChange={handleChange}
-                    name={item.name}
+        <Grid container direction="column" alignItems={"flex-start"} rowSpacing={2}>
+          <Grid item>
+            <FormGroup row>
+              {categoryConfig.map((item) => {
+                return (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={selectedCategory[item.name]}
+                        onChange={handleChange}
+                        name={item.name}
+                      />
+                    }
+                    className={classes.newLetterCheckboxLabel}
+                    label={item.label}
                   />
-                }
-                className={classes.newLetterCheckboxLabel}
-                label={item.label}
-              />
-            );
-          })}
-        </FormGroup>
-      </Grid>
-
-      <Grid item xs={12} md={4} className={classes.newLetterGridItems}>
-        <Button variant="contained" onClick={() => handleCategoryUpdate()}>
-          Update Categories
-        </Button>
+                );
+              })}
+            </FormGroup>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" onClick={() => handleCategoryUpdate()}>
+              Update Categories
+            </Button>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

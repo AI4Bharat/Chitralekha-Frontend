@@ -56,24 +56,26 @@ const DailyEmailToggle = () => {
     dispatch(APITransport(mailObj));
   };
 
+  const control = (
+    <Tooltip title={`${dailyEmail ? "Disable" : "Enable"} daily mails`}>
+      <FormControlLabel
+        control={<Switch color="primary" />}
+        checked={dailyEmail}
+        onChange={() => handleSwitchToggleEmail()}
+        disabled={
+          !(
+            loggedInUser.id === +id ||
+            loggedInUser.role === "ADMIN" ||
+            isUserOrgOwner
+          )
+        }
+      />
+    </Tooltip>
+  );
+
   return (
-    <Grid display="flex" justifyContent="center" item xs={12} md={8}>
-      <Tooltip
-        title={`${dailyEmail ? "Disable" : "Enable"} daily mails`}
-      >
-        <FormControlLabel
-          control={<Switch color="primary" />}
-          checked={dailyEmail}
-          onChange={() => handleSwitchToggleEmail()}
-          disabled={
-            !(
-              loggedInUser.id === +id ||
-              loggedInUser.role === "ADMIN" ||
-              isUserOrgOwner
-            )
-          }
-        />
-      </Tooltip>
+    <Grid display="flex" justifyContent="center" alignItems="center">
+      {control}
     </Grid>
   );
 };

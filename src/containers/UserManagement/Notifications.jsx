@@ -34,21 +34,25 @@ const Notifications = () => {
     <Grid container direction="row">
       <Card className={classes.editProfileParentCard}>
         {notificationOptions.map((element) => {
+          const isFullWidthRow = [
+            "dailyEmail",
+            "newsLetterEmail",
+            "newsLetterCategories",
+          ].includes(element.name);
           return (
             <Grid
               container
               className={classes.editProfileParentGrid}
               style={{ justifyContent: "center", padding: "15px" }}
               gap={2}
-
             >
               <Grid
                 item
                 xs={12}
-                md={4}
+                md={isFullWidthRow ? 12 : 4}
                 display={"flex"}
                 flexDirection={"column"}
-                alignItems={"center"}
+                alignItems={"flex-start"}
                 justifyContent={"center"}
               >
                 <Typography variant="body1">{element.title}</Typography>
@@ -60,7 +64,12 @@ const Notifications = () => {
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} md={8}>
+              <Grid
+                item
+                xs={12}
+                md={isFullWidthRow ? 12 : 8}
+                className={isFullWidthRow ? classes.newLetterGridItems : ""}
+              >
                 {element.component}
               </Grid>
             </Grid>
