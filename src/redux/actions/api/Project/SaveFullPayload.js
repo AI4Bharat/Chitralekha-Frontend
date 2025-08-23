@@ -22,6 +22,9 @@ export default class SaveFullPayloadAPI extends API {
     super.processResponse(res);
     if (res) {
       this.report = res;
+      
+      // Remove time tracking code - now handled in backend
+      // Time tracking is automatically handled when session_start is included in payload
     }
   }
 
