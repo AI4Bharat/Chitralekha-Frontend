@@ -128,6 +128,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
   const [tableDialogResponse, setTableDialogResponse] = useState([]);
   const [tableDialogColumn, setTableDialogColumn] = useState([]);
   const [loader, setLoader] = useState(false);
+  const [sessionStartTime, setSessionStartTime] = useState(new Date().toISOString());
 
   useEffect(() => {
     if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
@@ -455,11 +456,14 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
     payload = subtitles,
     bookmark = false,
   ) => {
+    console.log('Save handler called with session_start:', sessionStartTime);
+    
     const reqBody = {
       task_id: taskId,
       offset: currentOffset,
       limit: limit,
-      ...(bookmark && {bookmark: currentIndex}),
+      ...(bookmark && { bookmark: currentIndex }),
+      session_start: sessionStartTime, // Include session start time
       payload: {
         payload: payload,
       },
@@ -469,11 +473,17 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
       reqBody.final = true;
     }
 
+    console.log('Request body:', reqBody);
+
     setComplete(isFinal);
     setAutoSave(isAutosave);
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
+    
+    // Reset session start time immediately after saving
+    setSessionStartTime(new Date().toISOString());
+    console.log('Session start time reset to:', new Date().toISOString());
   };
 
   const handleTimeChange = useCallback(
@@ -571,6 +581,7 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
       task_id: taskId,
       offset: currentPage,
       limit: limit,
+      session_start: sessionStartTime,
       payload: {
         payload: subtitles,
       },
@@ -578,6 +589,9 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
+    
+    // Reset session start time immediately after autosave
+    setSessionStartTime(new Date().toISOString());
   };
 
   const onNavigationClick = (value) => {

@@ -31,6 +31,11 @@ export default class SaveTranscriptAPI extends API {
     super.processResponse(res);
     if (res) {
       this.report = res;
+      
+      // Remove this entire block - time tracking is now handled in backend
+      // if (this.payload.session_start) {
+      //   this.updateTimeSpent();
+      // }
     }
   }
 

@@ -55,7 +55,7 @@ import {
   setSnackBar
 } from "redux/actions";
 import C from "redux/constants";
-import { useAutoSave, useUpdateTimeSpent } from "hooks";
+import { useAutoSave } from "hooks";
 import VoiceOverRightPanel1 from "./VoiceOverRightPanel1";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import PlayArrow from "@mui/icons-material/PlayArrow";
@@ -116,39 +116,7 @@ const VideoLanding = () => {
     }
   }, [taskDetails,loggedin_user_id, loggedin_user_role, dispatch, navigate]);
 
-  useEffect(() => {
-    let intervalId;
-
-    const updateTimer = () => {
-      ref.current = ref.current + 1;
-    };
-
-    intervalId = setInterval(updateTimer, 1000);
-
-    setInterval(() => {
-      clearInterval(intervalId);
-      ref.current = 0;
-
-      intervalId = setInterval(updateTimer, 1000);
-    }, 60 * 1000);
-
-    return () => {
-      if (
-        loggedin_user_id &&
-        taskDetails?.user?.id &&
-        loggedin_user_id === taskDetails?.user?.id
-      ) {
-        const apiObj = new UpdateTimeSpentPerTask(taskId, ref.current);
-        dispatch(APITransport(apiObj));
-      }
-      clearInterval(intervalId);
-      ref.current = 0;
-    };
-    // eslint-disable-next-line
-  }, [taskDetails]);
-
   useAutoSave();
-  useUpdateTimeSpent(ref);
 
   useEffect(() => {
     const apiObj = new FetchTaskDetailsAPI(taskId);
