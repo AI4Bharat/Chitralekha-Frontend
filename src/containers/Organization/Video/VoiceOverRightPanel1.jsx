@@ -157,6 +157,8 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
     bgMusic: "false",
   });
 
+  const [sessionStartTime, setSessionStartTime] = useState(new Date().toISOString());
+
   useEffect(() => {
     const transcriptExportObj = new FetchTranscriptExportTypesAPI();
     dispatch(APITransport(transcriptExportObj));
@@ -392,15 +394,12 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
       })
     );
     
-    // if(isGetUpdatedAudio){
-    //   SaveTranscriptAPI.isSaveInProgress(true);
-    // }
-
     const subs = JSON.parse(JSON.stringify(sourceText));
     const reqBody = {
       task_id: taskId,
       ...(bookmark && {bookmark: currentIndex}),
       offset: value,
+      session_start: sessionStartTime, // Include session start time
       payload: {
         payload: subs,
       },
@@ -419,6 +418,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
+    
+    // Reset session start time immediately after saving
+    setSessionStartTime(new Date().toISOString());
   };
 
   const getPayloadAPI = (offset = currentPage) => {
@@ -435,6 +437,7 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
       task_id: taskId,
       offset: currentPage,
       limit: limit,
+      session_start: sessionStartTime, // Include session start time
       payload: {
         payload: subtitles,
       },
@@ -442,6 +445,9 @@ const VoiceOverRightPanel1 = ({ currentIndex, setCurrentIndex, showTimeline, seg
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
+    
+    // Reset session start time immediately after autosave
+    setSessionStartTime(new Date().toISOString());
   };
 
   const onNavigationClick = (value) => {
