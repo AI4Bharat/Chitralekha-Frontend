@@ -1,4 +1,4 @@
-name: Prod Environment - Build and Release React App
+name: Reap Prod Environment - Build and Release React App
 
 on:
   push:
