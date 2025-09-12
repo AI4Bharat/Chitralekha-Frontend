@@ -20,7 +20,7 @@ env:
 
 jobs:
   cicd:
-    name: DEV__CICD
+    name: REAP_PROD__CICD
     runs-on: ubuntu-latest
     
     steps:
