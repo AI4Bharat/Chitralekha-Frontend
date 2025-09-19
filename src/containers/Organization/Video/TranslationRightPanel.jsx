@@ -113,6 +113,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
   const [loader, setLoader] = useState(false);
   const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
   const [disable, setDisable] = useState(false);
+  const [sessionStartTime, setSessionStartTime] = useState(new Date().toISOString());
 
   useEffect(() => {
     if(loggedin_user_id && taskData?.user?.id && loggedin_user_id !== taskData?.user?.id) {
@@ -361,6 +362,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       offset: currentOffset,
       limit: limit,
       ...(bookmark && {bookmark: currentIndex}),
+      session_start: sessionStartTime, // Include session start time
       payload: {
         payload: subs,
       },
@@ -375,6 +377,9 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
+    
+    // Reset session start time immediately after saving
+    setSessionStartTime(new Date().toISOString());
   };
   const savedPreference = localStorage.getItem(
     "subscriptSuperscriptPreferenceTranslate"
@@ -582,6 +587,7 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
       task_id: taskId,
       offset: currentPage,
       limit: limit,
+      session_start: sessionStartTime, // Include session start time
       payload: {
         payload: subtitles,
       },
@@ -589,6 +595,9 @@ const TranslationRightPanel = ({ currentIndex, currentSubs,setCurrentIndex, show
 
     const obj = new SaveTranscriptAPI(reqBody, taskData?.task_type);
     dispatch(APITransport(obj));
+    
+    // Reset session start time immediately after autosave
+    setSessionStartTime(new Date().toISOString());
   };
 
   const onNavigationClick = (value) => {

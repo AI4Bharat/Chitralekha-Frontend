@@ -25,7 +25,6 @@ import {
 } from "@mui/material";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import RightPanel from "./RightPanel";
-// import VoiceOverRightPanel from "./VoiceOverRightPanel";
 import Timeline from "./Timeline";
 import VideoPanel from "./components/VideoPanel";
 import TranslationRightPanel from "./TranslationRightPanel";
@@ -41,7 +40,6 @@ import {
   FetchVideoDetailsAPI,
   FullScreen,
   FullScreenVideo,
-  UpdateTimeSpentPerTask,
   setCompletedCount,
   setCurrentPage,
   setNextPage,
@@ -94,8 +92,6 @@ const VideoLanding = () => {
   const subs = useSelector((state) => state.commonReducer.subtitles);
   const player = useSelector((state) => state.commonReducer.player);
 
-  const ref = useRef(0);
-
   useEffect(() => {
     if (
       taskDetails?.user?.id &&
@@ -116,6 +112,7 @@ const VideoLanding = () => {
     }
   }, [taskDetails,loggedin_user_id, loggedin_user_role, dispatch, navigate]);
 
+  //use the autosave hook 
   useAutoSave();
 
   useEffect(() => {
@@ -127,6 +124,7 @@ const VideoLanding = () => {
     };
     // eslint-disable-next-line
   }, []);
+
   useEffect(() => {
     if (taskDetails && taskDetails?.id) {
       const apiObj = new FetchVideoDetailsAPI(
@@ -148,6 +146,7 @@ const VideoLanding = () => {
     }
     // eslint-disable-next-line
   }, [taskDetails]);
+  
 
   useEffect(() => {
     const sub = transcriptPayload?.payload?.payload.map(
