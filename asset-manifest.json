@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.9ec9c719.css",
-    "main.js": "/static/js/main.27df2643.js",
+    "main.js": "/static/js/main.6d94a40d.js",
     "static/js/850.195368b5.chunk.js": "/static/js/850.195368b5.chunk.js",
     "static/js/353.a8afe15a.chunk.js": "/static/js/353.a8afe15a.chunk.js",
     "reactPlayerPreview.js": "/static/js/reactPlayerPreview.816f9eae.chunk.js",
@@ -36,7 +36,7 @@
     "index.html": "/index.html",
     "static/media/Card.svg": "/static/media/Card.93f0e69be62a5b18d067c6ba14e983e2.svg",
     "main.9ec9c719.css.map": "/static/css/main.9ec9c719.css.map",
-    "main.27df2643.js.map": "/static/js/main.27df2643.js.map",
+    "main.6d94a40d.js.map": "/static/js/main.6d94a40d.js.map",
     "850.195368b5.chunk.js.map": "/static/js/850.195368b5.chunk.js.map",
     "353.a8afe15a.chunk.js.map": "/static/js/353.a8afe15a.chunk.js.map",
     "reactPlayerPreview.816f9eae.chunk.js.map": "/static/js/reactPlayerPreview.816f9eae.chunk.js.map",
@@ -55,6 +55,6 @@
   },
   "entrypoints": [
     "static/css/main.9ec9c719.css",
-    "static/js/main.27df2643.js"
+    "static/js/main.6d94a40d.js"
   ]
 }
