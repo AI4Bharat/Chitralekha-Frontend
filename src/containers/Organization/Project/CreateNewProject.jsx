@@ -56,8 +56,9 @@ const CreatenewProject = () => {
   const orgUsers = useSelector((state) => state.getOrganizatioUsers.data);
 
   const filteredOrgUsers = (orgUsers || []).filter(
-    (user) => user.role === "ORG_OWNER"
+    (user) => user.role === "ORG_OWNER"  || user.role === "PROJECT_MANAGER"
   );
+
   const userList = [...(projectManagers || []), ...filteredOrgUsers];
 
   const transcriptTypes = useSelector((state) => state.getTranscriptTypes.data);
