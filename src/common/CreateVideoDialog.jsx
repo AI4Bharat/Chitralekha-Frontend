@@ -86,6 +86,7 @@ const CreateVideoDialog = ({
   const [showPopup, setShowPopup] = useState(false);
   const [showYoutubeUrl, setShowYoutubeUrl] = useState(false);
   const [showDurationSelector, setDurationSelector] = useState(false);
+  const [showDurationError, setShowDurationError] = useState(false);
   useEffect(() => {
     if (videosInProject.some((video) => video.url === videoLink)) {
       setShowPopup(true);
@@ -193,7 +194,24 @@ const CreateVideoDialog = ({
     setSpeakerInfo(temp);
   };
 
+  const handleCreateClick = () => {
+    // Check if non-YouTube link
+    const isYouTube = videoLink.includes("youtube.com") || videoLink.includes("youtu.be");
+
+    // If not YouTube and duration is 00:00:00
+    if (!isYouTube && duration.trim() === "00:00:00") {
+      //alert("Please enter the video duration");
+      setShowDurationError(true);
+      return; // Stop submission
+    }
+
+    // Otherwise, proceed as usual
+    addBtnClickHandler();
+  };
+
+
   return (
+    <>
     <Dialog
       fullWidth={true}
       open={open}
@@ -519,7 +537,8 @@ const CreateVideoDialog = ({
           <Button
             variant="contained"
             sx={{ borderRadius: 2, lineHeight: 1 }}
-            onClick={() => addBtnClickHandler()}
+            //onClick={() => addBtnClickHandler()}
+            onClick={handleCreateClick}
             disabled={isDisabled()}
           >
             Create{" "}
@@ -527,7 +546,23 @@ const CreateVideoDialog = ({
           </Button>
         </Box>
       </DialogActions>
-    </Dialog>
+    </Dialog>,
+      {/* ✅ Duration error popup */}
+      <Dialog
+        open={showDurationError}
+        onClose={() => setShowDurationError(false)}
+      >
+        <DialogTitle>Missing Duration</DialogTitle>
+        <DialogContent>
+          <Typography>Please enter the video duration</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDurationError(false)} autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
