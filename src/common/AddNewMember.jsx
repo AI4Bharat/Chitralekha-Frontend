@@ -92,22 +92,17 @@ const AddNewMember = ({ open, handleClose }) => {
       target: { name, value },
     } = event;
 
-    if (name === "orgName") {
-      setFormFields((prev) => {
-        return {
-          ...prev,
-          email: value.organization_owner.email,
-        };
-      });
-    }
-
     setFormFields((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
+      const updated = { ...prev, [name]: value };
+
+      if (name === "orgName") {
+        updated.email = value?.organization_owner?.email ?? "";
+      }
+
+      return updated;
     });
   };
+
 
   const handleClear = () => {
     setFormFields({
@@ -129,7 +124,7 @@ const AddNewMember = ({ open, handleClose }) => {
   const disableForm = () => {
     const { orgName, email, roles } = formFields;
 
-    if (orgName === "" || email === "" || roles.length === 0) {
+    if (!orgName?.title || !email || roles.length === 0) {
       return true;
     }
 

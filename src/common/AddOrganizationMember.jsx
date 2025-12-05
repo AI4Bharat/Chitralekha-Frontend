@@ -39,8 +39,16 @@ const AddOrganizationMember = ({
 }) => {
   const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState("");
+  const loggedInUser = useSelector((state) => state.getLoggedInUserDetails.data);
+  let userRoles = useSelector((state) => state.getUserRoles.data);
 
-  const userRoles = useSelector((state) => state.getUserRoles.data);
+  if (loggedInUser?.role === "ORG_OWNER") {
+    userRoles = [
+      ...userRoles,
+      { label: "Organisation Owner", value: "ORG_OWNER" }
+    ];
+  }
+
 
   const getUserRolesList = () => {
     const userObj = new FetchUserRolesAPI();
@@ -71,7 +79,7 @@ const AddOrganizationMember = ({
   //   }, 1000);
   // };
 
-
+  
   useEffect(() => {
     getUserRolesList();
 
