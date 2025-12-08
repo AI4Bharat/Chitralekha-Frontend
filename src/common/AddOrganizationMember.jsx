@@ -49,7 +49,6 @@ const AddOrganizationMember = ({
     ];
   }
 
-
   const getUserRolesList = () => {
     const userObj = new FetchUserRolesAPI();
     dispatch(APITransport(userObj));
