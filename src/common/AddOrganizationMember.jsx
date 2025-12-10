@@ -38,8 +38,19 @@ const AddOrganizationMember = ({
   isAdmin,
 }) => {
   const dispatch = useDispatch();
+  const [inputValue, setInputValue] = useState("");
 
-  const userRoles = useSelector((state) => state.getUserRoles.data);
+  const loggedInUser = useSelector((state) => state.getLoggedInUserDetails.data);
+
+  let userRoles = useSelector((state) => state.getUserRoles.data);
+
+  // Allow Org Owner to assign Org Owner role
+  if (loggedInUser?.role === "ORG_OWNER") {
+    userRoles = [
+      ...userRoles,
+      { label: "Organisation Owner", value: "ORG_OWNER" }
+    ];
+  }
 
   const getUserRolesList = () => {
     const userObj = new FetchUserRolesAPI();
