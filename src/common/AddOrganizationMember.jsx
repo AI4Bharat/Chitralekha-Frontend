@@ -38,8 +38,6 @@ const AddOrganizationMember = ({
   isAdmin,
 }) => {
   const dispatch = useDispatch();
-  const [inputValue, setInputValue] = useState("");
-
   const loggedInUser = useSelector((state) => state.getLoggedInUserDetails.data);
 
   let userRoles = useSelector((state) => state.getUserRoles.data);
