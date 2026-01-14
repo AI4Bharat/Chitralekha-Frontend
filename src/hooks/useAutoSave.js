@@ -15,7 +15,8 @@ export const useAutoSave = () => {
   const apiStatus = useSelector((state) => state.apiStatus);
   const [apiInProgress, setApiInProgress] = useState(false);
   const apiInProgressRef = useRef(apiInProgress);
-  const loggedin_user_id = JSON.parse(localStorage.getItem("userData"))?.id;
+  const userDataFromStorage = localStorage.getItem("userData");
+  const loggedin_user_id = userDataFromStorage ? JSON.parse(userDataFromStorage)?.id : null;
   
   useEffect(() => {
     const { progress, success, data, apiType } = apiStatus;
