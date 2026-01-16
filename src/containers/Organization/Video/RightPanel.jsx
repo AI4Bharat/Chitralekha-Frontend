@@ -238,6 +238,34 @@ const RightPanel = ({ currentIndex, currentSubs,setCurrentIndex, showTimeline, s
       ?.scrollIntoView(true, { block: "start" });
   }, [currentOffset]);
 
+  // Auto-assign speaker IDs based on speaker_name in subtitles
+  useEffect(() => {
+    if (subtitles && speakerIdList && speakerIdList.length > 0) {
+      let hasChanges = false;
+      const updatedSubtitles = subtitles.map((item, index) => {
+        // Check if this subtitle has a speaker_name but no speaker_id
+        if (item.speaker_name && !item.speaker_id) {
+          // Find the matching speaker in speakerIdList
+          const matchingSpeaker = speakerIdList.find(
+            (speaker) => speaker.name === item.speaker_name
+          );
+          
+          if (matchingSpeaker) {
+            hasChanges = true;
+            return { ...item, speaker_id: matchingSpeaker.id };
+          }
+        }
+        return item;
+      });
+
+      // Update the store if there were any changes
+      if (hasChanges) {
+        dispatch(setSubtitles(updatedSubtitles, C.SUBTITLES));
+      }
+    }
+    // eslint-disable-next-line
+  }, [subtitles, speakerIdList]);
+
   const getPayload = (offset = currentOffset, lim = limit) => {
     const payloadObj = new FetchTranscriptPayloadAPI(
       taskData.id,

@@ -1,6 +1,33 @@
 import clamp from "lodash/clamp";
 import DT from "duration-time-conversion";
 
+// Utility function to extract speaker from text
+const extractSpeakerFromText = (text) => {
+  if (!text || typeof text !== "string") {
+    return { speakerName: null, cleanText: text };
+  }
+
+  const firstLine = text.split('\n')[0];
+  const speakerPattern = /^([A-Za-z0-9]+):\s*(.*)$/;
+  const match = firstLine.match(speakerPattern);
+
+  if (match) {
+    const speakerName = match[1];
+    const textAfterTag = match[2];
+    
+    // If there are multiple lines, append remaining lines
+    const lines = text.split('\n');
+    let cleanText = textAfterTag;
+    if (lines.length > 1) {
+      cleanText = textAfterTag + "\n" + lines.slice(1).join('\n');
+    }
+
+    return { speakerName, cleanText };
+  }
+
+  return { speakerName: null, cleanText: text };
+};
+
 export default class Sub {
   constructor(obj) {
     this.start_time = obj.start_time;
@@ -18,6 +45,16 @@ export default class Sub {
     this.verbatim_text = obj.verbatim_text;
     this.fast_audio = obj.fast_audio;
     this.image_url = obj.image_url;
+    this.speaker_name = obj.speaker_name || null;
+
+    // Extract speaker name from text if present and not already in speaker_name
+    if (!this.speaker_name && this.text) {
+      const { speakerName, cleanText } = extractSpeakerFromText(this.text);
+      if (speakerName) {
+        this.speaker_name = speakerName;
+        this.text = cleanText;
+      }
+    }
   }
 
   get check() {
