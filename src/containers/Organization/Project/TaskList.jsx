@@ -1064,6 +1064,24 @@ const TaskList = () => {
               }
 
               {buttonConfig.map((item) => {
+                // Always show the View button for Org Owner, but only for manually uploaded tasks
+                if (
+                  item.key === "View" &&
+                  userData.role === "ORG_OWNER"  &&
+                  selectedTask?.source_type?.includes("Manually Uploaded")
+                ) {
+                  return (
+                    <Tooltip key={item.key} title={item.title}>
+                      <IconButton
+                        onClick={() => handleActionButtonClick(tableMeta, item.key)}
+                        color={item.color}
+                      >
+                        {item.icon}
+                      </IconButton>
+                    </Tooltip>
+                  );
+                }
+                // Default logic for other buttons
                 return (
                   <Tooltip key={item.key} title={item.title}>
                     <IconButton

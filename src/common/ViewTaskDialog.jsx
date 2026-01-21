@@ -27,6 +27,7 @@ import {
   APITransport,
   FetchTranslationTypesAPI,
   ImportSubtitlesAPI,
+  FetchUserDetailsAPI,
 } from "redux/actions";
 
 const ViewTaskDialog = ({
@@ -54,6 +55,24 @@ const ViewTaskDialog = ({
   const TranslationTypes = useSelector(
     (state) => state.getTranslationTypes.data
   );
+  const userDetails = useSelector((state) => state.getUserDetails.data);
+  
+  useEffect(() => {
+    const isEmpty =
+      !userDetails ||
+      (Array.isArray(userDetails) && userDetails.length === 0) ||
+      (typeof userDetails === 'object' && !Array.isArray(userDetails) && Object.keys(userDetails).length === 0);
+    if (isEmpty) {
+      const apiObj = new FetchUserDetailsAPI("me");
+      dispatch(APITransport(apiObj));
+    }
+  }, [userDetails, dispatch]);
+  
+  // Check if user can upload SRT (Org Owner or Project Manager only)
+  const canUploadSRT =
+    userDetails?.role === "ORG_OWNER" ||
+    userDetails?.role === "PROJECT_MANAGER" ||
+    userDetails?.role === "ADMIN";
 
   const transcriptTranslationType =
     taskDetail.task_type === "TRANSCRIPTION_EDIT"
@@ -210,7 +229,7 @@ const ViewTaskDialog = ({
             </FormControl>
           </Box> */}
 
-          {(transcriptSource.includes("Manually Uploaded") ||
+          {canUploadSRT && (transcriptSource.includes("Manually Uploaded") ||
             taskDetail?.source_type?.includes("Manually Uploaded")) && (
             <Box display="flex" sx={{ mb: 3 }} alignItems="center">
               <Typography variant="h5" width={"20%"}>
@@ -250,7 +269,7 @@ const ViewTaskDialog = ({
           )}
         </DialogContent>
         <DialogActions style={{ padding: "24px" }}>
-          {taskDetail?.source_type?.includes("Manually Uploaded") &&
+          {taskDetail?.source_type?.includes("Manually Uploaded") && canUploadSRT &&
             taskDetail?.is_active && (
               <Box sx={{ marginRight: "auto" }}>
                 <Typography variant="body2" fontWeight={"bold"}>
@@ -268,7 +287,7 @@ const ViewTaskDialog = ({
           >
             Cancel
           </Button>
-          {taskDetail?.source_type?.includes("Manually Uploaded") ? (
+          {(taskDetail?.source_type?.includes("Manually Uploaded") && canUploadSRT) ? (
             <Button
               variant="contained"
               sx={{ borderRadius: 2 }}
@@ -277,26 +296,29 @@ const ViewTaskDialog = ({
               Upload
             </Button>
           ) : (
-            <>
-              {taskDetail.task_type === "TRANSCRIPTION_EDIT" && (
-                <Button
-                  variant="contained"
-                  sx={{ borderRadius: 2 }}
-                  onClick={() => compareHandler(id, transcriptSource, false)}
-                >
-                  Compare
-                </Button>
-              )}
-              {taskDetail.task_type === "TRANSLATION_EDIT" && (
-                <Button
-                  variant="contained"
-                  sx={{ borderRadius: 2 }}
-                  onClick={() => compareHandler(id, transcriptSource, true)}
-                >
-                  Submit
-                </Button>
-              )}
-            </>
+            // If it's a manually uploaded transcription and user cannot upload, show only Cancel
+            (taskDetail?.source_type?.includes("Manually Uploaded") && taskDetail.task_type === "TRANSCRIPTION_EDIT") ? null : (
+              <>
+                {taskDetail.task_type === "TRANSCRIPTION_EDIT" && (
+                  <Button
+                    variant="contained"
+                    sx={{ borderRadius: 2 }}
+                    onClick={() => compareHandler(id, transcriptSource, false)}
+                  >
+                    Compare
+                  </Button>
+                )}
+                {taskDetail.task_type === "TRANSLATION_EDIT" && (
+                  <Button
+                    variant="contained"
+                    sx={{ borderRadius: 2 }}
+                    onClick={() => compareHandler(id, transcriptSource, true)}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </>
+            )
           )}
         </DialogActions>
       </Dialog>
