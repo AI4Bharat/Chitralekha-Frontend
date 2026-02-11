@@ -269,7 +269,7 @@ const OrganizationReport = () => {
   const createReportColumns = (rawData) => {
     let tempColumns = [];
 
-    if (rawData?.length > 0 && rawData[0] && loading==false) {
+    if (rawData?.length > 0 && rawData[0]) {
       Object.entries(rawData[0]).forEach((el) => {
         tempColumns.push({
           name: el[0],
@@ -329,7 +329,7 @@ const OrganizationReport = () => {
   };
 
   const createTableData = (rawData) => {
-    if (rawData?.length > 0 && loading==false) {
+    if (rawData?.length > 0) {
       let result = [];
 
       let tableData = rawData.map((el) => {
