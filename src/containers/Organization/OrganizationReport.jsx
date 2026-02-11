@@ -65,7 +65,6 @@ const OrganizationReport = () => {
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [loading, setLoading] = useState(false);
   const [taskStartDate, setTaskStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [taskEndDate, setTaskEndDate] = useState(moment().format("YYYY-MM-DD"));
   const openSelector = Boolean(anchorEl);
@@ -82,7 +81,6 @@ const OrganizationReport = () => {
   const handleChangeReportsLevel = (event) => {
     setTableData([]);
     setOriginalTableData([])
-    setLoading(true)
     setReportsLevel(event.target.value);
     setlanguageLevelStats("");
     setOffset(0);
@@ -117,7 +115,6 @@ const OrganizationReport = () => {
       }
       return acc;
     }, {});
-    setLoading(true);
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
@@ -153,7 +150,6 @@ const OrganizationReport = () => {
       (item) => item.reportLevel === reportsLevel
     );
 
-    setLoading(true);
     const apiObj = new FetchOrganizationReportsAPI(
       id,
       temp[0].endPoint,
@@ -203,7 +199,6 @@ const OrganizationReport = () => {
       const temp = reportLevels.filter(
         (item) => item.reportLevel === reportsLevel
       );
-      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         temp[0].endPoint,
@@ -214,7 +209,6 @@ const OrganizationReport = () => {
       dispatch(APITransport(apiObj));
     } else {
       const endPoint = "get_aggregated_report_users";
-      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         endPoint,
@@ -233,7 +227,6 @@ const OrganizationReport = () => {
       const temp = reportLevels.filter(
         (item) => item.reportLevel === reportsLevel
       );
-      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         temp[0].endPoint,
@@ -244,7 +237,6 @@ const OrganizationReport = () => {
       dispatch(APITransport(apiObj));
     } else {
       const endPoint = "get_aggregated_report_users";
-      setLoading(true);
       const apiObj = new FetchOrganizationReportsAPI(
         id,
         endPoint,
@@ -257,7 +249,6 @@ const OrganizationReport = () => {
   }, [limit]);
 
   useEffect(() => {
-    setLoading(false);
     let rawData = [];
     rawData = reportData;
     createTableData(rawData);
@@ -451,7 +442,7 @@ const OrganizationReport = () => {
   };
 
   useEffect(() => {
-let option = getOptions(apiStatus.loading || loading); 
+let option = getOptions(apiStatus.loading); 
 
     option = {
       ...option,
